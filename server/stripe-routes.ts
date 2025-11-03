@@ -4,11 +4,20 @@ import { storage } from "./storage";
 
 const router = Router();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2024-11-20.acacia",
-});
+let stripe: Stripe | null = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2024-11-20.acacia",
+  });
+} else {
+  console.warn("[STRIPE] STRIPE_SECRET_KEY not set - Stripe routes will return errors");
+}
 
 router.post("/api/stripe/webhook", async (req: Request, res: Response) => {
+  if (!stripe) {
+    return res.status(503).json({ error: "Stripe not configured" });
+  }
+
   const signature = req.headers["stripe-signature"];
   
   if (!signature) {
@@ -61,6 +70,10 @@ router.post("/api/stripe/webhook", async (req: Request, res: Response) => {
 });
 
 router.post("/api/stripe/create-checkout", async (req: Request, res: Response) => {
+  if (!stripe) {
+    return res.status(503).json({ error: "Stripe not configured" });
+  }
+
   try {
     const { trackTitle, userId, userEmail } = req.body;
 
@@ -103,6 +116,10 @@ router.post("/api/stripe/create-checkout", async (req: Request, res: Response) =
 });
 
 router.post("/api/stripe/create-connect-account", async (req: Request, res: Response) => {
+  if (!stripe) {
+    return res.status(503).json({ error: "Stripe not configured" });
+  }
+
   try {
     const { userId, email } = req.body;
 
