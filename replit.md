@@ -1,0 +1,123 @@
+# The Ready Lab - Learning Management System
+
+## Project Overview
+A comprehensive educational learning management system (LMS) with course management, certifications, communities, digital products marketplace, live streaming, and multi-language support (EN, ES, FR, PT, AR, ZH).
+
+## Architecture
+- **Frontend**: React + TypeScript + Vite + TailwindCSS + shadcn/ui
+- **Backend**: Express.js + TypeScript
+- **Database**: Neon PostgreSQL with Drizzle ORM
+- **Payments**: Stripe (Connect, Subscriptions, Products)
+- **Development**: Full-stack monorepo with hot reload
+
+## Recent Migration (Nov 3, 2025)
+Successfully migrated from Lovable/Supabase to Replit full-stack environment:
+- ✅ Converted 25+ database tables from Supabase to Drizzle ORM
+- ✅ Created Express backend with REST API routes
+- ✅ Set up Neon PostgreSQL database
+- ✅ Configured Vite dev server integration
+- ✅ Basic Stripe payment routes (keys pending)
+- ⚠️ Frontend still uses Supabase client - needs migration to fetch API calls
+
+## Database Schema
+Located in `shared/schema.ts` with these main tables:
+- **profiles** - User accounts and roles
+- **tracks** - Course tracks/programs
+- **modules** - Course modules within tracks
+- **lessons** - Individual lessons with content
+- **enrollments** - User course enrollments
+- **lesson_progress** - Lesson completion tracking
+- **certifications** - Earned certificates
+- **communities** - Learning communities
+- **posts** - Community posts
+- **digital_products** - Marketplace products
+- **purchases** - Product purchases
+- **stripe_connect_accounts** - Educator payment accounts
+- **stripe_subscriptions** - User subscriptions
+- **notifications** - User notifications
+- **admin_roles** - Admin permissions
+- **audit_logs** - System audit trail
+- **quizzes** - Lesson quizzes
+- **live_events** - Live streaming events
+
+## API Endpoints
+**Core Resources:**
+- GET/POST `/api/profiles/:id`
+- GET `/api/tracks` - List all active tracks
+- GET `/api/tracks/:id` - Get track details
+- GET `/api/tracks/:id/modules` - Get track modules
+- GET `/api/modules/:id/lessons` - Get module lessons
+- GET `/api/lessons/:id` - Get lesson details
+- GET/POST `/api/enrollments/user/:userId`
+- GET `/api/certifications/user/:userId`
+- GET `/api/communities`
+- GET/POST `/api/communities/:id/posts`
+- GET `/api/products`
+- GET `/api/notifications/user/:userId`
+
+**Stripe (requires keys):**
+- POST `/api/stripe/webhook` - Stripe webhook handler
+- POST `/api/stripe/create-checkout` - Create checkout session
+- POST `/api/stripe/create-connect-account` - Create educator account
+
+## Environment Variables
+**Database (configured):**
+- DATABASE_URL
+- PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE
+
+**Required for full functionality:**
+- STRIPE_SECRET_KEY - For payment processing
+- STRIPE_WEBHOOK_SECRET - For webhook verification
+- (Optional) OPENAI_API_KEY - For AI features
+- (Optional) RESEND_API_KEY - For email notifications
+
+## Project Structure
+```
+├── server/              # Backend Express server
+│   ├── index.ts        # Main server entry point
+│   ├── routes.ts       # API route handlers
+│   ├── storage.ts      # Database operations layer
+│   ├── stripe-routes.ts # Stripe payment routes
+│   ├── vite.ts         # Vite dev server integration
+│   └── db.ts           # Database connection
+├── shared/             # Shared types and schema
+│   └── schema.ts       # Drizzle ORM schema
+├── src/                # Frontend React app
+│   ├── components/     # React components
+│   ├── pages/          # Page components
+│   ├── hooks/          # Custom React hooks
+│   ├── integrations/   # External integrations
+│   └── lib/            # Utilities
+├── supabase/           # Legacy Supabase files (reference)
+│   ├── migrations/     # SQL migrations (ported to Drizzle)
+│   └── functions/      # Edge functions (partially ported)
+└── package.json        # Dependencies and scripts
+```
+
+## Development Commands
+```bash
+npm run dev         # Start full-stack dev server (port 5000)
+npm run build       # Build for production
+npm run db:push     # Push schema changes to database
+npm run db:studio   # Open Drizzle Studio (database GUI)
+```
+
+## Current Status
+✅ **Backend**: Fully operational
+✅ **Database**: Schema deployed and ready
+✅ **Server**: Running on port 5000
+⚠️ **Frontend**: Still using Supabase client - needs update to use Express API
+⚠️ **Payments**: Stripe routes ready but require API keys
+⚠️ **Edge Functions**: Basic routes created, complex functions (certificate generation, translations) pending
+
+## Next Steps for Development
+1. Update frontend to replace Supabase calls with fetch to Express API
+2. Add Stripe API keys when ready to enable payments
+3. Port remaining Supabase Edge Functions as needed
+4. Test end-to-end user flows
+5. Add authentication middleware to protect routes
+
+## User Preferences
+- Focusing on UI work first, backend infrastructure complete
+- Stripe integration to be improved later
+- Prefers minimal API keys for initial development
