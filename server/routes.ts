@@ -1,8 +1,11 @@
 import express, { Request, Response } from "express";
 import { storage } from "./storage";
 import { insertProfileSchema, insertTrackSchema, insertEnrollmentSchema, insertPostSchema } from "@shared/schema";
+import { stripeRouter } from "./stripe-routes";
 
 export const router = express.Router();
+
+router.use(stripeRouter);
 
 router.get("/api/profiles/:id", async (req: Request, res: Response) => {
   try {

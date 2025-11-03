@@ -7,7 +7,15 @@ import path from "path";
 const app = express();
 const server = createServer(app);
 
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.path === "/api/stripe/webhook") {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
+
+app.use("/api/stripe/webhook", express.raw({ type: "application/json" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
