@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, Headphones, BookOpen, Hand } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import expertLedImage from "@/assets/feature-expert-led.jpg";
 import handsOnImage from "@/assets/feature-hands-on.jpg";
@@ -9,28 +8,32 @@ import flexibleImage from "@/assets/feature-flexible.jpg";
 import certifiedImage from "@/assets/feature-certified.jpg";
 import educatorImage from "@/assets/educator-1.jpg";
 import studentsImage from "@/assets/students-collaboration.jpg";
+import visualLearningImage from "@assets/stock_images/person_watching_educ_8ccc0366.jpg";
+import auditoryLearningImage from "@assets/stock_images/person_listening_wit_7333fc60.jpg";
+import readingLearningImage from "@assets/stock_images/person_reading_book__3e4c75c3.jpg";
+import kinestheticLearningImage from "@assets/stock_images/hands_on_learning_ac_8ca82f64.jpg";
 
 const Features = () => {
   const { t } = useLanguage();
 
   const learningStyles = [
     {
-      icon: Eye,
+      image: visualLearningImage,
       title: "Visual learners",
       description: "Video tutorials, diagrams, and on-screen examples"
     },
     {
-      icon: Headphones,
+      image: auditoryLearningImage,
       title: "Auditory learners", 
       description: "Voice-led lessons, expert interviews, and Q&A"
     },
     {
-      icon: BookOpen,
+      image: readingLearningImage,
       title: "Reading/Writing learners",
       description: "Downloadable guides, toolkits, and checklists"
     },
     {
-      icon: Hand,
+      image: kinestheticLearningImage,
       title: "Kinesthetic learners",
       description: "Hands-on activities, templates, and interactive labs"
     }
@@ -264,19 +267,24 @@ const Features = () => {
             {learningStyles.map((style, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                className="bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 data-testid={`card-learning-style-${index}`}
               >
-                <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mb-4">
-                  <style.icon className="h-6 w-6 text-white" />
+                <div className="w-full h-32 overflow-hidden">
+                  <img 
+                    src={style.image} 
+                    alt={style.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h4 className="text-lg font-bold text-neutral-900 dark:text-white mb-2 flex items-center gap-2">
-                  <span className="text-green-600 dark:text-green-500">✔️</span>
-                  {style.title}
-                </h4>
-                <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                  {style.description}
-                </p>
+                <div className="p-6">
+                  <h4 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">
+                    {style.title}
+                  </h4>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                    {style.description}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
