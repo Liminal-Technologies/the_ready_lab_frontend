@@ -1,0 +1,139 @@
+1) Student Journey A – Discovery → First Lesson (UI only)
+
+Implement/refine Student Journey A: Discovery → First Lesson as a pure front-end demo.
+
+Desired flow (all fake / local state is fine):
+
+Visitor lands on the homepage and can scroll/browse courses with no login.
+
+Clicking Enroll on any course opens an Auth modal (Google / Email buttons – just simulate success).
+
+After “sign up”, show a 3-screen onboarding wizard:
+
+Screen 1: Multi-select interests (Funding, Infrastructure, Branding, Finance, Legal, AI) using pill buttons with on/off states.
+
+Screen 2: Language select (English / Español) – store in local/global state and show somewhere in the UI as “Current language”.
+
+Screen 3: Optional profile (name, photo upload, short bio). The photo input can just preview a local image, no upload. Include Skip button.
+
+After onboarding, show a Welcome overlay / 4-step dashboard tour using tooltips or a simple stepper.
+
+Then land on a Student Dashboard with a “Recommended for You” row that filters static mock courses based on selected interests.
+
+Constraints:
+
+No real auth or uploads. When user clicks “Continue with Google” or “Sign up”, just close the modal and move to onboarding.
+
+Courses can be hard-coded mock data.
+
+Use comments where future APIs will go.
+
+Edit or create the relevant components (homepage, auth modal, onboarding, dashboard) and return the full updated code.
+
+2) Student Journey B & C – Enroll → Course Player (UI only)
+
+Build/refine the enroll + course player flow as a front-end demo—no real payments.
+
+Desired flow:
+
+On the Course detail page, show:
+
+Mock preview video (YouTube embed or placeholder), curriculum outline, instructor bio, Price (“Free” or “$199 / Included in subscription”).
+
+A primary Enroll Now button.
+
+Clicking Enroll Now:
+
+If course is marked free: instantly show a toast/pop-up “Enrolled!” and navigate to the Course Player page.
+
+If course is paid:
+
+Show a fake Stripe Checkout modal with card icons + BNPL options.
+
+Clicking “Pay” after a short loading spinner simply closes the modal and navigates to the Course Player with a “Payment Successful” message.
+
+Course Player UI (front-end only):
+
+Center video player with play/pause, fake progress bar, and speed control (0.5x–2x) that just adjusts a label.
+
+Caption selector (English / Español / Off) that updates state and a small “CC: ES” indicator; no real subtitle files needed.
+
+Right sidebar: module/lesson list with checkmarks. Clicking lessons just switches mock content.
+
+Below video: tabs Overview | Resources | Notes | Discussion with tab switching implemented.
+
+Notes tab: text area that saves to local state and persists while page is open.
+
+Discussion tab: simple comment thread using mock data + ability to add a new comment in local state.
+
+When the fake video progress reaches 95% (you can simulate with a button like “Mark lesson complete”), mark the lesson as complete in state and show progress on the sidebar and dashboard.
+
+Constraints:
+
+Do NOT call real Stripe; everything is fake UI.
+
+Use mock data arrays for curriculum, comments, etc.
+
+Add // TODO: backend comments where real logic would go.
+
+Update the Course Detail and Course Player components and return the full code.
+
+3) Student Journey D – Certificate (UI only)
+
+Build a certificate experience demo so the client can click through it, no real PDF generation.
+
+Desired flow:
+
+When a mock course reaches “100% complete” in state, show a “Certificate unlocked!” dialog with a View Certificate button.
+
+Certificate page:
+
+Show a nicely styled certificate card with: student name, course title, completion date, fake serial number, and a QR-code placeholder image (static SVG or png).
+
+Buttons: Download PDF, Share to LinkedIn, Copy verification link – these can just show toast messages like “Pretend PDF downloaded”.
+
+From the dashboard, add a “My Certificates” section listing earned certificates with a View button that routes to this certificate page.
+
+Constraints:
+
+Everything stays on the front-end; no real PDF or email.
+
+Use hard-coded or locally generated serials and dates.
+
+Add TODO comments where real certificate generation and email would go.
+
+Implement the certificate page, its routing, and the dashboard “My Certificates” UI and return the updated code.
+
+4) Student Journey E – Community (UI only)
+
+Build a community experience demo with fake data.
+
+Desired flow:
+
+After earning the first certificate, show a banner or modal on the dashboard: “Join the Ready Lab community”.
+
+Clicking it opens a Communities page:
+
+Cards for topics: Funding, Legal, Marketing, Branding, Infrastructure, AI.
+
+Each card has a Join / Leave button that toggles in local state.
+
+Clicking a community opens a Community detail view:
+
+Title, description, “Joined” badge.
+
+A list of posts (mock data) with rich-looking text, timestamps, and small avatars.
+
+Ability to create a new post via a textarea and “Post” button (local state).
+
+Each post supports comments (expand thread), likes/reactions counters (state only).
+
+A side panel section “Upcoming Live Q&A” with fake event cards.
+
+Constraints:
+
+All posts & membership stored in component/global state only.
+
+No backend; treat it as a UI walkthrough.
+
+Implement pages/components for the community list and detail, plus the dashboard prompt, and return the full code.

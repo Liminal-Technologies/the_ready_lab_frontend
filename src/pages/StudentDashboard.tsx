@@ -66,6 +66,18 @@ interface Notification {
   notification_type: string;
 }
 
+// Mock courses for recommendations
+const MOCK_COURSES = [
+  { id: '1', title: 'Startup Funding Strategies', category: 'Funding', price: 199, thumbnail: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=300&fit=crop', duration: '6 weeks', students: 1240 },
+  { id: '2', title: 'Building Tech Infrastructure', category: 'Infrastructure', price: 299, thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop', duration: '8 weeks', students: 892 },
+  { id: '3', title: 'Brand Identity Mastery', category: 'Branding', price: 149, thumbnail: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=400&h=300&fit=crop', duration: '4 weeks', students: 2150 },
+  { id: '4', title: 'Financial Planning for Startups', category: 'Finance', price: 249, thumbnail: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop', duration: '5 weeks', students: 1680 },
+  { id: '5', title: 'Legal Foundations for Founders', category: 'Legal', price: 199, thumbnail: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=300&fit=crop', duration: '6 weeks', students: 980 },
+  { id: '6', title: 'AI for Business Growth', category: 'AI', price: 349, thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=300&fit=crop', duration: '10 weeks', students: 3200 },
+  { id: '7', title: 'Venture Capital Fundamentals', category: 'Funding', price: 179, thumbnail: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=400&h=300&fit=crop', duration: '5 weeks', students: 1450 },
+  { id: '8', title: 'Marketing Strategy & Growth', category: 'Branding', price: 199, thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop', duration: '6 weeks', students: 2890 },
+];
+
 export const StudentDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -75,11 +87,29 @@ export const StudentDashboard = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [recommendedCourses, setRecommendedCourses] = useState<typeof MOCK_COURSES>([]);
 
   useEffect(() => {
     fetchDashboardData();
     loadMockCertificates();
+    loadRecommendedCourses();
   }, []);
+
+  const loadRecommendedCourses = () => {
+    // Get interests from onboarding data
+    const onboardingData = localStorage.getItem('onboardingData');
+    if (onboardingData) {
+      const { interests } = JSON.parse(onboardingData);
+      // Filter courses by selected interests
+      const filtered = MOCK_COURSES.filter(course => 
+        interests.includes(course.category)
+      ).slice(0, 4); // Show max 4 recommended courses
+      setRecommendedCourses(filtered);
+    } else {
+      // Show default recommendations if no interests selected
+      setRecommendedCourses(MOCK_COURSES.slice(0, 4));
+    }
+  };
 
   const loadMockCertificates = () => {
     // Get certificates from localStorage or create mock ones
@@ -317,6 +347,78 @@ export const StudentDashboard = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Recommended for You Section */}
+            {recommendedCourses.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-primary" />
+                    Recommended for You
+                  </CardTitle>
+                  <CardDescription>Based on your selected interests</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {recommendedCourses.map((course) => (
+                      <Card 
+                        key={course.id} 
+                        className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
+                        onClick={() => navigate(`/courses/${course.id}`)}
+                        data-testid={`course-recommendation-${course.id}`}
+                      >
+                        <div className="relative aspect-video">
+                          <img 
+                            src={course.thumbnail} 
+                            alt={course.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <Badge className="absolute top-2 right-2 bg-primary">
+                            {course.category}
+                          </Badge>
+                        </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                            {course.title}
+                          </h3>
+                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                            <div className="flex items-center gap-2">
+                              <Clock className="h-3 w-3" />
+                              <span>{course.duration}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="h-3 w-3" />
+                              <span>{course.students.toLocaleString()}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-lg font-bold text-primary">${course.price}</span>
+                            <Button 
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/courses/${course.id}`);
+                              }}
+                              data-testid={`button-view-course-${course.id}`}
+                            >
+                              View Course
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={() => navigate('/explore')}
+                    data-testid="button-explore-more"
+                  >
+                    Explore More Courses
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Progress Tracker Section */}
             <Card>
