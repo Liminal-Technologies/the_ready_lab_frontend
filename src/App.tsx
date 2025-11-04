@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardRouter } from "@/components/DashboardRouter";
@@ -24,7 +24,7 @@ import CreateProduct from "./pages/educator/CreateProduct";
 import EventDetail from "./pages/EventDetail";
 import { Settings } from "@/components/settings/Settings";
 import Index from "./pages/Index";
-import CourseBrowse from "./pages/CourseBrowse";
+import Courses from "./pages/Courses";
 import Products from "./pages/Products";
 import ProductDownload from "./pages/ProductDownload";
 import Pricing from "./pages/Pricing";
@@ -98,12 +98,12 @@ const AppContent = () => {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/educator-agreement" element={<EducatorAgreement />} />
           <Route path="/verify/:serial" element={<VerifyCertificate />} />
-          <Route path="/explore" element={<Navigate to="/courses" replace />} />
+          <Route path="/explore" element={<Explore />} />
           <Route path="/events/:eventId" element={<EventDetail />} />
           <Route path="/community/join" element={<CommunityJoin />} />
           <Route path="/community/create" element={<CommunityCreate />} />
           <Route path="/community/:communityId" element={<CommunityDetail />} />
-          <Route path="/courses" element={<CourseBrowse />} />
+          <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:courseId" element={<CourseDetail />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id/download" element={<ProductDownload />} />
@@ -213,12 +213,12 @@ const AppContent = () => {
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/educator-agreement" element={<EducatorAgreement />} />
-        <Route path="/explore" element={<Navigate to="/courses" replace />} />
+        <Route path="/explore" element={<Explore />} />
         <Route path="/events/:eventId" element={<EventDetail />} />
         <Route path="/community/join" element={<CommunityJoin />} />
         <Route path="/community/create" element={<CommunityCreate />} />
         <Route path="/community/:communityId" element={<CommunityDetail />} />
-        <Route path="/courses" element={<CourseBrowse />} />
+        <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:courseId" element={<CourseDetail />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id/download" element={<ProductDownload />} />

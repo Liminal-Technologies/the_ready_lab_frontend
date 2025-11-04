@@ -14,6 +14,7 @@ const MobileBottomNav = () => {
 
   const tabs = [
     { icon: Home, label: "Home", path: "/", authRequired: false },
+    { icon: Compass, label: "Explore", path: "/explore", authRequired: false },
     { icon: BookOpen, label: "Courses", path: "/courses", authRequired: false },
     { icon: Users, label: "Community", path: "/feed", authRequired: false },
     { icon: User, label: "Profile", path: "/dashboard", authRequired: true },
