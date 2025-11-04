@@ -98,9 +98,10 @@ const Features = () => {
           </div>
         </div>
         
-        {/* Colorful Card Mosaic */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {features.map((feature, index) => {
+        {/* Colorful Card Mosaic with Soft Yellow Background */}
+        <div className="bg-yellow-50 dark:bg-yellow-950/20 rounded-[3rem] p-8 lg:p-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {features.map((feature, index) => {
             // Define vibrant gradient backgrounds for each card
             const gradients = [
               'bg-gradient-to-br from-blue-500 to-blue-600',
@@ -149,6 +150,7 @@ const Features = () => {
               </div>
             );
           })}
+          </div>
         </div>
       </div>
     </section>
