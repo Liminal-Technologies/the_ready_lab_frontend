@@ -8,10 +8,10 @@ import flexibleImage from "@/assets/feature-flexible.jpg";
 import certifiedImage from "@/assets/feature-certified.jpg";
 import educatorImage from "@/assets/educator-1.jpg";
 import studentsImage from "@/assets/students-collaboration.jpg";
-import visualLearningImage from "@assets/stock_images/person_watching_educ_8ccc0366.jpg";
-import auditoryLearningImage from "@assets/stock_images/person_listening_wit_7333fc60.jpg";
-import readingLearningImage from "@assets/stock_images/person_reading_book__3e4c75c3.jpg";
-import kinestheticLearningImage from "@assets/stock_images/hands_on_learning_ac_8ca82f64.jpg";
+import visualLearningImage from "@/assets/stock_images/person_watching_educ_8ccc0366.jpg";
+import auditoryLearningImage from "@/assets/stock_images/person_listening_wit_7333fc60.jpg";
+import readingLearningImage from "@/assets/stock_images/person_reading_book__3e4c75c3.jpg";
+import kinestheticLearningImage from "@/assets/stock_images/hands_on_learning_ac_8ca82f64.jpg";
 
 const Features = () => {
   const { t } = useLanguage();
