@@ -81,7 +81,7 @@ const Hero = () => {
       </div>
 
       {/* Mobile Layout - Banner at Top Center, Content Below */}
-      <div className="lg:hidden absolute top-20 left-0 right-0 z-10 px-4">
+      <div className="lg:hidden absolute top-32 left-0 right-0 z-10 px-4">
         <div className="container mx-auto max-w-md text-center">
           <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-8">
             <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
@@ -96,7 +96,7 @@ const Hero = () => {
       </div>
 
       {/* Mobile Content - Below Banner Text */}
-      <div className="absolute bottom-16 left-0 right-0 z-20 px-4 lg:hidden">
+      <div className="absolute bottom-32 left-0 right-0 z-20 px-4 lg:hidden">
         <div className="container mx-auto max-w-md text-center">
           <p className="text-white mb-4 leading-relaxed" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
