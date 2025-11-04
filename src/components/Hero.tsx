@@ -53,7 +53,7 @@ const Hero = () => {
       </div>
 
       {/* Right Floating Content Box - Aligned with Banner Text */}
-      <div className="absolute bottom-48 md:bottom-56 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
+      <div className="absolute bottom-32 md:bottom-40 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
         <div className="rounded-2xl p-6">
           <p className="text-white mb-6 leading-relaxed" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
