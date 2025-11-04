@@ -33,11 +33,11 @@ const SuccessStoriesSection = () => {
             </div>
             
             {/* Right: Stat Card */}
-            <div className="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-3xl p-8 lg:p-10 shadow-lg">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-3xl p-8 lg:p-10 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <div className="text-white">
-                <p className="text-6xl md:text-7xl font-black mb-4">95%</p>
-                <p className="text-2xl md:text-3xl font-bold mb-2">Success Rate</p>
-                <p className="text-lg text-white/90">
+                <p className="text-6xl md:text-7xl font-black mb-4 text-white">95%</p>
+                <p className="text-2xl md:text-3xl font-bold mb-2 text-white">Success Rate</p>
+                <p className="text-lg text-white">
                   Graduates achieve goals within 12 months
                 </p>
               </div>
