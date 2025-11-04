@@ -74,13 +74,13 @@ const Features = () => {
 
   return (
     <>
-    <section id="about" className="py-24 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200">
+    <section id="about" className="py-24 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200 overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Hero Header with Ghost Text */}
-        <div className="relative mb-20 lg:mb-24">
+        <div className="relative mb-20 lg:mb-24 overflow-hidden">
           {/* Ghost Text Background */}
-          <div className="absolute left-0 top-0 opacity-[0.03] dark:opacity-[0.02] select-none pointer-events-none overflow-hidden">
-            <h2 className="text-[8rem] md:text-[12rem] lg:text-[16rem] font-black leading-none whitespace-nowrap">
+          <div className="absolute left-0 top-0 opacity-[0.05] dark:opacity-[0.02] select-none pointer-events-none">
+            <h2 className="text-[8rem] md:text-[12rem] lg:text-[16rem] font-black leading-none whitespace-nowrap text-neutral-900 dark:text-white">
               WHY CHOOSE
             </h2>
           </div>

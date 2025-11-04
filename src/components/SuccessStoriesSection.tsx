@@ -4,12 +4,12 @@ import educatorImage from "@/assets/educator-1.jpg";
 
 const SuccessStoriesSection = () => {
   return (
-    <section className="py-20 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200">
+    <section className="py-20 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200 overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Hero Row */}
-        <div className="relative mb-16 lg:mb-20">
+        <div className="relative mb-16 lg:mb-20 overflow-hidden">
           {/* Ghost Text Background */}
-          <div className="absolute left-0 top-0 opacity-[0.05] dark:opacity-[0.02] select-none pointer-events-none overflow-hidden">
+          <div className="absolute left-0 top-0 opacity-[0.05] dark:opacity-[0.02] select-none pointer-events-none">
             <h2 className="text-[8rem] md:text-[12rem] lg:text-[16rem] font-black leading-none whitespace-nowrap text-neutral-900 dark:text-white">
               REAL RESULTS
             </h2>
