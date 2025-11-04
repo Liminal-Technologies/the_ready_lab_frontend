@@ -1,17 +1,10 @@
-import { useState, useRef, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Video,
-  VideoOff,
-  Mic,
-  MicOff,
-  Monitor,
-  MonitorOff,
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useRef, useEffect } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Video, VideoOff, Mic, MicOff, Monitor, MonitorOff } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface StreamBroadcasterProps {
   eventId: string;
@@ -29,11 +22,9 @@ export const StreamBroadcaster = ({
   const [isMicOn, setIsMicOn] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null,
-  );
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
-
+  
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
@@ -65,7 +56,7 @@ export const StreamBroadcaster = ({
 
       // Start recording
       const recorder = new MediaRecorder(mediaStream, {
-        mimeType: "video/webm;codecs=vp8,opus",
+        mimeType: 'video/webm;codecs=vp8,opus',
       });
 
       const chunks: Blob[] = [];
@@ -76,19 +67,19 @@ export const StreamBroadcaster = ({
       };
 
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: "video/webm" });
+        const blob = new Blob(chunks, { type: 'video/webm' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
+        const a = document.createElement('a');
         a.href = url;
         a.download = `stream-${new Date().toISOString()}.webm`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-
+        
         toast({
-          title: "Recording downloaded",
-          description: "Your stream has been saved to Downloads",
+          title: 'Recording downloaded',
+          description: 'Your stream has been saved to Downloads',
         });
       };
 
@@ -98,18 +89,18 @@ export const StreamBroadcaster = ({
 
       // Update event status to live
       const { error: eventError } = await supabase
-        .from("live_events")
+        .from('live_events')
         .update({
-          status: "live",
+          status: 'live',
           is_recording: true,
         })
-        .eq("id", eventId);
+        .eq('id', eventId);
 
       if (eventError) throw eventError;
 
       // Store stream credentials securely
       const { error: credError } = await supabase
-        .from("live_event_credentials")
+        .from('live_event_credentials')
         .upsert({
           event_id: eventId,
           stream_key: crypto.randomUUID(),
@@ -121,24 +112,22 @@ export const StreamBroadcaster = ({
       onStreamStart?.();
 
       toast({
-        title: "Stream started",
-        description:
-          "You are now live! Recording will auto-download when you end.",
+        title: 'Stream started',
+        description: 'You are now live! Recording will auto-download when you end.',
       });
     } catch (error) {
-      console.error("Error starting stream:", error);
+      console.error('Error starting stream:', error);
       toast({
-        title: "Error",
-        description:
-          "Failed to start stream. Please check camera/microphone permissions.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to start stream. Please check camera/microphone permissions.',
+        variant: 'destructive',
       });
     }
   };
 
   const stopStream = async () => {
     // Stop recording first
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
       mediaRecorder.stop();
     }
 
@@ -153,12 +142,12 @@ export const StreamBroadcaster = ({
 
     // Update event status to completed
     await supabase
-      .from("live_events")
-      .update({
-        status: "completed",
+      .from('live_events')
+      .update({ 
+        status: 'completed',
         is_recording: false,
       })
-      .eq("id", eventId);
+      .eq('id', eventId);
 
     setIsStreaming(false);
     setIsScreenSharing(false);
@@ -167,8 +156,8 @@ export const StreamBroadcaster = ({
     onStreamEnd?.();
 
     toast({
-      title: "Stream ended",
-      description: "Your stream has been stopped. Recording is downloading...",
+      title: 'Stream ended',
+      description: 'Your stream has been stopped. Recording is downloading...',
     });
   };
 
@@ -203,13 +192,13 @@ export const StreamBroadcaster = ({
           video: true,
         });
         const cameraTrack = cameraStream.getVideoTracks()[0];
-
+        
         if (stream && videoRef.current) {
           stream.removeTrack(videoTrack!);
           stream.addTrack(cameraTrack);
           videoRef.current.srcObject = stream;
         }
-
+        
         setIsScreenSharing(false);
       } else {
         // Start screen sharing
@@ -217,7 +206,7 @@ export const StreamBroadcaster = ({
           video: true,
         });
         const screenTrack = screenStream.getVideoTracks()[0];
-
+        
         const videoTrack = stream?.getVideoTracks()[0];
         if (videoTrack) videoTrack.stop();
 
@@ -226,7 +215,7 @@ export const StreamBroadcaster = ({
           stream.addTrack(screenTrack);
           videoRef.current.srcObject = stream;
         }
-
+        
         setIsScreenSharing(true);
 
         // Handle screen share end
@@ -235,11 +224,11 @@ export const StreamBroadcaster = ({
         };
       }
     } catch (error) {
-      console.error("Error toggling screen share:", error);
+      console.error('Error toggling screen share:', error);
       toast({
-        title: "Error",
-        description: "Failed to toggle screen sharing",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to toggle screen sharing',
+        variant: 'destructive',
       });
     }
   };
@@ -254,7 +243,7 @@ export const StreamBroadcaster = ({
           playsInline
           className="w-full h-full object-cover"
         />
-
+        
         {isStreaming && (
           <Badge className="absolute top-4 left-4 bg-red-500 animate-pulse">
             🔴 LIVE
@@ -271,49 +260,33 @@ export const StreamBroadcaster = ({
             </Button>
           ) : (
             <>
-              <Button
-                onClick={stopStream}
-                variant="destructive"
-                className="flex-1"
-              >
+              <Button onClick={stopStream} variant="destructive" className="flex-1">
                 <VideoOff className="mr-2 h-4 w-4" />
                 End Stream
               </Button>
-
+              
               <Button
                 onClick={toggleCamera}
-                variant={isCameraOn ? "secondary" : "destructive"}
+                variant={isCameraOn ? 'secondary' : 'destructive'}
                 size="icon"
               >
-                {isCameraOn ? (
-                  <Video className="h-4 w-4" />
-                ) : (
-                  <VideoOff className="h-4 w-4" />
-                )}
+                {isCameraOn ? <Video className="h-4 w-4" /> : <VideoOff className="h-4 w-4" />}
               </Button>
-
+              
               <Button
                 onClick={toggleMic}
-                variant={isMicOn ? "secondary" : "destructive"}
+                variant={isMicOn ? 'secondary' : 'destructive'}
                 size="icon"
               >
-                {isMicOn ? (
-                  <Mic className="h-4 w-4" />
-                ) : (
-                  <MicOff className="h-4 w-4" />
-                )}
+                {isMicOn ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
               </Button>
-
+              
               <Button
                 onClick={toggleScreenShare}
-                variant={isScreenSharing ? "default" : "secondary"}
+                variant={isScreenSharing ? 'default' : 'secondary'}
                 size="icon"
               >
-                {isScreenSharing ? (
-                  <MonitorOff className="h-4 w-4" />
-                ) : (
-                  <Monitor className="h-4 w-4" />
-                )}
+                {isScreenSharing ? <MonitorOff className="h-4 w-4" /> : <Monitor className="h-4 w-4" />}
               </Button>
             </>
           )}

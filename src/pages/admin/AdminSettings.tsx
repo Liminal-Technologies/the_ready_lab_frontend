@@ -1,27 +1,14 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import {
-  Settings,
+import { 
+  Settings, 
   Save,
   Palette,
   Mail,
@@ -30,7 +17,7 @@ import {
   Eye,
   Edit,
   Trash2,
-  Plus,
+  Plus
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
@@ -63,7 +50,7 @@ export function AdminSettings() {
     site_description: "Professional learning platform for educators",
     primary_color: "#6366f1",
     logo_url: "",
-    favicon_url: "",
+    favicon_url: ""
   });
   const [emailSettings, setEmailSettings] = useState({
     smtp_host: "",
@@ -71,12 +58,12 @@ export function AdminSettings() {
     smtp_user: "",
     smtp_password: "",
     from_email: "noreply@thereadylab.com",
-    from_name: "The Ready Lab",
+    from_name: "The Ready Lab"
   });
   const [supportSettings, setSupportSettings] = useState({
     support_email: "support@thereadylab.com",
     support_phone: "+1 (555) 123-4567",
-    support_hours: "Mon-Fri 9AM-5PM EST",
+    support_hours: "Mon-Fri 9AM-5PM EST"
   });
   const { toast } = useToast();
 
@@ -88,14 +75,14 @@ export function AdminSettings() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("feature_flags")
-        .select("*")
-        .order("flag_name");
+        .from('feature_flags')
+        .select('*')
+        .order('flag_name');
 
       if (error) throw error;
       setFeatureFlags(data || []);
     } catch (error) {
-      console.error("Error fetching feature flags:", error);
+      console.error('Error fetching feature flags:', error);
       toast({
         title: "Error",
         description: "Failed to load feature flags",
@@ -109,29 +96,29 @@ export function AdminSettings() {
   const toggleFeatureFlag = async (id: string, currentValue: boolean) => {
     try {
       const { error } = await supabase
-        .from("feature_flags")
-        .update({
+        .from('feature_flags')
+        .update({ 
           is_enabled: !currentValue,
-          updated_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
-        .eq("id", id);
+        .eq('id', id);
 
       if (error) throw error;
 
-      await supabase.rpc("log_admin_action", {
-        _action: currentValue ? "disable_feature_flag" : "enable_feature_flag",
-        _entity_type: "feature_flag",
-        _entity_id: id,
+      await supabase.rpc('log_admin_action', {
+        _action: currentValue ? 'disable_feature_flag' : 'enable_feature_flag',
+        _entity_type: 'feature_flag',
+        _entity_id: id
       });
 
       toast({
         title: "Success",
-        description: `Feature flag ${currentValue ? "disabled" : "enabled"}`,
+        description: `Feature flag ${currentValue ? 'disabled' : 'enabled'}`,
       });
 
       fetchFeatureFlags();
     } catch (error) {
-      console.error("Error updating feature flag:", error);
+      console.error('Error updating feature flag:', error);
       toast({
         title: "Error",
         description: "Failed to update feature flag",
@@ -151,11 +138,13 @@ export function AdminSettings() {
     }
 
     try {
-      const { error } = await supabase.from("feature_flags").insert({
-        flag_name: newFlag.flag_name,
-        description: newFlag.description,
-        is_enabled: false,
-      });
+      const { error } = await supabase
+        .from('feature_flags')
+        .insert({
+          flag_name: newFlag.flag_name,
+          description: newFlag.description,
+          is_enabled: false
+        });
 
       if (error) throw error;
 
@@ -167,7 +156,7 @@ export function AdminSettings() {
       setNewFlag({ flag_name: "", description: "" });
       fetchFeatureFlags();
     } catch (error) {
-      console.error("Error creating feature flag:", error);
+      console.error('Error creating feature flag:', error);
       toast({
         title: "Error",
         description: "Failed to create feature flag",
@@ -206,10 +195,7 @@ export function AdminSettings() {
             Configure platform settings and manage feature flags
           </p>
         </div>
-        <Badge
-          variant="outline"
-          className="bg-blue-50 text-blue-700 border-blue-200"
-        >
+        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
           Admin Controls
         </Badge>
       </div>
@@ -242,9 +228,7 @@ export function AdminSettings() {
                     id="flag-name"
                     placeholder="e.g., verified_educators"
                     value={newFlag.flag_name}
-                    onChange={(e) =>
-                      setNewFlag({ ...newFlag, flag_name: e.target.value })
-                    }
+                    onChange={(e) => setNewFlag({ ...newFlag, flag_name: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -253,9 +237,7 @@ export function AdminSettings() {
                     id="flag-description"
                     placeholder="Brief description of the feature"
                     value={newFlag.description}
-                    onChange={(e) =>
-                      setNewFlag({ ...newFlag, description: e.target.value })
-                    }
+                    onChange={(e) => setNewFlag({ ...newFlag, description: e.target.value })}
                   />
                 </div>
               </div>
@@ -299,16 +281,10 @@ export function AdminSettings() {
                           <div className="flex items-center gap-2">
                             <Switch
                               checked={flag.is_enabled}
-                              onCheckedChange={() =>
-                                toggleFeatureFlag(flag.id, flag.is_enabled)
-                              }
+                              onCheckedChange={() => toggleFeatureFlag(flag.id, flag.is_enabled)}
                             />
-                            <Badge
-                              variant={
-                                flag.is_enabled ? "default" : "secondary"
-                              }
-                            >
-                              {flag.is_enabled ? "Enabled" : "Disabled"}
+                            <Badge variant={flag.is_enabled ? "default" : "secondary"}>
+                              {flag.is_enabled ? 'Enabled' : 'Disabled'}
                             </Badge>
                           </div>
                         </TableCell>
@@ -320,11 +296,7 @@ export function AdminSettings() {
                             <Button variant="ghost" size="sm">
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive"
-                            >
+                            <Button variant="ghost" size="sm" className="text-destructive">
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -356,12 +328,10 @@ export function AdminSettings() {
                   <Input
                     id="site-name"
                     value={brandingSettings.site_name}
-                    onChange={(e) =>
-                      setBrandingSettings({
-                        ...brandingSettings,
-                        site_name: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setBrandingSettings({ 
+                      ...brandingSettings, 
+                      site_name: e.target.value 
+                    })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -371,22 +341,18 @@ export function AdminSettings() {
                       id="primary-color"
                       type="color"
                       value={brandingSettings.primary_color}
-                      onChange={(e) =>
-                        setBrandingSettings({
-                          ...brandingSettings,
-                          primary_color: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setBrandingSettings({ 
+                        ...brandingSettings, 
+                        primary_color: e.target.value 
+                      })}
                       className="w-20"
                     />
                     <Input
                       value={brandingSettings.primary_color}
-                      onChange={(e) =>
-                        setBrandingSettings({
-                          ...brandingSettings,
-                          primary_color: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setBrandingSettings({ 
+                        ...brandingSettings, 
+                        primary_color: e.target.value 
+                      })}
                       className="flex-1"
                     />
                   </div>
@@ -398,12 +364,10 @@ export function AdminSettings() {
                 <Textarea
                   id="site-description"
                   value={brandingSettings.site_description}
-                  onChange={(e) =>
-                    setBrandingSettings({
-                      ...brandingSettings,
-                      site_description: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setBrandingSettings({ 
+                    ...brandingSettings, 
+                    site_description: e.target.value 
+                  })}
                   rows={3}
                 />
               </div>
@@ -416,12 +380,10 @@ export function AdminSettings() {
                       id="logo-url"
                       placeholder="https://example.com/logo.png"
                       value={brandingSettings.logo_url}
-                      onChange={(e) =>
-                        setBrandingSettings({
-                          ...brandingSettings,
-                          logo_url: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setBrandingSettings({ 
+                        ...brandingSettings, 
+                        logo_url: e.target.value 
+                      })}
                     />
                     <Button variant="outline" size="sm">
                       <Upload className="h-4 w-4" />
@@ -435,12 +397,10 @@ export function AdminSettings() {
                       id="favicon-url"
                       placeholder="https://example.com/favicon.ico"
                       value={brandingSettings.favicon_url}
-                      onChange={(e) =>
-                        setBrandingSettings({
-                          ...brandingSettings,
-                          favicon_url: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setBrandingSettings({ 
+                        ...brandingSettings, 
+                        favicon_url: e.target.value 
+                      })}
                     />
                     <Button variant="outline" size="sm">
                       <Upload className="h-4 w-4" />
@@ -476,12 +436,10 @@ export function AdminSettings() {
                     id="smtp-host"
                     placeholder="smtp.gmail.com"
                     value={emailSettings.smtp_host}
-                    onChange={(e) =>
-                      setEmailSettings({
-                        ...emailSettings,
-                        smtp_host: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setEmailSettings({ 
+                      ...emailSettings, 
+                      smtp_host: e.target.value 
+                    })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -489,12 +447,10 @@ export function AdminSettings() {
                   <Input
                     id="smtp-port"
                     value={emailSettings.smtp_port}
-                    onChange={(e) =>
-                      setEmailSettings({
-                        ...emailSettings,
-                        smtp_port: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setEmailSettings({ 
+                      ...emailSettings, 
+                      smtp_port: e.target.value 
+                    })}
                   />
                 </div>
               </div>
@@ -505,12 +461,10 @@ export function AdminSettings() {
                   <Input
                     id="smtp-user"
                     value={emailSettings.smtp_user}
-                    onChange={(e) =>
-                      setEmailSettings({
-                        ...emailSettings,
-                        smtp_user: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setEmailSettings({ 
+                      ...emailSettings, 
+                      smtp_user: e.target.value 
+                    })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -519,12 +473,10 @@ export function AdminSettings() {
                     id="smtp-password"
                     type="password"
                     value={emailSettings.smtp_password}
-                    onChange={(e) =>
-                      setEmailSettings({
-                        ...emailSettings,
-                        smtp_password: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setEmailSettings({ 
+                      ...emailSettings, 
+                      smtp_password: e.target.value 
+                    })}
                   />
                 </div>
               </div>
@@ -535,12 +487,10 @@ export function AdminSettings() {
                   <Input
                     id="from-email"
                     value={emailSettings.from_email}
-                    onChange={(e) =>
-                      setEmailSettings({
-                        ...emailSettings,
-                        from_email: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setEmailSettings({ 
+                      ...emailSettings, 
+                      from_email: e.target.value 
+                    })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -548,12 +498,10 @@ export function AdminSettings() {
                   <Input
                     id="from-name"
                     value={emailSettings.from_name}
-                    onChange={(e) =>
-                      setEmailSettings({
-                        ...emailSettings,
-                        from_name: e.target.value,
-                      })
-                    }
+                    onChange={(e) => setEmailSettings({ 
+                      ...emailSettings, 
+                      from_name: e.target.value 
+                    })}
                   />
                 </div>
               </div>
@@ -584,12 +532,10 @@ export function AdminSettings() {
                   id="support-email"
                   type="email"
                   value={supportSettings.support_email}
-                  onChange={(e) =>
-                    setSupportSettings({
-                      ...supportSettings,
-                      support_email: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setSupportSettings({ 
+                    ...supportSettings, 
+                    support_email: e.target.value 
+                  })}
                 />
               </div>
 
@@ -598,12 +544,10 @@ export function AdminSettings() {
                 <Input
                   id="support-phone"
                   value={supportSettings.support_phone}
-                  onChange={(e) =>
-                    setSupportSettings({
-                      ...supportSettings,
-                      support_phone: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setSupportSettings({ 
+                    ...supportSettings, 
+                    support_phone: e.target.value 
+                  })}
                 />
               </div>
 
@@ -613,12 +557,10 @@ export function AdminSettings() {
                   id="support-hours"
                   placeholder="Mon-Fri 9AM-5PM EST"
                   value={supportSettings.support_hours}
-                  onChange={(e) =>
-                    setSupportSettings({
-                      ...supportSettings,
-                      support_hours: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setSupportSettings({ 
+                    ...supportSettings, 
+                    support_hours: e.target.value 
+                  })}
                 />
               </div>
 

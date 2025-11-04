@@ -2,15 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import {
-  BookOpen,
-  CheckCircle2,
-  Clock,
-  Target,
-  TrendingUp,
+import { 
+  BookOpen, 
+  CheckCircle2, 
+  Clock, 
+  Target, 
+  TrendingUp, 
   Award,
   PlayCircle,
-  Calendar,
+  Calendar
 } from "lucide-react";
 
 interface LearningPath {
@@ -32,11 +32,11 @@ interface ProgressTrackerProps {
   currentStreak: number;
 }
 
-const ProgressTracker = ({
-  learningPaths,
-  totalProgress,
-  weeklyGoal,
-  currentStreak,
+const ProgressTracker = ({ 
+  learningPaths, 
+  totalProgress, 
+  weeklyGoal, 
+  currentStreak 
 }: ProgressTrackerProps) => {
   return (
     <div className="space-y-6">
@@ -49,12 +49,8 @@ const ProgressTracker = ({
                 <Target className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">
-                  Overall Progress
-                </p>
-                <p className="text-2xl font-bold text-foreground">
-                  {totalProgress}%
-                </p>
+                <p className="text-sm text-muted-foreground">Overall Progress</p>
+                <p className="text-2xl font-bold text-foreground">{totalProgress}%</p>
               </div>
             </div>
           </CardContent>
@@ -68,9 +64,7 @@ const ProgressTracker = ({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Weekly Goal</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {weeklyGoal}/7
-                </p>
+                <p className="text-2xl font-bold text-foreground">{weeklyGoal}/7</p>
               </div>
             </div>
           </CardContent>
@@ -84,9 +78,7 @@ const ProgressTracker = ({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Learning Streak</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {currentStreak} days
-                </p>
+                <p className="text-2xl font-bold text-foreground">{currentStreak} days</p>
               </div>
             </div>
           </CardContent>
@@ -103,39 +95,27 @@ const ProgressTracker = ({
         </CardHeader>
         <CardContent className="space-y-4">
           {learningPaths.map((path) => {
-            const progressPercentage = Math.round(
-              (path.completedLessons / path.totalLessons) * 100,
-            );
+            const progressPercentage = Math.round((path.completedLessons / path.totalLessons) * 100);
             const isCompleted = progressPercentage === 100;
-
+            
             return (
-              <div
-                key={path.id}
-                className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
-              >
+              <div key={path.id} className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-foreground">
-                        {path.title}
-                      </h3>
+                      <h3 className="font-semibold text-foreground">{path.title}</h3>
                       <Badge variant="outline" className="text-xs">
                         {path.category}
                       </Badge>
                       {path.certification && (
-                        <Badge
-                          className="bg-accent/10 text-accent text-xs"
-                          variant="outline"
-                        >
+                        <Badge className="bg-accent/10 text-accent text-xs" variant="outline">
                           <Award className="h-3 w-3 mr-1" />
                           Certified
                         </Badge>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {path.description}
-                    </p>
-
+                    <p className="text-sm text-muted-foreground mb-2">{path.description}</p>
+                    
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <CheckCircle2 className="h-4 w-4" />
@@ -147,7 +127,7 @@ const ProgressTracker = ({
                       </div>
                     </div>
                   </div>
-
+                  
                   <div className="text-right">
                     <div className="text-2xl font-bold text-foreground mb-1">
                       {progressPercentage}%
@@ -158,14 +138,16 @@ const ProgressTracker = ({
                         Complete
                       </Badge>
                     ) : (
-                      <Badge variant="outline">In Progress</Badge>
+                      <Badge variant="outline">
+                        In Progress
+                      </Badge>
                     )}
                   </div>
                 </div>
-
+                
                 <div className="space-y-3">
                   <Progress value={progressPercentage} className="h-2" />
-
+                  
                   <div className="flex items-center justify-between">
                     {path.nextLesson && !isCompleted ? (
                       <div className="text-sm text-muted-foreground">
@@ -178,11 +160,8 @@ const ProgressTracker = ({
                     ) : (
                       <div></div>
                     )}
-
-                    <Button
-                      size="sm"
-                      variant={isCompleted ? "default" : "outline"}
-                    >
+                    
+                    <Button size="sm" variant={isCompleted ? "default" : "outline"}>
                       {isCompleted ? (
                         <>
                           <Award className="h-4 w-4 mr-2" />

@@ -1,25 +1,13 @@
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Users } from "lucide-react";
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2, Users } from 'lucide-react';
 
 interface CreateCommunityModalProps {
   open: boolean;
@@ -27,19 +15,15 @@ interface CreateCommunityModalProps {
   onSuccess?: () => void;
 }
 
-export const CreateCommunityModal = ({
-  open,
-  onOpenChange,
-  onSuccess,
-}: CreateCommunityModalProps) => {
+export const CreateCommunityModal = ({ open, onOpenChange, onSuccess }: CreateCommunityModalProps) => {
   const [loading, setLoading] = useState(false);
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
-  const [coverPhotoPreview, setCoverPhotoPreview] = useState<string>("");
+  const [coverPhotoPreview, setCoverPhotoPreview] = useState<string>('');
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    visibility: "open",
-    rules: "",
+    name: '',
+    description: '',
+    visibility: 'open',
+    rules: '',
   });
   const { toast } = useToast();
 
@@ -59,7 +43,7 @@ export const CreateCommunityModal = ({
       }
 
       // Validate file type
-      if (!file.type.startsWith("image/")) {
+      if (!file.type.startsWith('image/')) {
         toast({
           title: "Invalid file type",
           description: "Please upload an image file",
@@ -79,7 +63,7 @@ export const CreateCommunityModal = ({
 
   const handleRemoveCoverPhoto = () => {
     setCoverPhoto(null);
-    setCoverPhotoPreview("");
+    setCoverPhotoPreview('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -87,33 +71,31 @@ export const CreateCommunityModal = ({
     setLoading(true);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
-      let coverPhotoUrl = "";
+      let coverPhotoUrl = '';
 
       // Upload cover photo if provided
       if (coverPhoto) {
-        const fileExt = coverPhoto.name.split(".").pop();
+        const fileExt = coverPhoto.name.split('.').pop();
         const fileName = `${user.id}-${Date.now()}.${fileExt}`;
         const filePath = `community-covers/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
-          .from("videos")
+          .from('videos')
           .upload(filePath, coverPhoto);
 
         if (uploadError) throw uploadError;
 
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("videos").getPublicUrl(filePath);
+        const { data: { publicUrl } } = supabase.storage
+          .from('videos')
+          .getPublicUrl(filePath);
 
         coverPhotoUrl = publicUrl;
       }
 
-      const { error } = await supabase.from("communities").insert({
+      const { error } = await supabase.from('communities').insert({
         ...formData,
         created_by: user.id,
         cover_photo: coverPhotoUrl || null,
@@ -125,19 +107,19 @@ export const CreateCommunityModal = ({
         title: "Success",
         description: "Community created successfully.",
       });
-
+      
       onSuccess?.();
       onOpenChange(false);
       setFormData({
-        name: "",
-        description: "",
-        visibility: "open",
-        rules: "",
+        name: '',
+        description: '',
+        visibility: 'open',
+        rules: '',
       });
       setCoverPhoto(null);
-      setCoverPhotoPreview("");
+      setCoverPhotoPreview('');
     } catch (error) {
-      console.error("Error creating community:", error);
+      console.error('Error creating community:', error);
       toast({
         title: "Error",
         description: "Failed to create community. Please try again.",
@@ -169,9 +151,9 @@ export const CreateCommunityModal = ({
             />
             {coverPhotoPreview && (
               <div className="mt-2 relative">
-                <img
-                  src={coverPhotoPreview}
-                  alt="Cover preview"
+                <img 
+                  src={coverPhotoPreview} 
+                  alt="Cover preview" 
                   className="w-full h-32 object-cover rounded-lg"
                 />
                 <Button
@@ -192,9 +174,7 @@ export const CreateCommunityModal = ({
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g., Nonprofit Leaders Forum"
               required
             />
@@ -205,9 +185,7 @@ export const CreateCommunityModal = ({
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Describe the purpose of this community..."
               rows={4}
               required
@@ -218,18 +196,14 @@ export const CreateCommunityModal = ({
             <Label htmlFor="visibility">Visibility *</Label>
             <Select
               value={formData.visibility}
-              onValueChange={(value) =>
-                setFormData({ ...formData, visibility: value })
-              }
+              onValueChange={(value) => setFormData({ ...formData, visibility: value })}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="open">Open - Anyone can join</SelectItem>
-                <SelectItem value="private">
-                  Private - Approval required
-                </SelectItem>
+                <SelectItem value="private">Private - Approval required</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -239,20 +213,14 @@ export const CreateCommunityModal = ({
             <Textarea
               id="rules"
               value={formData.rules}
-              onChange={(e) =>
-                setFormData({ ...formData, rules: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, rules: e.target.value })}
               placeholder="List the guidelines for community members..."
               rows={4}
             />
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>

@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { StreamBroadcaster } from "@/components/streaming/StreamBroadcaster";
-import { StreamViewer } from "@/components/streaming/StreamViewer";
-import { StreamChat } from "@/components/streaming/StreamChat";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Calendar, Clock, ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { StreamBroadcaster } from '@/components/streaming/StreamBroadcaster';
+import { StreamViewer } from '@/components/streaming/StreamViewer';
+import { StreamChat } from '@/components/streaming/StreamChat';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 interface LiveEvent {
   id: string;
@@ -51,16 +51,16 @@ const LiveStream = () => {
     const channel = supabase
       .channel(`event:${eventId}`)
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "UPDATE",
-          schema: "public",
-          table: "live_events",
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'live_events',
           filter: `id=eq.${eventId}`,
         },
         (payload) => {
           setEvent(payload.new as LiveEvent);
-        },
+        }
       )
       .subscribe();
 
@@ -74,18 +74,18 @@ const LiveStream = () => {
 
     // Use the public view to avoid exposing instructor_id
     const { data, error } = await supabase
-      .from("public_live_events")
-      .select("*")
-      .eq("id", eventId)
+      .from('public_live_events')
+      .select('*')
+      .eq('id', eventId)
       .single();
 
     if (error) {
       toast({
-        title: "Error",
-        description: "Failed to load stream details",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to load stream details',
+        variant: 'destructive',
       });
-      navigate("/");
+      navigate('/');
       return;
     }
 
@@ -96,20 +96,19 @@ const LiveStream = () => {
   const checkUserRole = async () => {
     if (!eventId) return;
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     // Use the security definer function to check instructor status
     // This avoids exposing instructor_id to the client
-    const { data, error } = await supabase.rpc("is_event_instructor", {
-      _event_id: eventId,
-      _user_id: user.id,
-    });
+    const { data, error } = await supabase
+      .rpc('is_event_instructor', {
+        _event_id: eventId,
+        _user_id: user.id
+      });
 
     if (error) {
-      console.error("Error checking instructor role:", error);
+      console.error('Error checking instructor role:', error);
       return;
     }
 
@@ -139,9 +138,13 @@ const LiveStream = () => {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-
+      
       <div className="container mx-auto px-4 py-8">
-        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-4"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
@@ -152,7 +155,10 @@ const LiveStream = () => {
             {isInstructor ? (
               <StreamBroadcaster eventId={event.id} />
             ) : (
-              <StreamViewer eventId={event.id} status={event.status} />
+              <StreamViewer
+                eventId={event.id}
+                status={event.status}
+              />
             )}
 
             {/* Stream Info */}
@@ -160,27 +166,25 @@ const LiveStream = () => {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-2xl mb-2">
-                      {event.title}
-                    </CardTitle>
+                    <CardTitle className="text-2xl mb-2">{event.title}</CardTitle>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
-                        {format(new Date(event.scheduled_at), "MMM d, yyyy")}
+                        {format(new Date(event.scheduled_at), 'MMM d, yyyy')}
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
-                        {format(new Date(event.scheduled_at), "h:mm a")}
+                        {format(new Date(event.scheduled_at), 'h:mm a')}
                       </div>
                     </div>
                   </div>
                   <Badge
                     variant={
-                      event.status === "live"
-                        ? "default"
-                        : event.status === "scheduled"
-                          ? "secondary"
-                          : "outline"
+                      event.status === 'live'
+                        ? 'default'
+                        : event.status === 'scheduled'
+                        ? 'secondary'
+                        : 'outline'
                     }
                   >
                     {event.status}

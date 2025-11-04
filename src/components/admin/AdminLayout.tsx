@@ -28,18 +28,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   useEffect(() => {
     if (!auth.loading && !auth.user) {
-      navigate("/auth");
+      navigate('/auth');
       return;
     }
 
     // Check if user has admin privileges
     if (!auth.loading && auth.user) {
-      const hasAdminRole =
-        auth.user.admin_roles && auth.user.admin_roles.length > 0;
-      const isAdmin = auth.user.role === "admin";
-
+      const hasAdminRole = auth.user.admin_roles && auth.user.admin_roles.length > 0;
+      const isAdmin = auth.user.role === 'admin';
+      
       if (!hasAdminRole && !isAdmin) {
-        navigate("/");
+        navigate('/');
         return;
       }
     }
@@ -62,10 +61,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     return null;
   }
 
-  const hasAdminRole =
-    auth.user.admin_roles && auth.user.admin_roles.length > 0;
-  const isAdmin = auth.user.role === "admin";
-
+  const hasAdminRole = auth.user.admin_roles && auth.user.admin_roles.length > 0;
+  const isAdmin = auth.user.role === 'admin';
+  
   if (!hasAdminRole && !isAdmin) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -73,9 +71,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <CardContent className="p-8 text-center">
             <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
-            <p className="text-muted-foreground">
-              You don't have permission to access the admin dashboard.
-            </p>
+            <p className="text-muted-foreground">You don't have permission to access the admin dashboard.</p>
           </CardContent>
         </Card>
       </div>
@@ -84,29 +80,24 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/");
+    navigate('/');
   };
 
-  const userRole = auth.user.admin_roles?.[0]?.role || "admin";
-  const roleLabel = userRole
-    .replace("_", " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase());
+  const userRole = auth.user.admin_roles?.[0]?.role || 'admin';
+  const roleLabel = userRole.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-white">
         <AdminSidebar />
-
+        
         <div className="flex-1 flex flex-col">
           {/* Top Header */}
           <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-6 gap-4">
             <SidebarTrigger className="h-8 w-8" />
-
+            
             <div className="flex items-center gap-2">
-              <Badge
-                variant="outline"
-                className="bg-green-50 text-green-700 border-green-200"
-              >
+              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                 PROD
               </Badge>
             </div>
@@ -114,8 +105,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div className="flex-1 max-w-md">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search users, courses, transactions..."
+                <Input 
+                  placeholder="Search users, courses, transactions..." 
                   className="pl-10"
                 />
               </div>
@@ -131,37 +122,27 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="flex items-center gap-2 px-3"
-                  >
+                  <Button variant="ghost" className="flex items-center gap-2 px-3">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={auth.user.avatar_url} />
                       <AvatarFallback>
-                        {auth.user.full_name?.charAt(0) ||
-                          auth.user.email.charAt(0).toUpperCase()}
+                        {auth.user.full_name?.charAt(0) || auth.user.email.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="text-left">
-                      <div className="text-sm font-medium">
-                        {auth.user.full_name || "Admin"}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {roleLabel}
-                      </div>
+                      <div className="text-sm font-medium">{auth.user.full_name || 'Admin'}</div>
+                      <div className="text-xs text-muted-foreground">{roleLabel}</div>
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>Admin Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/admin/profile")}>
+                  <DropdownMenuItem onClick={() => navigate('/admin/profile')}>
                     <User className="mr-2 h-4 w-4" />
                     Profile Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => navigate("/admin/audit-logs")}
-                  >
+                  <DropdownMenuItem onClick={() => navigate('/admin/audit-logs')}>
                     <Shield className="mr-2 h-4 w-4" />
                     Audit Logs
                   </DropdownMenuItem>
@@ -175,7 +156,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 p-6 overflow-auto">{children}</main>
+          <main className="flex-1 p-6 overflow-auto">
+            {children}
+          </main>
         </div>
       </div>
     </SidebarProvider>

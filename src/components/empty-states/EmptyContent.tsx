@@ -15,7 +15,7 @@ export const EmptyContent = ({
   description = "Create your first piece of content to get started",
   actionLabel = "Create Content",
   actionPath = "/dashboard",
-  showAction = true,
+  showAction = true
 }: EmptyContentProps) => {
   const navigate = useNavigate();
 
@@ -23,9 +23,13 @@ export const EmptyContent = ({
     <div className="flex flex-col items-center justify-center py-16 text-center">
       <FileText className="h-16 w-16 text-muted-foreground mb-4" />
       <h3 className="text-xl font-semibold mb-2">{message}</h3>
-      <p className="text-muted-foreground mb-6 max-w-md">{description}</p>
+      <p className="text-muted-foreground mb-6 max-w-md">
+        {description}
+      </p>
       {showAction && (
-        <Button onClick={() => navigate(actionPath)}>{actionLabel}</Button>
+        <Button onClick={() => navigate(actionPath)}>
+          {actionLabel}
+        </Button>
       )}
     </div>
   );

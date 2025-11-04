@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { BarChart3, CheckCircle } from "lucide-react";
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { BarChart3, CheckCircle } from 'lucide-react';
 
 interface PollOption {
   id: string;
@@ -24,7 +24,7 @@ export const PollCard = ({
   totalVotes,
   hasVoted: initialHasVoted = false,
 }: PollCardProps) => {
-  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [selectedOption, setSelectedOption] = useState<string>('');
   const [hasVoted, setHasVoted] = useState(initialHasVoted);
 
   const handleVote = () => {
@@ -60,8 +60,8 @@ export const PollCard = ({
               ))}
             </div>
           </RadioGroup>
-          <Button
-            className="w-full mt-4"
+          <Button 
+            className="w-full mt-4" 
             onClick={handleVote}
             disabled={!selectedOption}
           >
@@ -71,22 +71,17 @@ export const PollCard = ({
       ) : (
         <div className="space-y-3">
           {options.map((option) => {
-            const percentage =
-              totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
+            const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
             const isSelected = option.id === selectedOption;
-
+            
             return (
               <div key={option.id} className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <span>{option.text}</span>
-                    {isSelected && (
-                      <CheckCircle className="h-4 w-4 text-primary" />
-                    )}
+                    {isSelected && <CheckCircle className="h-4 w-4 text-primary" />}
                   </div>
-                  <span className="font-semibold">
-                    {percentage.toFixed(0)}%
-                  </span>
+                  <span className="font-semibold">{percentage.toFixed(0)}%</span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div

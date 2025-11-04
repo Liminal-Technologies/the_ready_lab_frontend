@@ -1,9 +1,9 @@
-import { useAuth } from "@/hooks/useAuth";
-import { StudentSettings } from "./StudentSettings";
-import { EducatorSettings } from "./EducatorSettings";
-import { AdminSettings } from "./AdminSettings";
-import { Card, CardContent } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { useAuth } from '@/hooks/useAuth';
+import { StudentSettings } from './StudentSettings';
+import { EducatorSettings } from './EducatorSettings';
+import { AdminSettings } from './AdminSettings';
+import { Card, CardContent } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
 
 export const Settings = () => {
   const { auth } = useAuth();
@@ -26,18 +26,17 @@ export const Settings = () => {
   }
 
   // Check if user has admin privileges
-  const hasAdminRole =
-    auth.user.admin_roles && auth.user.admin_roles.length > 0;
-  const isAdmin = auth.user.role === "admin";
+  const hasAdminRole = auth.user.admin_roles && auth.user.admin_roles.length > 0;
+  const isAdmin = auth.user.role === 'admin';
 
   if (hasAdminRole || isAdmin) {
     return <AdminSettings />;
   }
 
   switch (auth.user.role) {
-    case "student":
+    case 'student':
       return <StudentSettings />;
-    case "educator":
+    case 'educator':
       return <EducatorSettings />;
     default:
       return (
@@ -45,9 +44,7 @@ export const Settings = () => {
           <Card>
             <CardContent className="p-8 text-center">
               <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
-              <p className="text-muted-foreground">
-                Your account role is not recognized.
-              </p>
+              <p className="text-muted-foreground">Your account role is not recognized.</p>
             </CardContent>
           </Card>
         </div>

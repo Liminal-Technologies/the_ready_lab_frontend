@@ -1,24 +1,18 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters')
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -30,13 +24,9 @@ interface LoginFormProps {
 export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const { signIn, auth } = useAuth();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema)
   });
 
   const onSubmit = async (data: LoginFormData) => {
@@ -47,8 +37,7 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
       });
     } catch (error: any) {
       toast.error("Sign in failed", {
-        description:
-          error.message || "Please check your credentials and try again",
+        description: error.message || "Please check your credentials and try again",
       });
     }
   };
@@ -72,7 +61,7 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
                 type="email"
                 placeholder="Enter your email"
                 className="pl-10"
-                {...register("email")}
+                {...register('email')}
               />
             </div>
             {errors.email && (
@@ -86,43 +75,37 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
                 className="pl-10 pr-10"
-                {...register("password")}
+                {...register('password')}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
             {errors.password && (
-              <p className="text-sm text-destructive">
-                {errors.password.message}
-              </p>
+              <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
           </div>
 
-          <Button
-            type="submit"
-            className="w-full"
+          <Button 
+            type="submit" 
+            className="w-full" 
             disabled={auth.loading}
             variant="hero"
           >
-            {auth.loading ? "Signing in..." : "Sign In"}
+            {auth.loading ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don't have an account?{' '}
             <button
               onClick={onSwitchToSignup}
               className="text-primary hover:underline font-medium"

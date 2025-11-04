@@ -7,16 +7,13 @@ const PricingHero = () => {
         <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground leading-tight">
           Always Free to Learn
         </h1>
-
+        
         <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-          Join for free and start learning today. Pay only for premium courses,
-          certifications, communities, and events.
+          Join for free and start learning today. Pay only for premium courses, certifications, communities, and events.
         </p>
-
+        
         <p className="text-base text-muted-foreground mb-10 max-w-2xl mx-auto">
-          Whether you're building your business, teaching your expertise, or
-          scaling your institution — The Ready Lab has flexible options for
-          everyone.
+          Whether you're building your business, teaching your expertise, or scaling your institution — The Ready Lab has flexible options for everyone.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

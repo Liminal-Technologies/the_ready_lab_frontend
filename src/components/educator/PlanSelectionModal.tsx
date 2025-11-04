@@ -1,16 +1,16 @@
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Check, Loader2, Sparkles, Zap, Crown } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  Sparkles,
+  Zap,
+  Crown
+} from "lucide-react";
 
 interface PlanSelectionModalProps {
   open: boolean;
@@ -94,48 +94,43 @@ const plans: Plan[] = [
   },
 ];
 
-export function PlanSelectionModal({
-  open,
-  onOpenChange,
-  onPlanSelected,
-}: PlanSelectionModalProps) {
+export function PlanSelectionModal({ open, onOpenChange, onPlanSelected }: PlanSelectionModalProps) {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handlePlanSelect = async (planId: string) => {
     setSelectedPlan(planId);
-
+    
     if (planId === "free") {
       // Free plan - just save and close
       localStorage.setItem("educatorPlan", planId);
-
+      
       toast({
         title: "Welcome to The Ready Lab! 🎉",
-        description:
-          "You're all set with the Free plan. Start creating your first course!",
+        description: "You're all set with the Free plan. Start creating your first course!",
       });
-
+      
       onPlanSelected?.(planId);
       onOpenChange(false);
       setSelectedPlan(null);
     } else {
       // Paid plans - show mock checkout
       setIsProcessing(true);
-
+      
       // Simulate Stripe checkout
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       // Save plan selection
       localStorage.setItem("educatorPlan", planId);
-
+      
       setIsProcessing(false);
       setSelectedPlan(null);
-
+      
       toast({
         title: "Payment successful! 🎉",
         description: `Welcome to the ${planId === "pro" ? "Pro" : "Premium"} plan. Let's build something amazing!`,
       });
-
+      
       onPlanSelected?.(planId);
       onOpenChange(false);
     }
@@ -158,7 +153,7 @@ export function PlanSelectionModal({
             const Icon = plan.icon;
             const isSelected = selectedPlan === plan.id;
             const isLoading = isProcessing && isSelected;
-
+            
             return (
               <Card
                 key={plan.id}
@@ -177,33 +172,25 @@ export function PlanSelectionModal({
                 )}
 
                 <div className="text-center mb-6">
-                  <div
-                    className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 ${plan.iconColor}`}
-                  >
+                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 ${plan.iconColor}`}>
                     <Icon className="h-8 w-8" />
                   </div>
-
+                  
                   <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-
+                  
                   <div className="flex items-baseline justify-center gap-1 mb-1">
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
-
+                  
                   {plan.id === "free" && (
-                    <p className="text-sm text-muted-foreground">
-                      Perfect to get started
-                    </p>
+                    <p className="text-sm text-muted-foreground">Perfect to get started</p>
                   )}
                   {plan.id === "pro" && (
-                    <p className="text-sm text-primary font-medium">
-                      Best value for growing educators
-                    </p>
+                    <p className="text-sm text-primary font-medium">Best value for growing educators</p>
                   )}
                   {plan.id === "premium" && (
-                    <p className="text-sm text-muted-foreground">
-                      For serious course creators
-                    </p>
+                    <p className="text-sm text-muted-foreground">For serious course creators</p>
                   )}
                 </div>
 
@@ -222,11 +209,9 @@ export function PlanSelectionModal({
                             : "text-muted-foreground"
                         }`}
                       />
-                      <span
-                        className={`text-sm ${
-                          !feature.included ? "line-through" : ""
-                        }`}
-                      >
+                      <span className={`text-sm ${
+                        !feature.included ? "line-through" : ""
+                      }`}>
                         {feature.text}
                       </span>
                     </div>
@@ -261,9 +246,7 @@ export function PlanSelectionModal({
         </div>
 
         <div className="text-center text-sm text-muted-foreground pt-4 border-t">
-          <p>
-            All plans include access to our educator community and resources.
-          </p>
+          <p>All plans include access to our educator community and resources.</p>
           <p className="mt-1">You can upgrade, downgrade, or cancel anytime.</p>
         </div>
       </DialogContent>

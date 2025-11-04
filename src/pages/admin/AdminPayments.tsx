@@ -1,34 +1,15 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Search,
-  Filter,
-  MoreHorizontal,
+import { 
+  Search, 
+  Filter, 
+  MoreHorizontal, 
   CreditCard,
   DollarSign,
   TrendingUp,
@@ -36,7 +17,7 @@ import {
   RefreshCw,
   Eye,
   Download,
-  AlertCircle,
+  AlertCircle
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -57,7 +38,7 @@ const mockTransactions = [
     description: "Educator Pro Plan",
     created: "2024-01-15T10:30:00Z",
     payment_method: "card",
-    last4: "4242",
+    last4: "4242"
   },
   {
     id: "pi_0987654321",
@@ -68,8 +49,8 @@ const mockTransactions = [
     description: "Educator Premium Plan",
     created: "2024-01-14T15:45:00Z",
     payment_method: "card",
-    last4: "4444",
-  },
+    last4: "4444"
+  }
 ];
 
 const mockSubscriptions = [
@@ -82,8 +63,8 @@ const mockSubscriptions = [
     interval: "month",
     current_period_start: "2024-01-15T00:00:00Z",
     current_period_end: "2024-02-15T00:00:00Z",
-    created: "2024-01-15T10:30:00Z",
-  },
+    created: "2024-01-15T10:30:00Z"
+  }
 ];
 
 export function AdminPayments() {
@@ -113,22 +94,18 @@ export function AdminPayments() {
       failed: "bg-red-100 text-red-800",
       active: "bg-green-100 text-green-800",
       canceled: "bg-red-100 text-red-800",
-      past_due: "bg-orange-100 text-orange-800",
+      past_due: "bg-orange-100 text-orange-800"
     };
     return (
-      <Badge
-        className={
-          colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800"
-        }
-      >
+      <Badge className={colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
   };
 
-  const formatAmount = (amount: number, currency: string = "usd") => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
+  const formatAmount = (amount: number, currency: string = 'usd') => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
       currency: currency.toUpperCase(),
     }).format(amount / 100);
   };
@@ -143,9 +120,7 @@ export function AdminPayments() {
           </p>
         </div>
         <Button onClick={refreshStripeData} disabled={loading}>
-          <RefreshCw
-            className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`}
-          />
+          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           Sync with Stripe
         </Button>
       </div>
@@ -154,9 +129,7 @@ export function AdminPayments() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Monthly Revenue
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -168,38 +141,38 @@ export function AdminPayments() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Active Subscriptions
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">89</div>
-            <p className="text-xs text-muted-foreground">+7 new this month</p>
+            <p className="text-xs text-muted-foreground">
+              +7 new this month
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Failed Payments
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Failed Payments</CardTitle>
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">Require attention</p>
+            <p className="text-xs text-muted-foreground">
+              Require attention
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Pending Payouts
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$4,234</div>
-            <p className="text-xs text-muted-foreground">To educators</p>
+            <p className="text-xs text-muted-foreground">
+              To educators
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -276,23 +249,16 @@ export function AdminPayments() {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <div className="font-medium">
-                              {transaction.customer_email}
-                            </div>
+                            <div className="font-medium">{transaction.customer_email}</div>
                             <div className="text-sm text-muted-foreground">
                               Card ending in {transaction.last4}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="font-medium">
-                          {formatAmount(
-                            transaction.amount,
-                            transaction.currency,
-                          )}
+                          {formatAmount(transaction.amount, transaction.currency)}
                         </TableCell>
-                        <TableCell>
-                          {getStatusBadge(transaction.status)}
-                        </TableCell>
+                        <TableCell>{getStatusBadge(transaction.status)}</TableCell>
                         <TableCell>{transaction.description}</TableCell>
                         <TableCell>
                           {new Date(transaction.created).toLocaleDateString()}
@@ -313,7 +279,7 @@ export function AdminPayments() {
                                 <Download className="mr-2 h-4 w-4" />
                                 Download Receipt
                               </DropdownMenuItem>
-                              {transaction.status === "succeeded" && (
+                              {transaction.status === 'succeeded' && (
                                 <DropdownMenuItem>
                                   <RefreshCw className="mr-2 h-4 w-4" />
                                   Issue Refund
@@ -364,16 +330,11 @@ export function AdminPayments() {
                           <Badge variant="outline">{subscription.plan}</Badge>
                         </TableCell>
                         <TableCell>
-                          {formatAmount(subscription.amount)}/
-                          {subscription.interval}
+                          {formatAmount(subscription.amount)}/{subscription.interval}
                         </TableCell>
+                        <TableCell>{getStatusBadge(subscription.status)}</TableCell>
                         <TableCell>
-                          {getStatusBadge(subscription.status)}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(
-                            subscription.current_period_end,
-                          ).toLocaleDateString()}
+                          {new Date(subscription.current_period_end).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>
@@ -408,9 +369,7 @@ export function AdminPayments() {
             <CardContent className="p-8 text-center">
               <RefreshCw className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Refund Management</h3>
-              <p className="text-muted-foreground">
-                Refund processing features coming soon...
-              </p>
+              <p className="text-muted-foreground">Refund processing features coming soon...</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -420,9 +379,7 @@ export function AdminPayments() {
             <CardContent className="p-8 text-center">
               <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Educator Payouts</h3>
-              <p className="text-muted-foreground">
-                Payout management features coming soon...
-              </p>
+              <p className="text-muted-foreground">Payout management features coming soon...</p>
             </CardContent>
           </Card>
         </TabsContent>

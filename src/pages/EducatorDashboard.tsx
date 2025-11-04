@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import Header from "@/components/Header";
-import {
-  Upload,
-  Users,
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import Header from '@/components/Header';
+import { 
+  Upload, 
+  Users, 
   Video,
   FileText,
   BookOpen,
-  Settings,
-} from "lucide-react";
-import { CreateMicrolearningModal } from "@/components/educator/CreateMicrolearningModal";
-import { CreateDeepLearningModal } from "@/components/educator/CreateDeepLearningModal";
-import { UploadDigitalProductModal } from "@/components/educator/UploadDigitalProductModal";
-import { CreateLiveEventModal } from "@/components/educator/CreateLiveEventModal";
-import { CreateCommunityModal } from "@/components/educator/CreateCommunityModal";
-import { MyContentTable } from "@/components/educator/MyContentTable";
-import { NotificationsList } from "@/components/educator/NotificationsList";
-import { PayoutManagement } from "@/components/settings/PayoutManagement";
-import { CommunityManager } from "@/components/community/CommunityManager";
+  Settings
+} from 'lucide-react';
+import { CreateMicrolearningModal } from '@/components/educator/CreateMicrolearningModal';
+import { CreateDeepLearningModal } from '@/components/educator/CreateDeepLearningModal';
+import { UploadDigitalProductModal } from '@/components/educator/UploadDigitalProductModal';
+import { CreateLiveEventModal } from '@/components/educator/CreateLiveEventModal';
+import { CreateCommunityModal } from '@/components/educator/CreateCommunityModal';
+import { MyContentTable } from '@/components/educator/MyContentTable';
+import { NotificationsList } from '@/components/educator/NotificationsList';
+import { PayoutManagement } from '@/components/settings/PayoutManagement';
+import { CommunityManager } from '@/components/community/CommunityManager';
 
 export const EducatorDashboard = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export const EducatorDashboard = () => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleSuccess = () => {
-    setRefreshKey((prev) => prev + 1);
+    setRefreshKey(prev => prev + 1);
   };
 
   return (
@@ -42,7 +42,9 @@ export const EducatorDashboard = () => {
           <div className="bg-primary rounded-2xl p-8 text-primary-foreground">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Educator Dashboard</h1>
+                <h1 className="text-3xl font-bold mb-2">
+                  Educator Dashboard
+                </h1>
                 <p className="text-lg opacity-90">
                   Create, manage, and track all your content in one place
                 </p>
@@ -96,9 +98,7 @@ export const EducatorDashboard = () => {
               <Video className="h-6 w-6" />
               <div>
                 <div className="font-semibold">Live Streaming</div>
-                <div className="text-xs opacity-80">
-                  Stream directly on platform
-                </div>
+                <div className="text-xs opacity-80">Stream directly on platform</div>
               </div>
             </Button>
             <Button
@@ -128,7 +128,7 @@ export const EducatorDashboard = () => {
 
           {/* Settings Link */}
           <div className="flex justify-center">
-            <Button variant="outline" onClick={() => navigate("/settings")}>
+            <Button variant="outline" onClick={() => navigate('/settings')}>
               <Settings className="h-4 w-4 mr-2" />
               Account Settings
             </Button>

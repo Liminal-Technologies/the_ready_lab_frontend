@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Image, Video, Link as LinkIcon, Type, Loader2 } from "lucide-react";
+import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Image, Video, Link as LinkIcon, Type, Loader2 } from 'lucide-react';
 
 interface CreatePostProps {
   communityId: string;
@@ -14,13 +14,11 @@ interface CreatePostProps {
 }
 
 export const CreatePost = ({ communityId, onPostCreated }: CreatePostProps) => {
-  const [postType, setPostType] = useState<"text" | "image" | "video" | "link">(
-    "text",
-  );
-  const [content, setContent] = useState("");
-  const [title, setTitle] = useState("");
+  const [postType, setPostType] = useState<'text' | 'image' | 'video' | 'link'>('text');
+  const [content, setContent] = useState('');
+  const [title, setTitle] = useState('');
   const [mediaFile, setMediaFile] = useState<File | null>(null);
-  const [linkUrl, setLinkUrl] = useState("");
+  const [linkUrl, setLinkUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
   const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
@@ -30,7 +28,7 @@ export const CreatePost = ({ communityId, onPostCreated }: CreatePostProps) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (postType === "video") {
+    if (postType === 'video') {
       if (file.size > MAX_VIDEO_SIZE) {
         toast.error("File too large", {
           description: "Video must be under 100MB",
@@ -39,8 +37,8 @@ export const CreatePost = ({ communityId, onPostCreated }: CreatePostProps) => {
       }
 
       // Check video duration
-      const video = document.createElement("video");
-      video.preload = "metadata";
+      const video = document.createElement('video');
+      video.preload = 'metadata';
       video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
         if (video.duration > MAX_VIDEO_DURATION) {
@@ -58,19 +56,19 @@ export const CreatePost = ({ communityId, onPostCreated }: CreatePostProps) => {
   };
 
   const uploadMedia = async (file: File): Promise<string> => {
-    const fileExt = file.name.split(".").pop();
+    const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
     const filePath = `${communityId}/${fileName}`;
 
     const { error: uploadError, data } = await supabase.storage
-      .from("videos")
+      .from('videos')
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("videos").getPublicUrl(filePath);
+    const { data: { publicUrl } } = supabase.storage
+      .from('videos')
+      .getPublicUrl(filePath);
 
     return publicUrl;
   };
@@ -86,25 +84,25 @@ export const CreatePost = ({ communityId, onPostCreated }: CreatePostProps) => {
 
     setLoading(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       let mediaUrl = null;
       if (mediaFile) {
         mediaUrl = await uploadMedia(mediaFile);
       }
 
-      const { error } = await supabase.from("posts").insert({
-        community_id: communityId,
-        user_id: user.id,
-        post_type: postType,
-        title: title || null,
-        content: content || null,
-        media_url: mediaUrl,
-        link_url: linkUrl || null,
-      });
+      const { error } = await supabase
+        .from('posts')
+        .insert({
+          community_id: communityId,
+          user_id: user.id,
+          post_type: postType,
+          title: title || null,
+          content: content || null,
+          media_url: mediaUrl,
+          link_url: linkUrl || null,
+        });
 
       if (error) throw error;
 
@@ -113,13 +111,13 @@ export const CreatePost = ({ communityId, onPostCreated }: CreatePostProps) => {
       });
 
       // Reset form
-      setContent("");
-      setTitle("");
+      setContent('');
+      setTitle('');
       setMediaFile(null);
-      setLinkUrl("");
+      setLinkUrl('');
       onPostCreated();
     } catch (error) {
-      console.error("Error creating post:", error);
+      console.error('Error creating post:', error);
       toast.error("Failed to create post", {
         description: "Something went wrong. Please try again",
       });

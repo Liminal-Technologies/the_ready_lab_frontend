@@ -1,17 +1,11 @@
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Check, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Check, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SubscriptionCardProps {
   name: string;
@@ -20,7 +14,7 @@ interface SubscriptionCardProps {
   description: string;
   features: string[];
   popular?: boolean;
-  role: "student" | "educator";
+  role: 'student' | 'educator';
 }
 
 export const SubscriptionCard = ({
@@ -48,20 +42,17 @@ export const SubscriptionCard = ({
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke(
-        "create-checkout",
-        {
-          body: { priceId, role },
-        },
-      );
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId, role },
+      });
 
       if (error) throw error;
 
       if (data?.url) {
-        window.open(data.url, "_blank");
+        window.open(data.url, '_blank');
       }
     } catch (error) {
-      console.error("Subscription error:", error);
+      console.error('Subscription error:', error);
       toast({
         title: "Error",
         description: "Failed to start checkout. Please try again.",
@@ -73,11 +64,11 @@ export const SubscriptionCard = ({
   };
 
   return (
-    <Card
-      className={`flex flex-col ${popular ? "border-primary shadow-elegant" : ""}`}
-    >
+    <Card className={`flex flex-col ${popular ? 'border-primary shadow-elegant' : ''}`}>
       <CardHeader>
-        {popular && <Badge className="w-fit mb-2">Most Popular</Badge>}
+        {popular && (
+          <Badge className="w-fit mb-2">Most Popular</Badge>
+        )}
         <CardTitle className="text-2xl">{name}</CardTitle>
         <CardDescription>{description}</CardDescription>
         <div className="mt-4">
@@ -94,8 +85,8 @@ export const SubscriptionCard = ({
             </div>
           ))}
         </div>
-        <Button
-          onClick={handleSubscribe}
+        <Button 
+          onClick={handleSubscribe} 
           disabled={loading}
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
         >
@@ -105,7 +96,7 @@ export const SubscriptionCard = ({
               Processing...
             </>
           ) : (
-            "Get Started"
+            'Get Started'
           )}
         </Button>
       </CardContent>

@@ -9,9 +9,7 @@ const EducatorAgreement = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           <h1 className="text-4xl font-bold mb-6">Educator Agreement</h1>
           <div className="prose prose-lg">
-            <p className="text-muted-foreground">
-              Educator Agreement content will be added here.
-            </p>
+            <p className="text-muted-foreground">Educator Agreement content will be added here.</p>
           </div>
         </div>
       </main>

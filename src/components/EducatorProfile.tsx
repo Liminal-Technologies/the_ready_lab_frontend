@@ -1,8 +1,8 @@
-import { VideoWithSubtitles } from "./VideoWithSubtitles";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, BookOpen, Users, Award } from "lucide-react";
+import { VideoWithSubtitles } from './VideoWithSubtitles';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Star, BookOpen, Users, Award } from 'lucide-react';
 
 interface EducatorProfileProps {
   educator: {
@@ -38,18 +38,12 @@ export const EducatorProfile = ({ educator }: EducatorProfileProps) => {
               <AvatarImage src={educator.avatar} alt={educator.name} />
               <AvatarFallback>{educator.name.charAt(0)}</AvatarFallback>
             </Avatar>
-
+            
             <div className="flex-1 space-y-4">
               <div>
-                <h1 className="text-3xl font-bold text-foreground mb-2">
-                  {educator.name}
-                </h1>
-                <p className="text-xl text-muted-foreground mb-3">
-                  {educator.title}
-                </p>
-                <p className="text-foreground leading-relaxed">
-                  {educator.bio}
-                </p>
+                <h1 className="text-3xl font-bold text-foreground mb-2">{educator.name}</h1>
+                <p className="text-xl text-muted-foreground mb-3">{educator.title}</p>
+                <p className="text-foreground leading-relaxed">{educator.bio}</p>
               </div>
 
               <div className="flex flex-wrap gap-4">
@@ -60,9 +54,7 @@ export const EducatorProfile = ({ educator }: EducatorProfileProps) => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-primary" />
-                  <span className="font-medium">
-                    {educator.studentsCount.toLocaleString()}
-                  </span>
+                  <span className="font-medium">{educator.studentsCount.toLocaleString()}</span>
                   <span className="text-muted-foreground">students</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -96,9 +88,8 @@ export const EducatorProfile = ({ educator }: EducatorProfileProps) => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground mb-6">
-                Watch this course preview with AI-powered subtitle translation.
-                Switch to Spanish using the language selector to see translated
-                subtitles.
+                Watch this course preview with AI-powered subtitle translation. 
+                Switch to Spanish using the language selector to see translated subtitles.
               </p>
               <VideoWithSubtitles
                 videoUrl={educator.featuredVideo.url}

@@ -10,40 +10,33 @@ const CommunitySection = () => {
               Join a Community
             </h3>
             <p className="text-muted-foreground mb-4">
-              Connect with fellow entrepreneurs and changemakers. Share
-              challenges, celebrate wins, and grow together.
+              Connect with fellow entrepreneurs and changemakers. Share challenges, celebrate wins, and grow together.
             </p>
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 bg-success/10 rounded-full flex items-center justify-center">
                   <span className="text-success text-xs">✓</span>
                 </div>
-                <span className="text-sm text-foreground">
-                  Weekly peer collaboration
-                </span>
+                <span className="text-sm text-foreground">Weekly peer collaboration</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 bg-success/10 rounded-full flex items-center justify-center">
                   <span className="text-success text-xs">✓</span>
                 </div>
-                <span className="text-sm text-foreground">
-                  Direct mentor access
-                </span>
+                <span className="text-sm text-foreground">Direct mentor access</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-6 h-6 bg-success/10 rounded-full flex items-center justify-center">
                   <span className="text-success text-xs">✓</span>
                 </div>
-                <span className="text-sm text-foreground">
-                  Exclusive networking events
-                </span>
+                <span className="text-sm text-foreground">Exclusive networking events</span>
               </div>
             </div>
           </div>
           <div className="relative">
-            <img
-              src={studentsImage}
-              alt="Entrepreneurs collaborating"
+            <img 
+              src={studentsImage} 
+              alt="Entrepreneurs collaborating" 
               className="w-full h-64 object-cover rounded-2xl shadow-lg"
             />
             <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>

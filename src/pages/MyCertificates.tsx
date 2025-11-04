@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import Header from "@/components/Header";
-import { CertificateDisplay } from "@/components/certificates/CertificateDisplay";
-import { CertificateSkeleton } from "@/components/skeletons/CertificateSkeleton";
-import { EmptyCertificates } from "@/components/empty-states/EmptyCertificates";
-import { Button } from "@/components/ui/button";
-import { Award } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import Header from '@/components/Header';
+import { CertificateDisplay } from '@/components/certificates/CertificateDisplay';
+import { CertificateSkeleton } from '@/components/skeletons/CertificateSkeleton';
+import { EmptyCertificates } from '@/components/empty-states/EmptyCertificates';
+import { Button } from '@/components/ui/button';
+import { Award } from 'lucide-react';
 
 interface Certificate {
   id: string;
   track_id: string;
-  cert_type: "completion" | "certified";
+  cert_type: 'completion' | 'certified';
   issued_at: string;
   pdf_url: string | null;
   share_url: string | null;
@@ -24,7 +24,7 @@ interface Certificate {
 export const MyCertificates = () => {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     fetchCertificates();
@@ -37,37 +37,33 @@ export const MyCertificates = () => {
 
       // Get user name
       const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name, email")
-        .eq("id", user.user.id)
+        .from('profiles')
+        .select('full_name, email')
+        .eq('id', user.user.id)
         .single();
 
-      setUserName(profile?.full_name || profile?.email || "Student");
+      setUserName(profile?.full_name || profile?.email || 'Student');
 
       // Get certificates
       const { data, error } = await supabase
-        .from("certifications")
-        .select(
-          `
+        .from('certifications')
+        .select(`
           *,
           track:tracks (
             title
           )
-        `,
-        )
-        .eq("user_id", user.user.id)
-        .eq("status", "approved")
-        .order("issued_at", { ascending: false });
+        `)
+        .eq('user_id', user.user.id)
+        .eq('status', 'approved')
+        .order('issued_at', { ascending: false });
 
       if (error) throw error;
-      setCertificates(
-        (data || []).map((cert) => ({
-          ...cert,
-          cert_type: cert.cert_type as "completion" | "certified",
-        })),
-      );
+      setCertificates((data || []).map(cert => ({
+        ...cert,
+        cert_type: cert.cert_type as 'completion' | 'certified',
+      })));
     } catch (error) {
-      console.error("Error fetching certificates:", error);
+      console.error('Error fetching certificates:', error);
     } finally {
       setLoading(false);
     }
@@ -95,13 +91,7 @@ export const MyCertificates = () => {
             ) : (
               <div className="space-y-6">
                 {certificates.map((cert) => (
-                  <div
-                    key={cert.id}
-                    onClick={() =>
-                      (window.location.href = `/certificates/${cert.id}`)
-                    }
-                    className="cursor-pointer"
-                  >
+                  <div key={cert.id} onClick={() => window.location.href = `/certificates/${cert.id}`} className="cursor-pointer">
                     <CertificateDisplay
                       certificateId={cert.id}
                       trackTitle={cert.track.title}

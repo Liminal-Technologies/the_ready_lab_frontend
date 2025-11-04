@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -12,25 +12,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Users,
-  MoreVertical,
-  ExternalLink,
-  Edit,
-  Trash2,
-  Shield,
-  Settings,
-} from "lucide-react";
-import { MemberManagement } from "./MemberManagement";
-import { ContentModeration } from "./ContentModeration";
-import { EditCommunityModal } from "./EditCommunityModal";
+} from '@/components/ui/dropdown-menu';
+import { Users, MoreVertical, ExternalLink, Edit, Trash2, Shield, Settings } from 'lucide-react';
+import { MemberManagement } from './MemberManagement';
+import { ContentModeration } from './ContentModeration';
+import { EditCommunityModal } from './EditCommunityModal';
 
 interface Community {
   id: string;
@@ -46,14 +38,10 @@ interface Community {
 export const CommunityManager = () => {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCommunity, setSelectedCommunity] = useState<string | null>(
-    null,
-  );
+  const [selectedCommunity, setSelectedCommunity] = useState<string | null>(null);
   const [showMembers, setShowMembers] = useState(false);
   const [showModeration, setShowModeration] = useState(false);
-  const [editingCommunity, setEditingCommunity] = useState<Community | null>(
-    null,
-  );
+  const [editingCommunity, setEditingCommunity] = useState<Community | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -63,21 +51,19 @@ export const CommunityManager = () => {
 
   const fetchCommunities = async () => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
-        .from("communities")
-        .select("*")
-        .eq("created_by", user.id)
-        .order("created_at", { ascending: false });
+        .from('communities')
+        .select('*')
+        .eq('created_by', user.id)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setCommunities(data || []);
     } catch (error) {
-      console.error("Error fetching communities:", error);
+      console.error('Error fetching communities:', error);
       toast({
         title: "Error",
         description: "Failed to load communities",
@@ -89,19 +75,15 @@ export const CommunityManager = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (
-      !confirm(
-        "Are you sure you want to archive this community? It will be hidden from members but data will be preserved.",
-      )
-    ) {
+    if (!confirm('Are you sure you want to archive this community? It will be hidden from members but data will be preserved.')) {
       return;
     }
 
     try {
       const { error } = await supabase
-        .from("communities")
+        .from('communities')
         .update({ updated_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq('id', id);
 
       if (error) throw error;
 
@@ -111,7 +93,7 @@ export const CommunityManager = () => {
       });
       fetchCommunities();
     } catch (error) {
-      console.error("Error archiving community:", error);
+      console.error('Error archiving community:', error);
       toast({
         title: "Error",
         description: "Failed to archive community",
@@ -169,7 +151,7 @@ export const CommunityManager = () => {
             <div className="text-center py-12">
               <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground mb-4">No communities yet</p>
-              <Button onClick={() => navigate("/community/create")}>
+              <Button onClick={() => navigate('/community/create')}>
                 Create Your First Community
               </Button>
             </div>
@@ -210,35 +192,25 @@ export const CommunityManager = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() =>
-                              navigate(`/community/${community.id}`)
-                            }
-                          >
+                          <DropdownMenuItem onClick={() => navigate(`/community/${community.id}`)}>
                             <ExternalLink className="h-4 w-4 mr-2" />
                             Open
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => setEditingCommunity(community)}
-                          >
+                          <DropdownMenuItem onClick={() => setEditingCommunity(community)}>
                             <Edit className="h-4 w-4 mr-2" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedCommunity(community.id);
-                              setShowMembers(true);
-                            }}
-                          >
+                          <DropdownMenuItem onClick={() => {
+                            setSelectedCommunity(community.id);
+                            setShowMembers(true);
+                          }}>
                             <Users className="h-4 w-4 mr-2" />
                             Manage Members
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedCommunity(community.id);
-                              setShowModeration(true);
-                            }}
-                          >
+                          <DropdownMenuItem onClick={() => {
+                            setSelectedCommunity(community.id);
+                            setShowModeration(true);
+                          }}>
                             <Shield className="h-4 w-4 mr-2" />
                             Moderate Content
                           </DropdownMenuItem>

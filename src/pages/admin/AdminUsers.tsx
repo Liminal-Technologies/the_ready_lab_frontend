@@ -1,40 +1,21 @@
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Search,
-  Filter,
-  MoreHorizontal,
-  UserCheck,
-  UserX,
+import { 
+  Search, 
+  Filter, 
+  MoreHorizontal, 
+  UserCheck, 
+  UserX, 
   CreditCard,
   Shield,
   Mail,
-  Calendar,
+  Calendar
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -79,12 +60,12 @@ export function AdminUsers() {
     action: string;
     title: string;
     description: string;
-  }>({ open: false, action: "", title: "", description: "" });
+  }>({ open: false, action: '', title: '', description: '' });
   const [emailDialog, setEmailDialog] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
+  const [newEmail, setNewEmail] = useState('');
   const [addAdminDialog, setAddAdminDialog] = useState(false);
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminRole, setAdminRole] = useState<string>("content_admin");
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminRole, setAdminRole] = useState<string>('content_admin');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -99,14 +80,14 @@ export function AdminUsers() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setUsers(data || []);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error('Error fetching users:', error);
       toast({
         title: "Error",
         description: "Failed to load users",
@@ -121,21 +102,18 @@ export function AdminUsers() {
     let filtered = users;
 
     if (searchTerm) {
-      filtered = filtered.filter(
-        (user) =>
-          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()),
+      filtered = filtered.filter(user => 
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (roleFilter !== "all") {
-      filtered = filtered.filter((user) => user.role === roleFilter);
+      filtered = filtered.filter(user => user.role === roleFilter);
     }
 
     if (statusFilter !== "all") {
-      filtered = filtered.filter(
-        (user) => user.subscription_status === statusFilter,
-      );
+      filtered = filtered.filter(user => user.subscription_status === statusFilter);
     }
 
     setFilteredUsers(filtered);
@@ -146,33 +124,33 @@ export function AdminUsers() {
 
     try {
       // Log the admin action
-      await supabase.rpc("log_admin_action", {
+      await supabase.rpc('log_admin_action', {
         _action: action,
-        _entity_type: "user",
+        _entity_type: 'user',
         _entity_id: selectedUser.id,
-        _metadata: { email: selectedUser.email },
+        _metadata: { email: selectedUser.email }
       });
 
       switch (action) {
-        case "approve_educator":
+        case 'approve_educator':
           await supabase
-            .from("profiles")
-            .update({ role: "educator", subscription_status: "active" })
-            .eq("id", selectedUser.id);
+            .from('profiles')
+            .update({ role: 'educator', subscription_status: 'active' })
+            .eq('id', selectedUser.id);
           break;
-        case "revoke_educator":
+        case 'revoke_educator':
           await supabase
-            .from("profiles")
-            .update({ role: "student" })
-            .eq("id", selectedUser.id);
+            .from('profiles')
+            .update({ role: 'student' })
+            .eq('id', selectedUser.id);
           break;
-        case "cancel_subscription":
+        case 'cancel_subscription':
           await supabase
-            .from("profiles")
-            .update({ subscription_status: "cancelled" })
-            .eq("id", selectedUser.id);
+            .from('profiles')
+            .update({ subscription_status: 'cancelled' })
+            .eq('id', selectedUser.id);
           break;
-        case "reset_password":
+        case 'reset_password':
           // This would typically send a password reset email
           toast({
             title: "Password Reset",
@@ -188,7 +166,7 @@ export function AdminUsers() {
 
       fetchUsers();
     } catch (error) {
-      console.error("Error performing user action:", error);
+      console.error('Error performing user action:', error);
       toast({
         title: "Error",
         description: "Failed to perform action",
@@ -196,7 +174,7 @@ export function AdminUsers() {
       });
     }
 
-    setActionDialog({ open: false, action: "", title: "", description: "" });
+    setActionDialog({ open: false, action: '', title: '', description: '' });
     setSelectedUser(null);
   };
 
@@ -207,25 +185,25 @@ export function AdminUsers() {
       // Update email in auth.users via admin API
       const { error: authError } = await supabase.auth.admin.updateUserById(
         selectedUser.id,
-        { email: newEmail },
+        { email: newEmail }
       );
 
       if (authError) throw authError;
 
       // Update email in profiles table
       const { error: profileError } = await supabase
-        .from("profiles")
+        .from('profiles')
         .update({ email: newEmail })
-        .eq("id", selectedUser.id);
+        .eq('id', selectedUser.id);
 
       if (profileError) throw profileError;
 
       // Log the admin action
-      await supabase.rpc("log_admin_action", {
-        _action: "update_email",
-        _entity_type: "user",
+      await supabase.rpc('log_admin_action', {
+        _action: 'update_email',
+        _entity_type: 'user',
         _entity_id: selectedUser.id,
-        _metadata: { old_email: selectedUser.email, new_email: newEmail },
+        _metadata: { old_email: selectedUser.email, new_email: newEmail }
       });
 
       toast({
@@ -235,14 +213,13 @@ export function AdminUsers() {
 
       fetchUsers();
       setEmailDialog(false);
-      setNewEmail("");
+      setNewEmail('');
       setSelectedUser(null);
     } catch (error) {
-      console.error("Error updating email:", error);
+      console.error('Error updating email:', error);
       toast({
         title: "Error",
-        description:
-          "Failed to update email. Make sure you have admin privileges.",
+        description: "Failed to update email. Make sure you have admin privileges.",
         variant: "destructive",
       });
     }
@@ -267,9 +244,9 @@ export function AdminUsers() {
     try {
       // Find user by email
       const { data: profiles, error: profileError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("email", adminEmail)
+        .from('profiles')
+        .select('id')
+        .eq('email', adminEmail)
         .single();
 
       if (profileError || !profiles) {
@@ -282,17 +259,17 @@ export function AdminUsers() {
       }
 
       // Insert admin role
-      const { error: roleError } = await supabase.from("admin_roles").insert([
-        {
+      const { error: roleError } = await supabase
+        .from('admin_roles')
+        .insert([{
           user_id: profiles.id,
           role: adminRole as any,
           granted_by: (await supabase.auth.getUser()).data.user?.id,
-          is_active: true,
-        },
-      ]);
+          is_active: true
+        }]);
 
       if (roleError) {
-        if (roleError.code === "23505") {
+        if (roleError.code === '23505') {
           toast({
             title: "Error",
             description: "This user already has that admin role",
@@ -305,11 +282,11 @@ export function AdminUsers() {
       }
 
       // Log the admin action
-      await supabase.rpc("log_admin_action", {
-        _action: "grant_admin_role",
-        _entity_type: "user",
+      await supabase.rpc('log_admin_action', {
+        _action: 'grant_admin_role',
+        _entity_type: 'user',
         _entity_id: profiles.id,
-        _metadata: { email: adminEmail, role: adminRole },
+        _metadata: { email: adminEmail, role: adminRole }
       });
 
       toast({
@@ -318,11 +295,11 @@ export function AdminUsers() {
       });
 
       setAddAdminDialog(false);
-      setAdminEmail("");
-      setAdminRole("content_admin");
+      setAdminEmail('');
+      setAdminRole('content_admin');
       fetchUsers();
     } catch (error) {
-      console.error("Error adding admin:", error);
+      console.error('Error adding admin:', error);
       toast({
         title: "Error",
         description: "Failed to grant admin role",
@@ -333,24 +310,24 @@ export function AdminUsers() {
 
   const openActionDialog = (user: User, action: string) => {
     setSelectedUser(user);
-
+    
     const dialogConfig = {
       approve_educator: {
         title: "Approve Educator",
-        description: `Are you sure you want to approve ${user.email} as an educator? This will grant them access to create courses.`,
+        description: `Are you sure you want to approve ${user.email} as an educator? This will grant them access to create courses.`
       },
       revoke_educator: {
         title: "Revoke Educator Status",
-        description: `Are you sure you want to revoke educator status for ${user.email}? They will lose access to course creation.`,
+        description: `Are you sure you want to revoke educator status for ${user.email}? They will lose access to course creation.`
       },
       cancel_subscription: {
         title: "Cancel Subscription",
-        description: `Are you sure you want to cancel the subscription for ${user.email}?`,
+        description: `Are you sure you want to cancel the subscription for ${user.email}?`
       },
       reset_password: {
         title: "Reset Password",
-        description: `Send a password reset email to ${user.email}?`,
-      },
+        description: `Send a password reset email to ${user.email}?`
+      }
     };
 
     const config = dialogConfig[action as keyof typeof dialogConfig];
@@ -358,7 +335,7 @@ export function AdminUsers() {
       open: true,
       action,
       title: config.title,
-      description: config.description,
+      description: config.description
     });
   };
 
@@ -366,14 +343,10 @@ export function AdminUsers() {
     const colors = {
       admin: "bg-red-100 text-red-800",
       educator: "bg-blue-100 text-blue-800",
-      student: "bg-green-100 text-green-800",
+      student: "bg-green-100 text-green-800"
     };
     return (
-      <Badge
-        className={
-          colors[role as keyof typeof colors] || "bg-gray-100 text-gray-800"
-        }
-      >
+      <Badge className={colors[role as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
         {role.charAt(0).toUpperCase() + role.slice(1)}
       </Badge>
     );
@@ -384,14 +357,10 @@ export function AdminUsers() {
       active: "bg-green-100 text-green-800",
       trial: "bg-yellow-100 text-yellow-800",
       inactive: "bg-gray-100 text-gray-800",
-      cancelled: "bg-red-100 text-red-800",
+      cancelled: "bg-red-100 text-red-800"
     };
     return (
-      <Badge
-        className={
-          colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800"
-        }
-      >
+      <Badge className={colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
@@ -486,29 +455,20 @@ export function AdminUsers() {
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={user.avatar_url} />
                           <AvatarFallback>
-                            {user.full_name?.charAt(0) ||
-                              user.email.charAt(0).toUpperCase()}
+                            {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium">
-                            {user.full_name || "No name"}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {user.email}
-                          </div>
+                          <div className="font-medium">{user.full_name || 'No name'}</div>
+                          <div className="text-sm text-muted-foreground">{user.email}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
-                    <TableCell>
-                      {getStatusBadge(user.subscription_status)}
-                    </TableCell>
+                    <TableCell>{getStatusBadge(user.subscription_status)}</TableCell>
                     <TableCell>
                       {user.subscription_tier ? (
-                        <Badge variant="outline">
-                          {user.subscription_tier}
-                        </Badge>
+                        <Badge variant="outline">{user.subscription_tier}</Badge>
                       ) : (
                         <span className="text-muted-foreground">None</span>
                       )}
@@ -529,36 +489,22 @@ export function AdminUsers() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => openEmailDialog(user)}
-                          >
+                          <DropdownMenuItem onClick={() => openEmailDialog(user)}>
                             <Mail className="mr-2 h-4 w-4" />
                             Edit Email
                           </DropdownMenuItem>
-                          {user.role === "educator" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                openActionDialog(user, "revoke_educator")
-                              }
-                            >
+                          {user.role === 'educator' && (
+                            <DropdownMenuItem onClick={() => openActionDialog(user, 'revoke_educator')}>
                               <UserX className="mr-2 h-4 w-4" />
                               Revoke Educator Status
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem
-                            onClick={() =>
-                              openActionDialog(user, "reset_password")
-                            }
-                          >
+                          <DropdownMenuItem onClick={() => openActionDialog(user, 'reset_password')}>
                             <Mail className="mr-2 h-4 w-4" />
                             Reset Password
                           </DropdownMenuItem>
-                          {user.subscription_status === "active" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                openActionDialog(user, "cancel_subscription")
-                              }
-                            >
+                          {user.subscription_status === 'active' && (
+                            <DropdownMenuItem onClick={() => openActionDialog(user, 'cancel_subscription')}>
                               <CreditCard className="mr-2 h-4 w-4" />
                               Cancel Subscription
                             </DropdownMenuItem>
@@ -575,21 +521,16 @@ export function AdminUsers() {
       </Card>
 
       {/* Action Confirmation Dialog */}
-      <Dialog
-        open={actionDialog.open}
-        onOpenChange={(open) => setActionDialog((prev) => ({ ...prev, open }))}
-      >
+      <Dialog open={actionDialog.open} onOpenChange={(open) => setActionDialog(prev => ({ ...prev, open }))}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{actionDialog.title}</DialogTitle>
             <DialogDescription>{actionDialog.description}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() =>
-                setActionDialog((prev) => ({ ...prev, open: false }))
-              }
+            <Button 
+              variant="outline" 
+              onClick={() => setActionDialog(prev => ({ ...prev, open: false }))}
             >
               Cancel
             </Button>
@@ -606,8 +547,7 @@ export function AdminUsers() {
           <DialogHeader>
             <DialogTitle>Update Email Address</DialogTitle>
             <DialogDescription>
-              Update the email address for{" "}
-              {selectedUser?.full_name || selectedUser?.email}
+              Update the email address for {selectedUser?.full_name || selectedUser?.email}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -619,17 +559,19 @@ export function AdminUsers() {
             />
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
+            <Button 
+              variant="outline" 
               onClick={() => {
                 setEmailDialog(false);
-                setNewEmail("");
+                setNewEmail('');
                 setSelectedUser(null);
               }}
             >
               Cancel
             </Button>
-            <Button onClick={handleUpdateEmail}>Update Email</Button>
+            <Button onClick={handleUpdateEmail}>
+              Update Email
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -663,32 +605,28 @@ export function AdminUsers() {
                   <SelectItem value="super_admin">Super Admin</SelectItem>
                   <SelectItem value="content_admin">Content Admin</SelectItem>
                   <SelectItem value="finance_admin">Finance Admin</SelectItem>
-                  <SelectItem value="community_admin">
-                    Community Admin
-                  </SelectItem>
-                  <SelectItem value="compliance_admin">
-                    Compliance Admin
-                  </SelectItem>
+                  <SelectItem value="community_admin">Community Admin</SelectItem>
+                  <SelectItem value="compliance_admin">Compliance Admin</SelectItem>
                   <SelectItem value="support_agent">Support Agent</SelectItem>
-                  <SelectItem value="institution_manager">
-                    Institution Manager
-                  </SelectItem>
+                  <SelectItem value="institution_manager">Institution Manager</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
+            <Button 
+              variant="outline" 
               onClick={() => {
                 setAddAdminDialog(false);
-                setAdminEmail("");
-                setAdminRole("content_admin");
+                setAdminEmail('');
+                setAdminRole('content_admin');
               }}
             >
               Cancel
             </Button>
-            <Button onClick={handleAddAdmin}>Grant Role</Button>
+            <Button onClick={handleAddAdmin}>
+              Grant Role
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

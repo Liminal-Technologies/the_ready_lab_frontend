@@ -1,7 +1,7 @@
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Play, Clock, BookOpen } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Play, Clock, BookOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface LessonCardProps {
   lessonId: string;
@@ -33,22 +33,16 @@ export const LessonCard = ({
     >
       <div className="relative aspect-[9/16] md:aspect-video">
         <img
-          src={
-            thumbnailUrl ||
-            "https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800"
-          }
+          src={thumbnailUrl || 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800'}
           alt={title}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-background/90" />
-
+        
         {/* Play button overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Play
-              className="h-8 w-8 text-primary-foreground ml-1"
-              fill="currentColor"
-            />
+            <Play className="h-8 w-8 text-primary-foreground ml-1" fill="currentColor" />
           </div>
         </div>
 
@@ -72,9 +66,7 @@ export const LessonCard = ({
             {completed && <Badge className="text-xs">Completed</Badge>}
           </div>
           <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
-          <p className="text-sm text-white/80 line-clamp-2 mb-2">
-            {description}
-          </p>
+          <p className="text-sm text-white/80 line-clamp-2 mb-2">{description}</p>
           <div className="flex items-center text-xs text-white/70">
             <Clock className="h-3 w-3 mr-1" />
             {duration} min

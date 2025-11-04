@@ -1,38 +1,19 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Search,
-  Filter,
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { 
+  Search, 
+  Filter, 
   Download,
   Shield,
   Eye,
   Calendar,
   User,
-  Activity,
+  Activity
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -72,15 +53,15 @@ export function AdminAuditLogs() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("audit_logs")
-        .select("*")
-        .order("created_at", { ascending: false })
+        .from('audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
         .limit(100);
 
       if (error) throw error;
       setAuditLogs(data || []);
     } catch (error) {
-      console.error("Error fetching audit logs:", error);
+      console.error('Error fetching audit logs:', error);
       toast({
         title: "Error",
         description: "Failed to load audit logs",
@@ -95,20 +76,19 @@ export function AdminAuditLogs() {
     let filtered = auditLogs;
 
     if (searchTerm) {
-      filtered = filtered.filter(
-        (log) =>
-          log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          log.entity_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          log.actor_id.toLowerCase().includes(searchTerm.toLowerCase()),
+      filtered = filtered.filter(log => 
+        log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.entity_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.actor_id.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (actionFilter !== "all") {
-      filtered = filtered.filter((log) => log.action.includes(actionFilter));
+      filtered = filtered.filter(log => log.action.includes(actionFilter));
     }
 
     if (entityFilter !== "all") {
-      filtered = filtered.filter((log) => log.entity_type === entityFilter);
+      filtered = filtered.filter(log => log.entity_type === entityFilter);
     }
 
     setFilteredLogs(filtered);
@@ -116,31 +96,22 @@ export function AdminAuditLogs() {
 
   const exportLogs = () => {
     const csv = [
-      [
-        "Date",
-        "Actor",
-        "Action",
-        "Entity Type",
-        "Entity ID",
-        "IP Address",
-      ].join(","),
-      ...filteredLogs.map((log) =>
-        [
-          new Date(log.created_at).toISOString(),
-          log.actor_id,
-          log.action,
-          log.entity_type,
-          log.entity_id || "",
-          log.ip_address || "",
-        ].join(","),
-      ),
-    ].join("\n");
+      ['Date', 'Actor', 'Action', 'Entity Type', 'Entity ID', 'IP Address'].join(','),
+      ...filteredLogs.map(log => [
+        new Date(log.created_at).toISOString(),
+        log.actor_id,
+        log.action,
+        log.entity_type,
+        log.entity_id || '',
+        log.ip_address || ''
+      ].join(','))
+    ].join('\n');
 
-    const blob = new Blob([csv], { type: "text/csv" });
+    const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = `audit-logs-${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `audit-logs-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -153,22 +124,22 @@ export function AdminAuditLogs() {
       approve: "bg-emerald-100 text-emerald-800",
       reject: "bg-orange-100 text-orange-800",
       login: "bg-purple-100 text-purple-800",
-      logout: "bg-gray-100 text-gray-800",
+      logout: "bg-gray-100 text-gray-800"
     };
 
-    const baseAction = action.split("_")[0];
+    const baseAction = action.split('_')[0];
     const colorClass = colorMap[baseAction] || "bg-gray-100 text-gray-800";
 
     return (
       <Badge className={colorClass}>
-        {action.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+        {action.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
       </Badge>
     );
   };
 
   const getEntityBadge = (entityType: string) => (
     <Badge variant="outline">
-      {entityType.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+      {entityType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
     </Badge>
   );
 
@@ -196,27 +167,25 @@ export function AdminAuditLogs() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{auditLogs.length}</div>
-            <p className="text-xs text-muted-foreground">Last 100 events</p>
+            <p className="text-xs text-muted-foreground">
+              Last 100 events
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Today's Actions
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Today's Actions</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {
-                auditLogs.filter(
-                  (log) =>
-                    new Date(log.created_at).toDateString() ===
-                    new Date().toDateString(),
-                ).length
-              }
+              {auditLogs.filter(log => 
+                new Date(log.created_at).toDateString() === new Date().toDateString()
+              ).length}
             </div>
-            <p className="text-xs text-muted-foreground">Events today</p>
+            <p className="text-xs text-muted-foreground">
+              Events today
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -226,7 +195,7 @@ export function AdminAuditLogs() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {new Set(auditLogs.map((log) => log.actor_id)).size}
+              {new Set(auditLogs.map(log => log.actor_id)).size}
             </div>
             <p className="text-xs text-muted-foreground">
               Unique administrators
@@ -235,20 +204,14 @@ export function AdminAuditLogs() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              High-Risk Actions
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">High-Risk Actions</CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {
-                auditLogs.filter(
-                  (log) =>
-                    log.action.includes("delete") ||
-                    log.action.includes("reject"),
-                ).length
-              }
+              {auditLogs.filter(log => 
+                log.action.includes('delete') || log.action.includes('reject')
+              ).length}
             </div>
             <p className="text-xs text-muted-foreground">
               Delete/reject actions
@@ -355,7 +318,7 @@ export function AdminAuditLogs() {
                       )}
                     </TableCell>
                     <TableCell className="font-mono text-xs">
-                      {(log.ip_address as string) || "—"}
+                      {(log.ip_address as string) || '—'}
                     </TableCell>
                     <TableCell>
                       {log.metadata && Object.keys(log.metadata).length > 0 ? (

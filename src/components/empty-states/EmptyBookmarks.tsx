@@ -13,7 +13,7 @@ export const EmptyBookmarks = ({
   message = "No bookmarks yet",
   description = "Save lessons and resources from the feed to access them quickly",
   actionLabel = "Explore Content",
-  actionPath = "/feed",
+  actionPath = "/feed"
 }: EmptyBookmarksProps) => {
   const navigate = useNavigate();
 

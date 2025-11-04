@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Heart } from 'lucide-react';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 
-const EMOJIS = ["👍", "❤️", "🔥", "😂", "😮", "😢"];
+const EMOJIS = ['👍', '❤️', '🔥', '😂', '😮', '😢'];
 
 interface PostReactionsProps {
   postId: string;
@@ -16,11 +16,7 @@ interface PostReactionsProps {
   initialCount: number;
 }
 
-export const PostReactions = ({
-  postId,
-  currentUserId,
-  initialCount,
-}: PostReactionsProps) => {
+export const PostReactions = ({ postId, currentUserId, initialCount }: PostReactionsProps) => {
   const [hasReacted, setHasReacted] = useState(false);
   const [count, setCount] = useState(initialCount);
   const [userEmoji, setUserEmoji] = useState<string | null>(null);
@@ -33,10 +29,10 @@ export const PostReactions = ({
     if (!currentUserId) return;
 
     const { data } = await supabase
-      .from("post_reactions")
-      .select("emoji")
-      .eq("post_id", postId)
-      .eq("user_id", currentUserId)
+      .from('post_reactions')
+      .select('emoji')
+      .eq('post_id', postId)
+      .eq('user_id', currentUserId)
       .single();
 
     if (data) {
@@ -52,27 +48,29 @@ export const PostReactions = ({
       if (hasReacted) {
         // Update existing reaction
         await supabase
-          .from("post_reactions")
+          .from('post_reactions')
           .update({ emoji })
-          .eq("post_id", postId)
-          .eq("user_id", currentUserId);
-
+          .eq('post_id', postId)
+          .eq('user_id', currentUserId);
+        
         setUserEmoji(emoji);
       } else {
         // Add new reaction
-        await supabase.from("post_reactions").insert({
-          post_id: postId,
-          user_id: currentUserId,
-          emoji,
-          reaction_type: "emoji",
-        });
+        await supabase
+          .from('post_reactions')
+          .insert({
+            post_id: postId,
+            user_id: currentUserId,
+            emoji,
+            reaction_type: 'emoji',
+          });
 
         setHasReacted(true);
         setUserEmoji(emoji);
         setCount(count + 1);
       }
     } catch (error) {
-      console.error("Error reacting to post:", error);
+      console.error('Error reacting to post:', error);
     }
   };
 
@@ -81,16 +79,16 @@ export const PostReactions = ({
 
     try {
       await supabase
-        .from("post_reactions")
+        .from('post_reactions')
         .delete()
-        .eq("post_id", postId)
-        .eq("user_id", currentUserId);
+        .eq('post_id', postId)
+        .eq('user_id', currentUserId);
 
       setHasReacted(false);
       setUserEmoji(null);
       setCount(Math.max(0, count - 1));
     } catch (error) {
-      console.error("Error removing reaction:", error);
+      console.error('Error removing reaction:', error);
     }
   };
 
@@ -100,14 +98,10 @@ export const PostReactions = ({
         <Button
           variant="ghost"
           size="sm"
-          className={hasReacted ? "text-primary" : ""}
+          className={hasReacted ? 'text-primary' : ''}
           onClick={hasReacted ? handleRemoveReaction : undefined}
         >
-          {userEmoji || (
-            <Heart
-              className={`h-4 w-4 mr-2 ${hasReacted ? "fill-current" : ""}`}
-            />
-          )}
+          {userEmoji || <Heart className={`h-4 w-4 mr-2 ${hasReacted ? 'fill-current' : ''}`} />}
           {count}
         </Button>
       </PopoverTrigger>

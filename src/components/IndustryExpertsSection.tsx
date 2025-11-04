@@ -6,9 +6,9 @@ const IndustryExpertsSection = () => {
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           <div className="relative">
-            <img
-              src={educatorImage}
-              alt="Professional educator teaching workshop"
+            <img 
+              src={educatorImage} 
+              alt="Professional educator teaching workshop" 
               className="w-full h-64 object-cover rounded-2xl shadow-lg"
             />
             <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
@@ -18,8 +18,7 @@ const IndustryExpertsSection = () => {
               Learn from Industry Experts
             </h3>
             <p className="text-muted-foreground mb-4">
-              Our instructors are successful entrepreneurs and business experts
-              who've been where you want to go.
+              Our instructors are successful entrepreneurs and business experts who've been where you want to go.
             </p>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">

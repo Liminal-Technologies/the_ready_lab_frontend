@@ -1,35 +1,16 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Search,
-  Filter,
-  MoreHorizontal,
+import { 
+  Search, 
+  Filter, 
+  MoreHorizontal, 
   Plus,
   Eye,
   Edit,
@@ -37,7 +18,7 @@ import {
   Award,
   BookOpen,
   Users,
-  Clock,
+  Clock
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -79,11 +60,11 @@ export function AdminCourses() {
   // Determine active tab from URL
   const getActiveTab = () => {
     const path = location.pathname;
-    if (path.includes("/modules")) return "modules";
-    if (path.includes("/lessons")) return "lessons";
-    if (path.includes("/quizzes")) return "quizzes";
-    if (path.includes("/certificates")) return "certificates";
-    return "tracks";
+    if (path.includes('/modules')) return 'modules';
+    if (path.includes('/lessons')) return 'lessons';
+    if (path.includes('/quizzes')) return 'quizzes';
+    if (path.includes('/certificates')) return 'certificates';
+    return 'tracks';
   };
 
   const [activeTab, setActiveTab] = useState(getActiveTab());
@@ -96,8 +77,8 @@ export function AdminCourses() {
   // Handle tab change
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    if (value === "tracks") {
-      navigate("/admin/courses");
+    if (value === 'tracks') {
+      navigate('/admin/courses');
     } else {
       navigate(`/admin/courses/${value}`);
     }
@@ -115,20 +96,18 @@ export function AdminCourses() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("tracks")
-        .select(
-          `
+        .from('tracks')
+        .select(`
           *,
           enrollments(count),
           modules(count)
-        `,
-        )
-        .order("created_at", { ascending: false });
+        `)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setTracks(data || []);
     } catch (error) {
-      console.error("Error fetching tracks:", error);
+      console.error('Error fetching tracks:', error);
       toast({
         title: "Error",
         description: "Failed to load courses",
@@ -143,20 +122,19 @@ export function AdminCourses() {
     let filtered = tracks;
 
     if (searchTerm) {
-      filtered = filtered.filter(
-        (track) =>
-          track.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          track.description?.toLowerCase().includes(searchTerm.toLowerCase()),
+      filtered = filtered.filter(track => 
+        track.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        track.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (categoryFilter !== "all") {
-      filtered = filtered.filter((track) => track.category === categoryFilter);
+      filtered = filtered.filter(track => track.category === categoryFilter);
     }
 
     if (statusFilter !== "all") {
       const isActive = statusFilter === "active";
-      filtered = filtered.filter((track) => track.is_active === isActive);
+      filtered = filtered.filter(track => track.is_active === isActive);
     }
 
     setFilteredTracks(filtered);
@@ -165,26 +143,26 @@ export function AdminCourses() {
   const toggleTrackStatus = async (trackId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
-        .from("tracks")
+        .from('tracks')
         .update({ is_active: !currentStatus })
-        .eq("id", trackId);
+        .eq('id', trackId);
 
       if (error) throw error;
 
-      await supabase.rpc("log_admin_action", {
-        _action: currentStatus ? "unpublish_track" : "publish_track",
-        _entity_type: "track",
-        _entity_id: trackId,
+      await supabase.rpc('log_admin_action', {
+        _action: currentStatus ? 'unpublish_track' : 'publish_track',
+        _entity_type: 'track',
+        _entity_id: trackId
       });
 
       toast({
         title: "Success",
-        description: `Track ${currentStatus ? "unpublished" : "published"} successfully`,
+        description: `Track ${currentStatus ? 'unpublished' : 'published'} successfully`,
       });
 
       fetchTracks();
     } catch (error) {
-      console.error("Error updating track:", error);
+      console.error('Error updating track:', error);
       toast({
         title: "Error",
         description: "Failed to update track status",
@@ -203,14 +181,10 @@ export function AdminCourses() {
     const colors = {
       beginner: "bg-green-100 text-green-800",
       intermediate: "bg-yellow-100 text-yellow-800",
-      advanced: "bg-red-100 text-red-800",
+      advanced: "bg-red-100 text-red-800"
     };
     return (
-      <Badge
-        className={
-          colors[level as keyof typeof colors] || "bg-gray-100 text-gray-800"
-        }
-      >
+      <Badge className={colors[level as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
         {level.charAt(0).toUpperCase() + level.slice(1)}
       </Badge>
     );
@@ -231,11 +205,7 @@ export function AdminCourses() {
         </Button>
       </div>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={handleTabChange}
-        className="space-y-6"
-      >
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList>
           <TabsTrigger value="tracks">Tracks</TabsTrigger>
           <TabsTrigger value="modules">Modules</TabsTrigger>
@@ -263,10 +233,7 @@ export function AdminCourses() {
                     />
                   </div>
                 </div>
-                <Select
-                  value={categoryFilter}
-                  onValueChange={setCategoryFilter}
-                >
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
@@ -344,7 +311,7 @@ export function AdminCourses() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {track.price > 0 ? `$${track.price}` : "Free"}
+                          {track.price > 0 ? `$${track.price}` : 'Free'}
                         </TableCell>
                         <TableCell>
                           {new Date(track.created_at).toLocaleDateString()}
@@ -365,13 +332,11 @@ export function AdminCourses() {
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Track
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  toggleTrackStatus(track.id, track.is_active)
-                                }
+                              <DropdownMenuItem 
+                                onClick={() => toggleTrackStatus(track.id, track.is_active)}
                               >
                                 <BookOpen className="mr-2 h-4 w-4" />
-                                {track.is_active ? "Unpublish" : "Publish"}
+                                {track.is_active ? 'Unpublish' : 'Publish'}
                               </DropdownMenuItem>
                               <DropdownMenuItem className="text-destructive">
                                 <Trash2 className="mr-2 h-4 w-4" />
@@ -394,9 +359,7 @@ export function AdminCourses() {
             <CardContent className="p-8 text-center">
               <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Module Management</h3>
-              <p className="text-muted-foreground">
-                Module management features coming soon...
-              </p>
+              <p className="text-muted-foreground">Module management features coming soon...</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -406,9 +369,7 @@ export function AdminCourses() {
             <CardContent className="p-8 text-center">
               <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Lesson Management</h3>
-              <p className="text-muted-foreground">
-                Lesson management features coming soon...
-              </p>
+              <p className="text-muted-foreground">Lesson management features coming soon...</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -418,9 +379,7 @@ export function AdminCourses() {
             <CardContent className="p-8 text-center">
               <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Quiz Management</h3>
-              <p className="text-muted-foreground">
-                Quiz management features coming soon...
-              </p>
+              <p className="text-muted-foreground">Quiz management features coming soon...</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -429,12 +388,8 @@ export function AdminCourses() {
           <Card>
             <CardContent className="p-8 text-center">
               <Award className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">
-                Certificate Templates
-              </h3>
-              <p className="text-muted-foreground">
-                Certificate management features coming soon...
-              </p>
+              <h3 className="text-lg font-semibold mb-2">Certificate Templates</h3>
+              <p className="text-muted-foreground">Certificate management features coming soon...</p>
             </CardContent>
           </Card>
         </TabsContent>

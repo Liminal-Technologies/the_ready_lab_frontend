@@ -1,21 +1,16 @@
-import { useState, useRef, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Sparkles, X, Minimize2, Send, Loader2, Lightbulb } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Sparkles, X, Minimize2, Send, Loader2, Lightbulb } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Message {
   id: string;
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
 }
@@ -25,45 +20,40 @@ const CONTEXTUAL_QUESTIONS = {
     "What should I learn next?",
     "How's my progress?",
     "Show me my completed courses",
-    "What are my learning goals?",
+    "What are my learning goals?"
   ],
   course: [
     "Tell me about this course",
     "Is this right for me?",
     "What will I learn?",
-    "How long will this take?",
+    "How long will this take?"
   ],
   lesson: [
     "Explain this concept",
     "Give me an example",
     "What are the key takeaways?",
-    "How does this apply in practice?",
+    "How does this apply in practice?"
   ],
   certificates: [
     "How do I earn certificates?",
     "What certifications are available?",
     "Can I share my certificates?",
-    "What's required for certification?",
+    "What's required for certification?"
   ],
   default: [
     "What course should I take next?",
     "How do I get certified?",
     "Explain a learning concept",
-    "How can I track my progress?",
-  ],
+    "How can I track my progress?"
+  ]
 };
 
 const MOCK_RESPONSES: Record<string, string> = {
-  dashboard:
-    "Based on your learning history, I recommend continuing with Advanced React Development. You're 65% through it and doing great! After that, consider exploring TypeScript Mastery to strengthen your skills.",
-  course:
-    "This course is perfect for intermediate learners who want to level up their skills. It covers practical, real-world applications with hands-on projects. You'll gain valuable skills that are in high demand.",
-  lesson:
-    "Let me break that down for you! This concept is fundamental because it helps you understand how components communicate and share data. Think of it like a conversation between different parts of your application.",
-  certificates:
-    "Great question! You earn certificates by completing all course modules and passing the final assessment with 70% or higher. Your certificates are automatically generated and can be downloaded or shared on LinkedIn.",
-  default:
-    "That's a great question! I'm here to help you with anything related to your learning journey. Feel free to ask about courses, lessons, certifications, or your progress.",
+  dashboard: "Based on your learning history, I recommend continuing with Advanced React Development. You're 65% through it and doing great! After that, consider exploring TypeScript Mastery to strengthen your skills.",
+  course: "This course is perfect for intermediate learners who want to level up their skills. It covers practical, real-world applications with hands-on projects. You'll gain valuable skills that are in high demand.",
+  lesson: "Let me break that down for you! This concept is fundamental because it helps you understand how components communicate and share data. Think of it like a conversation between different parts of your application.",
+  certificates: "Great question! You earn certificates by completing all course modules and passing the final assessment with 70% or higher. Your certificates are automatically generated and can be downloaded or shared on LinkedIn.",
+  default: "That's a great question! I'm here to help you with anything related to your learning journey. Feel free to ask about courses, lessons, certifications, or your progress."
 };
 
 export const AIChatWidget = () => {
@@ -72,14 +62,13 @@ export const AIChatWidget = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: "1",
-      role: "assistant",
-      content:
-        "Hi! I'm your AI Learning Assistant. I'm here to help you with course recommendations, learning tips, and answering questions about your courses. How can I help you today?",
-      timestamp: new Date(),
-    },
+      id: '1',
+      role: 'assistant',
+      content: "Hi! I'm your AI Learning Assistant. I'm here to help you with course recommendations, learning tips, and answering questions about your courses. How can I help you today?",
+      timestamp: new Date()
+    }
   ]);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [visibleSuggestions, setVisibleSuggestions] = useState(3);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -88,33 +77,30 @@ export const AIChatWidget = () => {
   // Detect current page context
   const getPageContext = () => {
     const path = location.pathname;
-
-    if (path.includes("/dashboard")) {
-      return { type: "dashboard", label: "Your Dashboard" };
+    
+    if (path.includes('/dashboard')) {
+      return { type: 'dashboard', label: 'Your Dashboard' };
     }
-    if (path.includes("/courses/") && path.includes("/lessons/")) {
-      return { type: "lesson", label: "Current Lesson" };
+    if (path.includes('/courses/') && path.includes('/lessons/')) {
+      return { type: 'lesson', label: 'Current Lesson' };
     }
-    if (path.includes("/courses")) {
-      return { type: "course", label: "Course Page" };
+    if (path.includes('/courses')) {
+      return { type: 'course', label: 'Course Page' };
     }
-    if (path.includes("/certificates")) {
-      return { type: "certificates", label: "Certificates" };
+    if (path.includes('/certificates')) {
+      return { type: 'certificates', label: 'Certificates' };
     }
-    if (path.includes("/lesson")) {
-      return { type: "lesson", label: "Lesson Page" };
+    if (path.includes('/lesson')) {
+      return { type: 'lesson', label: 'Lesson Page' };
     }
-    return { type: "default", label: "The Ready Lab" };
+    return { type: 'default', label: 'The Ready Lab' };
   };
 
   const pageContext = getPageContext();
-  const contextualQuestions =
-    CONTEXTUAL_QUESTIONS[
-      pageContext.type as keyof typeof CONTEXTUAL_QUESTIONS
-    ] || CONTEXTUAL_QUESTIONS.default;
+  const contextualQuestions = CONTEXTUAL_QUESTIONS[pageContext.type as keyof typeof CONTEXTUAL_QUESTIONS] || CONTEXTUAL_QUESTIONS.default;
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -126,27 +112,26 @@ export const AIChatWidget = () => {
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      role: "user",
+      role: 'user',
       content: content.trim(),
-      timestamp: new Date(),
+      timestamp: new Date()
     };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
     setIsTyping(true);
 
     // Simulate AI response delay with contextual response
     setTimeout(() => {
-      const contextResponse =
-        MOCK_RESPONSES[pageContext.type] || MOCK_RESPONSES.default;
+      const contextResponse = MOCK_RESPONSES[pageContext.type] || MOCK_RESPONSES.default;
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        role: "assistant",
+        role: 'assistant',
         content: contextResponse,
-        timestamp: new Date(),
+        timestamp: new Date()
       };
-
-      setMessages((prev) => [...prev, aiMessage]);
+      
+      setMessages(prev => [...prev, aiMessage]);
       setIsTyping(false);
     }, 1500);
   };
@@ -177,11 +162,11 @@ export const AIChatWidget = () => {
   }
 
   return (
-    <Card
+    <Card 
       className={`fixed right-6 shadow-2xl z-[1000] overflow-hidden transition-all duration-300 ${
-        isMinimized
-          ? "bottom-6 w-[300px] h-[60px]"
-          : "bottom-6 w-[400px] h-[600px] animate-slide-in-right"
+        isMinimized 
+          ? 'bottom-6 w-[300px] h-[60px]' 
+          : 'bottom-6 w-[400px] h-[600px] animate-slide-in-right'
       }`}
     >
       {/* Header */}
@@ -218,26 +203,25 @@ export const AIChatWidget = () => {
           {/* Messages Area */}
           <ScrollArea className="flex-1 p-4 h-[calc(600px-240px)]">
             <div className="space-y-4">
+
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
                     className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                      message.role === "user"
-                        ? "bg-muted text-foreground"
-                        : "bg-primary/10 text-foreground border border-primary/20"
+                      message.role === 'user'
+                        ? 'bg-muted text-foreground'
+                        : 'bg-primary/10 text-foreground border border-primary/20'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">
-                      {message.content}
-                    </p>
+                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {message.timestamp.toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true,
+                      {message.timestamp.toLocaleTimeString('en-US', { 
+                        hour: 'numeric', 
+                        minute: '2-digit',
+                        hour12: true 
                       })}
                     </p>
                   </div>
@@ -249,9 +233,7 @@ export const AIChatWidget = () => {
                   <div className="max-w-[80%] rounded-lg px-4 py-2 bg-primary/10 border border-primary/20">
                     <div className="flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                      <span className="text-sm text-muted-foreground">
-                        AI is typing...
-                      </span>
+                      <span className="text-sm text-muted-foreground">AI is typing...</span>
                     </div>
                   </div>
                 </div>
@@ -266,38 +248,29 @@ export const AIChatWidget = () => {
             <div className="flex items-center gap-2 mb-2">
               <Lightbulb className="h-3.5 w-3.5 text-primary" />
               <span className="text-xs text-muted-foreground">
-                💡 Asking about:{" "}
-                <span className="font-medium text-foreground">
-                  {pageContext.label}
-                </span>
+                💡 Asking about: <span className="font-medium text-foreground">{pageContext.label}</span>
               </span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {contextualQuestions
-                .slice(0, visibleSuggestions)
-                .map((question, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="cursor-pointer hover:bg-primary/10 transition-colors text-xs py-1"
-                    onClick={() => handleExampleClick(question)}
-                  >
-                    {question}
-                  </Badge>
-                ))}
+              {contextualQuestions.slice(0, visibleSuggestions).map((question, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-primary/10 transition-colors text-xs py-1"
+                  onClick={() => handleExampleClick(question)}
+                >
+                  {question}
+                </Badge>
+              ))}
               {contextualQuestions.length > visibleSuggestions && (
                 <Badge
                   variant="secondary"
                   className="cursor-pointer hover:bg-secondary/80 transition-colors text-xs py-1"
-                  onClick={() =>
-                    setVisibleSuggestions((prev) =>
-                      prev === 3 ? contextualQuestions.length : 3,
-                    )
-                  }
+                  onClick={() => setVisibleSuggestions(prev => 
+                    prev === 3 ? contextualQuestions.length : 3
+                  )}
                 >
-                  {visibleSuggestions === 3
-                    ? `+${contextualQuestions.length - 3} more`
-                    : "Show less"}
+                  {visibleSuggestions === 3 ? `+${contextualQuestions.length - 3} more` : 'Show less'}
                 </Badge>
               )}
             </div>

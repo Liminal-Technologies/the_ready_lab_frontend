@@ -1,39 +1,20 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Search,
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { 
+  Search, 
   Plus,
-  MoreHorizontal,
+  MoreHorizontal, 
   Users,
   MessageSquare,
   Settings,
   Eye,
   Edit,
-  Trash2,
+  Trash2
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -57,9 +38,7 @@ interface Community {
 
 export function AdminCommunities() {
   const [communities, setCommunities] = useState<Community[]>([]);
-  const [filteredCommunities, setFilteredCommunities] = useState<Community[]>(
-    [],
-  );
+  const [filteredCommunities, setFilteredCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
@@ -77,14 +56,14 @@ export function AdminCommunities() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from("communities")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .from('communities')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setCommunities(data || []);
     } catch (error) {
-      console.error("Error fetching communities:", error);
+      console.error('Error fetching communities:', error);
       toast({
         title: "Error",
         description: "Failed to load communities",
@@ -99,19 +78,14 @@ export function AdminCommunities() {
     let filtered = communities;
 
     if (searchTerm) {
-      filtered = filtered.filter(
-        (community) =>
-          community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          community.description
-            ?.toLowerCase()
-            .includes(searchTerm.toLowerCase()),
+      filtered = filtered.filter(community => 
+        community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        community.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (visibilityFilter !== "all") {
-      filtered = filtered.filter(
-        (community) => community.visibility === visibilityFilter,
-      );
+      filtered = filtered.filter(community => community.visibility === visibilityFilter);
     }
 
     setFilteredCommunities(filtered);
@@ -120,16 +94,16 @@ export function AdminCommunities() {
   const deleteCommunity = async (communityId: string) => {
     try {
       const { error } = await supabase
-        .from("communities")
+        .from('communities')
         .delete()
-        .eq("id", communityId);
+        .eq('id', communityId);
 
       if (error) throw error;
 
-      await supabase.rpc("log_admin_action", {
-        _action: "delete_community",
-        _entity_type: "community",
-        _entity_id: communityId,
+      await supabase.rpc('log_admin_action', {
+        _action: 'delete_community',
+        _entity_type: 'community',
+        _entity_id: communityId
       });
 
       toast({
@@ -139,7 +113,7 @@ export function AdminCommunities() {
 
       fetchCommunities();
     } catch (error) {
-      console.error("Error deleting community:", error);
+      console.error('Error deleting community:', error);
       toast({
         title: "Error",
         description: "Failed to delete community",
@@ -149,8 +123,8 @@ export function AdminCommunities() {
   };
 
   const getVisibilityBadge = (visibility: string) => (
-    <Badge variant={visibility === "open" ? "default" : "secondary"}>
-      {visibility === "open" ? "Public" : "Private"}
+    <Badge variant={visibility === 'open' ? "default" : "secondary"}>
+      {visibility === 'open' ? 'Public' : 'Private'}
     </Badge>
   );
 
@@ -173,28 +147,28 @@ export function AdminCommunities() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Communities
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Communities</CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{communities.length}</div>
-            <p className="text-xs text-muted-foreground">+2 from last month</p>
+            <p className="text-xs text-muted-foreground">
+              +2 from last month
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Public Communities
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Public Communities</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {communities.filter((c) => c.visibility === "open").length}
+              {communities.filter(c => c.visibility === 'open').length}
             </div>
-            <p className="text-xs text-muted-foreground">Open to all members</p>
+            <p className="text-xs text-muted-foreground">
+              Open to all members
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -213,14 +187,14 @@ export function AdminCommunities() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Pending Reports
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Pending Reports</CardTitle>
             <Settings className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">Require moderation</p>
+            <p className="text-xs text-muted-foreground">
+              Require moderation
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -243,10 +217,7 @@ export function AdminCommunities() {
                 />
               </div>
             </div>
-            <Select
-              value={visibilityFilter}
-              onValueChange={setVisibilityFilter}
-            >
+            <Select value={visibilityFilter} onValueChange={setVisibilityFilter}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Visibility" />
               </SelectTrigger>
@@ -291,9 +262,7 @@ export function AdminCommunities() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {getVisibilityBadge(community.visibility)}
-                    </TableCell>
+                    <TableCell>{getVisibilityBadge(community.visibility)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
@@ -323,7 +292,7 @@ export function AdminCommunities() {
                             <Settings className="mr-2 h-4 w-4" />
                             Moderate Posts
                           </DropdownMenuItem>
-                          <DropdownMenuItem
+                          <DropdownMenuItem 
                             className="text-destructive"
                             onClick={() => deleteCommunity(community.id)}
                           >

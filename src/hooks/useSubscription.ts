@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "./useAuth";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from './useAuth';
 
 export interface SubscriptionStatus {
   subscribed: boolean;
@@ -17,7 +17,7 @@ export const useSubscription = () => {
     subscribed: false,
     product_id: null,
     subscription_end: null,
-    subscription_status: "trial",
+    subscription_status: 'trial',
     loading: true,
     error: null,
   });
@@ -28,7 +28,7 @@ export const useSubscription = () => {
         subscribed: false,
         product_id: null,
         subscription_end: null,
-        subscription_status: "trial",
+        subscription_status: 'trial',
         loading: false,
         error: null,
       });
@@ -36,40 +36,36 @@ export const useSubscription = () => {
     }
 
     try {
-      setSubscription((prev) => ({ ...prev, loading: true, error: null }));
-
-      const { data, error } =
-        await supabase.functions.invoke("check-subscription");
-
+      setSubscription(prev => ({ ...prev, loading: true, error: null }));
+      
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      
       if (error) throw error;
-
+      
       setSubscription({
         subscribed: data.subscribed || false,
         product_id: data.product_id || null,
         subscription_end: data.subscription_end || null,
-        subscription_status: data.subscription_status || "trial",
+        subscription_status: data.subscription_status || 'trial',
         loading: false,
         error: null,
       });
     } catch (error) {
-      console.error("Error checking subscription:", error);
-      setSubscription((prev) => ({
-        ...prev,
+      console.error('Error checking subscription:', error);
+      setSubscription(prev => ({ 
+        ...prev, 
         loading: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to check subscription",
+        error: error instanceof Error ? error.message : 'Failed to check subscription',
       }));
     }
   };
 
   useEffect(() => {
     checkSubscription();
-
+    
     // Check every minute
     const interval = setInterval(checkSubscription, 60000);
-
+    
     return () => clearInterval(interval);
   }, [auth.user]);
 

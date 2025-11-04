@@ -15,7 +15,7 @@ export const EmptyProducts = ({
   description = "Check back soon for new digital products and templates",
   actionLabel = "Browse All Products",
   actionPath = "/products",
-  showAction = true,
+  showAction = true
 }: EmptyProductsProps) => {
   const navigate = useNavigate();
 
@@ -23,9 +23,13 @@ export const EmptyProducts = ({
     <div className="flex flex-col items-center justify-center py-16 text-center">
       <Package className="h-16 w-16 text-muted-foreground mb-4" />
       <h3 className="text-xl font-semibold mb-2">{message}</h3>
-      <p className="text-muted-foreground mb-6 max-w-md">{description}</p>
+      <p className="text-muted-foreground mb-6 max-w-md">
+        {description}
+      </p>
       {showAction && (
-        <Button onClick={() => navigate(actionPath)}>{actionLabel}</Button>
+        <Button onClick={() => navigate(actionPath)}>
+          {actionLabel}
+        </Button>
       )}
     </div>
   );

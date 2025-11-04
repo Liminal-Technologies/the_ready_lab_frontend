@@ -1,20 +1,17 @@
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { Upload, Video, Loader2, X } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { Upload, Video, Loader2, X } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface VideoUploadRecorderProps {
   onVideoUploaded: (videoUrl: string, duration: number, blob?: Blob) => void;
   educatorId: string;
 }
 
-export const VideoUploadRecorder = ({
-  onVideoUploaded,
-  educatorId,
-}: VideoUploadRecorderProps) => {
+export const VideoUploadRecorder = ({ onVideoUploaded, educatorId }: VideoUploadRecorderProps) => {
   const [uploading, setUploading] = useState(false);
   const [recording, setRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
@@ -28,7 +25,7 @@ export const VideoUploadRecorder = ({
     if (!file) return;
 
     // Validate file type
-    if (!["video/mp4", "video/quicktime", "video/webm"].includes(file.type)) {
+    if (!['video/mp4', 'video/quicktime', 'video/webm'].includes(file.type)) {
       toast({
         title: "Invalid file type",
         description: "Please upload MP4, MOV, or WEBM files only.",
@@ -53,29 +50,29 @@ export const VideoUploadRecorder = ({
   const uploadVideo = async (blob: Blob) => {
     setUploading(true);
     try {
-      const fileName = `${educatorId}/${Date.now()}.${blob.type.split("/")[1]}`;
-
+      const fileName = `${educatorId}/${Date.now()}.${blob.type.split('/')[1]}`;
+      
       const { error: uploadError } = await supabase.storage
-        .from("videos")
+        .from('videos')
         .upload(fileName, blob);
 
       if (uploadError) throw uploadError;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("videos").getPublicUrl(fileName);
+      const { data: { publicUrl } } = supabase.storage
+        .from('videos')
+        .getPublicUrl(fileName);
 
       // Get video duration
       const duration = await getVideoDuration(blob);
-
+      
       onVideoUploaded(publicUrl, duration, blob);
-
+      
       toast({
         title: "Success",
         description: "Video uploaded successfully!",
       });
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error('Upload error:', error);
       toast({
         title: "Upload failed",
         description: "Failed to upload video. Please try again.",
@@ -88,8 +85,8 @@ export const VideoUploadRecorder = ({
 
   const getVideoDuration = (blob: Blob): Promise<number> => {
     return new Promise((resolve) => {
-      const video = document.createElement("video");
-      video.preload = "metadata";
+      const video = document.createElement('video');
+      video.preload = 'metadata';
       video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
         resolve(Math.round(video.duration));
@@ -101,24 +98,21 @@ export const VideoUploadRecorder = ({
   const startRecording = async (includeScreen = false) => {
     try {
       let videoStream;
-
+      
       if (includeScreen) {
         // Screen share + webcam
         const screenStream = await navigator.mediaDevices.getDisplayMedia({
           video: true,
           audio: true,
         });
-
+        
         const cameraStream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: true,
         });
-
+        
         // Combine streams
-        const tracks = [
-          ...screenStream.getVideoTracks(),
-          ...cameraStream.getAudioTracks(),
-        ];
+        const tracks = [...screenStream.getVideoTracks(), ...cameraStream.getAudioTracks()];
         videoStream = new MediaStream(tracks);
       } else {
         // Webcam only
@@ -129,7 +123,7 @@ export const VideoUploadRecorder = ({
       }
 
       const mediaRecorder = new MediaRecorder(videoStream, {
-        mimeType: "video/webm",
+        mimeType: 'video/webm',
       });
 
       mediaRecorderRef.current = mediaRecorder;
@@ -152,7 +146,7 @@ export const VideoUploadRecorder = ({
       mediaRecorder.start();
       setRecording(true);
     } catch (error) {
-      console.error("Recording error:", error);
+      console.error('Recording error:', error);
       toast({
         title: "Recording failed",
         description: "Could not access camera/microphone/screen.",
@@ -165,10 +159,10 @@ export const VideoUploadRecorder = ({
     if (mediaRecorderRef.current && recording) {
       mediaRecorderRef.current.stop();
       setRecording(false);
-
+      
       // Create preview
       setTimeout(() => {
-        const blob = new Blob(recordedChunks, { type: "video/webm" });
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
         const url = URL.createObjectURL(blob);
         setVideoPreview(url);
       }, 100);
@@ -176,7 +170,7 @@ export const VideoUploadRecorder = ({
   };
 
   const uploadRecording = async () => {
-    const blob = new Blob(recordedChunks, { type: "video/webm" });
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
     await uploadVideo(blob);
     setVideoPreview(null);
     setRecordedChunks([]);
@@ -241,10 +235,7 @@ export const VideoUploadRecorder = ({
                       <Video className="h-4 w-4 mr-2" />
                       Record Webcam
                     </Button>
-                    <Button
-                      onClick={() => startRecording(true)}
-                      variant="outline"
-                    >
+                    <Button onClick={() => startRecording(true)} variant="outline">
                       <Video className="h-4 w-4 mr-2" />
                       Record Screen + Webcam
                     </Button>

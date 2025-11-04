@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Shield } from "lucide-react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { format } from "date-fns";
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { CheckCircle2, XCircle, Shield } from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { format } from 'date-fns';
 
 interface CertificateVerification {
   isValid: boolean;
@@ -18,8 +18,7 @@ interface CertificateVerification {
 
 export default function VerifyCertificate() {
   const { serial } = useParams<{ serial: string }>();
-  const [verification, setVerification] =
-    useState<CertificateVerification | null>(null);
+  const [verification, setVerification] = useState<CertificateVerification | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,9 +39,9 @@ export default function VerifyCertificate() {
       // Mock valid certificate data
       const mockCertificate: CertificateVerification = {
         isValid: true,
-        studentName: "Alex Johnson",
-        courseTitle: "Advanced React Development & Best Practices",
-        dateIssued: new Date("2024-01-15").toISOString(),
+        studentName: 'Alex Johnson',
+        courseTitle: 'Advanced React Development & Best Practices',
+        dateIssued: new Date('2024-01-15').toISOString(),
         serialNumber: serial,
         qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://thereadylab.com/verify/${serial}`,
       };
@@ -95,9 +94,7 @@ export default function VerifyCertificate() {
           {/* Verification Header */}
           <div className="text-center mb-8">
             <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
-            <h1 className="text-3xl font-bold mb-2">
-              Certificate Verification
-            </h1>
+            <h1 className="text-3xl font-bold mb-2">Certificate Verification</h1>
             <p className="text-muted-foreground">
               Verify the authenticity of certificates issued by The Ready Lab
             </p>
@@ -109,7 +106,7 @@ export default function VerifyCertificate() {
               {/* Success Banner */}
               <div className="bg-green-500/10 border-b border-green-500/20 p-6 text-center">
                 <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-green-600 mb-2">
+                <h2 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
                   Valid Certificate ✓
                 </h2>
                 <Badge className="bg-green-500 hover:bg-green-600 text-white">
@@ -144,11 +141,7 @@ export default function VerifyCertificate() {
                         Date Issued
                       </p>
                       <p className="text-lg font-medium">
-                        {verification.dateIssued &&
-                          format(
-                            new Date(verification.dateIssued),
-                            "MMMM d, yyyy",
-                          )}
+                        {verification.dateIssued && format(new Date(verification.dateIssued), 'MMMM d, yyyy')}
                       </p>
                     </div>
                     <div>
@@ -178,14 +171,11 @@ export default function VerifyCertificate() {
                   <div className="flex items-start gap-3">
                     <Shield className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                     <div>
-                      <h4 className="font-semibold mb-2">
-                        Certificate Authenticity
-                      </h4>
+                      <h4 className="font-semibold mb-2">Certificate Authenticity</h4>
                       <p className="text-sm text-muted-foreground">
-                        This certificate is authentic and was issued by The
-                        Ready Lab. It confirms that the certificate holder has
-                        successfully completed the specified course
-                        requirements.
+                        This certificate is authentic and was issued by The Ready Lab.
+                        It confirms that the certificate holder has successfully completed
+                        the specified course requirements.
                       </p>
                     </div>
                   </div>
@@ -194,8 +184,7 @@ export default function VerifyCertificate() {
                 {/* Verification Details */}
                 <div className="pt-4 border-t">
                   <p className="text-xs text-muted-foreground text-center">
-                    Certificate verified on {format(new Date(), "MMMM d, yyyy")}{" "}
-                    at {format(new Date(), "h:mm a")}
+                    Certificate verified on {format(new Date(), 'MMMM d, yyyy')} at {format(new Date(), 'h:mm a')}
                   </p>
                 </div>
               </div>
@@ -208,7 +197,9 @@ export default function VerifyCertificate() {
                 <h2 className="text-2xl font-bold text-destructive mb-2">
                   Invalid Certificate ✗
                 </h2>
-                <Badge variant="destructive">Verification Failed</Badge>
+                <Badge variant="destructive">
+                  Verification Failed
+                </Badge>
               </div>
 
               {/* Error Details */}
@@ -217,7 +208,7 @@ export default function VerifyCertificate() {
                   <p className="text-lg text-muted-foreground">
                     This certificate could not be verified
                   </p>
-
+                  
                   <div className="bg-muted/50 p-6 rounded-lg border border-muted">
                     <p className="text-sm text-muted-foreground uppercase tracking-wider mb-2">
                       Serial Number Entered
@@ -232,8 +223,7 @@ export default function VerifyCertificate() {
                     <ul className="text-sm text-muted-foreground space-y-2 text-left max-w-md mx-auto">
                       <li className="flex gap-2">
                         <span className="text-destructive">•</span>
-                        The certificate serial number may have been entered
-                        incorrectly
+                        The certificate serial number may have been entered incorrectly
                       </li>
                       <li className="flex gap-2">
                         <span className="text-destructive">•</span>
@@ -241,8 +231,7 @@ export default function VerifyCertificate() {
                       </li>
                       <li className="flex gap-2">
                         <span className="text-destructive">•</span>
-                        The certificate may not have been issued by The Ready
-                        Lab
+                        The certificate may not have been issued by The Ready Lab
                       </li>
                     </ul>
                   </div>
@@ -253,9 +242,8 @@ export default function VerifyCertificate() {
                       <div className="text-left">
                         <h4 className="font-semibold mb-2">Need Help?</h4>
                         <p className="text-sm text-muted-foreground">
-                          If you believe this is an error, please contact The
-                          Ready Lab support with the certificate serial number
-                          for assistance.
+                          If you believe this is an error, please contact The Ready Lab support
+                          with the certificate serial number for assistance.
                         </p>
                       </div>
                     </div>
@@ -265,9 +253,7 @@ export default function VerifyCertificate() {
                 {/* Verification Attempt Details */}
                 <div className="pt-4 border-t">
                   <p className="text-xs text-muted-foreground text-center">
-                    Verification attempted on{" "}
-                    {format(new Date(), "MMMM d, yyyy")} at{" "}
-                    {format(new Date(), "h:mm a")}
+                    Verification attempted on {format(new Date(), 'MMMM d, yyyy')} at {format(new Date(), 'h:mm a')}
                   </p>
                 </div>
               </div>
@@ -277,15 +263,11 @@ export default function VerifyCertificate() {
           {/* Additional Info */}
           <div className="mt-8 text-center">
             <p className="text-sm text-muted-foreground">
-              All certificates issued by The Ready Lab can be verified using
-              this page.
+              All certificates issued by The Ready Lab can be verified using this page.
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              For questions about certificate verification, please contact{" "}
-              <a
-                href="mailto:support@thereadylab.com"
-                className="text-primary hover:underline"
-              >
+              For questions about certificate verification, please contact{' '}
+              <a href="mailto:support@thereadylab.com" className="text-primary hover:underline">
                 support@thereadylab.com
               </a>
             </p>

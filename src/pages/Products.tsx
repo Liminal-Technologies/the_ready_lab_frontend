@@ -1,35 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyProducts } from "@/components/empty-states/EmptyProducts";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Download,
-  FileText,
-  FileSpreadsheet,
-  FileCode,
-  Filter,
-} from "lucide-react";
+import { Download, FileText, FileSpreadsheet, FileCode, Filter } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -37,11 +17,9 @@ const mockProducts = [
   {
     id: "1",
     title: "Pitch Deck Template",
-    description:
-      "Professional investor-ready pitch deck with 15 proven slides. Used by 500+ funded startups.",
+    description: "Professional investor-ready pitch deck with 15 proven slides. Used by 500+ funded startups.",
     price: 49,
-    thumbnail:
-      "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
     fileType: "PDF",
     educator: "Sarah Johnson",
     downloads: 524,
@@ -50,11 +28,9 @@ const mockProducts = [
   {
     id: "2",
     title: "Grant Writing Playbook",
-    description:
-      "Complete guide to winning nonprofit grants with templates and real examples.",
+    description: "Complete guide to winning nonprofit grants with templates and real examples.",
     price: 79,
-    thumbnail:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
     fileType: "PDF",
     educator: "Michael Chen",
     downloads: 312,
@@ -63,11 +39,9 @@ const mockProducts = [
   {
     id: "3",
     title: "Financial Model Spreadsheet",
-    description:
-      "3-year financial projection model with automated calculations and charts.",
+    description: "3-year financial projection model with automated calculations and charts.",
     price: 99,
-    thumbnail:
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
     fileType: "Excel",
     educator: "David Martinez",
     downloads: 428,
@@ -76,11 +50,9 @@ const mockProducts = [
   {
     id: "4",
     title: "Brand Strategy Worksheet",
-    description:
-      "Step-by-step framework to define your brand positioning and messaging.",
+    description: "Step-by-step framework to define your brand positioning and messaging.",
     price: 29,
-    thumbnail:
-      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
     fileType: "PDF",
     educator: "Emma Wilson",
     downloads: 892,
@@ -89,11 +61,9 @@ const mockProducts = [
   {
     id: "5",
     title: "Social Impact Measurement Kit",
-    description:
-      "Comprehensive toolkit for tracking and reporting social impact metrics.",
+    description: "Comprehensive toolkit for tracking and reporting social impact metrics.",
     price: 65,
-    thumbnail:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
     fileType: "Excel",
     educator: "James Anderson",
     downloads: 267,
@@ -102,11 +72,9 @@ const mockProducts = [
   {
     id: "6",
     title: "Nonprofit Budget Template",
-    description:
-      "Complete budget planning template with cash flow projections.",
+    description: "Complete budget planning template with cash flow projections.",
     price: 39,
-    thumbnail:
-      "https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=800&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=800&q=80",
     fileType: "Excel",
     educator: "Lisa Thompson",
     downloads: 615,
@@ -115,11 +83,9 @@ const mockProducts = [
   {
     id: "7",
     title: "Business Plan Master Guide",
-    description:
-      "200-page comprehensive business plan guide with examples from 50+ industries.",
+    description: "200-page comprehensive business plan guide with examples from 50+ industries.",
     price: 89,
-    thumbnail:
-      "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=800&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=800&q=80",
     fileType: "PDF",
     educator: "Robert Lee",
     downloads: 445,
@@ -128,11 +94,9 @@ const mockProducts = [
   {
     id: "8",
     title: "Marketing Strategy Toolkit",
-    description:
-      "Complete marketing strategy framework with templates and worksheets.",
+    description: "Complete marketing strategy framework with templates and worksheets.",
     price: 75,
-    thumbnail:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
     fileType: "ZIP",
     educator: "Maria Garcia",
     downloads: 356,
@@ -140,13 +104,7 @@ const mockProducts = [
   },
 ];
 
-const categories = [
-  "All Products",
-  "Templates",
-  "Guides & Playbooks",
-  "Tools & Software",
-  "Resources",
-];
+const categories = ["All Products", "Templates", "Guides & Playbooks", "Tools & Software", "Resources"];
 const priceRanges = [
   { label: "Under $25", min: 0, max: 25 },
   { label: "$25-$50", min: 25, max: 50 },
@@ -168,13 +126,9 @@ const getFileIcon = (fileType: string) => {
 
 export default function Products() {
   const { toast } = useToast();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([
-    "All Products",
-  ]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(["All Products"]);
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
-  const [selectedProduct, setSelectedProduct] = useState<
-    (typeof mockProducts)[0] | null
-  >(null);
+  const [selectedProduct, setSelectedProduct] = useState<typeof mockProducts[0] | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -200,15 +154,14 @@ export default function Products() {
 
   const handlePriceRangeToggle = (range: string) => {
     setSelectedPriceRanges((prev) =>
-      prev.includes(range) ? prev.filter((r) => r !== range) : [...prev, range],
+      prev.includes(range) ? prev.filter((r) => r !== range) : [...prev, range]
     );
   };
 
   const filteredProducts = mockProducts.filter((product) => {
     // Category filter
     const categoryMatch =
-      selectedCategories.includes("All Products") ||
-      selectedCategories.includes(product.category);
+      selectedCategories.includes("All Products") || selectedCategories.includes(product.category);
 
     // Price filter
     const priceMatch =
@@ -222,7 +175,7 @@ export default function Products() {
     return categoryMatch && priceMatch;
   });
 
-  const handleBuyNow = (product: (typeof mockProducts)[0]) => {
+  const handleBuyNow = (product: typeof mockProducts[0]) => {
     setSelectedProduct(product);
     setShowPaymentModal(true);
   };
@@ -231,8 +184,7 @@ export default function Products() {
     setShowPaymentModal(false);
     toast({
       title: "Purchase Successful!",
-      description:
-        "Your product has been added to My Purchases. Check your email for the download link.",
+      description: "Your product has been added to My Purchases. Check your email for the download link.",
     });
     setSelectedProduct(null);
   };
@@ -240,14 +192,12 @@ export default function Products() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-
+      
       <main className="flex-1">
         {/* Header Section */}
         <section className="bg-gradient-to-br from-primary/10 via-background to-background py-12 border-b">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Digital Products & Templates
-            </h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Digital Products & Templates</h1>
             <p className="text-xl text-muted-foreground">
               Download proven resources to accelerate your journey
             </p>
@@ -270,10 +220,7 @@ export default function Products() {
                   <div className="space-y-3">
                     <Label className="text-base font-semibold">Category</Label>
                     {categories.map((category) => (
-                      <div
-                        key={category}
-                        className="flex items-center space-x-2"
-                      >
+                      <div key={category} className="flex items-center space-x-2">
                         <Checkbox
                           id={category}
                           checked={selectedCategories.includes(category)}
@@ -291,20 +238,13 @@ export default function Products() {
 
                   {/* Price Range Filters */}
                   <div className="space-y-3">
-                    <Label className="text-base font-semibold">
-                      Price Range
-                    </Label>
+                    <Label className="text-base font-semibold">Price Range</Label>
                     {priceRanges.map((range) => (
-                      <div
-                        key={range.label}
-                        className="flex items-center space-x-2"
-                      >
+                      <div key={range.label} className="flex items-center space-x-2">
                         <Checkbox
                           id={range.label}
                           checked={selectedPriceRanges.includes(range.label)}
-                          onCheckedChange={() =>
-                            handlePriceRangeToggle(range.label)
-                          }
+                          onCheckedChange={() => handlePriceRangeToggle(range.label)}
                         />
                         <label
                           htmlFor={range.label}
@@ -323,8 +263,7 @@ export default function Products() {
             <div className="lg:col-span-3">
               <div className="mb-4">
                 <p className="text-muted-foreground">
-                  Showing {filteredProducts.length}{" "}
-                  {filteredProducts.length === 1 ? "product" : "products"}
+                  Showing {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
                 </p>
               </div>
 
@@ -350,63 +289,45 @@ export default function Products() {
                       </Card>
                     ))}
                   </>
-                ) : (
-                  filteredProducts.map((product) => {
-                    const FileIcon = getFileIcon(product.fileType);
-                    return (
-                      <Card
-                        key={product.id}
-                        className="overflow-hidden hover:shadow-lg transition-shadow"
-                      >
-                        <div className="aspect-video relative overflow-hidden bg-muted">
-                          <img
-                            src={product.thumbnail}
-                            alt={product.title}
-                            className="w-full h-full object-cover"
-                          />
-                          <Badge
-                            className="absolute top-2 right-2"
-                            variant="secondary"
-                          >
-                            <FileIcon className="h-3 w-3 mr-1" />
-                            {product.fileType}
-                          </Badge>
+                ) : filteredProducts.map((product) => {
+                  const FileIcon = getFileIcon(product.fileType);
+                  return (
+                    <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <div className="aspect-video relative overflow-hidden bg-muted">
+                        <img
+                          src={product.thumbnail}
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <Badge className="absolute top-2 right-2" variant="secondary">
+                          <FileIcon className="h-3 w-3 mr-1" />
+                          {product.fileType}
+                        </Badge>
+                      </div>
+                      <CardHeader>
+                        <CardTitle className="line-clamp-1">{product.title}</CardTitle>
+                        <CardDescription className="line-clamp-2">{product.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">By {product.educator}</span>
                         </div>
-                        <CardHeader>
-                          <CardTitle className="line-clamp-1">
-                            {product.title}
-                          </CardTitle>
-                          <CardDescription className="line-clamp-2">
-                            {product.description}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">
-                              By {product.educator}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Download className="h-4 w-4" />
-                            <span>{product.downloads} downloads</span>
-                          </div>
-                        </CardContent>
-                        <CardFooter className="flex items-center justify-between">
-                          <span className="text-2xl font-bold text-primary">
-                            ${product.price}
-                          </span>
-                          <Button onClick={() => handleBuyNow(product)}>
-                            Buy Now
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    );
-                  })
-                )}
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Download className="h-4 w-4" />
+                          <span>{product.downloads} downloads</span>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-primary">${product.price}</span>
+                        <Button onClick={() => handleBuyNow(product)}>Buy Now</Button>
+                      </CardFooter>
+                    </Card>
+                  );
+                })}
               </div>
 
               {filteredProducts.length === 0 && !loading && (
-                <EmptyProducts
+                <EmptyProducts 
                   message="No products match your filters"
                   description="Try adjusting your filters to see more products"
                   showAction={false}
@@ -426,7 +347,7 @@ export default function Products() {
             <DialogTitle>Complete Purchase</DialogTitle>
             <DialogDescription>Review your order details</DialogDescription>
           </DialogHeader>
-
+          
           {selectedProduct && (
             <div className="space-y-4">
               <div className="aspect-video relative overflow-hidden rounded-lg bg-muted">
@@ -436,35 +357,23 @@ export default function Products() {
                   className="w-full h-full object-cover"
                 />
               </div>
-
+              
               <div className="space-y-2">
-                <h3 className="font-semibold text-lg">
-                  {selectedProduct.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {selectedProduct.description}
-                </p>
+                <h3 className="font-semibold text-lg">{selectedProduct.title}</h3>
+                <p className="text-sm text-muted-foreground">{selectedProduct.description}</p>
                 <div className="flex items-center justify-between pt-2 border-t">
                   <span className="text-muted-foreground">Price</span>
-                  <span className="text-2xl font-bold text-primary">
-                    ${selectedProduct.price}
-                  </span>
+                  <span className="text-2xl font-bold text-primary">${selectedProduct.price}</span>
                 </div>
               </div>
             </div>
           )}
-
+          
           <DialogFooter className="sm:justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setShowPaymentModal(false)}
-            >
+            <Button variant="outline" onClick={() => setShowPaymentModal(false)}>
               Cancel
             </Button>
-            <Button
-              onClick={handlePurchase}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black"
-            >
+            <Button onClick={handlePurchase} className="bg-yellow-500 hover:bg-yellow-600 text-black">
               Complete Purchase
             </Button>
           </DialogFooter>

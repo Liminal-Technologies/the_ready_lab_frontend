@@ -1,28 +1,16 @@
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Loader2, BookOpen, Plus, X, Video } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VideoUploadRecorder } from "./VideoUploadRecorder";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2, BookOpen, Plus, X, Video } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { VideoUploadRecorder } from './VideoUploadRecorder';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface CreateDeepLearningModalProps {
   open: boolean;
@@ -31,25 +19,25 @@ interface CreateDeepLearningModalProps {
 }
 
 const roadmapTags = [
-  "Nonprofit Management",
-  "Fundraising",
-  "Grant Writing",
-  "Program Development",
-  "Marketing & Branding",
-  "Finance & Accounting",
-  "Leadership",
-  "Volunteer Management",
+  'Nonprofit Management',
+  'Fundraising',
+  'Grant Writing',
+  'Program Development',
+  'Marketing & Branding',
+  'Finance & Accounting',
+  'Leadership',
+  'Volunteer Management',
 ];
 
 const categories = [
-  "Business",
-  "Technology",
-  "Design",
-  "Marketing",
-  "Leadership",
-  "Nonprofit",
-  "Finance",
-  "Other",
+  'Business',
+  'Technology',
+  'Design',
+  'Marketing',
+  'Leadership',
+  'Nonprofit',
+  'Finance',
+  'Other',
 ];
 
 interface Lesson {
@@ -65,46 +53,34 @@ interface Module {
   lessons: Lesson[];
 }
 
-export const CreateDeepLearningModal = ({
-  open,
-  onOpenChange,
-  onSuccess,
-}: CreateDeepLearningModalProps) => {
+export const CreateDeepLearningModal = ({ open, onOpenChange, onSuccess }: CreateDeepLearningModalProps) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category: "",
-    level: "beginner",
+    title: '',
+    description: '',
+    category: '',
+    level: 'beginner',
     roadmap_tags: [] as string[],
     estimated_hours: 1,
     price: 0,
-    thumbnail_url: "",
+    thumbnail_url: '',
   });
-  const [modules, setModules] = useState<Module[]>([
-    { title: "", description: "", lessons: [] },
-  ]);
-  const [currentStep, setCurrentStep] = useState<
-    "course-info" | "modules" | "lessons"
-  >("course-info");
-  const [selectedModuleIndex, setSelectedModuleIndex] = useState<number | null>(
-    null,
-  );
+  const [modules, setModules] = useState<Module[]>([{ title: '', description: '', lessons: [] }]);
+  const [currentStep, setCurrentStep] = useState<'course-info' | 'modules' | 'lessons'>('course-info');
+  const [selectedModuleIndex, setSelectedModuleIndex] = useState<number | null>(null);
   const { toast } = useToast();
-  const [educatorId, setEducatorId] = useState<string>("");
+  const [educatorId, setEducatorId] = useState<string>('');
 
   useState(() => {
     const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (user) setEducatorId(user.id);
     };
     fetchUser();
   });
 
   const addModule = () => {
-    setModules([...modules, { title: "", description: "", lessons: [] }]);
+    setModules([...modules, { title: '', description: '', lessons: [] }]);
   };
 
   const removeModule = (index: number) => {
@@ -113,11 +89,7 @@ export const CreateDeepLearningModal = ({
     }
   };
 
-  const updateModule = (
-    index: number,
-    field: keyof Omit<Module, "lessons">,
-    value: string,
-  ) => {
+  const updateModule = (index: number, field: keyof Omit<Module, 'lessons'>, value: string) => {
     const updated = [...modules];
     updated[index][field] = value;
     setModules(updated);
@@ -126,9 +98,9 @@ export const CreateDeepLearningModal = ({
   const addLessonToModule = (moduleIndex: number) => {
     const updated = [...modules];
     updated[moduleIndex].lessons.push({
-      title: "",
-      description: "",
-      video_url: "",
+      title: '',
+      description: '',
+      video_url: '',
       video_duration_seconds: 0,
     });
     setModules(updated);
@@ -144,19 +116,14 @@ export const CreateDeepLearningModal = ({
     moduleIndex: number,
     lessonIndex: number,
     field: keyof Lesson,
-    value: string | number,
+    value: string | number
   ) => {
     const updated = [...modules];
     (updated[moduleIndex].lessons[lessonIndex] as any)[field] = value;
     setModules(updated);
   };
 
-  const handleVideoUploaded = (
-    moduleIndex: number,
-    lessonIndex: number,
-    videoUrl: string,
-    duration: number,
-  ) => {
+  const handleVideoUploaded = (moduleIndex: number, lessonIndex: number, videoUrl: string, duration: number) => {
     const updated = [...modules];
     updated[moduleIndex].lessons[lessonIndex].video_url = videoUrl;
     updated[moduleIndex].lessons[lessonIndex].video_duration_seconds = duration;
@@ -165,9 +132,9 @@ export const CreateDeepLearningModal = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     // Validate modules
-    const validModules = modules.filter((m) => m.title.trim() !== "");
+    const validModules = modules.filter(m => m.title.trim() !== '');
     if (validModules.length === 0) {
       toast({
         title: "Modules required",
@@ -180,14 +147,12 @@ export const CreateDeepLearningModal = ({
     setLoading(true);
 
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       // Create track
       const { data: track, error: trackError } = await supabase
-        .from("tracks")
+        .from('tracks')
         .insert({
           ...formData,
           created_by: user.id,
@@ -201,9 +166,9 @@ export const CreateDeepLearningModal = ({
       // Create modules and lessons
       for (let i = 0; i < validModules.length; i++) {
         const module = validModules[i];
-
+        
         const { data: createdModule, error: moduleError } = await supabase
-          .from("modules")
+          .from('modules')
           .insert({
             track_id: track.id,
             title: module.title,
@@ -221,17 +186,17 @@ export const CreateDeepLearningModal = ({
             module_id: createdModule.id,
             title: lesson.title,
             description: lesson.description,
-            content_type: "video",
+            content_type: 'video',
             content_url: lesson.video_url,
             video_duration_seconds: lesson.video_duration_seconds,
             duration_minutes: Math.ceil(lesson.video_duration_seconds / 60),
             order_index: lessonIndex,
-            lesson_type: "regular",
+            lesson_type: 'regular',
             is_standalone: false,
           }));
 
           const { error: lessonsError } = await supabase
-            .from("lessons")
+            .from('lessons')
             .insert(lessonInserts);
 
           if (lessonsError) throw lessonsError;
@@ -240,29 +205,28 @@ export const CreateDeepLearningModal = ({
 
       toast({
         title: "Success",
-        description:
-          "Deep learning course created successfully with all modules and lessons!",
+        description: "Deep learning course created successfully with all modules and lessons!",
       });
-
+      
       onSuccess?.();
       onOpenChange(false);
-
+      
       // Reset form
       setFormData({
-        title: "",
-        description: "",
-        category: "",
-        level: "beginner",
+        title: '',
+        description: '',
+        category: '',
+        level: 'beginner',
         roadmap_tags: [],
         estimated_hours: 1,
         price: 0,
-        thumbnail_url: "",
+        thumbnail_url: '',
       });
-      setModules([{ title: "", description: "", lessons: [] }]);
-      setCurrentStep("course-info");
+      setModules([{ title: '', description: '', lessons: [] }]);
+      setCurrentStep('course-info');
       setSelectedModuleIndex(null);
     } catch (error) {
-      console.error("Error creating course:", error);
+      console.error('Error creating course:', error);
       toast({
         title: "Error",
         description: "Failed to create course. Please try again.",
@@ -282,15 +246,11 @@ export const CreateDeepLearningModal = ({
             Create Deep Learning Course
           </DialogTitle>
           <DialogDescription>
-            Create a comprehensive multi-module course with structured learning
-            paths.
+            Create a comprehensive multi-module course with structured learning paths.
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs
-          value={currentStep}
-          onValueChange={(v) => setCurrentStep(v as any)}
-        >
+        <Tabs value={currentStep} onValueChange={(v) => setCurrentStep(v as any)}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="course-info">Course Info</TabsTrigger>
             <TabsTrigger value="modules">Modules</TabsTrigger>
@@ -300,15 +260,13 @@ export const CreateDeepLearningModal = ({
           <form onSubmit={handleSubmit} className="space-y-6 mt-6">
             <TabsContent value="course-info" className="space-y-4">
               <h3 className="text-lg font-semibold">Course Information</h3>
-
+              
               <div className="space-y-2">
                 <Label htmlFor="title">Course Title *</Label>
                 <Input
                   id="title"
                   value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="e.g., Complete Fundraising Masterclass"
                   required
                 />
@@ -319,9 +277,7 @@ export const CreateDeepLearningModal = ({
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Comprehensive description of the course..."
                   rows={4}
                   required
@@ -333,9 +289,7 @@ export const CreateDeepLearningModal = ({
                   <Label htmlFor="category">Category *</Label>
                   <Select
                     value={formData.category}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, category: value })
-                    }
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
                     required
                   >
                     <SelectTrigger>
@@ -355,9 +309,7 @@ export const CreateDeepLearningModal = ({
                   <Label htmlFor="level">Level *</Label>
                   <Select
                     value={formData.level}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, level: value })
-                    }
+                    onValueChange={(value) => setFormData({ ...formData, level: value })}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -375,25 +327,17 @@ export const CreateDeepLearningModal = ({
                 <Label>Roadmap Tags (select multiple)</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {roadmapTags.map((tag) => (
-                    <label
-                      key={tag}
-                      className="flex items-center space-x-2 cursor-pointer"
-                    >
+                    <label key={tag} className="flex items-center space-x-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={formData.roadmap_tags.includes(tag)}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setFormData({
-                              ...formData,
-                              roadmap_tags: [...formData.roadmap_tags, tag],
-                            });
+                            setFormData({ ...formData, roadmap_tags: [...formData.roadmap_tags, tag] });
                           } else {
                             setFormData({
                               ...formData,
-                              roadmap_tags: formData.roadmap_tags.filter(
-                                (t) => t !== tag,
-                              ),
+                              roadmap_tags: formData.roadmap_tags.filter((t) => t !== tag),
                             });
                           }
                         }}
@@ -413,12 +357,7 @@ export const CreateDeepLearningModal = ({
                     type="number"
                     min="1"
                     value={formData.estimated_hours}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        estimated_hours: parseInt(e.target.value),
-                      })
-                    }
+                    onChange={(e) => setFormData({ ...formData, estimated_hours: parseInt(e.target.value) })}
                     required
                   />
                 </div>
@@ -431,25 +370,16 @@ export const CreateDeepLearningModal = ({
                     min="0"
                     step="0.01"
                     value={formData.price}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        price: parseFloat(e.target.value),
-                      })
-                    }
+                    onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                   />
                 </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                   Cancel
                 </Button>
-                <Button type="button" onClick={() => setCurrentStep("modules")}>
+                <Button type="button" onClick={() => setCurrentStep('modules')}>
                   Next: Add Modules
                 </Button>
               </div>
@@ -458,12 +388,7 @@ export const CreateDeepLearningModal = ({
             <TabsContent value="modules" className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Course Modules</h3>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addModule}
-                >
+                <Button type="button" variant="outline" size="sm" onClick={addModule}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Module
                 </Button>
@@ -474,9 +399,7 @@ export const CreateDeepLearningModal = ({
                   <Card key={index}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-base">
-                          Module {index + 1}
-                        </CardTitle>
+                        <CardTitle className="text-base">Module {index + 1}</CardTitle>
                         {modules.length > 1 && (
                           <Button
                             type="button"
@@ -494,9 +417,7 @@ export const CreateDeepLearningModal = ({
                         <Label>Module Title *</Label>
                         <Input
                           value={module.title}
-                          onChange={(e) =>
-                            updateModule(index, "title", e.target.value)
-                          }
+                          onChange={(e) => updateModule(index, 'title', e.target.value)}
                           placeholder="e.g., Introduction to Fundraising"
                           required
                         />
@@ -505,9 +426,7 @@ export const CreateDeepLearningModal = ({
                         <Label>Description</Label>
                         <Textarea
                           value={module.description}
-                          onChange={(e) =>
-                            updateModule(index, "description", e.target.value)
-                          }
+                          onChange={(e) => updateModule(index, 'description', e.target.value)}
                           placeholder="What will students learn in this module?"
                           rows={2}
                         />
@@ -519,7 +438,7 @@ export const CreateDeepLearningModal = ({
                           size="sm"
                           onClick={() => {
                             setSelectedModuleIndex(index);
-                            setCurrentStep("lessons");
+                            setCurrentStep('lessons');
                           }}
                         >
                           <Video className="h-4 w-4 mr-2" />
@@ -532,14 +451,10 @@ export const CreateDeepLearningModal = ({
               </div>
 
               <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setCurrentStep("course-info")}
-                >
+                <Button type="button" variant="outline" onClick={() => setCurrentStep('course-info')}>
                   Back
                 </Button>
-                <Button type="button" onClick={() => setCurrentStep("lessons")}>
+                <Button type="button" onClick={() => setCurrentStep('lessons')}>
                   Next: Add Lessons
                 </Button>
               </div>
@@ -550,8 +465,7 @@ export const CreateDeepLearningModal = ({
                 <>
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold">
-                      Add Lessons to Module {selectedModuleIndex + 1}:{" "}
-                      {modules[selectedModuleIndex].title}
+                      Add Lessons to Module {selectedModuleIndex + 1}: {modules[selectedModuleIndex].title}
                     </h3>
                     <Button
                       type="button"
@@ -565,121 +479,77 @@ export const CreateDeepLearningModal = ({
                   </div>
 
                   <div className="space-y-4">
-                    {modules[selectedModuleIndex].lessons.map(
-                      (lesson, lessonIndex) => (
-                        <Card key={lessonIndex}>
-                          <CardHeader className="pb-3">
-                            <div className="flex items-center justify-between">
-                              <CardTitle className="text-base">
-                                Lesson {lessonIndex + 1}
-                              </CardTitle>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  removeLessonFromModule(
-                                    selectedModuleIndex,
-                                    lessonIndex,
-                                  )
+                    {modules[selectedModuleIndex].lessons.map((lesson, lessonIndex) => (
+                      <Card key={lessonIndex}>
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-base">Lesson {lessonIndex + 1}</CardTitle>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeLessonFromModule(selectedModuleIndex, lessonIndex)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="space-y-2">
+                            <Label>Lesson Title *</Label>
+                            <Input
+                              value={lesson.title}
+                              onChange={(e) =>
+                                updateLesson(selectedModuleIndex, lessonIndex, 'title', e.target.value)
+                              }
+                              placeholder="e.g., Understanding Donor Psychology"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Description</Label>
+                            <Textarea
+                              value={lesson.description}
+                              onChange={(e) =>
+                                updateLesson(selectedModuleIndex, lessonIndex, 'description', e.target.value)
+                              }
+                              placeholder="Brief description of the lesson"
+                              rows={2}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Video Content *</Label>
+                            {lesson.video_url ? (
+                              <div className="space-y-2">
+                                <video src={lesson.video_url} controls className="w-full rounded-lg" />
+                                <p className="text-sm text-muted-foreground">
+                                  Duration: {Math.floor(lesson.video_duration_seconds / 60)}:
+                                  {String(lesson.video_duration_seconds % 60).padStart(2, '0')}
+                                </p>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    updateLesson(selectedModuleIndex, lessonIndex, 'video_url', '');
+                                    updateLesson(selectedModuleIndex, lessonIndex, 'video_duration_seconds', 0);
+                                  }}
+                                >
+                                  Change Video
+                                </Button>
+                              </div>
+                            ) : (
+                              <VideoUploadRecorder
+                                onVideoUploaded={(url, duration) =>
+                                  handleVideoUploaded(selectedModuleIndex, lessonIndex, url, duration)
                                 }
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                              <Label>Lesson Title *</Label>
-                              <Input
-                                value={lesson.title}
-                                onChange={(e) =>
-                                  updateLesson(
-                                    selectedModuleIndex,
-                                    lessonIndex,
-                                    "title",
-                                    e.target.value,
-                                  )
-                                }
-                                placeholder="e.g., Understanding Donor Psychology"
-                                required
+                                educatorId={educatorId}
                               />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Description</Label>
-                              <Textarea
-                                value={lesson.description}
-                                onChange={(e) =>
-                                  updateLesson(
-                                    selectedModuleIndex,
-                                    lessonIndex,
-                                    "description",
-                                    e.target.value,
-                                  )
-                                }
-                                placeholder="Brief description of the lesson"
-                                rows={2}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Video Content *</Label>
-                              {lesson.video_url ? (
-                                <div className="space-y-2">
-                                  <video
-                                    src={lesson.video_url}
-                                    controls
-                                    className="w-full rounded-lg"
-                                  />
-                                  <p className="text-sm text-muted-foreground">
-                                    Duration:{" "}
-                                    {Math.floor(
-                                      lesson.video_duration_seconds / 60,
-                                    )}
-                                    :
-                                    {String(
-                                      lesson.video_duration_seconds % 60,
-                                    ).padStart(2, "0")}
-                                  </p>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      updateLesson(
-                                        selectedModuleIndex,
-                                        lessonIndex,
-                                        "video_url",
-                                        "",
-                                      );
-                                      updateLesson(
-                                        selectedModuleIndex,
-                                        lessonIndex,
-                                        "video_duration_seconds",
-                                        0,
-                                      );
-                                    }}
-                                  >
-                                    Change Video
-                                  </Button>
-                                </div>
-                              ) : (
-                                <VideoUploadRecorder
-                                  onVideoUploaded={(url, duration) =>
-                                    handleVideoUploaded(
-                                      selectedModuleIndex,
-                                      lessonIndex,
-                                      url,
-                                      duration,
-                                    )
-                                  }
-                                  educatorId={educatorId}
-                                />
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ),
-                    )}
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
 
                   <div className="flex justify-between gap-2 pt-4 border-t">
@@ -688,7 +558,7 @@ export const CreateDeepLearningModal = ({
                       variant="outline"
                       onClick={() => {
                         setSelectedModuleIndex(null);
-                        setCurrentStep("modules");
+                        setCurrentStep('modules');
                       }}
                     >
                       Back to Modules
@@ -698,9 +568,7 @@ export const CreateDeepLearningModal = ({
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() =>
-                            setSelectedModuleIndex(selectedModuleIndex + 1)
-                          }
+                          onClick={() => setSelectedModuleIndex(selectedModuleIndex + 1)}
                         >
                           Next Module
                         </Button>
@@ -712,16 +580,11 @@ export const CreateDeepLearningModal = ({
                 <>
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">
-                      Select a module from the previous step to add lessons, or
-                      create your course now.
+                      Select a module from the previous step to add lessons, or create your course now.
                     </p>
                   </div>
                   <div className="flex justify-end gap-2 pt-4 border-t">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setCurrentStep("modules")}
-                    >
+                    <Button type="button" variant="outline" onClick={() => setCurrentStep('modules')}>
                       Back to Modules
                     </Button>
                     <Button type="submit" disabled={loading}>
@@ -731,7 +594,7 @@ export const CreateDeepLearningModal = ({
                           Creating...
                         </>
                       ) : (
-                        "Create Course"
+                        'Create Course'
                       )}
                     </Button>
                   </div>
@@ -739,13 +602,9 @@ export const CreateDeepLearningModal = ({
               )}
             </TabsContent>
 
-            {currentStep === "lessons" && selectedModuleIndex !== null && (
+            {currentStep === 'lessons' && selectedModuleIndex !== null && (
               <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={loading}>
@@ -755,7 +614,7 @@ export const CreateDeepLearningModal = ({
                       Creating...
                     </>
                   ) : (
-                    "Create Course"
+                    'Create Course'
                   )}
                 </Button>
               </div>

@@ -30,33 +30,23 @@ export default function StudentPlansRevised() {
         </div>
 
         <div className="mt-16 text-center">
-          <h3 className="text-2xl font-bold mb-6">
-            Pay Only for What You Need
-          </h3>
+          <h3 className="text-2xl font-bold mb-6">Pay Only for What You Need</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
             <div className="p-6 border border-border rounded-lg bg-card">
               <h4 className="font-semibold mb-2">Premium Courses</h4>
-              <p className="text-sm text-muted-foreground">
-                Access specialized content from expert educators
-              </p>
+              <p className="text-sm text-muted-foreground">Access specialized content from expert educators</p>
             </div>
             <div className="p-6 border border-border rounded-lg bg-card">
               <h4 className="font-semibold mb-2">Certifications</h4>
-              <p className="text-sm text-muted-foreground">
-                Earn verified credentials to advance your career
-              </p>
+              <p className="text-sm text-muted-foreground">Earn verified credentials to advance your career</p>
             </div>
             <div className="p-6 border border-border rounded-lg bg-card">
               <h4 className="font-semibold mb-2">Private Communities</h4>
-              <p className="text-sm text-muted-foreground">
-                Join exclusive groups and network with peers
-              </p>
+              <p className="text-sm text-muted-foreground">Join exclusive groups and network with peers</p>
             </div>
             <div className="p-6 border border-border rounded-lg bg-card">
               <h4 className="font-semibold mb-2">Live Events</h4>
-              <p className="text-sm text-muted-foreground">
-                Attend workshops, webinars, and Q&A sessions
-              </p>
+              <p className="text-sm text-muted-foreground">Attend workshops, webinars, and Q&A sessions</p>
             </div>
           </div>
         </div>

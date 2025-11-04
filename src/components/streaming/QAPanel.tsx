@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowUp, ThumbsUp } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { ArrowUp, ThumbsUp } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface Question {
   id: string;
@@ -22,35 +22,33 @@ interface QAPanelProps {
 }
 
 export const QAPanel = ({ eventId, isEducator }: QAPanelProps) => {
-  const [newQuestion, setNewQuestion] = useState("");
+  const [newQuestion, setNewQuestion] = useState('');
   const [questions, setQuestions] = useState<Question[]>([
     {
-      id: "1",
-      user: "Alex Johnson",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
-      question:
-        "Can you explain the difference between useMemo and useCallback?",
+      id: '1',
+      user: 'Alex Johnson',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex',
+      question: 'Can you explain the difference between useMemo and useCallback?',
       upvotes: 12,
-      timestamp: "5 min ago",
+      timestamp: '5 min ago',
       answered: false,
     },
     {
-      id: "2",
-      user: "Maria Garcia",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Maria",
-      question:
-        "What are the best practices for state management in large React apps?",
+      id: '2',
+      user: 'Maria Garcia',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Maria',
+      question: 'What are the best practices for state management in large React apps?',
       upvotes: 8,
-      timestamp: "8 min ago",
+      timestamp: '8 min ago',
       answered: false,
     },
     {
-      id: "3",
-      user: "John Smith",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
-      question: "How do you handle error boundaries in production?",
+      id: '3',
+      user: 'John Smith',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+      question: 'How do you handle error boundaries in production?',
       upvotes: 5,
-      timestamp: "12 min ago",
+      timestamp: '12 min ago',
       answered: true,
     },
   ]);
@@ -61,17 +59,17 @@ export const QAPanel = ({ eventId, isEducator }: QAPanelProps) => {
 
     const question: Question = {
       id: Date.now().toString(),
-      user: "You",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=You",
+      user: 'You',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=You',
       question: newQuestion,
       upvotes: 0,
-      timestamp: "Just now",
+      timestamp: 'Just now',
       answered: false,
     };
 
     setQuestions([question, ...questions]);
-    setNewQuestion("");
-
+    setNewQuestion('');
+    
     toast({
       title: "Question submitted!",
       description: "The educator will answer questions during the event",
@@ -81,29 +79,23 @@ export const QAPanel = ({ eventId, isEducator }: QAPanelProps) => {
   const handleUpvote = (questionId: string) => {
     if (upvotedQuestions.includes(questionId)) {
       // Remove upvote
-      setUpvotedQuestions(upvotedQuestions.filter((id) => id !== questionId));
-      setQuestions(
-        questions.map((q) =>
-          q.id === questionId ? { ...q, upvotes: q.upvotes - 1 } : q,
-        ),
-      );
+      setUpvotedQuestions(upvotedQuestions.filter(id => id !== questionId));
+      setQuestions(questions.map(q => 
+        q.id === questionId ? { ...q, upvotes: q.upvotes - 1 } : q
+      ));
     } else {
       // Add upvote
       setUpvotedQuestions([...upvotedQuestions, questionId]);
-      setQuestions(
-        questions.map((q) =>
-          q.id === questionId ? { ...q, upvotes: q.upvotes + 1 } : q,
-        ),
-      );
+      setQuestions(questions.map(q => 
+        q.id === questionId ? { ...q, upvotes: q.upvotes + 1 } : q
+      ));
     }
   };
 
   const handleMarkAsAnswered = (questionId: string) => {
-    setQuestions(
-      questions.map((q) =>
-        q.id === questionId ? { ...q, answered: true } : q,
-      ),
-    );
+    setQuestions(questions.map(q => 
+      q.id === questionId ? { ...q, answered: true } : q
+    ));
     toast({
       title: "Marked as answered",
       description: "Question has been marked as answered",
@@ -125,7 +117,7 @@ export const QAPanel = ({ eventId, isEducator }: QAPanelProps) => {
           <span className="text-xs text-muted-foreground">
             {newQuestion.length}/300
           </span>
-          <Button
+          <Button 
             onClick={handleSubmitQuestion}
             disabled={!newQuestion.trim()}
             size="sm"
@@ -150,7 +142,7 @@ export const QAPanel = ({ eventId, isEducator }: QAPanelProps) => {
                 <div
                   key={q.id}
                   className={`p-3 rounded-lg border ${
-                    q.answered ? "bg-muted/50 border-muted" : "bg-card"
+                    q.answered ? 'bg-muted/50 border-muted' : 'bg-card'
                   }`}
                 >
                   <div className="flex gap-3">
@@ -159,9 +151,9 @@ export const QAPanel = ({ eventId, isEducator }: QAPanelProps) => {
                         variant="ghost"
                         size="sm"
                         className={`h-8 w-8 p-0 ${
-                          upvotedQuestions.includes(q.id)
-                            ? "text-primary"
-                            : "text-muted-foreground"
+                          upvotedQuestions.includes(q.id) 
+                            ? 'text-primary' 
+                            : 'text-muted-foreground'
                         }`}
                         onClick={() => handleUpvote(q.id)}
                       >
@@ -187,7 +179,7 @@ export const QAPanel = ({ eventId, isEducator }: QAPanelProps) => {
                           </span>
                         )}
                       </div>
-
+                      
                       <p className="text-sm mb-2">{q.question}</p>
 
                       {isEducator && !q.answered && (

@@ -4,7 +4,7 @@ import { LearningFeed } from "./LearningFeed";
 
 const Explore = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dark:bg-neutral-900">
       <Header />
       <LearningFeed />
       <Footer />

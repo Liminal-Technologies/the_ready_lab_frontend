@@ -1,14 +1,8 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Award, Download, Share2, ExternalLink } from "lucide-react";
-import { format } from "date-fns";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Award, Download, Share2, ExternalLink } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface CertificateDisplayProps {
   certificateId: string;
@@ -18,7 +12,7 @@ interface CertificateDisplayProps {
   serial: string;
   pdfUrl?: string;
   shareUrl?: string;
-  certType: "completion" | "certified";
+  certType: 'completion' | 'certified';
   disclaimerText?: string;
 }
 
@@ -34,7 +28,7 @@ export const CertificateDisplay = ({
 }: CertificateDisplayProps) => {
   const handleDownload = () => {
     if (pdfUrl) {
-      window.open(pdfUrl, "_blank");
+      window.open(pdfUrl, '_blank');
     }
   };
 
@@ -49,7 +43,7 @@ export const CertificateDisplay = ({
     <Card className="relative overflow-hidden">
       {/* Decorative background */}
       <div className="absolute inset-0 bg-primary/5" />
-
+      
       <CardHeader className="relative">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -57,14 +51,11 @@ export const CertificateDisplay = ({
               <Award className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <CardTitle>
-                Certificate of{" "}
-                {certType === "completion" ? "Completion" : "Achievement"}
-              </CardTitle>
+              <CardTitle>Certificate of {certType === 'completion' ? 'Completion' : 'Achievement'}</CardTitle>
               <CardDescription>Serial: {serial}</CardDescription>
             </div>
           </div>
-          {certType === "certified" && (
+          {certType === 'certified' && (
             <Badge variant="default">Certified</Badge>
           )}
         </div>
@@ -72,18 +63,14 @@ export const CertificateDisplay = ({
 
       <CardContent className="relative space-y-4">
         <div className="border-l-4 border-primary pl-4 py-2">
-          <p className="text-sm text-muted-foreground mb-1">
-            This certifies that
-          </p>
+          <p className="text-sm text-muted-foreground mb-1">This certifies that</p>
           <h3 className="text-xl font-bold">{userName}</h3>
-          <p className="text-sm text-muted-foreground mt-2">
-            has successfully completed
-          </p>
+          <p className="text-sm text-muted-foreground mt-2">has successfully completed</p>
           <h4 className="text-lg font-semibold text-primary">{trackTitle}</h4>
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>Issued on {format(new Date(issuedAt), "MMMM d, yyyy")}</span>
+          <span>Issued on {format(new Date(issuedAt), 'MMMM d, yyyy')}</span>
         </div>
 
         {disclaimerText && (
@@ -95,11 +82,7 @@ export const CertificateDisplay = ({
         )}
 
         <div className="flex gap-2 pt-2">
-          <Button
-            onClick={handleDownload}
-            disabled={!pdfUrl}
-            className="flex-1"
-          >
+          <Button onClick={handleDownload} disabled={!pdfUrl} className="flex-1">
             <Download className="h-4 w-4 mr-2" />
             Download PDF
           </Button>

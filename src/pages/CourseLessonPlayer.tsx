@@ -4,46 +4,23 @@ import ReactPlayer from "react-player";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  ChevronDown,
+import { 
+  Play, 
+  Pause, 
+  Volume2, 
+  VolumeX, 
+  Maximize, 
+  ChevronDown, 
   ChevronRight,
   Check,
   Lock,
@@ -57,7 +34,7 @@ import {
   Award,
   ArrowRight,
   Menu,
-  X,
+  X
 } from "lucide-react";
 
 interface Lesson {
@@ -94,52 +71,17 @@ const mockModules: Module[] = [
     id: 1,
     title: "Getting Started",
     lessons: [
-      {
-        id: 1,
-        title: "Introduction",
-        duration: "12:30",
-        completed: true,
-        locked: false,
-        current: false,
-      },
-      {
-        id: 2,
-        title: "Core Concepts",
-        duration: "18:45",
-        completed: false,
-        locked: false,
-        current: true,
-      },
-      {
-        id: 3,
-        title: "Best Practices",
-        duration: "15:20",
-        completed: false,
-        locked: true,
-        current: false,
-      },
+      { id: 1, title: "Introduction", duration: "12:30", completed: true, locked: false, current: false },
+      { id: 2, title: "Core Concepts", duration: "18:45", completed: false, locked: false, current: true },
+      { id: 3, title: "Best Practices", duration: "15:20", completed: false, locked: true, current: false },
     ],
   },
   {
     id: 2,
     title: "Advanced Topics",
     lessons: [
-      {
-        id: 4,
-        title: "Implementation",
-        duration: "25:10",
-        completed: false,
-        locked: true,
-        current: false,
-      },
-      {
-        id: 5,
-        title: "Case Studies",
-        duration: "20:00",
-        completed: false,
-        locked: true,
-        current: false,
-      },
+      { id: 4, title: "Implementation", duration: "25:10", completed: false, locked: true, current: false },
+      { id: 5, title: "Case Studies", duration: "20:00", completed: false, locked: true, current: false },
     ],
   },
 ];
@@ -156,8 +98,7 @@ const initialDiscussionPosts: DiscussionPost[] = [
     author: "Sarah J.",
     authorInitials: "SJ",
     title: "How do I apply this concept to my business?",
-    content:
-      "I run a small e-commerce business and I'm trying to understand how these principles can be applied in my specific context. Can anyone share real-world examples?",
+    content: "I run a small e-commerce business and I'm trying to understand how these principles can be applied in my specific context. Can anyone share real-world examples?",
     timeAgo: "2 days ago",
     replies: 3,
     likes: 5,
@@ -170,8 +111,7 @@ const initialDiscussionPosts: DiscussionPost[] = [
     author: "Mike T.",
     authorInitials: "MT",
     title: "Can you clarify the example at 12:45?",
-    content:
-      "I watched this section multiple times but I'm still confused about the implementation details shown at the 12:45 mark. Could someone break it down?",
+    content: "I watched this section multiple times but I'm still confused about the implementation details shown at the 12:45 mark. Could someone break it down?",
     timeAgo: "5 hours ago",
     replies: 1,
     likes: 2,
@@ -184,8 +124,7 @@ const initialDiscussionPosts: DiscussionPost[] = [
     author: "Emma R.",
     authorInitials: "ER",
     title: "Best practices for implementation?",
-    content:
-      "What are some best practices you'd recommend when implementing this in a production environment? Any common pitfalls to avoid?",
+    content: "What are some best practices you'd recommend when implementing this in a production environment? Any common pitfalls to avoid?",
     timeAgo: "1 day ago",
     replies: 4,
     likes: 8,
@@ -198,8 +137,7 @@ const initialDiscussionPosts: DiscussionPost[] = [
     author: "James K.",
     authorInitials: "JK",
     title: "Additional resources on this topic?",
-    content:
-      "Does anyone have recommendations for books, articles, or other courses that complement what we're learning here? I'd love to dive deeper.",
+    content: "Does anyone have recommendations for books, articles, or other courses that complement what we're learning here? I'd love to dive deeper.",
     timeAgo: "3 days ago",
     replies: 2,
     likes: 4,
@@ -213,7 +151,7 @@ export default function CourseLessonPlayer() {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
   const playerRef = useRef<any>(null);
-
+  
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
@@ -226,37 +164,32 @@ export default function CourseLessonPlayer() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("overview");
-
+  
   // Discussion state
-  const [discussionPosts, setDiscussionPosts] = useState<DiscussionPost[]>(
-    initialDiscussionPosts,
-  );
+  const [discussionPosts, setDiscussionPosts] = useState<DiscussionPost[]>(initialDiscussionPosts);
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
   const [newQuestionTitle, setNewQuestionTitle] = useState("");
   const [newQuestionContent, setNewQuestionContent] = useState("");
   const [expandedPosts, setExpandedPosts] = useState<number[]>([]);
-
+  
   // Progress tracking state
   const [completedLessons, setCompletedLessons] = useState<number[]>([1]); // Lesson 1 is already complete
   const [currentLessonComplete, setCurrentLessonComplete] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-
-  const totalLessons = mockModules.reduce(
-    (acc, module) => acc + module.lessons.length,
-    0,
-  );
+  
+  const totalLessons = mockModules.reduce((acc, module) => acc + module.lessons.length, 0);
   const completedCount = completedLessons.length;
   const progressPercentage = Math.round((completedCount / totalLessons) * 100);
-
+  
   const currentLesson = mockModules
-    .flatMap((m) => m.lessons)
-    .find((l) => l.current);
+    .flatMap(m => m.lessons)
+    .find(l => l.current);
   const currentLessonId = currentLesson?.id || 2;
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const handleLessonClick = (lessonId: number, locked: boolean) => {
@@ -273,10 +206,10 @@ export default function CourseLessonPlayer() {
   };
 
   const toggleModule = (moduleId: number) => {
-    setOpenModules((prev) =>
-      prev.includes(moduleId)
-        ? prev.filter((id) => id !== moduleId)
-        : [...prev, moduleId],
+    setOpenModules(prev => 
+      prev.includes(moduleId) 
+        ? prev.filter(id => id !== moduleId)
+        : [...prev, moduleId]
     );
   };
 
@@ -319,37 +252,33 @@ export default function CourseLessonPlayer() {
   };
 
   const handleLikePost = (postId: number) => {
-    setDiscussionPosts((posts) =>
-      posts.map((post) =>
+    setDiscussionPosts(posts =>
+      posts.map(post =>
         post.id === postId
-          ? {
-              ...post,
-              isLiked: !post.isLiked,
-              likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-            }
-          : post,
-      ),
+          ? { ...post, isLiked: !post.isLiked, likes: post.isLiked ? post.likes - 1 : post.likes + 1 }
+          : post
+      )
     );
   };
 
   const handleReplyClick = (postId: number) => {
-    setDiscussionPosts((posts) =>
-      posts.map((post) =>
-        post.id === postId ? { ...post, showReplies: !post.showReplies } : post,
-      ),
+    setDiscussionPosts(posts =>
+      posts.map(post =>
+        post.id === postId ? { ...post, showReplies: !post.showReplies } : post
+      )
     );
   };
 
   const handleReplySubmit = (postId: number) => {
-    const post = discussionPosts.find((p) => p.id === postId);
+    const post = discussionPosts.find(p => p.id === postId);
     if (!post?.replyText?.trim()) return;
 
-    setDiscussionPosts((posts) =>
-      posts.map((p) =>
+    setDiscussionPosts(posts =>
+      posts.map(p =>
         p.id === postId
           ? { ...p, replies: p.replies + 1, replyText: "", showReplies: false }
-          : p,
-      ),
+          : p
+      )
     );
 
     toast.success("Reply Posted! 💬", {
@@ -358,18 +287,18 @@ export default function CourseLessonPlayer() {
   };
 
   const handleReplyTextChange = (postId: number, text: string) => {
-    setDiscussionPosts((posts) =>
-      posts.map((post) =>
-        post.id === postId ? { ...post, replyText: text } : post,
-      ),
+    setDiscussionPosts(posts =>
+      posts.map(post =>
+        post.id === postId ? { ...post, replyText: text } : post
+      )
     );
   };
 
   const toggleExpandPost = (postId: number) => {
-    setExpandedPosts((prev) =>
+    setExpandedPosts(prev =>
       prev.includes(postId)
-        ? prev.filter((id) => id !== postId)
-        : [...prev, postId],
+        ? prev.filter(id => id !== postId)
+        : [...prev, postId]
     );
   };
 
@@ -377,7 +306,7 @@ export default function CourseLessonPlayer() {
     if (!completedLessons.includes(currentLessonId)) {
       setCompletedLessons([...completedLessons, currentLessonId]);
       setCurrentLessonComplete(true);
-
+      
       toast.success("Lesson completed! 🎉", {
         description: "Great job! You're making excellent progress",
       });
@@ -390,10 +319,10 @@ export default function CourseLessonPlayer() {
   };
 
   const handleNextLesson = () => {
-    const allLessons = mockModules.flatMap((m) => m.lessons);
-    const currentIndex = allLessons.findIndex((l) => l.id === currentLessonId);
+    const allLessons = mockModules.flatMap(m => m.lessons);
+    const currentIndex = allLessons.findIndex(l => l.id === currentLessonId);
     const nextLesson = allLessons[currentIndex + 1];
-
+    
     if (nextLesson) {
       toast.success("Moving to next lesson", {
         description: nextLesson.title,
@@ -408,18 +337,14 @@ export default function CourseLessonPlayer() {
   // Auto-complete when video reaches 95%
   const handleProgress = (state: any) => {
     setPlayed(state.played);
-
-    if (
-      state.played >= 0.95 &&
-      !currentLessonComplete &&
-      !completedLessons.includes(currentLessonId)
-    ) {
+    
+    if (state.played >= 0.95 && !currentLessonComplete && !completedLessons.includes(currentLessonId)) {
       handleMarkComplete();
     }
   };
 
-  const allLessons = mockModules.flatMap((m) => m.lessons);
-  const currentIndex = allLessons.findIndex((l) => l.id === currentLessonId);
+  const allLessons = mockModules.flatMap(m => m.lessons);
+  const currentIndex = allLessons.findIndex(l => l.id === currentLessonId);
   const nextLesson = allLessons[currentIndex + 1];
 
   return (
@@ -428,8 +353,8 @@ export default function CourseLessonPlayer() {
       <div className="border-b bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
+            <Button 
+              variant="ghost" 
               size="sm"
               onClick={() => navigate(`/courses/${courseId}`)}
             >
@@ -437,7 +362,7 @@ export default function CourseLessonPlayer() {
               <span className="hidden sm:inline">Back to Course</span>
               <span className="sm:hidden">Back</span>
             </Button>
-
+            
             {/* Mobile Menu Toggle */}
             <Sheet open={mobileSheetOpen} onOpenChange={setMobileSheetOpen}>
               <SheetTrigger asChild>
@@ -446,10 +371,7 @@ export default function CourseLessonPlayer() {
                   Lessons
                 </Button>
               </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="w-[300px] sm:w-[400px] overflow-y-auto"
-              >
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle>Course Content</SheetTitle>
                 </SheetHeader>
@@ -476,9 +398,7 @@ export default function CourseLessonPlayer() {
                         {module.lessons.map((lesson) => (
                           <button
                             key={lesson.id}
-                            onClick={() =>
-                              handleLessonClick(lesson.id, lesson.locked)
-                            }
+                            onClick={() => handleLessonClick(lesson.id, lesson.locked)}
                             className={`w-full text-left p-3 rounded-lg transition-colors ${
                               lesson.current
                                 ? "bg-primary text-primary-foreground"
@@ -494,11 +414,12 @@ export default function CourseLessonPlayer() {
                                 <span className="text-sm">{lesson.title}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                {(lesson.completed ||
-                                  completedLessons.includes(lesson.id)) && (
+                                {(lesson.completed || completedLessons.includes(lesson.id)) && (
                                   <Check className="h-4 w-4 text-green-500" />
                                 )}
-                                {lesson.locked && <Lock className="h-4 w-4" />}
+                                {lesson.locked && (
+                                  <Lock className="h-4 w-4" />
+                                )}
                               </div>
                             </div>
                             <div className="text-xs text-muted-foreground mt-1">
@@ -525,21 +446,20 @@ export default function CourseLessonPlayer() {
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">
-                    {completedCount} of {totalLessons} lessons complete (
-                    {progressPercentage}%)
+                    {completedCount} of {totalLessons} lessons complete ({progressPercentage}%)
                   </span>
                   <span className="text-sm text-muted-foreground">
                     Keep going! 🚀
                   </span>
                 </div>
-                <Progress
-                  value={progressPercentage}
+                <Progress 
+                  value={progressPercentage} 
                   className="h-2 bg-muted [&>div]:bg-primary"
                 />
               </div>
 
               <h1 className="text-2xl font-bold mb-4">Core Concepts</h1>
-
+              
               {/* Video Player */}
               <div className="relative bg-black rounded-lg overflow-hidden aspect-video mb-4">
                 <ReactPlayer
@@ -579,11 +499,7 @@ export default function CourseLessonPlayer() {
                   size="icon"
                   onClick={() => setPlaying(!playing)}
                 >
-                  {playing ? (
-                    <Pause className="h-4 w-4" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )}
+                  {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                 </Button>
 
                 <div className="flex items-center gap-2">
@@ -592,11 +508,7 @@ export default function CourseLessonPlayer() {
                     size="icon"
                     onClick={() => setMuted(!muted)}
                   >
-                    {muted ? (
-                      <VolumeX className="h-4 w-4" />
-                    ) : (
-                      <Volume2 className="h-4 w-4" />
-                    )}
+                    {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                   </Button>
                   <Slider
                     value={[volume * 100]}
@@ -607,10 +519,7 @@ export default function CourseLessonPlayer() {
                   />
                 </div>
 
-                <Select
-                  value={playbackRate.toString()}
-                  onValueChange={(val) => setPlaybackRate(parseFloat(val))}
-                >
+                <Select value={playbackRate.toString()} onValueChange={(val) => setPlaybackRate(parseFloat(val))}>
                   <SelectTrigger className="w-24">
                     <SelectValue />
                   </SelectTrigger>
@@ -642,19 +551,13 @@ export default function CourseLessonPlayer() {
 
               {/* Completion and Next Lesson Buttons */}
               <div className="mt-4 flex gap-3">
-                {!currentLessonComplete &&
-                  !completedLessons.includes(currentLessonId) && (
-                    <Button
-                      onClick={handleMarkComplete}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      <CheckCircle2 className="mr-2 h-4 w-4" />
-                      Mark Complete
-                    </Button>
-                  )}
-                {(currentLessonComplete ||
-                  completedLessons.includes(currentLessonId)) && (
+                {!currentLessonComplete && !completedLessons.includes(currentLessonId) && (
+                  <Button onClick={handleMarkComplete} variant="outline" className="flex-1">
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    Mark Complete
+                  </Button>
+                )}
+                {(currentLessonComplete || completedLessons.includes(currentLessonId)) && (
                   <>
                     <div className="flex items-center gap-2 text-green-600 font-medium">
                       <CheckCircle2 className="h-5 w-5" />
@@ -679,7 +582,7 @@ export default function CourseLessonPlayer() {
                   <TabsTrigger value="notes">Notes</TabsTrigger>
                   <TabsTrigger value="discussion">Discussion</TabsTrigger>
                 </TabsList>
-
+                
                 {/* Mobile Dropdown */}
                 <div className="md:hidden mb-4">
                   <Select value={selectedTab} onValueChange={setSelectedTab}>
@@ -698,11 +601,9 @@ export default function CourseLessonPlayer() {
                 <TabsContent value="overview" className="space-y-4">
                   <h3 className="text-lg font-semibold">Lesson Description</h3>
                   <p className="text-muted-foreground">
-                    In this lesson, we'll dive deep into the core concepts that
-                    form the foundation of our subject matter. You'll learn
-                    about the fundamental principles, best practices, and
-                    real-world applications that will set you up for success in
-                    the following modules.
+                    In this lesson, we'll dive deep into the core concepts that form the foundation 
+                    of our subject matter. You'll learn about the fundamental principles, best practices, 
+                    and real-world applications that will set you up for success in the following modules.
                   </p>
                   <div className="space-y-2">
                     <h4 className="font-semibold">What you'll learn:</h4>
@@ -716,20 +617,13 @@ export default function CourseLessonPlayer() {
                 </TabsContent>
 
                 <TabsContent value="resources" className="space-y-4">
-                  <h3 className="text-lg font-semibold">
-                    Downloadable Resources
-                  </h3>
+                  <h3 className="text-lg font-semibold">Downloadable Resources</h3>
                   <div className="space-y-2">
                     {mockResources.map((resource) => (
-                      <Card
-                        key={resource.id}
-                        className="p-4 flex items-center justify-between hover:bg-accent transition-colors cursor-pointer"
-                      >
+                      <Card key={resource.id} className="p-4 flex items-center justify-between hover:bg-accent transition-colors cursor-pointer">
                         <div>
                           <p className="font-medium">{resource.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {resource.size}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{resource.size}</p>
                         </div>
                         <Button variant="ghost" size="icon">
                           <Download className="h-4 w-4" />
@@ -753,10 +647,7 @@ export default function CourseLessonPlayer() {
                 <TabsContent value="discussion" className="space-y-4">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold">Discussion</h3>
-                    <Dialog
-                      open={questionModalOpen}
-                      onOpenChange={setQuestionModalOpen}
-                    >
+                    <Dialog open={questionModalOpen} onOpenChange={setQuestionModalOpen}>
                       <DialogTrigger asChild>
                         <Button>
                           <MessageSquare className="mr-2 h-4 w-4" />
@@ -769,35 +660,24 @@ export default function CourseLessonPlayer() {
                         </DialogHeader>
                         <div className="space-y-4 mt-4">
                           <div>
-                            <label className="text-sm font-medium mb-2 block">
-                              Question Title
-                            </label>
+                            <label className="text-sm font-medium mb-2 block">Question Title</label>
                             <Input
                               placeholder="What's your question about?"
                               value={newQuestionTitle}
-                              onChange={(e) =>
-                                setNewQuestionTitle(e.target.value)
-                              }
+                              onChange={(e) => setNewQuestionTitle(e.target.value)}
                             />
                           </div>
                           <div>
-                            <label className="text-sm font-medium mb-2 block">
-                              Question Details
-                            </label>
+                            <label className="text-sm font-medium mb-2 block">Question Details</label>
                             <Textarea
                               placeholder="Provide more context about your question..."
                               value={newQuestionContent}
-                              onChange={(e) =>
-                                setNewQuestionContent(e.target.value)
-                              }
+                              onChange={(e) => setNewQuestionContent(e.target.value)}
                               className="min-h-[150px]"
                             />
                           </div>
                           <div className="flex justify-end gap-2">
-                            <Button
-                              variant="outline"
-                              onClick={() => setQuestionModalOpen(false)}
-                            >
+                            <Button variant="outline" onClick={() => setQuestionModalOpen(false)}>
                               Cancel
                             </Button>
                             <Button onClick={handlePostQuestion}>
@@ -820,19 +700,12 @@ export default function CourseLessonPlayer() {
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold">
-                                {post.author}
-                              </span>
-                              <span className="text-sm text-muted-foreground">
-                                • {post.timeAgo}
-                              </span>
+                              <span className="font-semibold">{post.author}</span>
+                              <span className="text-sm text-muted-foreground">• {post.timeAgo}</span>
                             </div>
-                            <h4 className="font-bold text-base mb-2">
-                              {post.title}
-                            </h4>
+                            <h4 className="font-bold text-base mb-2">{post.title}</h4>
                             <p className="text-muted-foreground text-sm mb-3">
-                              {expandedPosts.includes(post.id) ||
-                              post.content.length < 150
+                              {expandedPosts.includes(post.id) || post.content.length < 150
                                 ? post.content
                                 : `${post.content.substring(0, 150)}...`}
                               {post.content.length > 150 && (
@@ -840,35 +713,29 @@ export default function CourseLessonPlayer() {
                                   onClick={() => toggleExpandPost(post.id)}
                                   className="text-primary hover:underline ml-1"
                                 >
-                                  {expandedPosts.includes(post.id)
-                                    ? "Show less"
-                                    : "Read more"}
+                                  {expandedPosts.includes(post.id) ? "Show less" : "Read more"}
                                 </button>
                               )}
                             </p>
-
+                            
                             <div className="flex items-center gap-4 mb-3">
                               <button
                                 onClick={() => handleReplyClick(post.id)}
                                 className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
                               >
                                 <MessageSquare className="h-4 w-4" />
-                                {post.replies}{" "}
-                                {post.replies === 1 ? "reply" : "replies"}
+                                {post.replies} {post.replies === 1 ? "reply" : "replies"}
                               </button>
                               <button
                                 onClick={() => handleLikePost(post.id)}
                                 className={`flex items-center gap-1 text-sm transition-colors ${
-                                  post.isLiked
-                                    ? "text-primary"
+                                  post.isLiked 
+                                    ? "text-primary" 
                                     : "text-muted-foreground hover:text-foreground"
                                 }`}
                               >
-                                <ThumbsUp
-                                  className={`h-4 w-4 ${post.isLiked ? "fill-current" : ""}`}
-                                />
-                                {post.likes}{" "}
-                                {post.likes === 1 ? "like" : "likes"}
+                                <ThumbsUp className={`h-4 w-4 ${post.isLiked ? "fill-current" : ""}`} />
+                                {post.likes} {post.likes === 1 ? "like" : "likes"}
                               </button>
                             </div>
 
@@ -884,20 +751,13 @@ export default function CourseLessonPlayer() {
                                     <Textarea
                                       placeholder="Write your reply..."
                                       value={post.replyText || ""}
-                                      onChange={(e) =>
-                                        handleReplyTextChange(
-                                          post.id,
-                                          e.target.value,
-                                        )
-                                      }
+                                      onChange={(e) => handleReplyTextChange(post.id, e.target.value)}
                                       className="min-h-[80px] mb-2"
                                     />
                                     <div className="flex gap-2">
                                       <Button
                                         size="sm"
-                                        onClick={() =>
-                                          handleReplySubmit(post.id)
-                                        }
+                                        onClick={() => handleReplySubmit(post.id)}
                                       >
                                         <Send className="h-4 w-4 mr-1" />
                                         Reply
@@ -905,9 +765,7 @@ export default function CourseLessonPlayer() {
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() =>
-                                          handleReplyClick(post.id)
-                                        }
+                                        onClick={() => handleReplyClick(post.id)}
                                       >
                                         Cancel
                                       </Button>
@@ -956,9 +814,7 @@ export default function CourseLessonPlayer() {
                       {module.lessons.map((lesson) => (
                         <button
                           key={lesson.id}
-                          onClick={() =>
-                            handleLessonClick(lesson.id, lesson.locked)
-                          }
+                          onClick={() => handleLessonClick(lesson.id, lesson.locked)}
                           className={`w-full text-left p-3 rounded-lg transition-colors ${
                             lesson.current
                               ? "bg-primary text-primary-foreground"
@@ -974,11 +830,12 @@ export default function CourseLessonPlayer() {
                               <span className="text-sm">{lesson.title}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              {(lesson.completed ||
-                                completedLessons.includes(lesson.id)) && (
+                              {(lesson.completed || completedLessons.includes(lesson.id)) && (
                                 <Check className="h-4 w-4 text-green-500" />
                               )}
-                              {lesson.locked && <Lock className="h-4 w-4" />}
+                              {lesson.locked && (
+                                <Lock className="h-4 w-4" />
+                              )}
                             </div>
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">
@@ -996,16 +853,14 @@ export default function CourseLessonPlayer() {
       </div>
 
       {/* Floating Next Lesson Button (Mobile) */}
-      {nextLesson &&
-        (currentLessonComplete ||
-          completedLessons.includes(currentLessonId)) && (
-          <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-background border-t z-20">
-            <Button onClick={handleNextLesson} className="w-full" size="lg">
-              Next: {nextLesson.title}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        )}
+      {nextLesson && (currentLessonComplete || completedLessons.includes(currentLessonId)) && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-background border-t z-20">
+          <Button onClick={handleNextLesson} className="w-full" size="lg">
+            Next: {nextLesson.title}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Celebration Modal */}
       <Dialog open={showCelebration} onOpenChange={setShowCelebration}>
