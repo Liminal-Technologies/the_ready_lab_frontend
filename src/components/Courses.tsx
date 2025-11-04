@@ -244,14 +244,17 @@ const Courses = () => {
         <div className="bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600 rounded-3xl p-8 shadow-xl text-center">
           <Button
             size="lg"
-            className="text-lg px-8 py-6 rounded-full font-bold"
+            className="text-base md:text-lg px-6 md:px-8 py-5 md:py-6 rounded-full font-bold w-full md:w-auto"
             style={{ backgroundColor: '#FDB022', color: '#000' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
             data-testid="button-start-certification"
           >
-            <Award className="h-6 w-6 mr-2" />
-            {t('courses.startCertification')}
+            <Award className="h-5 w-5 md:h-6 md:w-6 mr-2" />
+            {/* Mobile: Short text */}
+            <span className="md:hidden">Start Certification</span>
+            {/* Desktop: Full text */}
+            <span className="hidden md:inline">{t('courses.startCertification')}</span>
           </Button>
           <p className="text-sm text-black/70 dark:text-white/80 mt-4 font-medium">
             {t('courses.paymentPlans')}
