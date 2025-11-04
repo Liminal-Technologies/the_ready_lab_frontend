@@ -46,6 +46,7 @@ import partnershipImage from "../../attached_assets/stock_images/partnership_han
 import financialImage from "../../attached_assets/stock_images/financial_planning_a_96357d65.jpg";
 import ctaBackgroundImage from "../../attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 const allCourses = [
   {
@@ -477,16 +478,18 @@ const CourseBrowse = () => {
   );
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900">
-      {/* Main Content Container with Rounded Top */}
-      <div className="bg-white dark:bg-neutral-800 rounded-t-[2rem] lg:rounded-t-[3rem] shadow-lg">
-        <div className="container mx-auto px-4 lg:px-8 max-w-7xl py-8">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-            <Link to="/" className="hover:text-foreground" data-testid="link-home">Home</Link>
-            <ChevronRight className="h-4 w-4" />
-            <span className="text-foreground font-medium">Courses & More</span>
-          </div>
+    <>
+      <Header />
+      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 pt-20">
+        {/* Main Content Container with Rounded Top */}
+        <div className="bg-white dark:bg-neutral-800 rounded-t-[2rem] lg:rounded-t-[3rem] shadow-lg">
+          <div className="container mx-auto px-4 lg:px-8 max-w-7xl py-8">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
+              <Link to="/" className="hover:text-foreground" data-testid="link-home">Home</Link>
+              <ChevronRight className="h-4 w-4" />
+              <span className="text-foreground font-medium">Courses & More</span>
+            </div>
 
           {/* Search Bar */}
           <div className="mb-8">
@@ -944,7 +947,8 @@ const CourseBrowse = () => {
 
       {/* Footer */}
       <Footer />
-    </div>
+      </div>
+    </>
   );
 };
 

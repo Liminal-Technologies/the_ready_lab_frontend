@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,8 @@ import {
   Loader2,
   ArrowRight,
   BookOpen,
-  Target
+  Target,
+  ChevronRight
 } from "lucide-react";
 
 // Mock course data
@@ -167,6 +168,17 @@ export default function CourseDetail() {
       
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+          {/* Breadcrumb */}
+          <div className="max-w-6xl mx-auto mb-6">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Link to="/" className="hover:text-foreground" data-testid="link-home">Home</Link>
+              <ChevronRight className="h-4 w-4" />
+              <Link to="/browse" className="hover:text-foreground" data-testid="link-browse">Courses</Link>
+              <ChevronRight className="h-4 w-4" />
+              <span className="text-foreground font-medium">{mockCourse.title}</span>
+            </div>
+          </div>
+
           {/* Hero Section */}
           <div className="max-w-6xl mx-auto mb-12">
             <div className="grid lg:grid-cols-3 gap-8">
