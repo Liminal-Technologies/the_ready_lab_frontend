@@ -10,7 +10,9 @@ A comprehensive educational learning management system (LMS) with course managem
 - **Payments**: Stripe (Connect, Subscriptions, Products)
 - **Development**: Full-stack monorepo with hot reload
 
-## Recent Migration (Nov 3, 2025)
+## Recent Changes
+
+### Migration to Replit (Nov 3, 2025)
 Successfully migrated from Lovable/Supabase to Replit full-stack environment:
 - ✅ Converted 25+ database tables from Supabase to Drizzle ORM
 - ✅ Created Express backend with REST API routes
@@ -18,6 +20,17 @@ Successfully migrated from Lovable/Supabase to Replit full-stack environment:
 - ✅ Configured Vite dev server integration
 - ✅ Basic Stripe payment routes (keys pending)
 - ⚠️ Frontend still uses Supabase client - needs migration to fetch API calls
+
+### Student Journey Front-End Demo (Nov 4, 2025)
+Completed 6 front-end enhancements for clickable demo (PRD compliant):
+- ✅ **Improved Onboarding Flow** - Language selection + optional profile (src/pages/Onboarding.tsx)
+- ✅ **Welcome Tour** - 5-step guided overlay for new users (src/components/onboarding/WelcomeTour.tsx)
+- ✅ **Browse Without Login** - Verified courses browseable without auth
+- ✅ **BNPL Payment Indicators** - Klarna/Afterpay/Affirm badges (src/pages/CourseDetail.tsx)
+- ✅ **Certificate Generation Modal** - Animated progress + LinkedIn share (src/components/certificates/CertificateGenerationModal.tsx)
+- ✅ **Community Join Prompt** - Post-certification banner (src/pages/MyCertificates.tsx)
+
+All components use localStorage + mock data (no backend dependencies). See STUDENT_JOURNEY_COMPLETION_REPORT.md for full details.
 
 ## Database Schema
 Located in `shared/schema.ts` with these main tables:
