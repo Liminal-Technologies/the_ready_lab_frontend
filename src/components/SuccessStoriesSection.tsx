@@ -9,8 +9,8 @@ const SuccessStoriesSection = () => {
         {/* Hero Row */}
         <div className="relative mb-16 lg:mb-20">
           {/* Ghost Text Background */}
-          <div className="absolute left-0 top-0 opacity-[0.03] dark:opacity-[0.02] select-none pointer-events-none overflow-hidden">
-            <h2 className="text-[8rem] md:text-[12rem] lg:text-[16rem] font-black leading-none whitespace-nowrap">
+          <div className="absolute left-0 top-0 opacity-[0.05] dark:opacity-[0.02] select-none pointer-events-none overflow-hidden">
+            <h2 className="text-[8rem] md:text-[12rem] lg:text-[16rem] font-black leading-none whitespace-nowrap text-neutral-900 dark:text-white">
               REAL RESULTS
             </h2>
           </div>
@@ -21,13 +21,13 @@ const SuccessStoriesSection = () => {
             <div>
               {/* Small Label */}
               <div className="mb-6">
-                <span className="inline-block px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-sm font-semibold">
+                <span className="inline-block px-5 py-2.5 bg-purple-600 dark:bg-purple-900/30 text-white dark:text-purple-400 rounded-full text-sm font-bold shadow-sm">
                   Success stories
                 </span>
               </div>
               
               {/* Large Headline */}
-              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-black dark:text-white leading-tight">
+              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-neutral-900 dark:text-white leading-tight">
                 Real Results from Real People
               </h2>
             </div>
