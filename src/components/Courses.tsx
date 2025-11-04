@@ -116,7 +116,7 @@ const Courses = () => {
   return (
     <section 
       id="courses" 
-      className="py-20 lg:py-32 bg-[#FEF5ED] dark:bg-neutral-900 transition-colors duration-200"
+      className="py-20 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200"
     >
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Header */}
@@ -134,9 +134,10 @@ const Courses = () => {
           </p>
         </div>
 
-        {/* Uniform Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
-          {courses.map((course) => (
+        {/* Course Cards with Soft Background Panel */}
+        <div className="bg-orange-50 dark:bg-orange-950/20 rounded-[3rem] p-8 lg:p-12 mb-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {courses.map((course) => (
             <div
               key={course.id}
               className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col"
@@ -236,6 +237,7 @@ const Courses = () => {
               </div>
             </div>
           ))}
+          </div>
         </div>
 
         {/* Bottom CTA Bar */}
