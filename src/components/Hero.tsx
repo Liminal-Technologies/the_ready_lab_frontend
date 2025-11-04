@@ -28,7 +28,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="min-h-screen relative overflow-hidden flex items-center justify-center">
+    <section className="min-h-screen relative overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <img 
@@ -39,24 +39,8 @@ const Hero = () => {
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-20 relative z-10">
-        {/* Massive Headline */}
-        <div className="max-w-4xl">
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-tight mb-8">
-            <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-              Prepare &{" "}
-            </span>
-            <br />
-            <span style={{ color: '#FDB022', textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-              Get Funded
-            </span>
-          </h1>
-        </div>
-      </div>
-
       {/* Top-Right Floating Content Box */}
-      <div className="absolute bottom-32 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
+      <div className="absolute top-16 md:top-20 lg:top-24 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
         <div className="rounded-2xl p-6">
           <p className="text-white mb-6 leading-relaxed" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
@@ -68,12 +52,14 @@ const Hero = () => {
               style={{ backgroundColor: '#FDB022', color: '#000' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
+              data-testid="button-start-journey"
             >
               Start Your Journey
             </Button>
             <Button 
               onClick={handleWatchDemo}
               className="w-full rounded-full border-2 bg-transparent hover:bg-white/10 font-semibold text-white border-white/60"
+              data-testid="button-watch-demo"
             >
               Watch Demo
             </Button>
@@ -81,8 +67,30 @@ const Hero = () => {
         </div>
       </div>
 
+      {/* Mobile Top Content */}
+      <div className="absolute top-20 left-0 right-0 z-20 px-4 lg:hidden">
+        <div className="container mx-auto max-w-md">
+          <p className="text-white mb-4 text-center leading-relaxed" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+            Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
+          </p>
+        </div>
+      </div>
+
+      {/* Massive Headline - Bottom Left */}
+      <div className="absolute bottom-32 md:bottom-40 left-4 md:left-8 lg:left-16 z-10 max-w-4xl">
+        <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-tight">
+          <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+            Prepare &{" "}
+          </span>
+          <br />
+          <span style={{ color: '#FDB022', textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+            Get Funded
+          </span>
+        </h1>
+      </div>
+
       {/* Mobile CTA Buttons */}
-      <div className="absolute bottom-24 left-0 right-0 z-20 px-4 lg:hidden">
+      <div className="absolute bottom-16 left-0 right-0 z-20 px-4 lg:hidden">
         <div className="container mx-auto max-w-md">
           <div className="flex flex-col gap-3">
             <Button 
@@ -92,6 +100,7 @@ const Hero = () => {
               style={{ backgroundColor: '#FDB022', color: '#000' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
+              data-testid="button-start-journey-mobile"
             >
               Start Your Journey
             </Button>
@@ -99,6 +108,7 @@ const Hero = () => {
               onClick={handleWatchDemo}
               size="lg"
               className="w-full rounded-full border-2 bg-transparent hover:bg-white/10 font-semibold text-white border-white/60"
+              data-testid="button-watch-demo-mobile"
             >
               Watch Demo
             </Button>
