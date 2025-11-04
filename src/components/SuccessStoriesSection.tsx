@@ -24,61 +24,78 @@ const SuccessStoriesSection = () => {
           
           {/* Large Headline */}
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-6 relative">
-            <span className="text-black dark:text-white">Real Results from Real People</span>
+            <span className="text-black dark:text-white">Real Results from </span>
+            <span className="text-purple-600 dark:text-purple-500">Real People</span>
           </h2>
+          
+          {/* Supporting Text with 95% Stat */}
+          <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-8">
+            <p className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-300 max-w-2xl">
+              Our students achieve remarkable success. Join thousands of entrepreneurs who've transformed their ideas into thriving businesses.
+            </p>
+            <div className="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-2xl p-6 shadow-lg flex-shrink-0">
+              <div className="text-white">
+                <p className="text-5xl font-black mb-2">95%</p>
+                <p className="text-lg font-bold">Success Rate</p>
+              </div>
+            </div>
+          </div>
         </div>
         
         {/* Large Rounded Light Purple Panel */}
-        <div className="bg-purple-50 dark:bg-purple-950/20 rounded-[3rem] p-8 lg:p-12">
+        <div className="bg-purple-100 dark:bg-purple-950/30 rounded-[3rem] p-8 lg:p-12">
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
             {/* Sarah M. Card */}
             <div 
-              className="relative group overflow-hidden rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               data-testid="testimonial-sarah"
             >
-              <img 
-                src={nonprofitImage} 
-                alt="Sarah M. nonprofit founder" 
-                className="w-full h-80 lg:h-96 object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <p className="text-xl lg:text-2xl font-bold mb-1">Sarah M.</p>
-                <p className="text-base lg:text-lg">Raised $500K for nonprofit</p>
+              <div className="overflow-hidden">
+                <img 
+                  src={nonprofitImage} 
+                  alt="Sarah M. nonprofit founder" 
+                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-6">
+                <p className="text-xl lg:text-2xl font-bold mb-2 text-neutral-900 dark:text-white">Sarah M.</p>
+                <p className="text-base lg:text-lg text-neutral-600 dark:text-neutral-300">Raised $500K for nonprofit</p>
               </div>
             </div>
             
             {/* Tech Startup Card */}
             <div 
-              className="relative group overflow-hidden rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               data-testid="testimonial-tech"
             >
-              <img 
-                src={successImage} 
-                alt="Tech startup team success" 
-                className="w-full h-80 lg:h-96 object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <p className="text-xl lg:text-2xl font-bold mb-1">Tech Startup</p>
-                <p className="text-base lg:text-lg">$2M Series A secured</p>
+              <div className="overflow-hidden">
+                <img 
+                  src={successImage} 
+                  alt="Tech startup team success" 
+                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-6">
+                <p className="text-xl lg:text-2xl font-bold mb-2 text-neutral-900 dark:text-white">Tech Startup</p>
+                <p className="text-base lg:text-lg text-neutral-600 dark:text-neutral-300">$2M Series A secured</p>
               </div>
             </div>
             
             {/* Maria L. Card */}
             <div 
-              className="relative group overflow-hidden rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               data-testid="testimonial-maria"
             >
-              <img 
-                src={educatorImage} 
-                alt="Maria L. social enterprise" 
-                className="w-full h-80 lg:h-96 object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <p className="text-xl lg:text-2xl font-bold mb-1">Maria L.</p>
-                <p className="text-base lg:text-lg">Built $1M social enterprise</p>
+              <div className="overflow-hidden">
+                <img 
+                  src={educatorImage} 
+                  alt="Maria L. social enterprise" 
+                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-6">
+                <p className="text-xl lg:text-2xl font-bold mb-2 text-neutral-900 dark:text-white">Maria L.</p>
+                <p className="text-base lg:text-lg text-neutral-600 dark:text-neutral-300">Built $1M social enterprise</p>
               </div>
             </div>
           </div>
