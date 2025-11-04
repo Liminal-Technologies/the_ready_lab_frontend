@@ -71,40 +71,98 @@ const Features = () => {
 
   return (
     <>
-    <section id="about" className="py-16 lg:py-24 bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-800 transition-colors duration-200">
-      <div className="container mx-auto px-4">
-        {/* Why Choose The Ready Lab Section */}
-        <div className="text-center mb-12 animate-fade-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
-            {t('features.title')}
-          </h2>
-          <p className="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
-            {t('features.subtitle')}
-          </p>
+    <section id="about" className="py-24 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200">
+      <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
+        {/* Hero Header with Ghost Text */}
+        <div className="relative mb-20 lg:mb-24">
+          {/* Ghost Text Background */}
+          <div className="absolute left-0 top-0 opacity-[0.03] dark:opacity-[0.02] select-none pointer-events-none overflow-hidden">
+            <h2 className="text-[8rem] md:text-[12rem] lg:text-[16rem] font-black leading-none whitespace-nowrap">
+              WHY CHOOSE
+            </h2>
+          </div>
+          
+          {/* Main Content */}
+          <div className="relative grid lg:grid-cols-2 gap-8 lg:gap-16 items-center pt-8 lg:pt-12">
+            {/* Left: Headline */}
+            <div>
+              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-black dark:text-white leading-tight mb-4">
+                {t('features.title')}
+              </h2>
+            </div>
+            
+            {/* Right: Supporting Text */}
+            <div>
+              <p className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                {t('features.subtitle')}
+              </p>
+            </div>
+          </div>
         </div>
         
+        {/* Colorful Card Mosaic */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {features.map((feature, index) => (
-            <Card 
-              key={index} 
-              className="group transition-all duration-200 animate-scale-in overflow-hidden"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <CardHeader>
-                <div className="w-full h-48 mb-4 overflow-hidden rounded-lg">
+          {features.map((feature, index) => {
+            // Define vibrant gradient backgrounds for each card
+            const gradients = [
+              'bg-gradient-to-br from-blue-500 to-blue-600',
+              'bg-gradient-to-br from-orange-400 to-orange-500',
+              'bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700',
+              'bg-gradient-to-br from-yellow-400 to-yellow-500',
+              'bg-gradient-to-br from-green-500 to-green-600',
+              'bg-gradient-to-br from-purple-500 to-purple-600'
+            ];
+            
+            const isColorCard = index !== 2; // Third card is white
+            
+            return (
+              <div
+                key={index}
+                className={`
+                  group relative rounded-3xl lg:rounded-[2rem] p-8 lg:p-10
+                  shadow-lg hover:shadow-2xl
+                  transition-all duration-300 ease-out
+                  hover:-translate-y-2 hover:scale-[1.02]
+                  animate-scale-in overflow-hidden
+                  ${gradients[index]}
+                `}
+                style={{ animationDelay: `${index * 0.1}s` }}
+                data-testid={`feature-card-${index}`}
+              >
+                {/* Card Image */}
+                <div className="w-full h-56 lg:h-64 mb-6 overflow-hidden rounded-2xl">
                   <img 
                     src={feature.image} 
                     alt={feature.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{feature.description}</p>
-              </CardContent>
-            </Card>
-          ))}
+                
+                {/* Card Content */}
+                <div>
+                  <h3 className={`
+                    text-2xl lg:text-3xl font-bold mb-4
+                    ${isColorCard ? 'text-white' : 'text-neutral-900 dark:text-white'}
+                  `}>
+                    {feature.title}
+                  </h3>
+                  <p className={`
+                    text-base lg:text-lg leading-relaxed
+                    ${isColorCard ? 'text-white/90' : 'text-neutral-600 dark:text-neutral-300'}
+                  `}>
+                    {feature.description}
+                  </p>
+                </div>
+                
+                {/* Subtle decorative element */}
+                <div className={`
+                  absolute -bottom-8 -right-8 w-32 h-32 rounded-full blur-3xl
+                  ${isColorCard ? 'bg-white/20' : 'bg-neutral-200/50 dark:bg-neutral-700/50'}
+                  transition-all duration-300 group-hover:scale-150
+                `} />
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
