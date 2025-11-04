@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Award, Users, ArrowRight } from "lucide-react";
+import { Award, Users, ArrowRight, CheckCircle2 } from "lucide-react";
 
 const FinalCTASection = () => {
   return (
@@ -24,9 +24,18 @@ const FinalCTASection = () => {
         </div>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-sm">
-          <span>✓ 14-day free trial</span>
-          <span>✓ No credit card required</span>
-          <span>✓ Cancel anytime</span>
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="h-4 w-4" />
+            14-day free trial
+          </span>
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="h-4 w-4" />
+            No credit card required
+          </span>
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="h-4 w-4" />
+            Cancel anytime
+          </span>
         </div>
       </div>
     </section>
