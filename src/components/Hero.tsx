@@ -39,8 +39,8 @@ const Hero = () => {
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Massive Headline - Bottom Left */}
-      <div className="absolute bottom-32 md:bottom-40 left-4 md:left-8 lg:left-16 z-10 max-w-4xl">
+      {/* Massive Headline - Bottom Left (Desktop) / Top Center (Mobile) */}
+      <div className="absolute bottom-32 md:bottom-40 left-4 md:left-8 lg:left-16 lg:block hidden z-10 max-w-4xl">
         <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-tight">
           <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
             Prepare &{" "}
@@ -52,8 +52,8 @@ const Hero = () => {
         </h1>
       </div>
 
-      {/* Right Floating Content Box - Same Level as Headline */}
-      <div className="absolute bottom-32 md:bottom-40 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
+      {/* Right Floating Content Box - Aligned with Banner Text */}
+      <div className="absolute bottom-48 md:bottom-56 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
         <div className="rounded-2xl p-6">
           <p className="text-white mb-6 leading-relaxed" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
@@ -80,9 +80,24 @@ const Hero = () => {
         </div>
       </div>
 
+      {/* Mobile Layout - Banner at Top Center, Content Below */}
+      <div className="lg:hidden absolute top-20 left-0 right-0 z-10 px-4">
+        <div className="container mx-auto max-w-md text-center">
+          <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-8">
+            <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+              Prepare &{" "}
+            </span>
+            <br />
+            <span style={{ color: '#FDB022', textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+              Get Funded
+            </span>
+          </h1>
+        </div>
+      </div>
+
       {/* Mobile Content - Below Banner Text */}
       <div className="absolute bottom-16 left-0 right-0 z-20 px-4 lg:hidden">
-        <div className="container mx-auto max-w-md">
+        <div className="container mx-auto max-w-md text-center">
           <p className="text-white mb-4 leading-relaxed" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
           </p>
