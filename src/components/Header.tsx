@@ -30,6 +30,7 @@ const Header = () => {
     { label: "Courses", path: "/courses" },
     { label: "Join a Community", path: "/community/join" },
     { label: "Create a Community", path: "/community/create" },
+    { label: "For Institutions", path: "/for-institutions" },
     { label: "Custom Solutions", path: "/custom" },
     { label: "Pricing", path: "/pricing" },
   ];
@@ -96,6 +97,15 @@ const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Link
+            to="/for-institutions"
+            className={`text-sm font-medium transition-colors hover:text-primary ${
+              isActive("/for-institutions") ? "text-primary" : "text-neutral-900 dark:text-white"
+            }`}
+          >
+            For Institutions
+          </Link>
 
           <Link
             to="/custom"
