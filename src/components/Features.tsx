@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Eye, Headphones, BookOpen, Hand, MessageCircle, Calendar } from "lucide-react";
+import { Eye, Headphones, BookOpen, Hand } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import IndustryExpertsSection from "./IndustryExpertsSection";
 import CommunitySection from "./CommunitySection";
@@ -10,7 +10,6 @@ import careerImage from "@/assets/feature-career.jpg";
 import flexibleImage from "@/assets/feature-flexible.jpg";
 import certifiedImage from "@/assets/feature-certified.jpg";
 
-// Ecudum-style Features Section redesigned
 const Features = () => {
   const { t } = useLanguage();
 
@@ -72,147 +71,39 @@ const Features = () => {
 
   return (
     <>
-    {/* Programs & Features Section - Ecudum style with light green background */}
-    <section 
-      id="about" 
-      className="py-20 lg:py-32 dark:bg-green-900/20 transition-colors duration-200"
-      style={{ backgroundColor: 'hsl(142 76% 92%)' }}
-    >
-      <div className="container mx-auto px-4 lg:px-8">
-        {/* Section header with ghost text */}
-        <div className="mb-16">
-          <div className="relative">
-            {/* Ghost text behind */}
-            <h2 
-              className="absolute -top-6 left-0 text-7xl md:text-8xl lg:text-9xl font-bold leading-none select-none pointer-events-none"
-              style={{ color: 'hsl(142 30% 94%)', opacity: 0.4 }}
-              aria-hidden="true"
-            >
-              Education
-            </h2>
-            
-            {/* Small accent tag */}
-            <div className="mb-4">
-              <span 
-                className="inline-block text-sm font-medium px-4 py-2 rounded-full"
-                style={{ 
-                  backgroundColor: 'hsl(142 50% 45%)',
-                  color: 'white'
-                }}
-              >
-                Learning Programs
-              </span>
-            </div>
-
-            {/* Main headline */}
-            <h2 className="relative text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-black dark:text-white max-w-4xl">
-              Expand beyond{" "}
-              <span style={{ color: 'hsl(142 50% 45%)' }}>
-                traditional education.
-              </span>
-            </h2>
-          </div>
+    <section id="about" className="py-16 lg:py-24 bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-800 transition-colors duration-200">
+      <div className="container mx-auto px-4">
+        {/* Why Choose The Ready Lab Section */}
+        <div className="text-center mb-12 animate-fade-up">
+          <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
+            {t('features.title')}
+          </h2>
+          <p className="text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl mx-auto">
+            {t('features.subtitle')}
+          </p>
         </div>
-
-        {/* Feature cards grid - Ecudum style */}
+        
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {/* Card 1 - Comment and Activity */}
-          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="mb-4">
-              <span className="text-xs font-medium uppercase tracking-wide" style={{ color: 'hsl(142 50% 45%)' }}>
-                Comment and activity
-              </span>
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold text-black dark:text-white mb-3">
-              Give and receive actionable feedback
-            </h3>
-            <p className="text-neutral-600 dark:text-neutral-300 mb-4">
-              Draw innovations and leave comments to collaborate with peers and instructors in real-time.
-            </p>
-            {features[1]?.image && (
-              <div className="rounded-2xl overflow-hidden mt-4">
-                <img 
-                  src={features[1].image} 
-                  alt="Collaborative feedback"
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Card 2 - Schedule and Learn */}
-          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-            <div className="mb-4">
-              <span className="text-xs font-medium uppercase tracking-wide" style={{ color: 'hsl(142 50% 45%)' }}>
-                Comment and activity
-              </span>
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold text-black dark:text-white mb-3">
-              Schedule and learn on your own time
-            </h3>
-            <p className="text-neutral-600 dark:text-neutral-300 mb-4">
-              Flexible learning for your busy schedule. Take control of your education, anytime, anywhere.
-            </p>
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              {features[3]?.image && (
-                <div className="rounded-xl overflow-hidden">
+          {features.map((feature, index) => (
+            <Card 
+              key={index} 
+              className="group transition-all duration-200 animate-scale-in overflow-hidden"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <CardHeader>
+                <div className="w-full h-48 mb-4 overflow-hidden rounded-lg">
                   <img 
-                    src={features[3].image} 
-                    alt="Flexible learning"
-                    className="w-full h-24 object-cover"
+                    src={feature.image} 
+                    alt={feature.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
-              )}
-              {features[4]?.image && (
-                <div className="rounded-xl overflow-hidden bg-black text-white flex items-center justify-center p-3 text-xs font-medium">
-                  Self-paced courses
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Card 3 - Knowledge Retention */}
-          <div 
-            className="rounded-3xl p-6 text-white shadow-sm hover:shadow-md transition-all duration-300"
-            style={{ backgroundColor: 'hsl(142 50% 45%)' }}
-          >
-            <div className="mb-4">
-              <span className="text-xs font-medium uppercase tracking-wide opacity-90">
-                Proven Results
-              </span>
-            </div>
-            <h3 className="text-xl md:text-2xl font-bold mb-3">
-              The Ready Lab knows what and how each student is learning
-            </h3>
-            <p className="opacity-90 text-sm">
-              Surfacing the right content at the right time to ensure the knowledge sticks fast and the curiosity keeps growing.
-            </p>
-          </div>
-        </div>
-
-        {/* Additional features grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mt-8">
-          {features.slice(0, 3).map((feature, index) => (
-            <div 
-              key={index}
-              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
-            >
-              <div className="h-48 overflow-hidden">
-                <img 
-                  src={feature.image} 
-                  alt={feature.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-black dark:text-white mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                  {feature.description}
-                </p>
-              </div>
-            </div>
+                <CardTitle className="text-xl">{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>{feature.description}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>
@@ -222,38 +113,44 @@ const Features = () => {
 
     <CommunitySection />
 
-    {/* Learning Styles Section - Clean white background */}
-    <section className="py-16 lg:py-24 bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-700 transition-colors duration-200">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black dark:text-white mb-6">
+    <section className="py-16 lg:py-24 bg-neutral-50 dark:bg-neutral-800 border-t border-neutral-100 dark:border-neutral-700 transition-colors duration-200">
+      <div className="container mx-auto px-4">
+        {/* Built for Every Learner Section */}
+        <div className="text-center mb-12 animate-fade-up">
+          <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
             Built for Every Learner
           </h2>
-          <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto">
-            We know every learner is different — that's why The Ready Lab supports multiple learning styles.
+          <p className="text-lg text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto mb-6">
+            We know every learner is different — that's why The Ready Lab supports multiple learning styles to help you absorb, retain, and apply knowledge in real life.
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-8">
           {learningStyles.map((style, index) => (
-            <div 
-              key={index}
-              className="bg-neutral-50 dark:bg-neutral-800 rounded-2xl p-6 hover:shadow-md transition-all duration-300"
+            <Card 
+              key={index} 
+              className="group transition-all duration-200 animate-scale-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div 
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                style={{ backgroundColor: 'hsl(45 100% 51%)' }}
-              >
-                <style.icon className="h-6 w-6 text-black" />
-              </div>
-              <h3 className="text-lg font-bold text-black dark:text-white mb-2 flex items-center gap-2">
-                ✔️ {style.title}
-              </h3>
-              <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                {style.description}
-              </p>
-            </div>
+              <CardHeader>
+                <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4 transition-all duration-200">
+                  <style.icon className="h-6 w-6 text-white" />
+                </div>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  ✔️ {style.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>{style.description}</p>
+              </CardContent>
+            </Card>
           ))}
+        </div>
+        
+        <div className="text-center">
+          <p className="text-lg font-semibold text-neutral-900 dark:text-white">
+            This isn't passive learning — it's learning that sticks.
+          </p>
         </div>
       </div>
     </section>
