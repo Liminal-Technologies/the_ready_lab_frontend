@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
-import MicroLearning from "@/components/MicroLearning";
 import SuccessStoriesSection from "@/components/SuccessStoriesSection";
 import Courses from "@/components/Courses";
 import FinalCTASection from "@/components/FinalCTASection";
@@ -13,7 +12,6 @@ const Index = () => {
       <Header />
       <Hero />
       <Features />
-      <MicroLearning />
       <SuccessStoriesSection />
       <Courses />
       <FinalCTASection />

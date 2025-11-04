@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
+import MicroLearning from "@/components/MicroLearning";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -280,6 +281,9 @@ const Courses = () => {
           </div>
         </div>
       </section>
+
+      {/* Micro Learning Feed */}
+      <MicroLearning />
 
       {/* Top Communities Section */}
       <section className="py-16 bg-background dark:bg-neutral-900">
