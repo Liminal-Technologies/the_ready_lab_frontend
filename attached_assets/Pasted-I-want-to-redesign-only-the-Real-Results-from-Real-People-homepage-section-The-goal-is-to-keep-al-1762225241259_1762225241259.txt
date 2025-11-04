@@ -1,0 +1,54 @@
+I want to redesign only the “Real Results from Real People” homepage section.
+The goal is to keep all of the existing text exactly the same, but change the layout and styling so it looks like the modern card-mosaic hero in the reference image (Ecudum).
+
+Current content that must stay the same:
+
+Section heading: “Real Results from Real People”
+
+Testimonial cards (names + subtitles), e.g.:
+
+Sarah M. – Raised $500K for nonprofit
+
+Tech Startup – $2M Series A secured
+
+Maria L. – Built $1M social enterprise
+
+Stat block: “95% Success Rate”
+
+Subtext: “Graduates achieve goals within 12 months”
+
+New layout I want (Ecudum-style):
+
+A top hero row on a white background:
+
+On the left:
+
+A small label in a bright accent color (e.g., “Success stories”).
+
+A very large bold headline “Real Results from Real People”.
+
+Faint, oversized “ghost” text behind or underneath the headline (e.g., “real results”) in very light gray.
+
+A short supporting sentence using the existing success-rate text or a brief summary, but don’t invent new claims.
+
+On the right: a compact stacked layout that highlights the 95% Success Rate and the “Graduates achieve goals within 12 months” line, styled like a stat card.
+
+Below the hero, a rounded, light background panel (off-white or very pale color) containing:
+
+A mosaic/grid of the 3 testimonial cards, each as a large rounded tile: full-bleed image, dark gradient overlay, and the existing name + subtitle text.
+
+Cards should have big border radius, soft shadows, and hover effects.
+
+Design rules:
+
+Do NOT change any routing, data, or business logic. Only adjust JSX/HTML structure and styling (CSS or Tailwind).
+
+Keep all text exactly as it is now.
+
+Use a clean sans-serif font, lots of white space, and pill/rounded elements, similar to the Ecudum hero.
+
+Make the layout responsive:
+
+On desktop, hero text and stat block appear side-by-side with testimonial cards in a 3-column grid below.
+
+On mobile, stack hero elements vertically and show testimonial cards in a single column.
