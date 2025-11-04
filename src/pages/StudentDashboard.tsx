@@ -26,7 +26,9 @@ import {
   Download,
   Share2,
   X,
-  Trophy
+  Trophy,
+  Clock,
+  Users
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 

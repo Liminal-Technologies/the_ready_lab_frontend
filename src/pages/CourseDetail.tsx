@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { FakeStripeCheckoutModal } from "@/components/checkout/FakeStripeCheckoutModal";
 import {
   Clock,
   Users,
@@ -376,103 +377,14 @@ export default function CourseDetail() {
 
       <Footer />
 
-      {/* Checkout Modal */}
-      <Dialog open={showCheckoutModal} onOpenChange={setShowCheckoutModal}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">Choose Your Payment Method</DialogTitle>
-            <DialogDescription>
-              Secure payment powered by Stripe
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-6">
-            <div className="text-center mb-6 p-4 bg-muted rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Course Price</div>
-              <div className="text-4xl font-bold">${mockCourse.price}</div>
-              <div className="text-sm text-muted-foreground mt-1">One-time payment</div>
-            </div>
-
-            <div className="space-y-3">
-              <Button
-                variant="outline"
-                className="w-full h-16 text-base justify-start hover:bg-accent"
-                onClick={() => handlePaymentMethod("Credit/Debit Card")}
-                disabled={isProcessing}
-              >
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <CreditCard className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">Credit / Debit Card</div>
-                    <div className="text-xs text-muted-foreground">Visa, Mastercard, Amex</div>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full h-16 text-base justify-start hover:bg-accent"
-                onClick={() => handlePaymentMethod("Klarna")}
-                disabled={isProcessing}
-              >
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-lg bg-pink-100 flex items-center justify-center">
-                    <span className="font-bold text-pink-600">K</span>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">Klarna</div>
-                    <div className="text-xs text-muted-foreground">Pay in 4 interest-free payments</div>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full h-16 text-base justify-start hover:bg-accent"
-                onClick={() => handlePaymentMethod("Afterpay")}
-                disabled={isProcessing}
-              >
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center">
-                    <span className="font-bold text-teal-600">A</span>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">Afterpay</div>
-                    <div className="text-xs text-muted-foreground">Buy now, pay later</div>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full h-16 text-base justify-start hover:bg-accent"
-                onClick={() => handlePaymentMethod("Affirm")}
-                disabled={isProcessing}
-              >
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <span className="font-bold text-blue-600">a</span>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="font-semibold">Affirm</div>
-                    <div className="text-xs text-muted-foreground">Monthly payment plans</div>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                </div>
-              </Button>
-            </div>
-
-            <p className="text-xs text-center text-muted-foreground mt-6">
-              Secure checkout powered by Stripe. Your payment information is encrypted and secure.
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Fake Stripe Checkout Modal */}
+      <FakeStripeCheckoutModal
+        open={showCheckoutModal}
+        onOpenChange={setShowCheckoutModal}
+        courseTitle={mockCourse.title}
+        price={mockCourse.price}
+        onPaymentSuccess={handlePaymentMethod}
+      />
     </div>
   );
 }
