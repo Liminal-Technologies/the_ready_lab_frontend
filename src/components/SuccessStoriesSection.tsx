@@ -24,31 +24,32 @@ const SuccessStoriesSection = () => {
         
         {/* Large Rounded Light Purple Panel */}
         <div className="bg-purple-100 dark:bg-purple-950/30 rounded-[3rem] p-8 lg:p-12">
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
             {/* 95% Success Rate Card */}
             <div 
-              className="bg-gradient-to-br from-purple-500 to-blue-500 dark:from-purple-600 dark:to-blue-600 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-center items-center text-center"
+              className="bg-gradient-to-br from-purple-500 to-blue-500 dark:from-purple-600 dark:to-blue-600 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-center items-center text-center min-h-[320px]"
               data-testid="card-success-rate"
             >
               <div className="text-white">
-                <p className="text-6xl md:text-7xl font-black mb-3">95%</p>
-                <p className="text-xl md:text-2xl font-semibold opacity-90">Success Rate</p>
+                <p className="text-6xl md:text-7xl font-black mb-4">95%</p>
+                <p className="text-2xl md:text-3xl font-bold mb-3">Success Rate</p>
+                <p className="text-lg md:text-xl font-medium opacity-90">Graduates achieve goals within 12 months</p>
               </div>
             </div>
             
             {/* Sarah M. Card */}
             <div 
-              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 min-h-[320px] flex flex-col"
               data-testid="testimonial-sarah"
             >
-              <div className="overflow-hidden">
+              <div className="overflow-hidden flex-shrink-0">
                 <img 
                   src={nonprofitImage} 
                   alt="Sarah M. nonprofit founder" 
-                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex-grow">
                 <p className="text-xl lg:text-2xl font-bold mb-2 text-neutral-900 dark:text-white">Sarah M.</p>
                 <p className="text-base lg:text-lg text-neutral-600 dark:text-neutral-300">Raised $500K for nonprofit</p>
               </div>
@@ -56,17 +57,17 @@ const SuccessStoriesSection = () => {
             
             {/* Tech Startup Card */}
             <div 
-              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 min-h-[320px] flex flex-col"
               data-testid="testimonial-tech"
             >
-              <div className="overflow-hidden">
+              <div className="overflow-hidden flex-shrink-0">
                 <img 
                   src={successImage} 
                   alt="Tech startup team success" 
-                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex-grow">
                 <p className="text-xl lg:text-2xl font-bold mb-2 text-neutral-900 dark:text-white">Tech Startup</p>
                 <p className="text-base lg:text-lg text-neutral-600 dark:text-neutral-300">$2M Series A secured</p>
               </div>
@@ -74,17 +75,17 @@ const SuccessStoriesSection = () => {
             
             {/* Maria L. Card */}
             <div 
-              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 min-h-[320px] flex flex-col"
               data-testid="testimonial-maria"
             >
-              <div className="overflow-hidden">
+              <div className="overflow-hidden flex-shrink-0">
                 <img 
                   src={educatorImage} 
                   alt="Maria L. social enterprise" 
-                  className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="p-6">
+              <div className="p-6 flex-grow">
                 <p className="text-xl lg:text-2xl font-bold mb-2 text-neutral-900 dark:text-white">Maria L.</p>
                 <p className="text-base lg:text-lg text-neutral-600 dark:text-neutral-300">Built $1M social enterprise</p>
               </div>
