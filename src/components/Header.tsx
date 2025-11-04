@@ -20,13 +20,11 @@ const Header = () => {
 
   const navItems = [
     { label: "Home", path: "/" },
-    { label: "Explore", path: "/explore" },
     { label: "Courses", path: "/courses" },
   ];
 
   const mobileNavItems = [
     { label: "Home", path: "/" },
-    { label: "Explore", path: "/explore" },
     { label: "Courses", path: "/courses" },
     { label: "Join a Community", path: "/community/join" },
     { label: "Create a Community", path: "/community/create" },
