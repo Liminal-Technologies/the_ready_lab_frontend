@@ -76,21 +76,16 @@ const Features = () => {
     <>
     <section id="about" className="py-24 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200 overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
-        {/* Hero Header with Ghost Text */}
-        <div className="relative mb-20 lg:mb-24 overflow-hidden">
-          {/* Ghost Text Background */}
-          <div className="absolute left-0 top-0 opacity-[0.05] dark:opacity-[0.02] select-none pointer-events-none">
-            <h2 className="text-[8rem] md:text-[12rem] lg:text-[16rem] font-black leading-none whitespace-nowrap text-neutral-900 dark:text-white">
-              WHY CHOOSE
-            </h2>
-          </div>
-          
+        {/* Hero Header */}
+        <div className="relative mb-20 lg:mb-24">
           {/* Main Content */}
-          <div className="relative grid lg:grid-cols-2 gap-8 lg:gap-16 items-center pt-8 lg:pt-12">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left: Headline */}
             <div>
-              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-black dark:text-white leading-tight mb-4">
-                {t('features.title')}
+              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-4">
+                <span className="text-black dark:text-white">Why Choose The </span>
+                <span style={{ color: '#FDB022' }}>Ready Lab</span>
+                <span className="text-black dark:text-white">?</span>
               </h2>
             </div>
             
