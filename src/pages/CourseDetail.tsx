@@ -272,9 +272,30 @@ export default function CourseDetail() {
                         <div className="text-4xl font-bold mb-2">
                           {mockCourse.isFree ? "Free" : `$${mockCourse.price}`}
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground mb-3">
                           One-time payment • Lifetime access
                         </p>
+                        
+                        {/* BNPL Payment Options */}
+                        {!mockCourse.isFree && (
+                          <div className="flex flex-col gap-2 pt-3 border-t">
+                            <p className="text-xs text-muted-foreground font-medium">Or pay in installments with:</p>
+                            <div className="flex items-center justify-center gap-3 flex-wrap">
+                              <div className="px-3 py-1.5 border rounded-md bg-white dark:bg-neutral-800 flex items-center gap-1.5">
+                                <div className="font-semibold text-xs" style={{ color: '#FFB3C7' }}>Klarna</div>
+                              </div>
+                              <div className="px-3 py-1.5 border rounded-md bg-white dark:bg-neutral-800 flex items-center gap-1.5">
+                                <div className="font-semibold text-xs" style={{ color: '#B2FCE4' }}>Afterpay</div>
+                              </div>
+                              <div className="px-3 py-1.5 border rounded-md bg-white dark:bg-neutral-800 flex items-center gap-1.5">
+                                <div className="font-semibold text-xs" style={{ color: '#0FA0EA' }}>Affirm</div>
+                              </div>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              4 interest-free payments of ${(mockCourse.price / 4).toFixed(2)}
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       <Button 
@@ -282,6 +303,7 @@ export default function CourseDetail() {
                         size="lg"
                         onClick={handleEnrollClick}
                         disabled={isProcessing}
+                        data-testid="button-enroll"
                       >
                         {isProcessing ? (
                           <>
