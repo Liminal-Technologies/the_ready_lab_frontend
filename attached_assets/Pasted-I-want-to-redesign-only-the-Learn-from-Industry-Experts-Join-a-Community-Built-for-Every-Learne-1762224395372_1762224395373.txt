@@ -1,0 +1,48 @@
+I want to redesign only the “Learn from Industry Experts / Join a Community / Built for Every Learner” section of my homepage.
+The goal is to keep all of the existing text exactly the same, but change the layout and styling so it matches the style of this reference layout:
+
+Large statement at the top: small green label line, then a huge 2-line headline (black + bright green) like “Expand beyond introductory education.”
+
+Below that, a rounded light-green panel that contains multiple cards in a clean grid.
+
+Cards are white, large border-radius, soft shadow, and plenty of padding.
+
+Overall look: minimal, airy, with lots of white/green space and bold typography.
+
+Map my current content into this layout:
+
+Use “Built for Every Learner” as the main big headline (like the reference’s “Expand beyond introductory education”).
+
+Use the paragraph that starts with “We know every learner is different…” as the supporting text under the headline.
+
+Put a small green label above the headline (e.g., “Learning styles” – or reuse my existing text if there is a similar label).
+
+Inside the rounded light-green panel:
+
+Convert “Learn from Industry Experts” and “Join a Community” into two prominent feature cards on the first row, each with its current image, title, bullet points, and stats.
+
+On the row below, place the four learner-type cards:
+
+Visual learners
+
+Auditory learners
+
+Reading/Writing learners
+
+Kinesthetic learners
+
+Keep all their descriptions exactly as they are now; just restyle the cards.
+
+Keep the closing line “This isn’t passive learning — it’s learning that sticks.” as a subtle line below the panel, centered.
+
+Design rules:
+
+Do NOT change any routing, logic, or component props. Only adjust JSX/HTML structure and styling (CSS or Tailwind).
+
+Use a white background for the section, with a large, rounded light-green container behind the cards, similar to the reference.
+
+Headline: very large, bold, left-aligned; second line can be bright green for emphasis.
+
+All cards: white, rounded corners, soft shadow, hover effect, and responsive grid (2–3 columns on desktop, stacked on mobile).
+
+Make sure the layout is fully responsive and maintains comfortable spacing.
