@@ -102,27 +102,17 @@ const Features = () => {
         <div className="bg-yellow-50 dark:bg-yellow-950/20 rounded-[3rem] p-8 lg:p-12">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {features.map((feature, index) => {
-            // Define vibrant gradient backgrounds for each card
-            const gradients = [
-              'bg-gradient-to-br from-blue-500 to-blue-600',
-              'bg-gradient-to-br from-orange-400 to-orange-500',
-              'bg-gradient-to-br from-orange-400 to-orange-500',
-              'bg-gradient-to-br from-yellow-400 to-yellow-500',
-              'bg-gradient-to-br from-green-500 to-green-600',
-              'bg-gradient-to-br from-purple-500 to-purple-600'
-            ];
-            
             return (
               <div
                 key={index}
-                className={`
+                className="
                   group relative rounded-3xl lg:rounded-[2rem] p-8 lg:p-10
                   shadow-lg hover:shadow-2xl
                   transition-all duration-300 ease-out
                   hover:-translate-y-2 hover:scale-[1.02]
                   animate-scale-in overflow-hidden
-                  ${gradients[index]}
-                `}
+                  bg-white dark:bg-neutral-800
+                "
                 style={{ animationDelay: `${index * 0.1}s` }}
                 data-testid={`feature-card-${index}`}
               >
