@@ -12,6 +12,17 @@ A comprehensive educational learning management system (LMS) with course managem
 
 ## Recent Changes
 
+### CourseBrowse Page Redesign (Nov 4, 2025) - ✅ COMPLETE
+Merged Explore and Courses pages into unified LinkedIn Learning-style course browsing experience:
+- ✅ **Left Sidebar Filters** - Categories, Levels, Interests with color-coded badges (yellow/green/purple/brown)
+- ✅ **Tabbed Content Area** - All Courses, Trending, My Feed tabs with yellow active state
+- ✅ **Full Filter Functionality** - Working Category, Level, and Interest filters with AND logic
+- ✅ **Active Filter Display** - Badges showing applied filters with X to remove individually
+- ✅ **Clear All Filters** - Single button to reset all three filter types
+- ✅ **Mobile Responsive** - Hide/show filters button, responsive grid layout
+- ✅ **Updated Routing** - /explore now redirects to /courses, removed duplicate nav items
+- ✅ **Interest Tags** - Each course includes relevant interest tags (Funding, Business, AI, etc.)
+
 ### Migration to Replit (Nov 3, 2025)
 Successfully migrated from Lovable/Supabase to Replit full-stack environment:
 - ✅ Converted 25+ database tables from Supabase to Drizzle ORM
