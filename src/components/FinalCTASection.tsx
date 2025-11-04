@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Award, Users, ArrowRight, CheckCircle2 } from "lucide-react";
-import ctaBackground from "@assets/stock_images/diverse_business_tea_d87c6b57.jpg";
+import ctaBackground from "/attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg";
 
 const FinalCTASection = () => {
   return (
