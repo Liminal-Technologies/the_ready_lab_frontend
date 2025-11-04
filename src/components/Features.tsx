@@ -113,8 +113,6 @@ const Features = () => {
               'bg-gradient-to-br from-purple-500 to-purple-600'
             ];
             
-            const isColorCard = index !== 2; // Third card is white
-            
             return (
               <div
                 key={index}
@@ -140,26 +138,16 @@ const Features = () => {
                 
                 {/* Card Content */}
                 <div>
-                  <h3 className={`
-                    text-2xl lg:text-3xl font-bold mb-4
-                    ${isColorCard ? 'text-white' : 'text-neutral-900 dark:text-white'}
-                  `}>
+                  <h3 className="text-2xl lg:text-3xl font-bold mb-4 text-neutral-900 dark:text-white">
                     {feature.title}
                   </h3>
-                  <p className={`
-                    text-base lg:text-lg leading-relaxed
-                    ${isColorCard ? 'text-white/90' : 'text-neutral-600 dark:text-neutral-300'}
-                  `}>
+                  <p className="text-base lg:text-lg leading-relaxed text-neutral-600 dark:text-neutral-300">
                     {feature.description}
                   </p>
                 </div>
                 
                 {/* Subtle decorative element */}
-                <div className={`
-                  absolute -bottom-8 -right-8 w-32 h-32 rounded-full blur-3xl
-                  ${isColorCard ? 'bg-white/20' : 'bg-neutral-200/50 dark:bg-neutral-700/50'}
-                  transition-all duration-300 group-hover:scale-150
-                `} />
+                <div className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full bg-neutral-200/50 dark:bg-neutral-700/50 blur-3xl transition-all duration-300 group-hover:scale-150" />
               </div>
             );
           })}
