@@ -41,6 +41,8 @@ import brandingImage from "../../attached_assets/stock_images/branding_marketing
 import aiImage from "../../attached_assets/stock_images/artificial_intellige_80651e44.jpg";
 import partnershipImage from "../../attached_assets/stock_images/partnership_handshak_d5c0b270.jpg";
 import financialImage from "../../attached_assets/stock_images/financial_planning_a_96357d65.jpg";
+import ctaBackgroundImage from "../../attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg";
+import Footer from "@/components/Footer";
 
 const allCourses = [
   {
@@ -856,19 +858,28 @@ const CourseBrowse = () => {
       </div>
 
       {/* Bottom CTA Banner */}
-      <div className="bg-gradient-to-r from-orange-400 to-orange-500 dark:from-orange-500 dark:to-orange-600 py-16 mt-16">
-        <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
+      <div className="relative py-16 mt-16 overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${ctaBackgroundImage})` }}
+        >
+          <div className="absolute inset-0 bg-white/80 dark:bg-black/70"></div>
+        </div>
+        
+        {/* Content */}
+        <div className="container mx-auto px-4 lg:px-8 max-w-7xl relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex-1 text-white">
-              <h2 className="text-3xl lg:text-4xl font-black mb-4">
+            <div className="flex-1">
+              <h2 className="text-3xl lg:text-4xl font-black mb-4 text-black dark:text-white">
                 Move closer to your goals with The Ready Lab.
               </h2>
-              <p className="text-lg opacity-90 max-w-2xl">
+              <p className="text-lg max-w-2xl text-neutral-700 dark:text-neutral-300">
                 Achieve your goals with The Ready Lab, your pathway to personal and professional success. Join us on a transformative journey today!
               </p>
               <Button
                 size="lg"
-                className="mt-6 bg-white text-orange-500 hover:bg-neutral-100 font-bold"
+                className="mt-6 bg-orange-500 text-white hover:bg-orange-600 font-bold"
                 onClick={() => navigate("/signup")}
                 data-testid="button-join-free"
               >
@@ -877,13 +888,16 @@ const CourseBrowse = () => {
               </Button>
             </div>
             <div className="flex-shrink-0">
-              <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center">
-                <Award className="h-32 w-32 text-white" />
+              <div className="w-64 h-64 bg-orange-500/20 rounded-full flex items-center justify-center">
+                <Award className="h-32 w-32 text-orange-500" />
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
