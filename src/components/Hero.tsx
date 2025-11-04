@@ -41,7 +41,7 @@ const Hero = () => {
 
       {/* Massive Headline - Bottom Left (Desktop) / Top Center (Mobile) */}
       <div className="absolute bottom-32 md:bottom-40 left-4 md:left-8 lg:left-16 lg:block hidden z-10 max-w-4xl">
-        <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-tight">
+        <h1 className="font-bold leading-tight" style={{ fontSize: '6.3rem' }}>
           <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
             Prepare &{" "}
           </span>
@@ -55,7 +55,7 @@ const Hero = () => {
       {/* Right Floating Content Box - Centered Vertically, Right Aligned */}
       <div className="absolute top-1/2 -translate-y-1/2 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
         <div className="rounded-2xl p-5 text-center">
-          <p className="text-white text-sm mb-5 leading-relaxed font-normal" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+          <p className="text-white mb-5 leading-relaxed font-normal" style={{ fontSize: '0.9375rem', textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
           </p>
           <div className="flex flex-col gap-3">
@@ -125,11 +125,6 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Scroll Down Indicator */}
-      <div className="absolute bottom-8 right-8 z-20 flex items-center gap-2 text-white/80 text-sm animate-bounce">
-        <span className="hidden md:inline">Scroll down</span>
-        <ChevronDown className="h-5 w-5" />
-      </div>
       
       <AuthModal 
         isOpen={isAuthModalOpen} 
