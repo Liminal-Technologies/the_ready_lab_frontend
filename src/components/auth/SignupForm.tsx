@@ -1,28 +1,42 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, User, GraduationCap } from 'lucide-react';
-import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { Eye, EyeOff, Mail, Lock, User, GraduationCap } from "lucide-react";
+import { PlanSelectionModal } from "@/components/educator/PlanSelectionModal";
 
-const signupSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string(),
-  role: z.enum(['student', 'educator']).default('student')
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"]
-});
+const signupSchema = z
+  .object({
+    fullName: z.string().min(2, "Full name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+    role: z.enum(["student", "educator"]).default("student"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
@@ -35,37 +49,44 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
-  const [signupRole, setSignupRole] = useState<string>('');
+  const [signupRole, setSignupRole] = useState<string>("");
   const { signUp, auth } = useAuth();
-  
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SignupFormData>({
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      role: 'student'
-    }
+      role: "student",
+    },
   });
 
-  const selectedRole = watch('role');
+  const selectedRole = watch("role");
 
   const onSubmit = async (data: SignupFormData) => {
     try {
       await signUp(data.email, data.password, data.role, data.fullName);
-      
+
       setSignupRole(data.role);
-      
+
       // Show plan selection modal for educators
-      if (data.role === 'educator') {
+      if (data.role === "educator") {
         setShowPlanModal(true);
       } else {
         toast.success("Account created successfully! 🎉", {
           description: "Let's get you set up",
         });
         // Redirect to onboarding for students
-        navigate('/onboarding');
+        navigate("/onboarding");
       }
     } catch (error: any) {
       toast.error("Sign up failed", {
-        description: error.message || "There was an error creating your account",
+        description:
+          error.message || "There was an error creating your account",
       });
     }
   };
@@ -75,7 +96,7 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
       description: "Let's get you set up",
     });
     // Redirect to onboarding after educator plan selection
-    navigate('/onboarding');
+    navigate("/onboarding");
   };
 
   return (
@@ -97,11 +118,13 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
                 type="text"
                 placeholder="Enter your full name"
                 className="pl-10"
-                {...register('fullName')}
+                {...register("fullName")}
               />
             </div>
             {errors.fullName && (
-              <p className="text-sm text-destructive">{errors.fullName.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.fullName.message}
+              </p>
             )}
           </div>
 
@@ -114,7 +137,7 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
                 type="email"
                 placeholder="Enter your email"
                 className="pl-10"
-                {...register('email')}
+                {...register("email")}
               />
             </div>
             {errors.email && (
@@ -124,7 +147,11 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
 
           <div className="space-y-2">
             <Label htmlFor="role">I want to join as a...</Label>
-            <Select onValueChange={(value) => setValue('role', value as 'student' | 'educator')}>
+            <Select
+              onValueChange={(value) =>
+                setValue("role", value as "student" | "educator")
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select your role" />
               </SelectTrigger>
@@ -134,7 +161,9 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
                     <GraduationCap className="h-4 w-4" />
                     <div>
                       <div className="font-medium">Student</div>
-                      <div className="text-sm text-muted-foreground">Learn and get certified ($29/mo)</div>
+                      <div className="text-sm text-muted-foreground">
+                        Learn and get certified ($29/mo)
+                      </div>
                     </div>
                   </div>
                 </SelectItem>
@@ -143,7 +172,9 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
                     <User className="h-4 w-4" />
                     <div>
                       <div className="font-medium">Educator</div>
-                      <div className="text-sm text-muted-foreground">Teach and earn (starting at $49/mo)</div>
+                      <div className="text-sm text-muted-foreground">
+                        Teach and earn (starting at $49/mo)
+                      </div>
                     </div>
                   </div>
                 </SelectItem>
@@ -160,21 +191,27 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Create a password"
                 className="pl-10 pr-10"
-                {...register('password')}
+                {...register("password")}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -184,37 +221,43 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 id="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 className="pl-10 pr-10"
-                {...register('confirmPassword')}
+                {...register("confirmPassword")}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
-          <Button 
-            type="submit" 
-            className="w-full" 
+          <Button
+            type="submit"
+            className="w-full"
             disabled={auth.loading}
             variant="hero"
           >
-            {auth.loading ? 'Creating account...' : 'Create Account'}
+            {auth.loading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <button
               onClick={onSwitchToLogin}
               className="text-primary hover:underline font-medium"
@@ -225,7 +268,7 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
         </div>
       </CardContent>
 
-      <PlanSelectionModal 
+      <PlanSelectionModal
         open={showPlanModal}
         onOpenChange={setShowPlanModal}
         onPlanSelected={handlePlanSelected}

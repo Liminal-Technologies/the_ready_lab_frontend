@@ -6,19 +6,19 @@
  */
 export const generateVideoThumbnail = (
   videoFile: File | Blob,
-  timeInSeconds: number = 1
+  timeInSeconds: number = 1,
 ): Promise<Blob> => {
   return new Promise((resolve, reject) => {
-    const video = document.createElement('video');
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+    const video = document.createElement("video");
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
 
     if (!context) {
-      reject(new Error('Could not get canvas context'));
+      reject(new Error("Could not get canvas context"));
       return;
     }
 
-    video.preload = 'metadata';
+    video.preload = "metadata";
     video.muted = true;
     video.playsInline = true;
 
@@ -42,14 +42,14 @@ export const generateVideoThumbnail = (
             if (blob) {
               resolve(blob);
             } else {
-              reject(new Error('Failed to create thumbnail blob'));
+              reject(new Error("Failed to create thumbnail blob"));
             }
-            
+
             // Clean up
             window.URL.revokeObjectURL(video.src);
           },
-          'image/jpeg',
-          0.8 // Quality
+          "image/jpeg",
+          0.8, // Quality
         );
       } catch (error) {
         reject(error);
@@ -57,7 +57,7 @@ export const generateVideoThumbnail = (
     };
 
     video.onerror = () => {
-      reject(new Error('Error loading video'));
+      reject(new Error("Error loading video"));
     };
 
     video.src = URL.createObjectURL(videoFile);
@@ -71,19 +71,19 @@ export const uploadThumbnail = async (
   thumbnailBlob: Blob,
   educatorId: string,
   lessonId: string,
-  supabaseClient: any
+  supabaseClient: any,
 ): Promise<string> => {
   const fileName = `thumbnails/${educatorId}/${lessonId}.jpg`;
 
   const { error: uploadError } = await supabaseClient.storage
-    .from('videos')
+    .from("videos")
     .upload(fileName, thumbnailBlob, { upsert: true });
 
   if (uploadError) throw uploadError;
 
-  const { data: { publicUrl } } = supabaseClient.storage
-    .from('videos')
-    .getPublicUrl(fileName);
+  const {
+    data: { publicUrl },
+  } = supabaseClient.storage.from("videos").getPublicUrl(fileName);
 
   return publicUrl;
 };

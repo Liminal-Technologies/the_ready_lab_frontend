@@ -1,12 +1,18 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Video } from 'lucide-react';
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Video } from "lucide-react";
 
 interface CreateLiveEventModalProps {
   open: boolean;
@@ -14,16 +20,20 @@ interface CreateLiveEventModalProps {
   onSuccess?: () => void;
 }
 
-export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLiveEventModalProps) => {
+export const CreateLiveEventModal = ({
+  open,
+  onOpenChange,
+  onSuccess,
+}: CreateLiveEventModalProps) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    scheduled_at: '',
+    title: "",
+    description: "",
+    scheduled_at: "",
     duration_minutes: 60,
-    meeting_url: '',
+    meeting_url: "",
     max_attendees: 0,
-    thumbnail_url: '',
+    thumbnail_url: "",
   });
   const { toast } = useToast();
 
@@ -32,13 +42,15 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase.from('live_events').insert({
+      const { error } = await supabase.from("live_events").insert({
         ...formData,
         instructor_id: user.id,
-        status: 'scheduled',
+        status: "scheduled",
         max_attendees: formData.max_attendees || null,
       });
 
@@ -48,20 +60,20 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
         title: "Success",
         description: "Live streaming scheduled successfully.",
       });
-      
+
       onSuccess?.();
       onOpenChange(false);
       setFormData({
-        title: '',
-        description: '',
-        scheduled_at: '',
+        title: "",
+        description: "",
+        scheduled_at: "",
         duration_minutes: 60,
-        meeting_url: '',
+        meeting_url: "",
         max_attendees: 0,
-        thumbnail_url: '',
+        thumbnail_url: "",
       });
     } catch (error) {
-      console.error('Error creating event:', error);
+      console.error("Error creating event:", error);
       toast({
         title: "Error",
         description: "Failed to create event. Please try again.",
@@ -88,7 +100,9 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               placeholder="e.g., Q&A Session: Nonprofit Fundraising"
               required
             />
@@ -99,7 +113,9 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="What will you cover in this session?"
               rows={4}
               required
@@ -113,7 +129,9 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
                 id="scheduled_at"
                 type="datetime-local"
                 value={formData.scheduled_at}
-                onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, scheduled_at: e.target.value })
+                }
                 required
               />
             </div>
@@ -126,7 +144,12 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
                 min="15"
                 step="15"
                 value={formData.duration_minutes}
-                onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    duration_minutes: parseInt(e.target.value),
+                  })
+                }
                 required
               />
             </div>
@@ -137,7 +160,9 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
             <Input
               id="meeting_url"
               value={formData.meeting_url}
-              onChange={(e) => setFormData({ ...formData, meeting_url: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, meeting_url: e.target.value })
+              }
               placeholder="https://zoom.us/j/123456789"
               required
             />
@@ -153,7 +178,12 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
               type="number"
               min="0"
               value={formData.max_attendees}
-              onChange={(e) => setFormData({ ...formData, max_attendees: parseInt(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  max_attendees: parseInt(e.target.value),
+                })
+              }
               placeholder="Leave empty for unlimited"
             />
           </div>
@@ -163,13 +193,19 @@ export const CreateLiveEventModal = ({ open, onOpenChange, onSuccess }: CreateLi
             <Input
               id="thumbnail"
               value={formData.thumbnail_url}
-              onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, thumbnail_url: e.target.value })
+              }
               placeholder="https://example.com/image.jpg"
             />
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>

@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -19,18 +25,19 @@ import {
   VideoIcon,
   Download,
   ArrowRight,
-  User
+  User,
 } from "lucide-react";
 
 // Mock event data
 const mockEvent = {
   id: "1",
   title: "Grant Writing Workshop: Win Your First $50K",
-  description: "Join us for an intensive workshop where you'll learn the exact strategies and frameworks used to secure over $2M in grants. We'll cover everything from finding the right opportunities to crafting compelling narratives that funders can't resist.",
+  description:
+    "Join us for an intensive workshop where you'll learn the exact strategies and frameworks used to secure over $2M in grants. We'll cover everything from finding the right opportunities to crafting compelling narratives that funders can't resist.",
   educator: {
     name: "Dr. Sarah Johnson",
     title: "Funding Strategy Expert",
-    initials: "SJ"
+    initials: "SJ",
   },
   startDate: new Date(Date.now() + 2 * 60 * 60 * 1000 + 34 * 60 * 1000), // 2 hours 34 mins from now
   duration: 90,
@@ -38,20 +45,20 @@ const mockEvent = {
   maxAttendees: 100,
   relatedCourse: {
     id: "1",
-    name: "Funding Readiness 101"
+    name: "Funding Readiness 101",
   },
   whatYouLearn: [
     "How to identify high-probability grant opportunities for your organization",
     "The 5-part framework for writing compelling grant proposals",
     "Common mistakes that get applications rejected (and how to avoid them)",
     "How to build relationships with funders before you apply",
-    "Real examples of winning proposals and why they worked"
+    "Real examples of winning proposals and why they worked",
   ],
   features: {
     chat: true,
     qa: true,
-    recording: true
-  }
+    recording: true,
+  },
 };
 
 const upcomingEvents = [
@@ -60,35 +67,37 @@ const upcomingEvents = [
     title: "Building Your Nonprofit Board",
     educator: "Maria Rodriguez",
     date: "Tomorrow at 2:00 PM",
-    attendees: 32
+    attendees: 32,
   },
   {
     id: "3",
     title: "Social Media for Social Impact",
     educator: "James Chen",
     date: "Friday at 10:00 AM",
-    attendees: 28
+    attendees: 28,
   },
   {
     id: "4",
     title: "Financial Planning Workshop",
     educator: "Lisa Anderson",
     date: "Next Monday at 3:00 PM",
-    attendees: 41
-  }
+    attendees: 41,
+  },
 ];
 
 export default function EventDetail() {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  
+
   const [isRegistered, setIsRegistered] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [timeUntilStart, setTimeUntilStart] = useState("");
 
   // Check registration status
   useEffect(() => {
-    const registeredEvents = JSON.parse(localStorage.getItem("registeredEvents") || "[]");
+    const registeredEvents = JSON.parse(
+      localStorage.getItem("registeredEvents") || "[]",
+    );
     setIsRegistered(registeredEvents.includes(eventId));
   }, [eventId]);
 
@@ -106,8 +115,10 @@ export default function EventDetail() {
 
       const hours = Math.floor(distance / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      
-      setTimeUntilStart(`Starts in ${hours} ${hours === 1 ? 'hour' : 'hours'} ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+
+      setTimeUntilStart(
+        `Starts in ${hours} ${hours === 1 ? "hour" : "hours"} ${minutes} ${minutes === 1 ? "minute" : "minutes"}`,
+      );
     };
 
     updateCountdown();
@@ -117,13 +128,15 @@ export default function EventDetail() {
   }, []);
 
   const handleRegister = () => {
-    const registeredEvents = JSON.parse(localStorage.getItem("registeredEvents") || "[]");
+    const registeredEvents = JSON.parse(
+      localStorage.getItem("registeredEvents") || "[]",
+    );
     registeredEvents.push(eventId);
     localStorage.setItem("registeredEvents", JSON.stringify(registeredEvents));
-    
+
     setIsRegistered(true);
     setShowSuccessModal(true);
-    
+
     toast({
       title: "Registration successful! 🎉",
       description: "You're all set for the event.",
@@ -144,7 +157,7 @@ export default function EventDetail() {
       weekday: "long",
       year: "numeric",
       month: "long",
-      day: "numeric"
+      day: "numeric",
     });
   };
 
@@ -152,22 +165,24 @@ export default function EventDetail() {
     return mockEvent.startDate.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
-      hour12: true
+      hour12: true,
     });
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           {/* Event Header */}
           <div className="max-w-4xl mx-auto mb-12">
             <div className="mb-6">
-              <Badge className="mb-4 bg-primary/10 text-primary">Live Event</Badge>
+              <Badge className="mb-4 bg-primary/10 text-primary">
+                Live Event
+              </Badge>
               <h1 className="text-4xl font-bold mb-4">{mockEvent.title}</h1>
-              
+
               {/* Educator Info */}
               <div className="flex items-center gap-3 mb-6">
                 <Avatar>
@@ -177,7 +192,9 @@ export default function EventDetail() {
                 </Avatar>
                 <div>
                   <p className="font-semibold">{mockEvent.educator.name}</p>
-                  <p className="text-sm text-muted-foreground">{mockEvent.educator.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {mockEvent.educator.title}
+                  </p>
                 </div>
               </div>
 
@@ -202,7 +219,7 @@ export default function EventDetail() {
               </div>
 
               {/* Countdown */}
-              <div className="inline-flex items-center gap-2 bg-yellow-500/10 text-yellow-700 dark:text-yellow-500 px-4 py-2 rounded-full font-medium">
+              <div className="inline-flex items-center gap-2 bg-yellow-500/10 text-yellow-700 px-4 py-2 rounded-full font-medium">
                 <Clock className="h-4 w-4" />
                 {timeUntilStart}
               </div>
@@ -254,15 +271,21 @@ export default function EventDetail() {
               <Card className="p-6 mb-6 bg-primary/5 border-primary/20">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Related Course</p>
-                    <h3 className="text-lg font-semibold">{mockEvent.relatedCourse.name}</h3>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Related Course
+                    </p>
+                    <h3 className="text-lg font-semibold">
+                      {mockEvent.relatedCourse.name}
+                    </h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Take the full course to dive deeper into this topic
                     </p>
                   </div>
                   <Button
                     variant="outline"
-                    onClick={() => navigate(`/courses/${mockEvent.relatedCourse.id}`)}
+                    onClick={() =>
+                      navigate(`/courses/${mockEvent.relatedCourse.id}`)
+                    }
                   >
                     View Course
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -343,7 +366,7 @@ export default function EventDetail() {
               We'll send you a reminder 15 minutes before the event starts.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="py-6 space-y-4">
             <Card className="p-4 bg-muted/50">
               <div className="flex items-start gap-3">

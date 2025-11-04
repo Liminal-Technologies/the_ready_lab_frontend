@@ -1,11 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { Loader2, ExternalLink, DollarSign, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, ExternalLink, DollarSign, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Table,
   TableBody,
@@ -13,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
 interface ConnectAccount {
   stripe_account_id: string;
@@ -49,26 +55,23 @@ export const PayoutManagement = () => {
   const fetchData = async () => {
     try {
       const [accountResponse, payoutsResponse] = await Promise.all([
+        supabase.from("stripe_connect_accounts").select("*").single(),
         supabase
-          .from('stripe_connect_accounts')
-          .select('*')
-          .single(),
-        supabase
-          .from('stripe_payouts')
-          .select('*')
-          .order('created_at', { ascending: false })
+          .from("stripe_payouts")
+          .select("*")
+          .order("created_at", { ascending: false })
           .limit(10),
       ]);
 
       if (accountResponse.data) {
         setAccount(accountResponse.data);
       }
-      
+
       if (payoutsResponse.data) {
         setPayouts(payoutsResponse.data);
       }
     } catch (error) {
-      console.error('Error fetching payout data:', error);
+      console.error("Error fetching payout data:", error);
     } finally {
       setLoading(false);
     }
@@ -77,19 +80,22 @@ export const PayoutManagement = () => {
   const handleConnectAccount = async () => {
     setConnectLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-connect-account');
-      
+      const { data, error } = await supabase.functions.invoke(
+        "create-connect-account",
+      );
+
       if (error) throw error;
-      
+
       if (data?.url) {
-        window.open(data.url, '_blank');
+        window.open(data.url, "_blank");
         toast({
           title: "Opening Stripe Connect",
-          description: "Complete the onboarding process to start receiving payouts.",
+          description:
+            "Complete the onboarding process to start receiving payouts.",
         });
       }
     } catch (error) {
-      console.error('Connect error:', error);
+      console.error("Connect error:", error);
       toast({
         title: "Error",
         description: "Failed to start Connect onboarding. Please try again.",
@@ -103,15 +109,17 @@ export const PayoutManagement = () => {
   const handleOpenDashboard = async () => {
     setDashboardLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('get-connect-dashboard');
-      
+      const { data, error } = await supabase.functions.invoke(
+        "get-connect-dashboard",
+      );
+
       if (error) throw error;
-      
+
       if (data?.url) {
-        window.open(data.url, '_blank');
+        window.open(data.url, "_blank");
       }
     } catch (error) {
-      console.error('Dashboard error:', error);
+      console.error("Dashboard error:", error);
       toast({
         title: "Error",
         description: "Failed to open Stripe dashboard. Please try again.",
@@ -123,8 +131,8 @@ export const PayoutManagement = () => {
   };
 
   const formatAmount = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
       currency: currency.toUpperCase(),
     }).format(amount / 100);
   };
@@ -142,14 +150,17 @@ export const PayoutManagement = () => {
       <Card>
         <CardHeader>
           <CardTitle>Payout Account</CardTitle>
-          <CardDescription>Connect your bank account to receive payouts</CardDescription>
+          <CardDescription>
+            Connect your bank account to receive payouts
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {!account ? (
             <div className="text-center py-6">
               <DollarSign className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground mb-4">
-                Connect your bank account via Stripe to start receiving payouts from course sales
+                Connect your bank account via Stripe to start receiving payouts
+                from course sales
               </p>
               <Button
                 onClick={handleConnectAccount}
@@ -174,18 +185,30 @@ export const PayoutManagement = () => {
                   </AlertDescription>
                 </Alert>
               )}
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Account Status</p>
-                  <Badge variant={account.account_status === 'active' ? 'default' : 'secondary'}>
+                  <p className="text-sm text-muted-foreground">
+                    Account Status
+                  </p>
+                  <Badge
+                    variant={
+                      account.account_status === "active"
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
                     {account.account_status}
                   </Badge>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Payouts</p>
-                  <Badge variant={account.payouts_enabled ? 'default' : 'destructive'}>
-                    {account.payouts_enabled ? 'Enabled' : 'Disabled'}
+                  <Badge
+                    variant={
+                      account.payouts_enabled ? "default" : "destructive"
+                    }
+                  >
+                    {account.payouts_enabled ? "Enabled" : "Disabled"}
                   </Badge>
                 </div>
               </div>
@@ -212,7 +235,7 @@ export const PayoutManagement = () => {
                     {connectLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      'Complete Onboarding'
+                      "Complete Onboarding"
                     )}
                   </Button>
                 )}
@@ -225,7 +248,9 @@ export const PayoutManagement = () => {
       <Card>
         <CardHeader>
           <CardTitle>Payout History</CardTitle>
-          <CardDescription>Track your earnings and payout status</CardDescription>
+          <CardDescription>
+            Track your earnings and payout status
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {payouts.length > 0 ? (
@@ -249,17 +274,21 @@ export const PayoutManagement = () => {
                       {formatAmount(payout.amount, payout.currency)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={payout.status === 'paid' ? 'default' : 'secondary'}>
+                      <Badge
+                        variant={
+                          payout.status === "paid" ? "default" : "secondary"
+                        }
+                      >
                         {payout.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       {payout.arrival_date
                         ? new Date(payout.arrival_date).toLocaleDateString()
-                        : 'Pending'}
+                        : "Pending"}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {payout.description || '-'}
+                      {payout.description || "-"}
                     </TableCell>
                   </TableRow>
                 ))}

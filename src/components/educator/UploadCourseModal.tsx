@@ -1,14 +1,26 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Upload, Languages } from 'lucide-react';
-import { MultilingualMetadataEditor } from './MultilingualMetadataEditor';
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Upload, Languages } from "lucide-react";
+import { MultilingualMetadataEditor } from "./MultilingualMetadataEditor";
 
 interface UploadCourseModalProps {
   open: boolean;
@@ -17,39 +29,43 @@ interface UploadCourseModalProps {
 }
 
 const roadmapTags = [
-  'Nonprofit Management',
-  'Fundraising',
-  'Grant Writing',
-  'Program Development',
-  'Marketing & Branding',
-  'Finance & Accounting',
-  'Leadership',
-  'Volunteer Management',
+  "Nonprofit Management",
+  "Fundraising",
+  "Grant Writing",
+  "Program Development",
+  "Marketing & Branding",
+  "Finance & Accounting",
+  "Leadership",
+  "Volunteer Management",
 ];
 
 const categories = [
-  'Business',
-  'Technology',
-  'Design',
-  'Marketing',
-  'Leadership',
-  'Nonprofit',
-  'Finance',
-  'Other',
+  "Business",
+  "Technology",
+  "Design",
+  "Marketing",
+  "Leadership",
+  "Nonprofit",
+  "Finance",
+  "Other",
 ];
 
-export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCourseModalProps) => {
+export const UploadCourseModal = ({
+  open,
+  onOpenChange,
+  onSuccess,
+}: UploadCourseModalProps) => {
   const [loading, setLoading] = useState(false);
   const [translationsModalOpen, setTranslationsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    level: 'beginner',
+    title: "",
+    description: "",
+    category: "",
+    level: "beginner",
     roadmap_tags: [] as string[],
     estimated_hours: 1,
     price: 0,
-    thumbnail_url: '',
+    thumbnail_url: "",
     translations: {} as Record<string, { title: string; description: string }>,
   });
   const { toast } = useToast();
@@ -59,10 +75,12 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase.from('tracks').insert({
+      const { error } = await supabase.from("tracks").insert({
         ...formData,
         created_by: user.id,
         is_active: false, // Draft by default
@@ -74,22 +92,22 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
         title: "Success",
         description: "Course created as draft. You can publish it later.",
       });
-      
+
       onSuccess?.();
       onOpenChange(false);
       setFormData({
-        title: '',
-        description: '',
-        category: '',
-        level: 'beginner',
+        title: "",
+        description: "",
+        category: "",
+        level: "beginner",
         roadmap_tags: [],
         estimated_hours: 1,
         price: 0,
-        thumbnail_url: '',
+        thumbnail_url: "",
         translations: {},
       });
     } catch (error) {
-      console.error('Error creating course:', error);
+      console.error("Error creating course:", error);
       toast({
         title: "Error",
         description: "Failed to create course. Please try again.",
@@ -106,7 +124,8 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
         <DialogHeader>
           <DialogTitle>Create New Course</DialogTitle>
           <DialogDescription>
-            Fill in the details to create a new course. It will be saved as a draft.
+            Fill in the details to create a new course. It will be saved as a
+            draft.
           </DialogDescription>
         </DialogHeader>
 
@@ -116,7 +135,9 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               placeholder="e.g., Fundraising Fundamentals"
               required
             />
@@ -127,7 +148,9 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Describe what students will learn..."
               rows={4}
               required
@@ -139,7 +162,9 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
               <Label htmlFor="category">Category *</Label>
               <Select
                 value={formData.category}
-                onValueChange={(value) => setFormData({ ...formData, category: value })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, category: value })
+                }
                 required
               >
                 <SelectTrigger>
@@ -159,7 +184,9 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
               <Label htmlFor="level">Level *</Label>
               <Select
                 value={formData.level}
-                onValueChange={(value) => setFormData({ ...formData, level: value })}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, level: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -177,17 +204,25 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
             <Label>Roadmap Tags (select multiple)</Label>
             <div className="grid grid-cols-2 gap-2">
               {roadmapTags.map((tag) => (
-                <label key={tag} className="flex items-center space-x-2 cursor-pointer">
+                <label
+                  key={tag}
+                  className="flex items-center space-x-2 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     checked={formData.roadmap_tags.includes(tag)}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setFormData({ ...formData, roadmap_tags: [...formData.roadmap_tags, tag] });
+                        setFormData({
+                          ...formData,
+                          roadmap_tags: [...formData.roadmap_tags, tag],
+                        });
                       } else {
                         setFormData({
                           ...formData,
-                          roadmap_tags: formData.roadmap_tags.filter((t) => t !== tag),
+                          roadmap_tags: formData.roadmap_tags.filter(
+                            (t) => t !== tag,
+                          ),
                         });
                       }
                     }}
@@ -207,7 +242,12 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
                 type="number"
                 min="1"
                 value={formData.estimated_hours}
-                onChange={(e) => setFormData({ ...formData, estimated_hours: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    estimated_hours: parseInt(e.target.value),
+                  })
+                }
                 required
               />
             </div>
@@ -220,7 +260,12 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
                 min="0"
                 step="0.01"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    price: parseFloat(e.target.value),
+                  })
+                }
               />
             </div>
           </div>
@@ -230,25 +275,32 @@ export const UploadCourseModal = ({ open, onOpenChange, onSuccess }: UploadCours
             <Input
               id="thumbnail"
               value={formData.thumbnail_url}
-              onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, thumbnail_url: e.target.value })
+              }
               placeholder="https://example.com/image.jpg"
             />
           </div>
 
           <div className="pt-4 border-t">
-            <Button 
+            <Button
               type="button"
-              variant="outline" 
+              variant="outline"
               onClick={() => setTranslationsModalOpen(true)}
               className="w-full"
             >
               <Languages className="h-4 w-4 mr-2" />
-              Add Translations ({Object.keys(formData.translations).length} languages)
+              Add Translations ({Object.keys(formData.translations).length}{" "}
+              languages)
             </Button>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>

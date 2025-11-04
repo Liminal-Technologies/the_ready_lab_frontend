@@ -40,17 +40,34 @@
     --success-foreground: 0 0% 100%;
     --warning: 45 92% 50%;
     --warning-foreground: 0 0% 100%;
-    
+
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(45 92% 50%), hsl(202 71% 46%));
-    --gradient-hero: linear-gradient(135deg, hsl(45 92% 50%) 0%, hsl(202 71% 46%) 50%, hsl(202 100% 20%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(45 33% 98%) 100%);
-    
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(45 92% 50%),
+      hsl(202 71% 46%)
+    );
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(45 92% 50%) 0%,
+      hsl(202 71% 46%) 50%,
+      hsl(202 100% 20%) 100%
+    );
+    --gradient-subtle: linear-gradient(
+      180deg,
+      hsl(0 0% 100%) 0%,
+      hsl(45 33% 98%) 100%
+    );
+
     /* Shadows */
-    --shadow-soft: 0 4px 6px -1px hsl(45 92% 50% / 0.1), 0 2px 4px -1px hsl(45 92% 50% / 0.06);
-    --shadow-medium: 0 10px 15px -3px hsl(45 92% 50% / 0.1), 0 4px 6px -2px hsl(45 92% 50% / 0.05);
+    --shadow-soft:
+      0 4px 6px -1px hsl(45 92% 50% / 0.1),
+      0 2px 4px -1px hsl(45 92% 50% / 0.06);
+    --shadow-medium:
+      0 10px 15px -3px hsl(45 92% 50% / 0.1),
+      0 4px 6px -2px hsl(45 92% 50% / 0.05);
     --shadow-glow: 0 0 30px hsl(45 92% 50% / 0.3);
-    
+
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -73,45 +90,6 @@
 
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
-
-  .dark {
-    --background: 0 0% 9%;
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 45 95% 55%;
-    --primary-foreground: 0 0% 9%;
-
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 70%;
-
-    --accent: 0 0% 20%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 26%;
-    --input: 0 0% 26%;
-    --ring: 45 95% 55%;
-    
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 45 95% 55%;
-    --sidebar-primary-foreground: 0 0% 9%;
-    --sidebar-accent: 0 0% 20%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 26%;
-    --sidebar-ring: 45 95% 55%;
-  }
 }
 
 @layer base {
@@ -127,10 +105,10 @@
 @layer utilities {
   /* Hide scrollbar for Chrome, Safari and Opera */
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

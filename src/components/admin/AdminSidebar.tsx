@@ -13,7 +13,7 @@ import {
   Settings,
   Shield,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
 import {
   Sidebar,
@@ -28,7 +28,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const adminMenuItems = [
   {
@@ -40,7 +44,7 @@ const adminMenuItems = [
     title: "Users",
     url: "/admin/users",
     icon: Users,
-    badge: "24"
+    badge: "24",
   },
   {
     title: "Courses & Certificates",
@@ -51,7 +55,7 @@ const adminMenuItems = [
       { title: "Lessons", url: "/admin/courses/lessons" },
       { title: "Quizzes", url: "/admin/courses/quizzes" },
       { title: "Certificates", url: "/admin/courses/certificates" },
-    ]
+    ],
   },
   {
     title: "Communities",
@@ -62,7 +66,7 @@ const adminMenuItems = [
     title: "Digital Products",
     url: "/admin/products",
     icon: Package,
-    badge: "3"
+    badge: "3",
   },
   {
     title: "Payments",
@@ -73,7 +77,7 @@ const adminMenuItems = [
     title: "Institutions",
     url: "/admin/institutions",
     icon: Building2,
-    badge: "PILOT"
+    badge: "PILOT",
   },
   {
     title: "AI Assistant",
@@ -96,23 +100,24 @@ export function AdminSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
-  const [openGroups, setOpenGroups] = useState<string[]>(['Courses & Certificates']);
-  const collapsed = state === 'collapsed';
+  const [openGroups, setOpenGroups] = useState<string[]>([
+    "Courses & Certificates",
+  ]);
+  const collapsed = state === "collapsed";
 
   const isActive = (path: string) => currentPath === path;
-  const isGroupActive = (subItems: any[]) => subItems.some(item => isActive(item.url));
+  const isGroupActive = (subItems: any[]) =>
+    subItems.some((item) => isActive(item.url));
 
   const toggleGroup = (title: string) => {
-    setOpenGroups(prev => 
-      prev.includes(title) 
-        ? prev.filter(g => g !== title)
-        : [...prev, title]
+    setOpenGroups((prev) =>
+      prev.includes(title) ? prev.filter((g) => g !== title) : [...prev, title],
     );
   };
 
   const getNavClasses = (isActive: boolean) =>
-    isActive 
-      ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" 
+    isActive
+      ? "bg-primary/10 text-primary font-medium border-r-2 border-primary"
       : "hover:bg-muted/50 text-muted-foreground hover:text-foreground";
 
   return (
@@ -123,7 +128,9 @@ export function AdminSidebar() {
           {!collapsed && (
             <div>
               <h2 className="font-semibold text-sm">TRL Admin</h2>
-              <Badge variant="outline" className="text-xs mt-1">PROD</Badge>
+              <Badge variant="outline" className="text-xs mt-1">
+                PROD
+              </Badge>
             </div>
           )}
         </div>
@@ -143,8 +150,8 @@ export function AdminSidebar() {
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton
                           className={`w-full justify-between ${
-                            isGroupActive(item.subItems) 
-                              ? "bg-primary/10 text-primary font-medium" 
+                            isGroupActive(item.subItems)
+                              ? "bg-primary/10 text-primary font-medium"
                               : "hover:bg-muted/50"
                           }`}
                         >
@@ -152,18 +159,19 @@ export function AdminSidebar() {
                             <item.icon className="mr-3 h-4 w-4" />
                             {!collapsed && <span>{item.title}</span>}
                           </div>
-                          {!collapsed && (
-                            openGroups.includes(item.title) 
-                              ? <ChevronDown className="h-4 w-4" />
-                              : <ChevronRight className="h-4 w-4" />
-                          )}
+                          {!collapsed &&
+                            (openGroups.includes(item.title) ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            ))}
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="space-y-1">
                         {item.subItems.map((subItem) => (
                           <SidebarMenuButton key={subItem.url} asChild>
-                            <NavLink 
-                              to={subItem.url} 
+                            <NavLink
+                              to={subItem.url}
                               className={`ml-6 ${getNavClasses(isActive(subItem.url))}`}
                             >
                               {!collapsed && <span>{subItem.title}</span>}
@@ -174,8 +182,8 @@ export function AdminSidebar() {
                     </Collapsible>
                   ) : (
                     <SidebarMenuButton asChild>
-                      <NavLink 
-                        to={item.url} 
+                      <NavLink
+                        to={item.url}
                         className={getNavClasses(isActive(item.url))}
                       >
                         <item.icon className="mr-3 h-4 w-4" />
@@ -204,9 +212,9 @@ export function AdminSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <NavLink 
-                    to="/admin/audit-logs" 
-                    className={getNavClasses(isActive('/admin/audit-logs'))}
+                  <NavLink
+                    to="/admin/audit-logs"
+                    className={getNavClasses(isActive("/admin/audit-logs"))}
                   >
                     <Shield className="mr-3 h-4 w-4" />
                     {!collapsed && <span>Audit Logs</span>}

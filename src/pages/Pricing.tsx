@@ -9,12 +9,12 @@ import PricingFAQ from "@/components/pricing/PricingFAQ";
 
 const Pricing = () => {
   return (
-    <div className="min-h-screen bg-background dark:bg-neutral-900">
+    <div className="min-h-screen bg-background">
       <Header />
       <div className="pt-20">
         <PricingHero />
-      <StudentPlansRevised />
-      <EducatorPlansRevised />
+        <StudentPlansRevised />
+        <EducatorPlansRevised />
         <InstitutionPlans />
         <PaymentOptions />
         <PricingFAQ />

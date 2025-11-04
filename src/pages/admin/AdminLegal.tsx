@@ -1,19 +1,32 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { 
-  FileText, 
+import {
+  FileText,
   Save,
   Eye,
   Clock,
   User,
   Shield,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,9 +50,12 @@ export function AdminLegal() {
   const [loading, setLoading] = useState(true);
   const [documents, setDocuments] = useState({
     terms: "# Terms of Service\n\n[Terms content will be loaded here...]",
-    privacy: "# Privacy Policy\n\n[Privacy policy content will be loaded here...]",
-    educator_agreement: "# Educator Agreement\n\n[Educator agreement content will be loaded here...]",
-    certificate_disclaimer: "# Certificate Disclaimer\n\n[Certificate disclaimer content will be loaded here...]"
+    privacy:
+      "# Privacy Policy\n\n[Privacy policy content will be loaded here...]",
+    educator_agreement:
+      "# Educator Agreement\n\n[Educator agreement content will be loaded here...]",
+    certificate_disclaimer:
+      "# Certificate Disclaimer\n\n[Certificate disclaimer content will be loaded here...]",
   });
   const { toast } = useToast();
 
@@ -51,20 +67,22 @@ export function AdminLegal() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('educator_agreements')
-        .select(`
+        .from("educator_agreements")
+        .select(
+          `
           *,
           profiles:user_id (
             email,
             full_name
           )
-        `)
-        .order('accepted_at', { ascending: false });
+        `,
+        )
+        .order("accepted_at", { ascending: false });
 
       if (error) throw error;
       setAgreements(data || []);
     } catch (error) {
-      console.error('Error fetching educator agreements:', error);
+      console.error("Error fetching educator agreements:", error);
       toast({
         title: "Error",
         description: "Failed to load educator agreements",
@@ -79,16 +97,16 @@ export function AdminLegal() {
     // In real implementation, this would save to database
     toast({
       title: "Success",
-      description: `${type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} saved successfully`,
+      description: `${type.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())} saved successfully`,
     });
   };
 
   const getAgreementStats = () => {
     const total = agreements.length;
-    const thisMonth = agreements.filter(a => 
-      new Date(a.accepted_at).getMonth() === new Date().getMonth()
+    const thisMonth = agreements.filter(
+      (a) => new Date(a.accepted_at).getMonth() === new Date().getMonth(),
     ).length;
-    
+
     return { total, thisMonth };
   };
 
@@ -104,7 +122,10 @@ export function AdminLegal() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge
+            variant="outline"
+            className="bg-green-50 text-green-700 border-green-200"
+          >
             <CheckCircle className="mr-1 h-3 w-3" />
             Compliant
           </Badge>
@@ -115,7 +136,9 @@ export function AdminLegal() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Agreements</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Agreements
+            </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -132,14 +155,14 @@ export function AdminLegal() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.thisMonth}</div>
-            <p className="text-xs text-muted-foreground">
-              New agreements
-            </p>
+            <p className="text-xs text-muted-foreground">New agreements</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Document Version</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Document Version
+            </CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -151,7 +174,9 @@ export function AdminLegal() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Compliance Status</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Compliance Status
+            </CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -186,12 +211,14 @@ export function AdminLegal() {
               <CardContent className="space-y-4">
                 <Textarea
                   value={documents.terms}
-                  onChange={(e) => setDocuments({ ...documents, terms: e.target.value })}
+                  onChange={(e) =>
+                    setDocuments({ ...documents, terms: e.target.value })
+                  }
                   rows={15}
                   className="font-mono text-sm"
                 />
                 <div className="flex gap-2">
-                  <Button onClick={() => saveDocument('terms')}>
+                  <Button onClick={() => saveDocument("terms")}>
                     <Save className="mr-2 h-4 w-4" />
                     Save Terms
                   </Button>
@@ -217,12 +244,14 @@ export function AdminLegal() {
               <CardContent className="space-y-4">
                 <Textarea
                   value={documents.privacy}
-                  onChange={(e) => setDocuments({ ...documents, privacy: e.target.value })}
+                  onChange={(e) =>
+                    setDocuments({ ...documents, privacy: e.target.value })
+                  }
                   rows={15}
                   className="font-mono text-sm"
                 />
                 <div className="flex gap-2">
-                  <Button onClick={() => saveDocument('privacy')}>
+                  <Button onClick={() => saveDocument("privacy")}>
                     <Save className="mr-2 h-4 w-4" />
                     Save Policy
                   </Button>
@@ -248,12 +277,17 @@ export function AdminLegal() {
               <CardContent className="space-y-4">
                 <Textarea
                   value={documents.educator_agreement}
-                  onChange={(e) => setDocuments({ ...documents, educator_agreement: e.target.value })}
+                  onChange={(e) =>
+                    setDocuments({
+                      ...documents,
+                      educator_agreement: e.target.value,
+                    })
+                  }
                   rows={15}
                   className="font-mono text-sm"
                 />
                 <div className="flex gap-2">
-                  <Button onClick={() => saveDocument('educator_agreement')}>
+                  <Button onClick={() => saveDocument("educator_agreement")}>
                     <Save className="mr-2 h-4 w-4" />
                     Save Agreement
                   </Button>
@@ -279,12 +313,19 @@ export function AdminLegal() {
               <CardContent className="space-y-4">
                 <Textarea
                   value={documents.certificate_disclaimer}
-                  onChange={(e) => setDocuments({ ...documents, certificate_disclaimer: e.target.value })}
+                  onChange={(e) =>
+                    setDocuments({
+                      ...documents,
+                      certificate_disclaimer: e.target.value,
+                    })
+                  }
                   rows={15}
                   className="font-mono text-sm"
                 />
                 <div className="flex gap-2">
-                  <Button onClick={() => saveDocument('certificate_disclaimer')}>
+                  <Button
+                    onClick={() => saveDocument("certificate_disclaimer")}
+                  >
                     <Save className="mr-2 h-4 w-4" />
                     Save Disclaimer
                   </Button>
@@ -324,7 +365,7 @@ export function AdminLegal() {
                         <TableCell>
                           <div>
                             <div className="font-medium">
-                              {agreement.profiles?.full_name || 'Unknown'}
+                              {agreement.profiles?.full_name || "Unknown"}
                             </div>
                             <div className="text-sm text-muted-foreground">
                               {agreement.profiles?.email}
@@ -336,17 +377,21 @@ export function AdminLegal() {
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            {new Date(agreement.accepted_at).toLocaleDateString()}
+                            {new Date(
+                              agreement.accepted_at,
+                            ).toLocaleDateString()}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {new Date(agreement.accepted_at).toLocaleTimeString()}
+                            {new Date(
+                              agreement.accepted_at,
+                            ).toLocaleTimeString()}
                           </div>
                         </TableCell>
                         <TableCell className="font-mono text-sm">
-                          {(agreement.ip_address as string) || '—'}
+                          {(agreement.ip_address as string) || "—"}
                         </TableCell>
                         <TableCell className="text-sm max-w-[200px] truncate">
-                          {(agreement.user_agent as string) || '—'}
+                          {(agreement.user_agent as string) || "—"}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -361,8 +406,12 @@ export function AdminLegal() {
           <Card>
             <CardContent className="p-8 text-center">
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Compliance Dashboard</h3>
-              <p className="text-muted-foreground">Compliance monitoring and reporting features coming soon...</p>
+              <h3 className="text-lg font-semibold mb-2">
+                Compliance Dashboard
+              </h3>
+              <p className="text-muted-foreground">
+                Compliance monitoring and reporting features coming soon...
+              </p>
             </CardContent>
           </Card>
         </TabsContent>

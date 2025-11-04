@@ -6,8 +6,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
@@ -22,7 +32,7 @@ import {
   VideoIcon,
   ArrowLeft,
   Save,
-  Send
+  Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +54,7 @@ const durationOptions = [
 
 export default function CreateLiveEvent() {
   const navigate = useNavigate();
-  
+
   // Form state
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -97,7 +107,7 @@ export default function CreateLiveEvent() {
     setIsPublishing(true);
 
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     toast({
       title: "Event scheduled! 🎉",
@@ -123,7 +133,7 @@ export default function CreateLiveEvent() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           <Button
@@ -165,7 +175,9 @@ export default function CreateLiveEvent() {
                     id="description"
                     placeholder="What will attendees learn in this event?"
                     value={description}
-                    onChange={(e) => setDescription(e.target.value.slice(0, 300))}
+                    onChange={(e) =>
+                      setDescription(e.target.value.slice(0, 300))
+                    }
                     className="min-h-[100px]"
                   />
                   <p className="text-xs text-muted-foreground text-right">
@@ -185,7 +197,7 @@ export default function CreateLiveEvent() {
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
+                            !date && "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
@@ -257,8 +269,13 @@ export default function CreateLiveEvent() {
 
                 {/* Related Course */}
                 <div className="space-y-2 mb-4">
-                  <Label htmlFor="relatedCourse">Related Course (Optional)</Label>
-                  <Select value={relatedCourse} onValueChange={setRelatedCourse}>
+                  <Label htmlFor="relatedCourse">
+                    Related Course (Optional)
+                  </Label>
+                  <Select
+                    value={relatedCourse}
+                    onValueChange={setRelatedCourse}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a course" />
                     </SelectTrigger>
@@ -275,13 +292,15 @@ export default function CreateLiveEvent() {
                 {/* Features */}
                 <div className="space-y-4">
                   <Label>Features</Label>
-                  
+
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="enableChat"
                         checked={enableChat}
-                        onCheckedChange={(checked) => setEnableChat(checked as boolean)}
+                        onCheckedChange={(checked) =>
+                          setEnableChat(checked as boolean)
+                        }
                       />
                       <label
                         htmlFor="enableChat"
@@ -296,7 +315,9 @@ export default function CreateLiveEvent() {
                       <Checkbox
                         id="enableQA"
                         checked={enableQA}
-                        onCheckedChange={(checked) => setEnableQA(checked as boolean)}
+                        onCheckedChange={(checked) =>
+                          setEnableQA(checked as boolean)
+                        }
                       />
                       <label
                         htmlFor="enableQA"
@@ -311,7 +332,9 @@ export default function CreateLiveEvent() {
                       <Checkbox
                         id="enableRecording"
                         checked={enableRecording}
-                        onCheckedChange={(checked) => setEnableRecording(checked as boolean)}
+                        onCheckedChange={(checked) =>
+                          setEnableRecording(checked as boolean)
+                        }
                       />
                       <label
                         htmlFor="enableRecording"
@@ -367,7 +390,8 @@ export default function CreateLiveEvent() {
                     </h3>
 
                     <p className="text-muted-foreground text-sm">
-                      {description || "Your event description will appear here..."}
+                      {description ||
+                        "Your event description will appear here..."}
                     </p>
 
                     <div className="pt-3 space-y-2 border-t">

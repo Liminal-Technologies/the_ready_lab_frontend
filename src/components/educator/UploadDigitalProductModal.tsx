@@ -1,24 +1,36 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Upload } from 'lucide-react';
-import { useSubscription } from '@/hooks/useSubscription';
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Upload } from "lucide-react";
+import { useSubscription } from "@/hooks/useSubscription";
 
 // Map Stripe product IDs to platform fee percentages
 const PLATFORM_FEE_BY_PRODUCT: Record<string, number> = {
   // Starter plan: 10% fee
-  'prod_starter': 10,
+  prod_starter: 10,
   // Professional plan: 6% fee
-  'prod_professional': 6,
+  prod_professional: 6,
   // Enterprise plan: 0% fee
-  'prod_enterprise': 0,
+  prod_enterprise: 0,
 };
 
 const DEFAULT_PLATFORM_FEE = 10; // Default for users without subscription
@@ -30,26 +42,30 @@ interface UploadDigitalProductModalProps {
 }
 
 const productTypes = [
-  'Template',
-  'Guide',
-  'Toolkit',
-  'Worksheet',
-  'Checklist',
-  'Report',
-  'Other',
+  "Template",
+  "Guide",
+  "Toolkit",
+  "Worksheet",
+  "Checklist",
+  "Report",
+  "Other",
 ];
 
-export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: UploadDigitalProductModalProps) => {
+export const UploadDigitalProductModal = ({
+  open,
+  onOpenChange,
+  onSuccess,
+}: UploadDigitalProductModalProps) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    product_type: '',
+    title: "",
+    description: "",
+    product_type: "",
     price: 0,
     is_free: true,
-    file_url: '',
-    preview_url: '',
-    thumbnail_url: '',
+    file_url: "",
+    preview_url: "",
+    thumbnail_url: "",
     tags: [] as string[],
   });
   const { toast } = useToast();
@@ -60,15 +76,18 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
       // Determine platform fee based on educator's subscription tier
-      const platformFee = subscription.product_id 
-        ? (PLATFORM_FEE_BY_PRODUCT[subscription.product_id] || DEFAULT_PLATFORM_FEE)
+      const platformFee = subscription.product_id
+        ? PLATFORM_FEE_BY_PRODUCT[subscription.product_id] ||
+          DEFAULT_PLATFORM_FEE
         : DEFAULT_PLATFORM_FEE;
 
-      const { error } = await supabase.from('digital_products').insert({
+      const { error } = await supabase.from("digital_products").insert({
         title: formData.title,
         description: formData.description,
         product_type: formData.product_type,
@@ -78,7 +97,7 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
         thumbnail_url: formData.thumbnail_url,
         tags: formData.tags,
         educator_id: user.id,
-        status: 'pending',
+        status: "pending",
         platform_fee_percentage: platformFee,
       });
 
@@ -88,22 +107,22 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
         title: "Success",
         description: "Digital product uploaded. Awaiting admin approval.",
       });
-      
+
       onSuccess?.();
       onOpenChange(false);
       setFormData({
-        title: '',
-        description: '',
-        product_type: '',
+        title: "",
+        description: "",
+        product_type: "",
         price: 0,
         is_free: true,
-        file_url: '',
-        preview_url: '',
-        thumbnail_url: '',
+        file_url: "",
+        preview_url: "",
+        thumbnail_url: "",
         tags: [],
       });
     } catch (error) {
-      console.error('Error uploading product:', error);
+      console.error("Error uploading product:", error);
       toast({
         title: "Error",
         description: "Failed to upload product. Please try again.",
@@ -130,7 +149,9 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
             <Input
               id="title"
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               placeholder="e.g., Nonprofit Grant Template"
               required
             />
@@ -141,7 +162,9 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
             <Textarea
               id="description"
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
               placeholder="Describe your product..."
               rows={4}
               required
@@ -152,7 +175,9 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
             <Label htmlFor="product_type">Product Type *</Label>
             <Select
               value={formData.product_type}
-              onValueChange={(value) => setFormData({ ...formData, product_type: value })}
+              onValueChange={(value) =>
+                setFormData({ ...formData, product_type: value })
+              }
               required
             >
               <SelectTrigger>
@@ -177,7 +202,9 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
             </div>
             <Switch
               checked={formData.is_free}
-              onCheckedChange={(checked) => setFormData({ ...formData, is_free: checked })}
+              onCheckedChange={(checked) =>
+                setFormData({ ...formData, is_free: checked })
+              }
             />
           </div>
 
@@ -190,7 +217,12 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
                 min="0"
                 step="0.01"
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    price: parseFloat(e.target.value),
+                  })
+                }
                 required={!formData.is_free}
               />
             </div>
@@ -201,7 +233,9 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
             <Input
               id="file_url"
               value={formData.file_url}
-              onChange={(e) => setFormData({ ...formData, file_url: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, file_url: e.target.value })
+              }
               placeholder="https://example.com/file.pdf"
               required
             />
@@ -215,7 +249,9 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
             <Input
               id="preview_url"
               value={formData.preview_url}
-              onChange={(e) => setFormData({ ...formData, preview_url: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, preview_url: e.target.value })
+              }
               placeholder="https://example.com/preview.pdf"
             />
           </div>
@@ -225,7 +261,9 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
             <Input
               id="thumbnail"
               value={formData.thumbnail_url}
-              onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, thumbnail_url: e.target.value })
+              }
               placeholder="https://example.com/image.jpg"
             />
           </div>
@@ -234,14 +272,23 @@ export const UploadDigitalProductModal = ({ open, onOpenChange, onSuccess }: Upl
             <Label htmlFor="tags">Tags (comma separated)</Label>
             <Input
               id="tags"
-              value={formData.tags.join(', ')}
-              onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()) })}
+              value={formData.tags.join(", ")}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  tags: e.target.value.split(",").map((t) => t.trim()),
+                })
+              }
               placeholder="nonprofit, fundraising, template"
             />
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>

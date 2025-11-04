@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -11,8 +11,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Trash2, Eye } from 'lucide-react';
+} from "@/components/ui/table";
+import { Trash2, Eye } from "lucide-react";
 
 interface Report {
   id: string;
@@ -43,32 +43,36 @@ export const ContentModeration = ({ communityId }: ContentModerationProps) => {
     try {
       // Fetch reports
       const { data: reportsData, error: reportsError } = await supabase
-        .from('post_reports')
-        .select('*')
-        .or(`post_id.in.(select id from posts where community_id=${communityId}),comment_id.in.(select id from post_comments where post_id in (select id from posts where community_id=${communityId}))`)
-        .order('created_at', { ascending: false });
+        .from("post_reports")
+        .select("*")
+        .or(
+          `post_id.in.(select id from posts where community_id=${communityId}),comment_id.in.(select id from post_comments where post_id in (select id from posts where community_id=${communityId}))`,
+        )
+        .order("created_at", { ascending: false });
 
       if (reportsError) throw reportsError;
 
       // Fetch all posts
       const { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select(`
+        .from("posts")
+        .select(
+          `
           *,
           profiles:user_id (
             full_name,
             email
           )
-        `)
-        .eq('community_id', communityId)
-        .order('created_at', { ascending: false });
+        `,
+        )
+        .eq("community_id", communityId)
+        .order("created_at", { ascending: false });
 
       if (postsError) throw postsError;
 
       setReports(reportsData || []);
       setPosts(postsData || []);
     } catch (error) {
-      console.error('Error fetching moderation data:', error);
+      console.error("Error fetching moderation data:", error);
       toast({
         title: "Error",
         description: "Failed to load moderation data",
@@ -80,13 +84,10 @@ export const ContentModeration = ({ communityId }: ContentModerationProps) => {
   };
 
   const handleDeletePost = async (postId: string) => {
-    if (!confirm('Are you sure you want to delete this post?')) return;
+    if (!confirm("Are you sure you want to delete this post?")) return;
 
     try {
-      const { error } = await supabase
-        .from('posts')
-        .delete()
-        .eq('id', postId);
+      const { error } = await supabase.from("posts").delete().eq("id", postId);
 
       if (error) throw error;
 
@@ -96,7 +97,7 @@ export const ContentModeration = ({ communityId }: ContentModerationProps) => {
       });
       fetchReportsAndContent();
     } catch (error) {
-      console.error('Error deleting post:', error);
+      console.error("Error deleting post:", error);
       toast({
         title: "Error",
         description: "Failed to delete post",
@@ -107,17 +108,19 @@ export const ContentModeration = ({ communityId }: ContentModerationProps) => {
 
   const handleResolveReport = async (reportId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
 
       const { error } = await supabase
-        .from('post_reports')
+        .from("post_reports")
         .update({
-          status: 'resolved',
+          status: "resolved",
           reviewed_by: user.id,
           reviewed_at: new Date().toISOString(),
         })
-        .eq('id', reportId);
+        .eq("id", reportId);
 
       if (error) throw error;
 
@@ -127,7 +130,7 @@ export const ContentModeration = ({ communityId }: ContentModerationProps) => {
       });
       fetchReportsAndContent();
     } catch (error) {
-      console.error('Error resolving report:', error);
+      console.error("Error resolving report:", error);
       toast({
         title: "Error",
         description: "Failed to resolve report",
@@ -143,7 +146,9 @@ export const ContentModeration = ({ communityId }: ContentModerationProps) => {
   return (
     <Tabs defaultValue="reports">
       <TabsList>
-        <TabsTrigger value="reports">Reports ({reports.filter(r => r.status === 'pending').length})</TabsTrigger>
+        <TabsTrigger value="reports">
+          Reports ({reports.filter((r) => r.status === "pending").length})
+        </TabsTrigger>
         <TabsTrigger value="posts">All Posts ({posts.length})</TabsTrigger>
       </TabsList>
 
@@ -166,24 +171,32 @@ export const ContentModeration = ({ communityId }: ContentModerationProps) => {
                 <TableRow key={report.id}>
                   <TableCell>
                     <Badge variant="secondary">
-                      {report.post_id ? 'Post' : 'Comment'}
+                      {report.post_id ? "Post" : "Comment"}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <p className="font-medium">{report.reason}</p>
                     {report.details && (
-                      <p className="text-sm text-muted-foreground">{report.details}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {report.details}
+                      </p>
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={report.status === 'pending' ? 'default' : 'secondary'}>
+                    <Badge
+                      variant={
+                        report.status === "pending" ? "default" : "secondary"
+                      }
+                    >
                       {report.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>{new Date(report.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {new Date(report.created_at).toLocaleDateString()}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      {report.status === 'pending' && (
+                      {report.status === "pending" && (
                         <>
                           <Button
                             variant="outline"
@@ -227,18 +240,22 @@ export const ContentModeration = ({ communityId }: ContentModerationProps) => {
             {posts.map((post) => (
               <TableRow key={post.id}>
                 <TableCell>
-                  <p className="font-medium">{post.title || 'Untitled'}</p>
+                  <p className="font-medium">{post.title || "Untitled"}</p>
                   <p className="text-sm text-muted-foreground line-clamp-1">
                     {post.content}
                   </p>
                 </TableCell>
                 <TableCell>
-                  {post.profiles?.full_name || post.profiles?.email || 'Unknown'}
+                  {post.profiles?.full_name ||
+                    post.profiles?.email ||
+                    "Unknown"}
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary">{post.post_type}</Badge>
                 </TableCell>
-                <TableCell>{new Date(post.created_at).toLocaleDateString()}</TableCell>
+                <TableCell>
+                  {new Date(post.created_at).toLocaleDateString()}
+                </TableCell>
                 <TableCell className="text-right">
                   <Button
                     variant="destructive"

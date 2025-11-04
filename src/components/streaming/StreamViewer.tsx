@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Eye } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useStreamPresence } from '@/hooks/useStreamPresence';
+import { useEffect, useRef, useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Users, Eye } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useStreamPresence } from "@/hooks/useStreamPresence";
 
 interface StreamViewerProps {
   eventId: string;
@@ -13,7 +13,7 @@ interface StreamViewerProps {
 
 export const StreamViewer = ({ eventId, status }: StreamViewerProps) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [username, setUsername] = useState('Viewer');
+  const [username, setUsername] = useState("Viewer");
   const videoRef = useRef<HTMLVideoElement>(null);
   const { viewerCount } = useStreamPresence(eventId, username);
 
@@ -22,28 +22,30 @@ export const StreamViewer = ({ eventId, status }: StreamViewerProps) => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', user.id)
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user.id)
           .single()
           .then(({ data }) => {
-            setUsername(data?.full_name || user.email?.split('@')[0] || 'Viewer');
+            setUsername(
+              data?.full_name || user.email?.split("@")[0] || "Viewer",
+            );
           });
       }
     });
   }, []);
 
   useEffect(() => {
-    if (status === 'live') {
+    if (status === "live") {
       // Simulate loading for demo
       setTimeout(() => setIsLoading(false), 1000);
-      
+
       // In production, this would connect to the broadcaster's WebRTC stream
       // For now, we'll just show a placeholder
     }
   }, [status]);
 
-  if (status === 'scheduled') {
+  if (status === "scheduled") {
     return (
       <Card className="aspect-video flex items-center justify-center bg-muted">
         <div className="text-center p-8">
@@ -56,7 +58,7 @@ export const StreamViewer = ({ eventId, status }: StreamViewerProps) => {
     );
   }
 
-  if (status === 'completed') {
+  if (status === "completed") {
     return (
       <Card className="aspect-video flex items-center justify-center bg-muted">
         <div className="text-center p-8">
@@ -83,11 +85,9 @@ export const StreamViewer = ({ eventId, status }: StreamViewerProps) => {
               controls
               className="w-full h-full object-cover"
             />
-            
+
             <div className="absolute top-4 left-4 flex gap-2">
-              <Badge className="bg-red-500 animate-pulse">
-                🔴 LIVE
-              </Badge>
+              <Badge className="bg-red-500 animate-pulse">🔴 LIVE</Badge>
               <Badge variant="secondary" className="bg-black/50">
                 <Users className="h-3 w-3 mr-1" />
                 {viewerCount}

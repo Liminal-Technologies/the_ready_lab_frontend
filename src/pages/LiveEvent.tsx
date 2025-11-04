@@ -1,18 +1,18 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, MonitorUp, StopCircle, Clock } from 'lucide-react';
-import { StreamViewer } from '@/components/streaming/StreamViewer';
-import { StreamBroadcaster } from '@/components/streaming/StreamBroadcaster';
-import { StreamChat } from '@/components/streaming/StreamChat';
-import { QAPanel } from '@/components/streaming/QAPanel';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { toast } from '@/hooks/use-toast';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, MonitorUp, StopCircle, Clock } from "lucide-react";
+import { StreamViewer } from "@/components/streaming/StreamViewer";
+import { StreamBroadcaster } from "@/components/streaming/StreamBroadcaster";
+import { StreamChat } from "@/components/streaming/StreamChat";
+import { QAPanel } from "@/components/streaming/QAPanel";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { toast } from "@/hooks/use-toast";
 
 interface LiveEventData {
   id: string;
@@ -24,7 +24,7 @@ interface LiveEventData {
   end_time: string;
   duration: number;
   viewer_count: number;
-  status: 'scheduled' | 'live' | 'completed';
+  status: "scheduled" | "live" | "completed";
   recording_enabled: boolean;
   educator_id: string;
 }
@@ -36,7 +36,7 @@ export default function LiveEvent() {
   const [loading, setLoading] = useState(true);
   const [isEducator, setIsEducator] = useState(false);
   const [canJoin, setCanJoin] = useState(false);
-  const [timeUntilStart, setTimeUntilStart] = useState('');
+  const [timeUntilStart, setTimeUntilStart] = useState("");
 
   useEffect(() => {
     loadEventData();
@@ -47,25 +47,29 @@ export default function LiveEvent() {
   const loadEventData = () => {
     // Mock event data - in production, fetch from API
     const mockEvent: LiveEventData = {
-      id: eventId || '1',
-      title: 'Advanced React Patterns Masterclass',
-      description: 'Learn advanced React patterns including compound components, render props, and custom hooks.',
-      educator_name: 'Dr. Sarah Chen',
-      educator_avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+      id: eventId || "1",
+      title: "Advanced React Patterns Masterclass",
+      description:
+        "Learn advanced React patterns including compound components, render props, and custom hooks.",
+      educator_name: "Dr. Sarah Chen",
+      educator_avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
       start_time: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // 5 minutes from now
       end_time: new Date(Date.now() + 95 * 60 * 1000).toISOString(), // 95 minutes from now
       duration: 90,
       viewer_count: 234,
-      status: 'live',
+      status: "live",
       recording_enabled: true,
-      educator_id: 'educator-1',
+      educator_id: "educator-1",
     };
 
     setEvent(mockEvent);
     setLoading(false);
 
     // Mock educator check - in production, check against actual user ID
-    const mockUserId = localStorage.getItem('userRole') === 'educator' ? 'educator-1' : 'student-1';
+    const mockUserId =
+      localStorage.getItem("userRole") === "educator"
+        ? "educator-1"
+        : "student-1";
     setIsEducator(mockUserId === mockEvent.educator_id);
 
     checkEventTiming(mockEvent);
@@ -77,18 +81,23 @@ export default function LiveEvent() {
     const now = new Date();
     const startTime = new Date(eventData.start_time);
     const endTime = new Date(eventData.end_time);
-    const minutesUntilStart = Math.floor((startTime.getTime() - now.getTime()) / 60000);
+    const minutesUntilStart = Math.floor(
+      (startTime.getTime() - now.getTime()) / 60000,
+    );
 
     if (now > endTime) {
-      setEvent({ ...eventData, status: 'completed' });
+      setEvent({ ...eventData, status: "completed" });
       setCanJoin(false);
-    } else if (minutesUntilStart <= 15 && minutesUntilStart >= -eventData.duration) {
-      setEvent({ ...eventData, status: 'live' });
+    } else if (
+      minutesUntilStart <= 15 &&
+      minutesUntilStart >= -eventData.duration
+    ) {
+      setEvent({ ...eventData, status: "live" });
       setCanJoin(true);
     } else {
-      setEvent({ ...eventData, status: 'scheduled' });
+      setEvent({ ...eventData, status: "scheduled" });
       setCanJoin(false);
-      
+
       if (minutesUntilStart > 0) {
         const hours = Math.floor(minutesUntilStart / 60);
         const mins = minutesUntilStart % 60;
@@ -110,7 +119,7 @@ export default function LiveEvent() {
       description: "The live stream has been ended successfully",
       variant: "destructive",
     });
-    setTimeout(() => navigate('/dashboard'), 2000);
+    setTimeout(() => navigate("/dashboard"), 2000);
   };
 
   if (loading) {
@@ -131,7 +140,7 @@ export default function LiveEvent() {
         <main className="container mx-auto px-4 py-8">
           <Card className="p-8 text-center">
             <h2 className="text-2xl font-bold mb-4">Event Not Found</h2>
-            <Button onClick={() => navigate('/explore')}>Browse Events</Button>
+            <Button onClick={() => navigate("/explore")}>Browse Events</Button>
           </Card>
         </main>
       </div>
@@ -139,7 +148,7 @@ export default function LiveEvent() {
   }
 
   // Pre-event state
-  if (event.status === 'scheduled' && !canJoin) {
+  if (event.status === "scheduled" && !canJoin) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -151,14 +160,13 @@ export default function LiveEvent() {
               Event hasn't started yet
             </p>
             <div className="text-lg mb-8">
-              Starts in <span className="font-bold text-primary">{timeUntilStart}</span>
+              Starts in{" "}
+              <span className="font-bold text-primary">{timeUntilStart}</span>
             </div>
             <p className="text-sm text-muted-foreground mb-6">
               Come back within 15 minutes of the start time to join
             </p>
-            <Button onClick={() => navigate('/explore')}>
-              Back to Events
-            </Button>
+            <Button onClick={() => navigate("/explore")}>Back to Events</Button>
           </Card>
         </main>
         <Footer />
@@ -167,7 +175,7 @@ export default function LiveEvent() {
   }
 
   // Post-event state
-  if (event.status === 'completed') {
+  if (event.status === "completed") {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -181,10 +189,10 @@ export default function LiveEvent() {
               Check back for future events or view recorded sessions
             </p>
             <div className="flex gap-4 justify-center">
-              <Button onClick={() => navigate('/explore')}>
+              <Button onClick={() => navigate("/explore")}>
                 Browse Events
               </Button>
-              <Button variant="outline" onClick={() => navigate('/courses')}>
+              <Button variant="outline" onClick={() => navigate("/courses")}>
                 View Courses
               </Button>
             </div>
@@ -199,7 +207,7 @@ export default function LiveEvent() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {event.recording_enabled && (
         <div className="bg-destructive/10 border-b border-destructive/20 py-2 px-4">
           <p className="text-center text-sm text-destructive font-medium">
@@ -222,13 +230,16 @@ export default function LiveEvent() {
               ) : (
                 <StreamViewer eventId={event.id} status={event.status} />
               )}
-              
-              {event.status === 'live' && !isEducator && (
+
+              {event.status === "live" && !isEducator && (
                 <div className="absolute top-4 left-4 flex gap-2">
                   <Badge className="bg-destructive animate-pulse">
                     🔴 LIVE
                   </Badge>
-                  <Badge variant="secondary" className="bg-background/80 backdrop-blur">
+                  <Badge
+                    variant="secondary"
+                    className="bg-background/80 backdrop-blur"
+                  >
                     <Users className="h-3 w-3 mr-1" />
                     {event.viewer_count} watching
                   </Badge>
@@ -269,7 +280,9 @@ export default function LiveEvent() {
                   </Button>
                 </div>
                 <div className="mt-4 pt-4 border-t">
-                  <h4 className="text-sm font-medium mb-2">Participants ({event.viewer_count})</h4>
+                  <h4 className="text-sm font-medium mb-2">
+                    Participants ({event.viewer_count})
+                  </h4>
                   <div className="space-y-2 max-h-32 overflow-y-auto">
                     {[...Array(5)].map((_, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm">

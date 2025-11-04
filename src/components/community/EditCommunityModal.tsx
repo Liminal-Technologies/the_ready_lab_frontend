@@ -1,24 +1,24 @@
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Loader2, X } from 'lucide-react';
+} from "@/components/ui/select";
+import { Loader2, X } from "lucide-react";
 
 interface Community {
   id: string;
@@ -36,13 +36,20 @@ interface EditCommunityModalProps {
   onSuccess: () => void;
 }
 
-export const EditCommunityModal = ({ community, open, onOpenChange, onSuccess }: EditCommunityModalProps) => {
+export const EditCommunityModal = ({
+  community,
+  open,
+  onOpenChange,
+  onSuccess,
+}: EditCommunityModalProps) => {
   const [name, setName] = useState(community.name);
-  const [description, setDescription] = useState(community.description || '');
+  const [description, setDescription] = useState(community.description || "");
   const [visibility, setVisibility] = useState(community.visibility);
-  const [rules, setRules] = useState(community.rules || '');
+  const [rules, setRules] = useState(community.rules || "");
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
-  const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(community.cover_photo);
+  const [coverPhotoPreview, setCoverPhotoPreview] = useState<string | null>(
+    community.cover_photo,
+  );
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -61,7 +68,7 @@ export const EditCommunityModal = ({ community, open, onOpenChange, onSuccess }:
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       toast({
         title: "Invalid file type",
         description: "Please upload an image file",
@@ -92,19 +99,19 @@ export const EditCommunityModal = ({ community, open, onOpenChange, onSuccess }:
       let coverPhotoUrl = community.cover_photo;
 
       if (coverPhoto) {
-        const fileExt = coverPhoto.name.split('.').pop();
+        const fileExt = coverPhoto.name.split(".").pop();
         const fileName = `${community.id}-${Math.random()}.${fileExt}`;
         const filePath = `community-covers/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
-          .from('videos')
+          .from("videos")
           .upload(filePath, coverPhoto, { upsert: true });
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('videos')
-          .getPublicUrl(filePath);
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("videos").getPublicUrl(filePath);
 
         coverPhotoUrl = publicUrl;
       } else if (coverPhotoPreview === null) {
@@ -112,7 +119,7 @@ export const EditCommunityModal = ({ community, open, onOpenChange, onSuccess }:
       }
 
       const { error } = await supabase
-        .from('communities')
+        .from("communities")
         .update({
           name: name.trim(),
           description: description.trim() || null,
@@ -121,7 +128,7 @@ export const EditCommunityModal = ({ community, open, onOpenChange, onSuccess }:
           cover_photo: coverPhotoUrl,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', community.id);
+        .eq("id", community.id);
 
       if (error) throw error;
 
@@ -133,7 +140,7 @@ export const EditCommunityModal = ({ community, open, onOpenChange, onSuccess }:
       onSuccess();
       onOpenChange(false);
     } catch (error) {
-      console.error('Error updating community:', error);
+      console.error("Error updating community:", error);
       toast({
         title: "Error",
         description: "Failed to update community",
@@ -208,7 +215,9 @@ export const EditCommunityModal = ({ community, open, onOpenChange, onSuccess }:
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="open">Open - Anyone can join</SelectItem>
-                <SelectItem value="private">Private - Approval required</SelectItem>
+                <SelectItem value="private">
+                  Private - Approval required
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -225,7 +234,11 @@ export const EditCommunityModal = ({ community, open, onOpenChange, onSuccess }:
           </div>
 
           <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>

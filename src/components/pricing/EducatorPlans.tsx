@@ -1,6 +1,12 @@
 import { Check, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 const EducatorPlans = () => {
@@ -14,8 +20,8 @@ const EducatorPlans = () => {
         "Upload 1 product",
         "Basic community features",
         "TRL branding",
-        "0% fee on first 10 enrollments"
-      ]
+        "0% fee on first 10 enrollments",
+      ],
     },
     {
       name: "Creator Basic",
@@ -27,8 +33,8 @@ const EducatorPlans = () => {
         "8% platform fee per sale",
         "TRL branding",
         "Basic analytics",
-        "Access to TRL creator community"
-      ]
+        "Access to TRL creator community",
+      ],
     },
     {
       name: "Creator Pro",
@@ -40,8 +46,8 @@ const EducatorPlans = () => {
         "2–5% platform fee",
         "Custom domains + branded storefront",
         "Affiliate tools + course bundles",
-        "Advanced analytics"
-      ]
+        "Advanced analytics",
+      ],
     },
     {
       name: "Premium",
@@ -54,9 +60,9 @@ const EducatorPlans = () => {
         "White-label options",
         "API integrations",
         "Dedicated onboarding and support",
-        "Eligible for TRL educator certification"
-      ]
-    }
+        "Eligible for TRL educator certification",
+      ],
+    },
   ];
 
   const includedFeatures = [
@@ -64,7 +70,7 @@ const EducatorPlans = () => {
     "Community creation tools and student engagement features",
     "AI tools for lesson planning + content prompts",
     "Custom storefront capabilities with your branding",
-    "Access to verified educator track (apply to be certified)"
+    "Access to verified educator track (apply to be certified)",
   ];
 
   return (
@@ -73,22 +79,27 @@ const EducatorPlans = () => {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 mb-4">
             <GraduationCap className="w-4 h-4 text-amber-600" />
-            <span className="text-amber-600 font-semibold uppercase tracking-wider text-sm">EDUCATOR & CREATOR PLANS</span>
+            <span className="text-amber-600 font-semibold uppercase tracking-wider text-sm">
+              EDUCATOR & CREATOR PLANS
+            </span>
           </div>
           <h2 className="text-3xl font-bold text-foreground mb-3">
             For Experts Ready to Teach and Earn
           </h2>
           <p className="text-muted-foreground mb-4">
-            Share your expertise with free tools to get started, then scale with powerful creator features
+            Share your expertise with free tools to get started, then scale with
+            powerful creator features
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {educatorPlans.map((plan, index) => (
-            <Card 
-              key={index} 
+            <Card
+              key={index}
               className={`relative transition-all duration-300 hover:shadow-lg ${
-                plan.popular ? 'border-primary shadow-md ring-2 ring-primary/20' : 'border-border'
+                plan.popular
+                  ? "border-primary shadow-md ring-2 ring-primary/20"
+                  : "border-border"
               }`}
             >
               {plan.popular && (
@@ -98,25 +109,29 @@ const EducatorPlans = () => {
                   </Badge>
                 </div>
               )}
-              
+
               <CardHeader className="text-center pb-4">
                 <CardTitle className="text-lg mb-2">{plan.name}</CardTitle>
                 <div className="flex items-baseline justify-center gap-1 mb-4">
-                  <span className="text-2xl font-bold text-foreground">{plan.price}</span>
-                  <span className="text-xs text-muted-foreground">{plan.duration}</span>
+                  <span className="text-2xl font-bold text-foreground">
+                    {plan.price}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {plan.duration}
+                  </span>
                 </div>
-                <Button 
+                <Button
                   className={`w-full ${
-                    plan.popular 
-                      ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
-                      : 'variant-outline border-primary text-primary hover:bg-primary hover:text-primary-foreground'
+                    plan.popular
+                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
+                      : "variant-outline border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                   }`}
                   size="sm"
                 >
                   Get Started
                 </Button>
               </CardHeader>
-              
+
               <CardContent className="pt-0">
                 <ul className="space-y-2">
                   {plan.features.map((feature, idx) => (
@@ -124,7 +139,9 @@ const EducatorPlans = () => {
                       <div className="w-3 h-3 rounded-full bg-green-100 flex items-center justify-center mt-1 flex-shrink-0">
                         <Check className="w-2 h-2 text-green-600" />
                       </div>
-                      <span className="text-xs text-foreground leading-relaxed">{feature}</span>
+                      <span className="text-xs text-foreground leading-relaxed">
+                        {feature}
+                      </span>
                     </li>
                   ))}
                 </ul>

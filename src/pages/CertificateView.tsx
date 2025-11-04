@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Download, Share2, Copy, CheckCircle2, ArrowLeft } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { format } from 'date-fns';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Download, Share2, Copy, CheckCircle2, ArrowLeft } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { format } from "date-fns";
 
 interface CertificateData {
   id: string;
@@ -31,12 +31,14 @@ export default function CertificateView() {
   const loadCertificate = async () => {
     // Mock certificate data - in production, fetch from API
     const mockCertificate: CertificateData = {
-      id: certificateId || '1',
-      studentName: 'Alex Johnson',
-      courseTitle: 'Advanced React Development & Best Practices',
+      id: certificateId || "1",
+      studentName: "Alex Johnson",
+      courseTitle: "Advanced React Development & Best Practices",
       dateIssued: new Date().toISOString(),
       serialNumber: `TRL-${Math.random().toString(36).substr(2, 4).toUpperCase()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
-      qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://thereadylab.com/verify/' + certificateId,
+      qrCodeUrl:
+        "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://thereadylab.com/verify/" +
+        certificateId,
     };
 
     setCertificate(mockCertificate);
@@ -53,10 +55,10 @@ export default function CertificateView() {
 
   const handleShareLinkedIn = () => {
     if (!certificate) return;
-    
+
     const linkedInText = `I'm excited to share that I've completed ${certificate.courseTitle} on The Ready Lab! 🎓`;
     const verificationUrl = `https://thereadylab.com/verify/${certificate.serialNumber}`;
-    
+
     toast({
       title: "Share to LinkedIn",
       description: linkedInText,
@@ -66,10 +68,10 @@ export default function CertificateView() {
 
   const handleCopyVerificationLink = () => {
     if (!certificate) return;
-    
+
     const verificationUrl = `https://thereadylab.com/verify/${certificate.serialNumber}`;
     navigator.clipboard.writeText(verificationUrl);
-    
+
     toast({
       title: "Link copied!",
       description: "Verification link copied to clipboard",
@@ -94,7 +96,9 @@ export default function CertificateView() {
         <main className="container mx-auto px-4 py-8">
           <Card className="p-8 text-center max-w-2xl mx-auto">
             <h2 className="text-2xl font-bold mb-4">Certificate Not Found</h2>
-            <Button onClick={() => navigate('/certificates')}>View My Certificates</Button>
+            <Button onClick={() => navigate("/certificates")}>
+              View My Certificates
+            </Button>
           </Card>
         </main>
       </div>
@@ -112,7 +116,7 @@ export default function CertificateView() {
           <div className="no-print mb-6">
             <Button
               variant="ghost"
-              onClick={() => navigate('/certificates')}
+              onClick={() => navigate("/certificates")}
               className="mb-4"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -181,7 +185,10 @@ export default function CertificateView() {
                         Date Issued
                       </p>
                       <p className="text-lg font-semibold">
-                        {format(new Date(certificate.dateIssued), 'MMMM d, yyyy')}
+                        {format(
+                          new Date(certificate.dateIssued),
+                          "MMMM d, yyyy",
+                        )}
                       </p>
                     </div>
                     <div className="text-center">
@@ -222,7 +229,9 @@ export default function CertificateView() {
                   <div className="pt-12 print:pt-16">
                     <div className="w-64 mx-auto border-t-2 border-muted pt-2">
                       <p className="text-sm font-semibold">The Ready Lab</p>
-                      <p className="text-xs text-muted-foreground">Authorized Signature</p>
+                      <p className="text-xs text-muted-foreground">
+                        Authorized Signature
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -231,11 +240,7 @@ export default function CertificateView() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 no-print">
-              <Button
-                onClick={handleDownloadPDF}
-                className="flex-1"
-                size="lg"
-              >
+              <Button onClick={handleDownloadPDF} className="flex-1" size="lg">
                 <Download className="h-5 w-5 mr-2" />
                 Download PDF
               </Button>
@@ -266,7 +271,8 @@ export default function CertificateView() {
                 Certificate Verification
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                This certificate can be verified at any time by scanning the QR code or visiting:
+                This certificate can be verified at any time by scanning the QR
+                code or visiting:
               </p>
               <code className="text-xs bg-muted px-3 py-2 rounded block">
                 https://thereadylab.com/verify/{certificate.serialNumber}

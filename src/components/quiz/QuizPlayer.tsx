@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { CheckCircle, XCircle, Clock } from "lucide-react";
 
 interface QuizQuestion {
   id: string;
@@ -24,7 +30,12 @@ interface QuizPlayerProps {
   onComplete: (passed: boolean, score: number) => void;
 }
 
-export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: QuizPlayerProps) => {
+export const QuizPlayer = ({
+  quizId,
+  quizTitle,
+  passThreshold,
+  onComplete,
+}: QuizPlayerProps) => {
   const { toast } = useToast();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -43,28 +54,34 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
   const fetchQuestions = async () => {
     try {
       const { data, error } = await supabase
-        .from('quiz_questions')
-        .select('*')
-        .eq('quiz_id', quizId)
-        .order('order_index');
+        .from("quiz_questions")
+        .select("*")
+        .eq("quiz_id", quizId)
+        .order("order_index");
 
       if (error) throw error;
 
-      const formattedQuestions: QuizQuestion[] = data.map(q => {
+      const formattedQuestions: QuizQuestion[] = data.map((q) => {
         // Parse options from JSON
-        const options = Array.isArray(q.options) 
-          ? q.options as string[]
-          : typeof q.options === 'object' && q.options !== null
-          ? Object.values(q.options as Record<string, unknown>).filter((v): v is string => typeof v === 'string')
-          : [];
+        const options = Array.isArray(q.options)
+          ? (q.options as string[])
+          : typeof q.options === "object" && q.options !== null
+            ? Object.values(q.options as Record<string, unknown>).filter(
+                (v): v is string => typeof v === "string",
+              )
+            : [];
 
         // Parse correct answer
         let correctAnswer = 0;
-        if (typeof q.correct_answer === 'number') {
+        if (typeof q.correct_answer === "number") {
           correctAnswer = q.correct_answer;
-        } else if (typeof q.correct_answer === 'object' && q.correct_answer !== null) {
+        } else if (
+          typeof q.correct_answer === "object" &&
+          q.correct_answer !== null
+        ) {
           const answerObj = q.correct_answer as Record<string, unknown>;
-          correctAnswer = typeof answerObj.answer === 'number' ? answerObj.answer : 0;
+          correctAnswer =
+            typeof answerObj.answer === "number" ? answerObj.answer : 0;
         }
 
         return {
@@ -72,17 +89,17 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
           question_text: q.question_text,
           options,
           correct_answer: correctAnswer,
-          explanation: q.explanation || '',
+          explanation: q.explanation || "",
         };
       });
 
       setQuestions(formattedQuestions);
     } catch (error) {
-      console.error('Error fetching questions:', error);
+      console.error("Error fetching questions:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to load quiz questions',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to load quiz questions",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -118,7 +135,7 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
 
   const completeQuiz = async () => {
     const correctAnswers = questions.filter(
-      (q) => answers[q.id] === q.correct_answer
+      (q) => answers[q.id] === q.correct_answer,
     ).length;
     const finalScore = Math.round((correctAnswers / questions.length) * 100);
     const passed = finalScore >= passThreshold;
@@ -130,7 +147,7 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
     try {
       const { data: user } = await supabase.auth.getUser();
       if (user?.user) {
-        await supabase.from('quiz_attempts').insert({
+        await supabase.from("quiz_attempts").insert({
           user_id: user.user.id,
           quiz_id: quizId,
           lesson_id: null as any, // Required by schema but we have quiz_id
@@ -141,7 +158,7 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
         });
       }
     } catch (error) {
-      console.error('Error saving quiz attempt:', error);
+      console.error("Error saving quiz attempt:", error);
     }
 
     onComplete(passed, finalScore);
@@ -161,7 +178,9 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
     return (
       <Card>
         <CardContent className="p-8">
-          <p className="text-center text-muted-foreground">No questions available for this quiz.</p>
+          <p className="text-center text-muted-foreground">
+            No questions available for this quiz.
+          </p>
         </CardContent>
       </Card>
     );
@@ -178,7 +197,8 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
         </CardHeader>
         <CardContent>
           <p className="mb-4 text-muted-foreground">
-            Answer all questions to complete this quiz. You need {passThreshold}% to pass.
+            Answer all questions to complete this quiz. You need {passThreshold}
+            % to pass.
           </p>
           <Button onClick={() => setQuizStarted(true)} className="w-full">
             Start Quiz
@@ -226,10 +246,10 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
               setSelectedAnswer(null);
               setShowFeedback(false);
             }}
-            variant={passed ? 'outline' : 'default'}
+            variant={passed ? "outline" : "default"}
             className="w-full"
           >
-            {passed ? 'Retake Quiz' : 'Try Again'}
+            {passed ? "Retake Quiz" : "Try Again"}
           </Button>
         </CardContent>
       </Card>
@@ -249,10 +269,15 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
           </CardDescription>
           <Progress value={progress} className="w-32" />
         </div>
-        <CardTitle className="text-lg">{currentQuestion.question_text}</CardTitle>
+        <CardTitle className="text-lg">
+          {currentQuestion.question_text}
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <RadioGroup value={selectedAnswer?.toString()} onValueChange={(v) => handleAnswerSelect(parseInt(v))}>
+        <RadioGroup
+          value={selectedAnswer?.toString()}
+          onValueChange={(v) => handleAnswerSelect(parseInt(v))}
+        >
           <div className="space-y-3">
             {currentQuestion.options.map((option, index) => (
               <div
@@ -260,16 +285,20 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
                 className={`flex items-center space-x-2 p-3 rounded-lg border transition-colors ${
                   showFeedback
                     ? index === currentQuestion.correct_answer
-                      ? 'bg-green-50 border-green-500'
+                      ? "bg-green-50 border-green-500"
                       : index === selectedAnswer && !isCorrect
-                      ? 'bg-red-50 border-red-500'
-                      : 'border-muted'
+                        ? "bg-red-50 border-red-500"
+                        : "border-muted"
                     : selectedAnswer === index
-                    ? 'border-primary bg-primary/5'
-                    : 'border-muted hover:border-primary/50'
+                      ? "border-primary bg-primary/5"
+                      : "border-muted hover:border-primary/50"
                 }`}
               >
-                <RadioGroupItem value={index.toString()} id={`option-${index}`} disabled={showFeedback} />
+                <RadioGroupItem
+                  value={index.toString()}
+                  id={`option-${index}`}
+                  disabled={showFeedback}
+                />
                 <Label
                   htmlFor={`option-${index}`}
                   className="flex-1 cursor-pointer"
@@ -288,9 +317,11 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
         </RadioGroup>
 
         {showFeedback && (
-          <Alert className={`mt-4 ${isCorrect ? 'border-green-500' : 'border-red-500'}`}>
+          <Alert
+            className={`mt-4 ${isCorrect ? "border-green-500" : "border-red-500"}`}
+          >
             <AlertDescription>
-              <strong>{isCorrect ? 'Correct!' : 'Incorrect.'}</strong>
+              <strong>{isCorrect ? "Correct!" : "Incorrect."}</strong>
               <p className="mt-1 text-sm">{currentQuestion.explanation}</p>
             </AlertDescription>
           </Alert>
@@ -307,7 +338,9 @@ export const QuizPlayer = ({ quizId, quizTitle, passThreshold, onComplete }: Qui
             </Button>
           ) : (
             <Button onClick={handleNextQuestion} className="flex-1">
-              {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Complete Quiz'}
+              {currentQuestionIndex < questions.length - 1
+                ? "Next Question"
+                : "Complete Quiz"}
             </Button>
           )}
         </div>

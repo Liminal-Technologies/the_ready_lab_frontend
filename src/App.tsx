@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/components/ThemeProvider";
 
 import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
@@ -56,13 +55,11 @@ import Onboarding from "./pages/Onboarding";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { AIChatWidget } from "@/components/ai/AIChatWidget";
 
-
-
 const AppContent = () => {
   const { auth } = useAuth();
-  
-  console.log('AppContent auth state:', auth);
-  
+
+  console.log("AppContent auth state:", auth);
+
   // Show loading state while auth is being determined
   if (auth.loading) {
     return (
@@ -74,7 +71,7 @@ const AppContent = () => {
       </div>
     );
   }
-  
+
   // If user is authenticated, show both platform and dashboard routes
   if (auth.user) {
     return (
@@ -100,7 +97,10 @@ const AppContent = () => {
           <Route path="/courses/:courseId" element={<CourseDetail />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id/download" element={<ProductDownload />} />
-          <Route path="/courses/:courseId/lessons/:lessonId" element={<CourseLessonPlayer />} />
+          <Route
+            path="/courses/:courseId/lessons/:lessonId"
+            element={<CourseLessonPlayer />}
+          />
           <Route path="/educator-demo" element={<EducatorProfileDemo />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<DashboardRouter />} />
@@ -112,81 +112,120 @@ const AppContent = () => {
           <Route path="/educator/events/create" element={<CreateLiveEvent />} />
           <Route path="/educator/products/create" element={<CreateProduct />} />
           <Route path="/certificates" element={<MyCertificates />} />
-          <Route path="/certificates/:certificateId" element={<CertificateView />} />
+          <Route
+            path="/certificates/:certificateId"
+            element={<CertificateView />}
+          />
           <Route path="/my-purchases" element={<MyPurchases />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
-        
-        {/* Admin routes */}
-        <Route path="/admin" element={
-          <AdminLayout>
-            <AdminOverview />
-          </AdminLayout>
-        } />
-        <Route path="/admin/users" element={
-          <AdminLayout>
-            <AdminUsers />
-          </AdminLayout>
-        } />
-        <Route path="/admin/courses/*" element={
-          <AdminLayout>
-            <AdminCourses />
-          </AdminLayout>
-        } />
-        <Route path="/admin/communities" element={
-          <AdminLayout>
-            <AdminCommunities />
-          </AdminLayout>
-        } />
-        <Route path="/admin/products" element={
-          <AdminLayout>
-            <AdminProducts />
-          </AdminLayout>
-        } />
-        <Route path="/admin/payments" element={
-          <AdminLayout>
-            <AdminPayments />
-          </AdminLayout>
-        } />
-        <Route path="/admin/institutions" element={
-          <AdminLayout>
-            <AdminInstitutions />
-          </AdminLayout>
-        } />
-        <Route path="/admin/ai" element={
-          <AdminLayout>
-            <AdminAI />
-          </AdminLayout>
-        } />
-        <Route path="/admin/legal" element={
-          <AdminLayout>
-            <AdminLegal />
-          </AdminLayout>
-        } />
-        <Route path="/admin/settings" element={
-          <AdminLayout>
-            <AdminSettings />
-          </AdminLayout>
-        } />
-        <Route path="/admin/profile" element={
-          <AdminLayout>
-            <AdminSettings />
-          </AdminLayout>
-        } />
-        <Route path="/admin/audit-logs" element={
-          <AdminLayout>
-            <AdminAuditLogs />
-          </AdminLayout>
-        } />
-        
-        <Route path="*" element={<NotFound />} />
+
+          {/* Admin routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminLayout>
+                <AdminOverview />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminLayout>
+                <AdminUsers />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/courses/*"
+            element={
+              <AdminLayout>
+                <AdminCourses />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/communities"
+            element={
+              <AdminLayout>
+                <AdminCommunities />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/products"
+            element={
+              <AdminLayout>
+                <AdminProducts />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/payments"
+            element={
+              <AdminLayout>
+                <AdminPayments />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/institutions"
+            element={
+              <AdminLayout>
+                <AdminInstitutions />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/ai"
+            element={
+              <AdminLayout>
+                <AdminAI />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/legal"
+            element={
+              <AdminLayout>
+                <AdminLegal />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/settings"
+            element={
+              <AdminLayout>
+                <AdminSettings />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/profile"
+            element={
+              <AdminLayout>
+                <AdminSettings />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/audit-logs"
+            element={
+              <AdminLayout>
+                <AdminAuditLogs />
+              </AdminLayout>
+            }
+          />
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <AIChatWidget />
         <MobileBottomNav />
       </>
     );
   }
-  
+
   // Otherwise show public pages only
   return (
     <>
@@ -222,15 +261,13 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </TooltipProvider>
-  </ThemeProvider>
+  <TooltipProvider>
+    <Toaster />
+    <Sonner />
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  </TooltipProvider>
 );
 
 export default App;

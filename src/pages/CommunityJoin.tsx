@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, Loader2 } from "lucide-react";
@@ -33,15 +39,15 @@ const CommunityJoin = () => {
   const fetchCommunities = async () => {
     try {
       const { data, error } = await supabase
-        .from('communities')
-        .select('*')
-        .eq('visibility', 'open')
-        .order('member_count', { ascending: false });
+        .from("communities")
+        .select("*")
+        .eq("visibility", "open")
+        .order("member_count", { ascending: false });
 
       if (error) throw error;
       setCommunities(data || []);
     } catch (error) {
-      console.error('Error fetching communities:', error);
+      console.error("Error fetching communities:", error);
       toast({
         title: "Error",
         description: "Failed to load communities",
@@ -55,8 +61,10 @@ const CommunityJoin = () => {
   const handleJoinCommunity = async (communityId: string) => {
     try {
       setJoiningId(communityId);
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         toast({
           title: "Authentication required",
@@ -66,16 +74,14 @@ const CommunityJoin = () => {
         return;
       }
 
-      const { error } = await supabase
-        .from('community_members')
-        .insert({
-          community_id: communityId,
-          user_id: user.id,
-          role: 'member',
-        });
+      const { error } = await supabase.from("community_members").insert({
+        community_id: communityId,
+        user_id: user.id,
+        role: "member",
+      });
 
       if (error) {
-        if (error.code === '23505') {
+        if (error.code === "23505") {
           toast({
             title: "Already a member",
             description: "You're already part of this community",
@@ -91,7 +97,7 @@ const CommunityJoin = () => {
         navigate(`/community/${communityId}`);
       }
     } catch (error) {
-      console.error('Error joining community:', error);
+      console.error("Error joining community:", error);
       toast({
         title: "Error",
         description: "Failed to join community",
@@ -125,7 +131,8 @@ const CommunityJoin = () => {
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold mb-4">Join a Community</h1>
               <p className="text-lg text-muted-foreground">
-                Connect with like-minded learners and professionals in your field
+                Connect with like-minded learners and professionals in your
+                field
               </p>
             </div>
 
@@ -133,11 +140,13 @@ const CommunityJoin = () => {
               <Card>
                 <CardContent className="py-12 text-center">
                   <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No communities yet</h3>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No communities yet
+                  </h3>
                   <p className="text-muted-foreground mb-4">
                     Be the first to create a community!
                   </p>
-                  <Button onClick={() => navigate('/community/create')}>
+                  <Button onClick={() => navigate("/community/create")}>
                     Create Community
                   </Button>
                 </CardContent>
@@ -145,11 +154,14 @@ const CommunityJoin = () => {
             ) : (
               <div className="grid md:grid-cols-2 gap-6">
                 {communities.map((community) => (
-                  <Card key={community.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                  <Card
+                    key={community.id}
+                    className="hover:shadow-lg transition-shadow overflow-hidden"
+                  >
                     {community.cover_photo && (
                       <div className="w-full h-32 overflow-hidden">
-                        <img 
-                          src={community.cover_photo} 
+                        <img
+                          src={community.cover_photo}
                           alt={community.name}
                           className="w-full h-full object-cover"
                         />
@@ -162,7 +174,9 @@ const CommunityJoin = () => {
                         </div>
                         <Badge variant="secondary">Open</Badge>
                       </div>
-                      <CardTitle className="text-xl">{community.name}</CardTitle>
+                      <CardTitle className="text-xl">
+                        {community.name}
+                      </CardTitle>
                       <CardDescription className="flex items-center gap-2 text-sm">
                         <Users className="h-4 w-4" />
                         {community.member_count} members
@@ -172,8 +186,8 @@ const CommunityJoin = () => {
                       <p className="text-muted-foreground mb-4 line-clamp-2">
                         {community.description || "No description available"}
                       </p>
-                      <Button 
-                        className="w-full" 
+                      <Button
+                        className="w-full"
                         onClick={() => handleJoinCommunity(community.id)}
                         disabled={joiningId === community.id}
                       >
@@ -183,7 +197,7 @@ const CommunityJoin = () => {
                             Joining...
                           </>
                         ) : (
-                          'Join Community'
+                          "Join Community"
                         )}
                       </Button>
                     </CardContent>

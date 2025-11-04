@@ -1,11 +1,23 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -17,12 +29,12 @@ const CommunityCreate = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
-  const [coverPhotoPreview, setCoverPhotoPreview] = useState<string>('');
+  const [coverPhotoPreview, setCoverPhotoPreview] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     category: "",
-    visibility: "open"
+    visibility: "open",
   });
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -41,7 +53,7 @@ const CommunityCreate = () => {
       }
 
       // Validate file type
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         toast({
           title: "Invalid file type",
           description: "Please upload an image file",
@@ -61,7 +73,7 @@ const CommunityCreate = () => {
 
   const handleRemoveCoverPhoto = () => {
     setCoverPhoto(null);
-    setCoverPhotoPreview('');
+    setCoverPhotoPreview("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,7 +81,9 @@ const CommunityCreate = () => {
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         toast({
           title: "Authentication required",
@@ -79,28 +93,28 @@ const CommunityCreate = () => {
         return;
       }
 
-      let coverPhotoUrl = '';
+      let coverPhotoUrl = "";
 
       // Upload cover photo if provided
       if (coverPhoto) {
-        const fileExt = coverPhoto.name.split('.').pop();
+        const fileExt = coverPhoto.name.split(".").pop();
         const fileName = `${user.id}-${Date.now()}.${fileExt}`;
         const filePath = `community-covers/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
-          .from('videos')
+          .from("videos")
           .upload(filePath, coverPhoto);
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('videos')
-          .getPublicUrl(filePath);
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("videos").getPublicUrl(filePath);
 
         coverPhotoUrl = publicUrl;
       }
 
-      const { error } = await supabase.from('communities').insert({
+      const { error } = await supabase.from("communities").insert({
         name: formData.name,
         description: formData.description,
         visibility: formData.visibility,
@@ -109,15 +123,15 @@ const CommunityCreate = () => {
       });
 
       if (error) throw error;
-      
+
       toast({
         title: "Community Created",
         description: "Your community has been successfully created!",
       });
-      
+
       navigate("/community/join");
     } catch (error) {
-      console.error('Error creating community:', error);
+      console.error("Error creating community:", error);
       toast({
         title: "Error",
         description: "Failed to create community. Please try again.",
@@ -160,9 +174,9 @@ const CommunityCreate = () => {
                     />
                     {coverPhotoPreview && (
                       <div className="mt-2 relative">
-                        <img 
-                          src={coverPhotoPreview} 
-                          alt="Cover preview" 
+                        <img
+                          src={coverPhotoPreview}
+                          alt="Cover preview"
                           className="w-full h-48 object-cover rounded-lg"
                         />
                         <Button
@@ -184,7 +198,9 @@ const CommunityCreate = () => {
                       id="name"
                       placeholder="e.g., Nonprofit Leaders Circle"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -195,7 +211,12 @@ const CommunityCreate = () => {
                       id="description"
                       placeholder="Describe the purpose and goals of your community"
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
                       rows={4}
                       required
                     />
@@ -205,14 +226,20 @@ const CommunityCreate = () => {
                     <Label htmlFor="visibility">Visibility</Label>
                     <Select
                       value={formData.visibility}
-                      onValueChange={(value) => setFormData({ ...formData, visibility: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, visibility: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="open">Open - Anyone can join</SelectItem>
-                        <SelectItem value="private">Private - Invitation only</SelectItem>
+                        <SelectItem value="open">
+                          Open - Anyone can join
+                        </SelectItem>
+                        <SelectItem value="private">
+                          Private - Invitation only
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -225,7 +252,7 @@ const CommunityCreate = () => {
                           Creating...
                         </>
                       ) : (
-                        'Create Community'
+                        "Create Community"
                       )}
                     </Button>
                     <Button

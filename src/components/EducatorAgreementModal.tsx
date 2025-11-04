@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -51,7 +57,11 @@ Last updated: January 2025
 Version: 1.0
 `;
 
-export function EducatorAgreementModal({ open, onOpenChange, onAgreementAccepted }: EducatorAgreementModalProps) {
+export function EducatorAgreementModal({
+  open,
+  onOpenChange,
+  onAgreementAccepted,
+}: EducatorAgreementModalProps) {
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -63,30 +73,29 @@ export function EducatorAgreementModal({ open, onOpenChange, onAgreementAccepted
     setLoading(true);
     try {
       // Get user's IP address and user agent
-      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipResponse = await fetch("https://api.ipify.org?format=json");
       const { ip } = await ipResponse.json();
-      
-      const { error } = await supabase
-        .from('educator_agreements')
-        .insert({
-          user_id: auth.user!.id,
-          agreement_text: EDUCATOR_AGREEMENT_TEXT,
-          ip_address: ip,
-          user_agent: navigator.userAgent,
-          version: '1.0'
-        });
+
+      const { error } = await supabase.from("educator_agreements").insert({
+        user_id: auth.user!.id,
+        agreement_text: EDUCATOR_AGREEMENT_TEXT,
+        ip_address: ip,
+        user_agent: navigator.userAgent,
+        version: "1.0",
+      });
 
       if (error) throw error;
 
       toast({
         title: "Agreement Accepted",
-        description: "Thank you for accepting the Educator Agreement. You can now create courses and content!",
+        description:
+          "Thank you for accepting the Educator Agreement. You can now create courses and content!",
       });
 
       onAgreementAccepted();
       onOpenChange(false);
     } catch (error) {
-      console.error('Error saving agreement:', error);
+      console.error("Error saving agreement:", error);
       toast({
         title: "Error",
         description: "Failed to save agreement. Please try again.",
@@ -103,11 +112,12 @@ export function EducatorAgreementModal({ open, onOpenChange, onAgreementAccepted
         <DialogHeader>
           <DialogTitle>Educator Agreement</DialogTitle>
         </DialogHeader>
-        
+
         <Alert className="border-amber-200 bg-amber-50">
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-amber-800">
-            Please review and accept the Educator Agreement to complete your subscription upgrade.
+            Please review and accept the Educator Agreement to complete your
+            subscription upgrade.
           </AlertDescription>
         </Alert>
 
@@ -119,13 +129,13 @@ export function EducatorAgreementModal({ open, onOpenChange, onAgreementAccepted
 
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="agree" 
+            <Checkbox
+              id="agree"
               checked={agreed}
               onCheckedChange={(checked) => setAgreed(checked as boolean)}
             />
-            <label 
-              htmlFor="agree" 
+            <label
+              htmlFor="agree"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               I have read and agree to the Educator Agreement
@@ -134,17 +144,14 @@ export function EducatorAgreementModal({ open, onOpenChange, onAgreementAccepted
         </div>
 
         <DialogFooter>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
             Cancel
           </Button>
-          <Button 
-            onClick={handleAccept}
-            disabled={!agreed || loading}
-          >
+          <Button onClick={handleAccept} disabled={!agreed || loading}>
             {loading ? "Accepting..." : "Accept & Continue"}
           </Button>
         </DialogFooter>

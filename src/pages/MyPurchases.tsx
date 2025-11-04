@@ -1,10 +1,16 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Download, FileText, Loader2, ShoppingBag } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Download, FileText, Loader2, ShoppingBag } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface Purchase {
   id: string;
@@ -32,12 +38,15 @@ export default function MyPurchases() {
 
   const fetchPurchases = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
-        .from('purchases')
-        .select(`
+        .from("purchases")
+        .select(
+          `
           *,
           digital_products (
             title,
@@ -46,19 +55,20 @@ export default function MyPurchases() {
             product_type,
             thumbnail_url
           )
-        `)
-        .eq('user_id', user.id)
-        .eq('status', 'completed')
-        .order('purchased_at', { ascending: false });
+        `,
+        )
+        .eq("user_id", user.id)
+        .eq("status", "completed")
+        .order("purchased_at", { ascending: false });
 
       if (error) throw error;
       setPurchases(data || []);
     } catch (error) {
-      console.error('Error fetching purchases:', error);
+      console.error("Error fetching purchases:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to load your purchases.',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to load your purchases.",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -69,17 +79,17 @@ export default function MyPurchases() {
     try {
       // In a real implementation, you'd want to generate a signed URL
       // or use a download endpoint that verifies ownership
-      window.open(fileUrl, '_blank');
-      
+      window.open(fileUrl, "_blank");
+
       toast({
-        title: 'Download started',
-        description: 'Your file download has started.',
+        title: "Download started",
+        description: "Your file download has started.",
       });
     } catch (error) {
       toast({
-        title: 'Download failed',
-        description: 'Failed to download the file.',
-        variant: 'destructive',
+        title: "Download failed",
+        description: "Failed to download the file.",
+        variant: "destructive",
       });
     }
   };
@@ -112,7 +122,7 @@ export default function MyPurchases() {
             <p className="text-muted-foreground mb-4">
               Explore our marketplace to find digital products
             </p>
-            <Button onClick={() => window.location.href = '/explore'}>
+            <Button onClick={() => (window.location.href = "/explore")}>
               Browse Products
             </Button>
           </CardContent>
@@ -160,7 +170,7 @@ export default function MyPurchases() {
                   onClick={() =>
                     handleDownload(
                       purchase.digital_products.file_url,
-                      purchase.digital_products.title
+                      purchase.digital_products.title,
                     )
                   }
                   className="w-full"

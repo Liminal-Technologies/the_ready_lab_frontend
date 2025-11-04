@@ -1,14 +1,33 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Search,
+  Filter,
+  MoreHorizontal,
   Plus,
   Eye,
   Edit,
@@ -18,7 +37,7 @@ import {
   CheckCircle,
   XCircle,
   DollarSign,
-  Package
+  Package,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -54,18 +73,22 @@ interface DigitalProduct {
 
 export function AdminProducts() {
   const [products, setProducts] = useState<DigitalProduct[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<DigitalProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<DigitalProduct[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [selectedProduct, setSelectedProduct] = useState<DigitalProduct | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<DigitalProduct | null>(
+    null,
+  );
   const [actionDialog, setActionDialog] = useState<{
     open: boolean;
     action: string;
     title: string;
     description: string;
-  }>({ open: false, action: '', title: '', description: '' });
+  }>({ open: false, action: "", title: "", description: "" });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -80,14 +103,14 @@ export function AdminProducts() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('digital_products')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("digital_products")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setProducts(data || []);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
       toast({
         title: "Error",
         description: "Failed to load products",
@@ -102,18 +125,21 @@ export function AdminProducts() {
     let filtered = products;
 
     if (searchTerm) {
-      filtered = filtered.filter(product => 
-        product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (product) =>
+          product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.description?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     if (statusFilter !== "all") {
-      filtered = filtered.filter(product => product.status === statusFilter);
+      filtered = filtered.filter((product) => product.status === statusFilter);
     }
 
     if (typeFilter !== "all") {
-      filtered = filtered.filter(product => product.product_type === typeFilter);
+      filtered = filtered.filter(
+        (product) => product.product_type === typeFilter,
+      );
     }
 
     setFilteredProducts(filtered);
@@ -124,31 +150,31 @@ export function AdminProducts() {
 
     try {
       let updateData: any = {};
-      
+
       switch (action) {
-        case 'approve':
-          updateData = { status: 'published' };
+        case "approve":
+          updateData = { status: "published" };
           break;
-        case 'reject':
-          updateData = { status: 'rejected' };
+        case "reject":
+          updateData = { status: "rejected" };
           break;
-        case 'unpublish':
-          updateData = { status: 'pending' };
+        case "unpublish":
+          updateData = { status: "pending" };
           break;
       }
 
       const { error } = await supabase
-        .from('digital_products')
+        .from("digital_products")
         .update(updateData)
-        .eq('id', selectedProduct.id);
+        .eq("id", selectedProduct.id);
 
       if (error) throw error;
 
-      await supabase.rpc('log_admin_action', {
+      await supabase.rpc("log_admin_action", {
         _action: `${action}_product`,
-        _entity_type: 'digital_product',
+        _entity_type: "digital_product",
         _entity_id: selectedProduct.id,
-        _metadata: { title: selectedProduct.title }
+        _metadata: { title: selectedProduct.title },
       });
 
       toast({
@@ -158,7 +184,7 @@ export function AdminProducts() {
 
       fetchProducts();
     } catch (error) {
-      console.error('Error updating product:', error);
+      console.error("Error updating product:", error);
       toast({
         title: "Error",
         description: "Failed to update product",
@@ -166,26 +192,26 @@ export function AdminProducts() {
       });
     }
 
-    setActionDialog({ open: false, action: '', title: '', description: '' });
+    setActionDialog({ open: false, action: "", title: "", description: "" });
     setSelectedProduct(null);
   };
 
   const openActionDialog = (product: DigitalProduct, action: string) => {
     setSelectedProduct(product);
-    
+
     const dialogConfig = {
       approve: {
         title: "Approve Product",
-        description: `Are you sure you want to approve "${product.title}"? It will be published and available for purchase.`
+        description: `Are you sure you want to approve "${product.title}"? It will be published and available for purchase.`,
       },
       reject: {
         title: "Reject Product",
-        description: `Are you sure you want to reject "${product.title}"? The educator will be notified.`
+        description: `Are you sure you want to reject "${product.title}"? The educator will be notified.`,
       },
       unpublish: {
         title: "Unpublish Product",
-        description: `Are you sure you want to unpublish "${product.title}"? It will no longer be available for purchase.`
-      }
+        description: `Are you sure you want to unpublish "${product.title}"? It will no longer be available for purchase.`,
+      },
     };
 
     const config = dialogConfig[action as keyof typeof dialogConfig];
@@ -193,18 +219,34 @@ export function AdminProducts() {
       open: true,
       action,
       title: config.title,
-      description: config.description
+      description: config.description,
     });
   };
 
   const getStatusBadge = (status: string) => {
     const config = {
-      pending: { variant: "secondary" as const, icon: AlertTriangle, color: "text-yellow-600" },
-      published: { variant: "default" as const, icon: CheckCircle, color: "text-green-600" },
-      rejected: { variant: "destructive" as const, icon: XCircle, color: "text-red-600" }
+      pending: {
+        variant: "secondary" as const,
+        icon: AlertTriangle,
+        color: "text-yellow-600",
+      },
+      published: {
+        variant: "default" as const,
+        icon: CheckCircle,
+        color: "text-green-600",
+      },
+      rejected: {
+        variant: "destructive" as const,
+        icon: XCircle,
+        color: "text-red-600",
+      },
     };
 
-    const { variant, icon: Icon, color } = config[status as keyof typeof config] || config.pending;
+    const {
+      variant,
+      icon: Icon,
+      color,
+    } = config[status as keyof typeof config] || config.pending;
 
     return (
       <Badge variant={variant} className="gap-1">
@@ -216,7 +258,7 @@ export function AdminProducts() {
 
   const getTypeBadge = (type: string) => (
     <Badge variant="outline">
-      {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+      {type.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
     </Badge>
   );
 
@@ -235,28 +277,28 @@ export function AdminProducts() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Products
+            </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{products.length}</div>
-            <p className="text-xs text-muted-foreground">
-              +12 from last month
-            </p>
+            <p className="text-xs text-muted-foreground">+12 from last month</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Review
+            </CardTitle>
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {products.filter(p => p.status === 'pending').length}
+              {products.filter((p) => p.status === "pending").length}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Require approval
-            </p>
+            <p className="text-xs text-muted-foreground">Require approval</p>
           </CardContent>
         </Card>
         <Card>
@@ -266,25 +308,23 @@ export function AdminProducts() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {products.filter(p => p.status === 'published').length}
+              {products.filter((p) => p.status === "published").length}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Live products
-            </p>
+            <p className="text-xs text-muted-foreground">Live products</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Downloads</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Downloads
+            </CardTitle>
             <Download className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {products.reduce((sum, p) => sum + p.downloads_count, 0)}
             </div>
-            <p className="text-xs text-muted-foreground">
-              All time downloads
-            </p>
+            <p className="text-xs text-muted-foreground">All time downloads</p>
           </CardContent>
         </Card>
       </div>
@@ -368,7 +408,11 @@ export function AdminProducts() {
                         {product.tags && (
                           <div className="flex gap-1 mt-1">
                             {product.tags.slice(0, 2).map((tag, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">
+                              <Badge
+                                key={index}
+                                variant="outline"
+                                className="text-xs"
+                              >
                                 {tag}
                               </Badge>
                             ))}
@@ -410,17 +454,21 @@ export function AdminProducts() {
                             Download File
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          {product.status === 'pending' && (
+                          {product.status === "pending" && (
                             <>
-                              <DropdownMenuItem 
-                                onClick={() => openActionDialog(product, 'approve')}
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  openActionDialog(product, "approve")
+                                }
                                 className="text-green-600"
                               >
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Approve Product
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => openActionDialog(product, 'reject')}
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  openActionDialog(product, "reject")
+                                }
                                 className="text-red-600"
                               >
                                 <XCircle className="mr-2 h-4 w-4" />
@@ -428,9 +476,11 @@ export function AdminProducts() {
                               </DropdownMenuItem>
                             </>
                           )}
-                          {product.status === 'published' && (
-                            <DropdownMenuItem 
-                              onClick={() => openActionDialog(product, 'unpublish')}
+                          {product.status === "published" && (
+                            <DropdownMenuItem
+                              onClick={() =>
+                                openActionDialog(product, "unpublish")
+                              }
                               className="text-orange-600"
                             >
                               <AlertTriangle className="mr-2 h-4 w-4" />
@@ -449,16 +499,21 @@ export function AdminProducts() {
       </Card>
 
       {/* Action Confirmation Dialog */}
-      <Dialog open={actionDialog.open} onOpenChange={(open) => setActionDialog(prev => ({ ...prev, open }))}>
+      <Dialog
+        open={actionDialog.open}
+        onOpenChange={(open) => setActionDialog((prev) => ({ ...prev, open }))}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{actionDialog.title}</DialogTitle>
             <DialogDescription>{actionDialog.description}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setActionDialog(prev => ({ ...prev, open: false }))}
+            <Button
+              variant="outline"
+              onClick={() =>
+                setActionDialog((prev) => ({ ...prev, open: false }))
+              }
             >
               Cancel
             </Button>

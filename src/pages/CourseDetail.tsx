@@ -3,7 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import Header from "@/components/Header";
@@ -19,15 +25,17 @@ import {
   Loader2,
   ArrowRight,
   BookOpen,
-  Target
+  Target,
 } from "lucide-react";
 
 // Mock course data
 const mockCourse = {
   id: "1",
   title: "Funding Readiness 101",
-  description: "Master grants, sponsorships, and investor pitches. Build the foundation for sustainable funding.",
-  longDescription: "This comprehensive course will teach you everything you need to know about securing funding for your organization. From understanding different funding sources to crafting compelling proposals, you'll gain the skills and confidence to attract the resources your mission needs.",
+  description:
+    "Master grants, sponsorships, and investor pitches. Build the foundation for sustainable funding.",
+  longDescription:
+    "This comprehensive course will teach you everything you need to know about securing funding for your organization. From understanding different funding sources to crafting compelling proposals, you'll gain the skills and confidence to attract the resources your mission needs.",
   duration: "8 weeks",
   students: "3,200",
   rating: "4.9",
@@ -39,47 +47,47 @@ const mockCourse = {
   instructor: {
     name: "Dr. Sarah Johnson",
     title: "Funding Strategy Expert",
-    bio: "20+ years of experience in nonprofit funding and grant writing"
+    bio: "20+ years of experience in nonprofit funding and grant writing",
   },
   modules: [
     {
       id: 1,
       title: "Introduction to Funding",
       lessons: 5,
-      duration: "45 mins"
+      duration: "45 mins",
     },
     {
       id: 2,
       title: "Grant Writing Fundamentals",
       lessons: 8,
-      duration: "90 mins"
+      duration: "90 mins",
     },
     {
       id: 3,
       title: "Investor Relations",
       lessons: 6,
-      duration: "60 mins"
+      duration: "60 mins",
     },
     {
       id: 4,
       title: "Building Partnerships",
       lessons: 7,
-      duration: "75 mins"
-    }
+      duration: "75 mins",
+    },
   ],
   whatYouLearn: [
     "Identify and research potential funding sources",
     "Write compelling grant proposals",
     "Pitch to investors with confidence",
     "Build lasting relationships with funders",
-    "Create a sustainable funding strategy"
-  ]
+    "Create a sustainable funding strategy",
+  ],
 };
 
 export default function CourseDetail() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  
+
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -87,10 +95,12 @@ export default function CourseDetail() {
 
   // Check enrollment status from localStorage
   useEffect(() => {
-    const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
+    const enrolledCourses = JSON.parse(
+      localStorage.getItem("enrolledCourses") || "[]",
+    );
     const enrolled = enrolledCourses.includes(courseId);
     setIsEnrolled(enrolled);
-    
+
     if (enrolled) {
       const progress = localStorage.getItem(`course_${courseId}_progress`);
       if (progress) {
@@ -109,22 +119,24 @@ export default function CourseDetail() {
 
   const handleFreeEnrollment = async () => {
     setIsProcessing(true);
-    
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     // Update localStorage
-    const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
+    const enrolledCourses = JSON.parse(
+      localStorage.getItem("enrolledCourses") || "[]",
+    );
     enrolledCourses.push(courseId);
     localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
-    
+
     setIsEnrolled(true);
     setIsProcessing(false);
-    
+
     toast.success("Enrolled successfully! 🎉", {
       description: "You can now access all course materials",
     });
-    
+
     // Redirect to first lesson
     setTimeout(() => {
       navigate(`/courses/${courseId}/lessons/1`);
@@ -134,22 +146,24 @@ export default function CourseDetail() {
   const handlePaymentMethod = async (method: string) => {
     setIsProcessing(true);
     setShowCheckoutModal(false);
-    
+
     // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     // Update localStorage
-    const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
+    const enrolledCourses = JSON.parse(
+      localStorage.getItem("enrolledCourses") || "[]",
+    );
     enrolledCourses.push(courseId);
     localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
-    
+
     setIsEnrolled(true);
     setIsProcessing(false);
-    
+
     toast.success("Payment successful! 🎉", {
       description: `Enrolled using ${method}. Welcome to the course!`,
     });
-    
+
     // Redirect to first lesson
     setTimeout(() => {
       navigate(`/courses/${courseId}/lessons/1`);
@@ -163,7 +177,7 @@ export default function CourseDetail() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           {/* Hero Section */}
@@ -173,11 +187,13 @@ export default function CourseDetail() {
               <div className="lg:col-span-2 space-y-6">
                 <div>
                   <Badge className="mb-4">{mockCourse.category}</Badge>
-                  <h1 className="text-4xl font-bold mb-4">{mockCourse.title}</h1>
+                  <h1 className="text-4xl font-bold mb-4">
+                    {mockCourse.title}
+                  </h1>
                   <p className="text-xl text-muted-foreground mb-6">
                     {mockCourse.description}
                   </p>
-                  
+
                   <div className="flex flex-wrap items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
@@ -195,7 +211,9 @@ export default function CourseDetail() {
                     {mockCourse.certification && (
                       <div className="flex items-center gap-2 text-primary">
                         <Award className="h-4 w-4" />
-                        <span className="font-medium">Certificate included</span>
+                        <span className="font-medium">
+                          Certificate included
+                        </span>
                       </div>
                     )}
                   </div>
@@ -251,8 +269,12 @@ export default function CourseDetail() {
                       <Users className="h-8 w-8 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-lg">{mockCourse.instructor.name}</h3>
-                      <p className="text-muted-foreground mb-2">{mockCourse.instructor.title}</p>
+                      <h3 className="font-semibold text-lg">
+                        {mockCourse.instructor.name}
+                      </h3>
+                      <p className="text-muted-foreground mb-2">
+                        {mockCourse.instructor.title}
+                      </p>
                       <p className="text-sm">{mockCourse.instructor.bio}</p>
                     </div>
                   </div>
@@ -265,7 +287,7 @@ export default function CourseDetail() {
                   <div className="aspect-video bg-primary rounded-lg mb-6 flex items-center justify-center">
                     <PlayCircle className="h-16 w-16 text-white" />
                   </div>
-                  
+
                   {!isEnrolled ? (
                     <>
                       <div className="text-center mb-6">
@@ -277,8 +299,8 @@ export default function CourseDetail() {
                         </p>
                       </div>
 
-                      <Button 
-                        className="w-full mb-4" 
+                      <Button
+                        className="w-full mb-4"
                         size="lg"
                         onClick={handleEnrollClick}
                         disabled={isProcessing}
@@ -308,8 +330,8 @@ export default function CourseDetail() {
                         </p>
                       </div>
 
-                      <Button 
-                        className="w-full mb-4 bg-green-600 hover:bg-green-700" 
+                      <Button
+                        className="w-full mb-4 bg-green-600 hover:bg-green-700"
                         size="lg"
                         onClick={handleContinueLearning}
                       >
@@ -319,7 +341,9 @@ export default function CourseDetail() {
 
                       <div className="pt-4 border-t">
                         <div className="flex justify-between text-sm mb-2">
-                          <span className="text-muted-foreground">Your Progress</span>
+                          <span className="text-muted-foreground">
+                            Your Progress
+                          </span>
                           <span className="font-medium">25%</span>
                         </div>
                         <Progress value={25} className="h-2" />
@@ -358,17 +382,23 @@ export default function CourseDetail() {
       <Dialog open={showCheckoutModal} onOpenChange={setShowCheckoutModal}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Choose Your Payment Method</DialogTitle>
+            <DialogTitle className="text-2xl">
+              Choose Your Payment Method
+            </DialogTitle>
             <DialogDescription>
               Secure payment powered by Stripe
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="py-6">
             <div className="text-center mb-6 p-4 bg-muted rounded-lg">
-              <div className="text-sm text-muted-foreground mb-1">Course Price</div>
+              <div className="text-sm text-muted-foreground mb-1">
+                Course Price
+              </div>
               <div className="text-4xl font-bold">${mockCourse.price}</div>
-              <div className="text-sm text-muted-foreground mt-1">One-time payment</div>
+              <div className="text-sm text-muted-foreground mt-1">
+                One-time payment
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -384,7 +414,9 @@ export default function CourseDetail() {
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-semibold">Credit / Debit Card</div>
-                    <div className="text-xs text-muted-foreground">Visa, Mastercard, Amex</div>
+                    <div className="text-xs text-muted-foreground">
+                      Visa, Mastercard, Amex
+                    </div>
                   </div>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </div>
@@ -402,7 +434,9 @@ export default function CourseDetail() {
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-semibold">Klarna</div>
-                    <div className="text-xs text-muted-foreground">Pay in 4 interest-free payments</div>
+                    <div className="text-xs text-muted-foreground">
+                      Pay in 4 interest-free payments
+                    </div>
                   </div>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </div>
@@ -420,7 +454,9 @@ export default function CourseDetail() {
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-semibold">Afterpay</div>
-                    <div className="text-xs text-muted-foreground">Buy now, pay later</div>
+                    <div className="text-xs text-muted-foreground">
+                      Buy now, pay later
+                    </div>
                   </div>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </div>
@@ -438,7 +474,9 @@ export default function CourseDetail() {
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-semibold">Affirm</div>
-                    <div className="text-xs text-muted-foreground">Monthly payment plans</div>
+                    <div className="text-xs text-muted-foreground">
+                      Monthly payment plans
+                    </div>
                   </div>
                   <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 </div>
@@ -446,7 +484,8 @@ export default function CourseDetail() {
             </div>
 
             <p className="text-xs text-center text-muted-foreground mt-6">
-              Secure checkout powered by Stripe. Your payment information is encrypted and secure.
+              Secure checkout powered by Stripe. Your payment information is
+              encrypted and secure.
             </p>
           </div>
         </DialogContent>

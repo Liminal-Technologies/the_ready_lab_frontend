@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star } from "lucide-react";
@@ -28,12 +34,16 @@ interface SubscriptionPlansProps {
   showEducatorOnly?: boolean;
 }
 
-export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlansProps) {
+export function SubscriptionPlans({
+  showEducatorOnly = false,
+}: SubscriptionPlansProps) {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
   const [showAgreement, setShowAgreement] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(
+    null,
+  );
   const { auth } = useAuth();
   const { toast } = useToast();
 
@@ -45,30 +55,34 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('subscription_plans')
-        .select('*')
-        .eq('is_active', true)
-        .order('price_monthly', { ascending: true });
+        .from("subscription_plans")
+        .select("*")
+        .eq("is_active", true)
+        .order("price_monthly", { ascending: true });
 
       if (error) throw error;
 
-      let filteredPlans = (data || []).map(plan => ({
+      let filteredPlans = (data || []).map((plan) => ({
         ...plan,
-        description: plan.description || '',
+        description: plan.description || "",
         price_yearly: plan.price_yearly || undefined,
         stripe_price_id_monthly: plan.stripe_price_id_monthly || undefined,
         stripe_price_id_yearly: plan.stripe_price_id_yearly || undefined,
         stripe_product_id: plan.stripe_product_id || undefined,
-        features: Array.isArray(plan.features) ? plan.features.map(f => String(f)) : []
+        features: Array.isArray(plan.features)
+          ? plan.features.map((f) => String(f))
+          : [],
       }));
-      
+
       if (showEducatorOnly) {
-        filteredPlans = filteredPlans.filter(plan => plan.role === 'educator');
+        filteredPlans = filteredPlans.filter(
+          (plan) => plan.role === "educator",
+        );
       }
 
       setPlans(filteredPlans);
     } catch (error) {
-      console.error('Error fetching plans:', error);
+      console.error("Error fetching plans:", error);
       toast({
         title: "Error",
         description: "Failed to load subscription plans",
@@ -89,12 +103,12 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
       return;
     }
 
-    if (plan.role === 'educator') {
+    if (plan.role === "educator") {
       // Check if user has already accepted educator agreement
       const { data: existingAgreement } = await supabase
-        .from('educator_agreements')
-        .select('id')
-        .eq('user_id', auth.user.id)
+        .from("educator_agreements")
+        .select("id")
+        .eq("user_id", auth.user.id)
         .single();
 
       if (!existingAgreement) {
@@ -109,7 +123,7 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
 
   const processSubscription = async (plan: SubscriptionPlan) => {
     setProcessingPlan(plan.id);
-    
+
     try {
       // This would integrate with Stripe checkout
       // For now, we'll show a placeholder message
@@ -123,9 +137,8 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
       // 2. Redirect to Stripe
       // 3. Handle success/cancel webhooks
       // 4. Automatically upgrade user role on successful payment
-      
     } catch (error) {
-      console.error('Error processing subscription:', error);
+      console.error("Error processing subscription:", error);
       toast({
         title: "Error",
         description: "Failed to process subscription",
@@ -144,15 +157,15 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
     }).format(price);
   };
 
   const isPopular = (plan: SubscriptionPlan) => {
-    return plan.name.toLowerCase().includes('professional');
+    return plan.name.toLowerCase().includes("professional");
   };
 
   if (loading) {
@@ -182,9 +195,9 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
     <>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {plans.map((plan) => (
-          <Card 
-            key={plan.id} 
-            className={`relative ${isPopular(plan) ? 'border-primary shadow-lg' : ''}`}
+          <Card
+            key={plan.id}
+            className={`relative ${isPopular(plan) ? "border-primary shadow-lg" : ""}`}
           >
             {isPopular(plan) && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -194,11 +207,11 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
                 </Badge>
               </div>
             )}
-            
+
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 {plan.name}
-                {plan.role === 'educator' && (
+                {plan.role === "educator" && (
                   <Badge variant="outline" className="text-xs">
                     Educator
                   </Badge>
@@ -207,7 +220,9 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
               <CardDescription>{plan.description}</CardDescription>
               <div className="text-3xl font-bold">
                 {formatPrice(plan.price_monthly)}
-                <span className="text-lg font-normal text-muted-foreground">/month</span>
+                <span className="text-lg font-normal text-muted-foreground">
+                  /month
+                </span>
               </div>
               {plan.price_yearly && (
                 <div className="text-sm text-muted-foreground">
@@ -215,17 +230,17 @@ export function SubscriptionPlans({ showEducatorOnly = false }: SubscriptionPlan
                 </div>
               )}
             </CardHeader>
-            
+
             <CardContent>
-              <Button 
-                className="w-full mb-6" 
+              <Button
+                className="w-full mb-6"
                 disabled={processingPlan === plan.id}
                 onClick={() => handleSubscribe(plan)}
                 variant={isPopular(plan) ? "default" : "outline"}
               >
                 {processingPlan === plan.id ? "Processing..." : "Get Started"}
               </Button>
-              
+
               <ul className="space-y-2">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2">

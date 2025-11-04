@@ -1,11 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useSubscription } from '@/hooks/useSubscription';
-import { Loader2, ExternalLink, Download, CreditCard } from 'lucide-react';
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useSubscription } from "@/hooks/useSubscription";
+import { Loader2, ExternalLink, Download, CreditCard } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -13,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
 interface Invoice {
   id: string;
@@ -40,15 +46,15 @@ export const BillingManagement = () => {
   const fetchInvoices = async () => {
     try {
       const { data, error } = await supabase
-        .from('stripe_invoices')
-        .select('*')
-        .order('period_start', { ascending: false })
+        .from("stripe_invoices")
+        .select("*")
+        .order("period_start", { ascending: false })
         .limit(10);
 
       if (error) throw error;
       setInvoices(data || []);
     } catch (error) {
-      console.error('Error fetching invoices:', error);
+      console.error("Error fetching invoices:", error);
     } finally {
       setLoading(false);
     }
@@ -57,15 +63,16 @@ export const BillingManagement = () => {
   const openCustomerPortal = async () => {
     setPortalLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('customer-portal');
-      
+      const { data, error } =
+        await supabase.functions.invoke("customer-portal");
+
       if (error) throw error;
-      
+
       if (data?.url) {
-        window.open(data.url, '_blank');
+        window.open(data.url, "_blank");
       }
     } catch (error) {
-      console.error('Portal error:', error);
+      console.error("Portal error:", error);
       toast({
         title: "Error",
         description: "Failed to open billing portal. Please try again.",
@@ -77,8 +84,8 @@ export const BillingManagement = () => {
   };
 
   const formatAmount = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
       currency: currency.toUpperCase(),
     }).format(amount / 100);
   };
@@ -88,13 +95,17 @@ export const BillingManagement = () => {
       <Card>
         <CardHeader>
           <CardTitle>Current Subscription</CardTitle>
-          <CardDescription>Manage your subscription and billing</CardDescription>
+          <CardDescription>
+            Manage your subscription and billing
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {subscription.loading ? (
             <div className="flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-muted-foreground">Loading subscription...</span>
+              <span className="text-sm text-muted-foreground">
+                Loading subscription...
+              </span>
             </div>
           ) : subscription.subscribed ? (
             <div className="space-y-4">
@@ -106,7 +117,10 @@ export const BillingManagement = () => {
                   </div>
                   {subscription.subscription_end && (
                     <p className="text-sm text-muted-foreground mt-1">
-                      Renews on {new Date(subscription.subscription_end).toLocaleDateString()}
+                      Renews on{" "}
+                      {new Date(
+                        subscription.subscription_end,
+                      ).toLocaleDateString()}
                     </p>
                   )}
                 </div>
@@ -124,11 +138,7 @@ export const BillingManagement = () => {
                   Manage Subscription
                 </Button>
               </div>
-              <Button
-                onClick={checkSubscription}
-                variant="ghost"
-                size="sm"
-              >
+              <Button onClick={checkSubscription} variant="ghost" size="sm">
                 Refresh Status
               </Button>
             </div>
@@ -138,7 +148,7 @@ export const BillingManagement = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 No active subscription found
               </p>
-              <Button onClick={() => window.location.href = '/pricing'}>
+              <Button onClick={() => (window.location.href = "/pricing")}>
                 View Plans
               </Button>
             </div>
@@ -176,7 +186,11 @@ export const BillingManagement = () => {
                       {formatAmount(invoice.amount_paid, invoice.currency)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={invoice.status === 'paid' ? 'default' : 'destructive'}>
+                      <Badge
+                        variant={
+                          invoice.status === "paid" ? "default" : "destructive"
+                        }
+                      >
                         {invoice.status}
                       </Badge>
                     </TableCell>
@@ -186,7 +200,9 @@ export const BillingManagement = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => window.open(invoice.hosted_invoice_url!, '_blank')}
+                            onClick={() =>
+                              window.open(invoice.hosted_invoice_url!, "_blank")
+                            }
                           >
                             <ExternalLink className="h-4 w-4" />
                           </Button>
@@ -195,7 +211,9 @@ export const BillingManagement = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => window.open(invoice.invoice_pdf!, '_blank')}
+                            onClick={() =>
+                              window.open(invoice.invoice_pdf!, "_blank")
+                            }
                           >
                             <Download className="h-4 w-4" />
                           </Button>

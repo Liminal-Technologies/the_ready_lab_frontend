@@ -1,14 +1,27 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { 
-  Bot, 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Bot,
   Plus,
   Settings,
   MessageSquare,
@@ -17,7 +30,7 @@ import {
   Trash2,
   MoreHorizontal,
   Eye,
-  Save
+  Save,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -42,21 +55,23 @@ const mockFAQs = [
   {
     id: "1",
     question: "How do I upgrade to an educator account?",
-    answer: "You can upgrade to an educator account by purchasing one of our educator subscription plans ($49, $129, or $349). Once purchased, you'll automatically gain educator privileges.",
+    answer:
+      "You can upgrade to an educator account by purchasing one of our educator subscription plans ($49, $129, or $349). Once purchased, you'll automatically gain educator privileges.",
     category: "Account",
     is_active: true,
     order_index: 1,
-    created_at: "2024-01-15T10:30:00Z"
+    created_at: "2024-01-15T10:30:00Z",
   },
   {
-    id: "2", 
+    id: "2",
     question: "What's included in the educator plans?",
-    answer: "Educator plans include course creation tools, community management, digital product marketplace access, and advanced analytics. Higher tiers offer additional features like custom branding and priority support.",
+    answer:
+      "Educator plans include course creation tools, community management, digital product marketplace access, and advanced analytics. Higher tiers offer additional features like custom branding and priority support.",
     category: "Plans",
     is_active: true,
     order_index: 2,
-    created_at: "2024-01-14T15:45:00Z"
-  }
+    created_at: "2024-01-14T15:45:00Z",
+  },
 ];
 
 interface FAQ {
@@ -71,13 +86,17 @@ interface FAQ {
 
 export function AdminAI() {
   const [faqs, setFaqs] = useState<FAQ[]>(mockFAQs);
-  const [newFAQ, setNewFAQ] = useState({ question: "", answer: "", category: "General" });
+  const [newFAQ, setNewFAQ] = useState({
+    question: "",
+    answer: "",
+    category: "General",
+  });
   const [editingFAQ, setEditingFAQ] = useState<FAQ | null>(null);
   const [aiSettings, setAiSettings] = useState({
     enabled: true,
     response_delay: 2000,
     max_response_length: 500,
-    fallback_to_human: true
+    fallback_to_human: true,
   });
   const { toast } = useToast();
 
@@ -96,12 +115,12 @@ export function AdminAI() {
       ...newFAQ,
       is_active: true,
       order_index: faqs.length + 1,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     setFaqs([...faqs, faq]);
     setNewFAQ({ question: "", answer: "", category: "General" });
-    
+
     toast({
       title: "Success",
       description: "FAQ added successfully",
@@ -111,11 +130,9 @@ export function AdminAI() {
   const updateFAQ = () => {
     if (!editingFAQ) return;
 
-    setFaqs(faqs.map(faq => 
-      faq.id === editingFAQ.id ? editingFAQ : faq
-    ));
+    setFaqs(faqs.map((faq) => (faq.id === editingFAQ.id ? editingFAQ : faq)));
     setEditingFAQ(null);
-    
+
     toast({
       title: "Success",
       description: "FAQ updated successfully",
@@ -123,13 +140,15 @@ export function AdminAI() {
   };
 
   const toggleFAQStatus = (id: string) => {
-    setFaqs(faqs.map(faq => 
-      faq.id === id ? { ...faq, is_active: !faq.is_active } : faq
-    ));
+    setFaqs(
+      faqs.map((faq) =>
+        faq.id === id ? { ...faq, is_active: !faq.is_active } : faq,
+      ),
+    );
   };
 
   const deleteFAQ = (id: string) => {
-    setFaqs(faqs.filter(faq => faq.id !== id));
+    setFaqs(faqs.filter((faq) => faq.id !== id));
     toast({
       title: "Success",
       description: "FAQ deleted successfully",
@@ -164,7 +183,7 @@ export function AdminAI() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {faqs.filter(faq => faq.is_active).length}
+              {faqs.filter((faq) => faq.is_active).length}
             </div>
             <p className="text-xs text-muted-foreground">
               Ready for AI responses
@@ -173,14 +192,14 @@ export function AdminAI() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">AI Interactions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              AI Interactions
+            </CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">247</div>
-            <p className="text-xs text-muted-foreground">
-              This month
-            </p>
+            <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
         <Card>
@@ -190,9 +209,7 @@ export function AdminAI() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">87%</div>
-            <p className="text-xs text-muted-foreground">
-              Questions answered
-            </p>
+            <p className="text-xs text-muted-foreground">Questions answered</p>
           </CardContent>
         </Card>
         <Card>
@@ -202,9 +219,7 @@ export function AdminAI() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">13%</div>
-            <p className="text-xs text-muted-foreground">
-              Escalated to human
-            </p>
+            <p className="text-xs text-muted-foreground">Escalated to human</p>
           </CardContent>
         </Card>
       </div>
@@ -236,7 +251,9 @@ export function AdminAI() {
                     id="question"
                     placeholder="Enter the question..."
                     value={newFAQ.question}
-                    onChange={(e) => setNewFAQ({ ...newFAQ, question: e.target.value })}
+                    onChange={(e) =>
+                      setNewFAQ({ ...newFAQ, question: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -245,7 +262,9 @@ export function AdminAI() {
                     id="category"
                     placeholder="e.g., Account, Plans, Technical"
                     value={newFAQ.category}
-                    onChange={(e) => setNewFAQ({ ...newFAQ, category: e.target.value })}
+                    onChange={(e) =>
+                      setNewFAQ({ ...newFAQ, category: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -255,7 +274,9 @@ export function AdminAI() {
                   id="answer"
                   placeholder="Enter the detailed answer..."
                   value={newFAQ.answer}
-                  onChange={(e) => setNewFAQ({ ...newFAQ, answer: e.target.value })}
+                  onChange={(e) =>
+                    setNewFAQ({ ...newFAQ, answer: e.target.value })
+                  }
                   rows={4}
                 />
               </div>
@@ -308,7 +329,7 @@ export function AdminAI() {
                               onCheckedChange={() => toggleFAQStatus(faq.id)}
                             />
                             <span className="text-sm">
-                              {faq.is_active ? 'Active' : 'Inactive'}
+                              {faq.is_active ? "Active" : "Inactive"}
                             </span>
                           </div>
                         </TableCell>
@@ -330,7 +351,7 @@ export function AdminAI() {
                               </DropdownMenuItem>
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <DropdownMenuItem 
+                                  <DropdownMenuItem
                                     onSelect={(e) => {
                                       e.preventDefault();
                                       setEditingFAQ(faq);
@@ -344,7 +365,8 @@ export function AdminAI() {
                                   <DialogHeader>
                                     <DialogTitle>Edit FAQ</DialogTitle>
                                     <DialogDescription>
-                                      Update the question and answer for this FAQ
+                                      Update the question and answer for this
+                                      FAQ
                                     </DialogDescription>
                                   </DialogHeader>
                                   {editingFAQ && (
@@ -353,37 +375,46 @@ export function AdminAI() {
                                         <Label>Question</Label>
                                         <Input
                                           value={editingFAQ.question}
-                                          onChange={(e) => setEditingFAQ({
-                                            ...editingFAQ,
-                                            question: e.target.value
-                                          })}
+                                          onChange={(e) =>
+                                            setEditingFAQ({
+                                              ...editingFAQ,
+                                              question: e.target.value,
+                                            })
+                                          }
                                         />
                                       </div>
                                       <div className="space-y-2">
                                         <Label>Category</Label>
                                         <Input
                                           value={editingFAQ.category}
-                                          onChange={(e) => setEditingFAQ({
-                                            ...editingFAQ,
-                                            category: e.target.value
-                                          })}
+                                          onChange={(e) =>
+                                            setEditingFAQ({
+                                              ...editingFAQ,
+                                              category: e.target.value,
+                                            })
+                                          }
                                         />
                                       </div>
                                       <div className="space-y-2">
                                         <Label>Answer</Label>
                                         <Textarea
                                           value={editingFAQ.answer}
-                                          onChange={(e) => setEditingFAQ({
-                                            ...editingFAQ,
-                                            answer: e.target.value
-                                          })}
+                                          onChange={(e) =>
+                                            setEditingFAQ({
+                                              ...editingFAQ,
+                                              answer: e.target.value,
+                                            })
+                                          }
                                           rows={4}
                                         />
                                       </div>
                                     </div>
                                   )}
                                   <DialogFooter>
-                                    <Button variant="outline" onClick={() => setEditingFAQ(null)}>
+                                    <Button
+                                      variant="outline"
+                                      onClick={() => setEditingFAQ(null)}
+                                    >
                                       Cancel
                                     </Button>
                                     <Button onClick={updateFAQ}>
@@ -392,7 +423,7 @@ export function AdminAI() {
                                   </DialogFooter>
                                 </DialogContent>
                               </Dialog>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 className="text-destructive"
                                 onClick={() => deleteFAQ(faq.id)}
                               >
@@ -432,7 +463,7 @@ export function AdminAI() {
                 </div>
                 <Switch
                   checked={aiSettings.enabled}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     setAiSettings({ ...aiSettings, enabled: checked })
                   }
                 />
@@ -443,10 +474,12 @@ export function AdminAI() {
                 <Input
                   type="number"
                   value={aiSettings.response_delay}
-                  onChange={(e) => setAiSettings({
-                    ...aiSettings,
-                    response_delay: parseInt(e.target.value)
-                  })}
+                  onChange={(e) =>
+                    setAiSettings({
+                      ...aiSettings,
+                      response_delay: parseInt(e.target.value),
+                    })
+                  }
                 />
                 <p className="text-sm text-muted-foreground">
                   How long to wait before the AI responds (simulates typing)
@@ -458,10 +491,12 @@ export function AdminAI() {
                 <Input
                   type="number"
                   value={aiSettings.max_response_length}
-                  onChange={(e) => setAiSettings({
-                    ...aiSettings,
-                    max_response_length: parseInt(e.target.value)
-                  })}
+                  onChange={(e) =>
+                    setAiSettings({
+                      ...aiSettings,
+                      max_response_length: parseInt(e.target.value),
+                    })
+                  }
                 />
                 <p className="text-sm text-muted-foreground">
                   Maximum number of characters in AI responses
@@ -477,7 +512,7 @@ export function AdminAI() {
                 </div>
                 <Switch
                   checked={aiSettings.fallback_to_human}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     setAiSettings({ ...aiSettings, fallback_to_human: checked })
                   }
                 />
@@ -496,7 +531,9 @@ export function AdminAI() {
             <CardContent className="p-8 text-center">
               <Bot className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">AI Analytics</h3>
-              <p className="text-muted-foreground">Detailed AI performance analytics coming soon...</p>
+              <p className="text-muted-foreground">
+                Detailed AI performance analytics coming soon...
+              </p>
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,10 +1,25 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { CheckCircle, Download, Copy, Clock, FileText, FileSpreadsheet, FileCode } from "lucide-react";
+import {
+  CheckCircle,
+  Download,
+  Copy,
+  Clock,
+  FileText,
+  FileSpreadsheet,
+  FileCode,
+} from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -13,9 +28,11 @@ const mockProducts = {
   "1": {
     id: "1",
     title: "Pitch Deck Template",
-    description: "Professional investor-ready pitch deck with 15 proven slides. Used by 500+ funded startups.",
+    description:
+      "Professional investor-ready pitch deck with 15 proven slides. Used by 500+ funded startups.",
     price: 49,
-    thumbnail: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
+    thumbnail:
+      "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
     fileType: "PDF",
     fileSize: "2.4 MB",
     educator: "Sarah Johnson",
@@ -25,17 +42,20 @@ const mockProducts = {
       "Editable in PowerPoint, Keynote, or Google Slides",
       "Color scheme customization guide",
       "Real-world examples from funded startups",
-      "Pitch presentation best practices guide"
+      "Pitch presentation best practices guide",
     ],
-    howToUse: "Open the file in your preferred presentation software. Customize the content, colors, and images to match your brand. Follow the included guide for best practices on pitching to investors.",
+    howToUse:
+      "Open the file in your preferred presentation software. Customize the content, colors, and images to match your brand. Follow the included guide for best practices on pitching to investors.",
     supportEmail: "support@example.com",
   },
   "2": {
     id: "2",
     title: "Grant Writing Playbook",
-    description: "Complete guide to winning nonprofit grants with templates and real examples.",
+    description:
+      "Complete guide to winning nonprofit grants with templates and real examples.",
     price: 79,
-    thumbnail: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
+    thumbnail:
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80",
     fileType: "PDF",
     fileSize: "5.8 MB",
     educator: "Michael Chen",
@@ -45,9 +65,10 @@ const mockProducts = {
       "10+ grant proposal templates",
       "Real winning grant examples",
       "Budget template spreadsheet",
-      "Grant research checklist"
+      "Grant research checklist",
     ],
-    howToUse: "Read through the guide to understand the grant writing process. Use the templates to structure your proposals. Study the real examples to see what works.",
+    howToUse:
+      "Read through the guide to understand the grant writing process. Use the templates to structure your proposals. Study the real examples to see what works.",
     supportEmail: "support@example.com",
   },
 };
@@ -57,28 +78,32 @@ const relatedProducts = [
     id: "3",
     title: "Financial Model Spreadsheet",
     price: 99,
-    thumbnail: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
+    thumbnail:
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
     fileType: "Excel",
   },
   {
     id: "4",
     title: "Brand Strategy Worksheet",
     price: 29,
-    thumbnail: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
+    thumbnail:
+      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80",
     fileType: "PDF",
   },
   {
     id: "5",
     title: "Social Impact Measurement Kit",
     price: 65,
-    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+    thumbnail:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
     fileType: "Excel",
   },
   {
     id: "6",
     title: "Nonprofit Budget Template",
     price: 39,
-    thumbnail: "https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=800&q=80",
+    thumbnail:
+      "https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=800&q=80",
     fileType: "Excel",
   },
 ];
@@ -109,7 +134,9 @@ export default function ProductDownload() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Product not found</h2>
-            <Button onClick={() => navigate("/products")}>Back to Products</Button>
+            <Button onClick={() => navigate("/products")}>
+              Back to Products
+            </Button>
           </div>
         </div>
         <Footer />
@@ -141,23 +168,29 @@ export default function ProductDownload() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      
+
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Success Header */}
           <div className="text-center mb-8">
             <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold mb-2">Thank you for your purchase! 🎉</h1>
-            <h2 className="text-2xl text-muted-foreground mb-4">{product.title}</h2>
-            <p className="text-lg text-muted-foreground">Your download is ready</p>
+            <h1 className="text-4xl font-bold mb-2">
+              Thank you for your purchase! 🎉
+            </h1>
+            <h2 className="text-2xl text-muted-foreground mb-4">
+              {product.title}
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Your download is ready
+            </p>
           </div>
 
           {/* Download Section */}
           <Card className="mb-8">
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   onClick={handleDownload}
                   className="w-full sm:w-auto px-12 py-6 text-lg bg-yellow-500 hover:bg-yellow-600 text-black"
                 >
@@ -166,7 +199,9 @@ export default function ProductDownload() {
                 </Button>
                 <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <FileIcon className="h-4 w-4" />
-                  <span>{product.fileType} • {product.fileSize}</span>
+                  <span>
+                    {product.fileType} • {product.fileSize}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -183,12 +218,14 @@ export default function ProductDownload() {
                   <div className="flex-1 px-3 py-2 bg-background rounded-md border text-sm font-mono truncate">
                     {product.downloadUrl}
                   </div>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="icon"
                     onClick={handleCopyLink}
                   >
-                    <Copy className={`h-4 w-4 ${copySuccess ? "text-green-500" : ""}`} />
+                    <Copy
+                      className={`h-4 w-4 ${copySuccess ? "text-green-500" : ""}`}
+                    />
                   </Button>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -223,12 +260,17 @@ export default function ProductDownload() {
                 <CardTitle>How to Use It</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">{product.howToUse}</p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {product.howToUse}
+                </p>
                 <div className="pt-4 border-t">
                   <p className="text-sm font-medium mb-2">Need help?</p>
                   <p className="text-sm text-muted-foreground">
                     Contact support at{" "}
-                    <a href={`mailto:${product.supportEmail}`} className="text-primary hover:underline">
+                    <a
+                      href={`mailto:${product.supportEmail}`}
+                      className="text-primary hover:underline"
+                    >
                       {product.supportEmail}
                     </a>
                   </p>
@@ -244,8 +286,8 @@ export default function ProductDownload() {
               {relatedProducts.slice(0, 4).map((relatedProduct) => {
                 const RelatedFileIcon = getFileIcon(relatedProduct.fileType);
                 return (
-                  <Card 
-                    key={relatedProduct.id} 
+                  <Card
+                    key={relatedProduct.id}
                     className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                     onClick={() => handleRelatedProductClick(relatedProduct.id)}
                   >
@@ -255,17 +297,26 @@ export default function ProductDownload() {
                         alt={relatedProduct.title}
                         className="w-full h-full object-cover"
                       />
-                      <Badge className="absolute top-2 right-2" variant="secondary">
+                      <Badge
+                        className="absolute top-2 right-2"
+                        variant="secondary"
+                      >
                         <RelatedFileIcon className="h-3 w-3 mr-1" />
                         {relatedProduct.fileType}
                       </Badge>
                     </div>
                     <CardHeader>
-                      <CardTitle className="text-base line-clamp-2">{relatedProduct.title}</CardTitle>
+                      <CardTitle className="text-base line-clamp-2">
+                        {relatedProduct.title}
+                      </CardTitle>
                     </CardHeader>
                     <CardFooter className="flex items-center justify-between pt-0">
-                      <span className="text-lg font-bold text-primary">${relatedProduct.price}</span>
-                      <Button size="sm" variant="outline">View</Button>
+                      <span className="text-lg font-bold text-primary">
+                        ${relatedProduct.price}
+                      </span>
+                      <Button size="sm" variant="outline">
+                        View
+                      </Button>
                     </CardFooter>
                   </Card>
                 );

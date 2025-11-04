@@ -1,22 +1,28 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowRight, 
-  Play, 
-  Award, 
-  Target, 
-  Flame, 
-  Users, 
-  Eye, 
-  Headphones, 
-  BookOpen, 
+import {
+  ArrowRight,
+  Play,
+  Award,
+  Target,
+  Flame,
+  Users,
+  Eye,
+  Headphones,
+  BookOpen,
   Hand,
   CheckSquare,
   Star,
   Clock,
-  User
+  User,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -29,7 +35,8 @@ import { useAuth } from "@/hooks/useAuth";
 const featuredTracks = [
   {
     title: "Funding Readiness 101",
-    description: "Master grants, sponsorships, and investor pitches. Build the foundation for sustainable funding.",
+    description:
+      "Master grants, sponsorships, and investor pitches. Build the foundation for sustainable funding.",
     duration: "8 weeks",
     students: "3,200",
     rating: "4.9",
@@ -37,11 +44,12 @@ const featuredTracks = [
     price: "$299",
     category: "Funding Strategy",
     certification: true,
-    featured: true
+    featured: true,
   },
   {
     title: "Business Infrastructure Mastery",
-    description: "Set up compliance, budgets, and operational systems that funders demand to see.",
+    description:
+      "Set up compliance, budgets, and operational systems that funders demand to see.",
     duration: "6 weeks",
     students: "2,800",
     rating: "4.8",
@@ -49,11 +57,12 @@ const featuredTracks = [
     price: "$249",
     category: "Operations",
     certification: true,
-    featured: false
+    featured: false,
   },
   {
     title: "Branding for Growth & Fundability",
-    description: "Develop clear messaging and positioning that attracts investors and customers alike.",
+    description:
+      "Develop clear messaging and positioning that attracts investors and customers alike.",
     duration: "4 weeks",
     students: "2,100",
     rating: "4.9",
@@ -61,11 +70,12 @@ const featuredTracks = [
     price: "$199",
     category: "Brand Strategy",
     certification: true,
-    featured: false
+    featured: false,
   },
   {
     title: "AI for Entrepreneurs",
-    description: "Streamline operations and scale efficiently using artificial intelligence tools and strategies.",
+    description:
+      "Streamline operations and scale efficiently using artificial intelligence tools and strategies.",
     duration: "5 weeks",
     students: "1,900",
     rating: "4.7",
@@ -73,11 +83,12 @@ const featuredTracks = [
     price: "$229",
     category: "Technology",
     certification: true,
-    featured: false
+    featured: false,
   },
   {
     title: "Donor Engagement & Strategic Partnerships",
-    description: "Build lasting relationships with donors, sponsors, and strategic partners for sustainable growth.",
+    description:
+      "Build lasting relationships with donors, sponsors, and strategic partners for sustainable growth.",
     duration: "6 weeks",
     students: "1,600",
     rating: "4.8",
@@ -85,14 +96,15 @@ const featuredTracks = [
     price: "$279",
     category: "Partnership Strategy",
     certification: true,
-    featured: true
-  }
+    featured: true,
+  },
 ];
 
 const popularCourses = [
   {
     title: "Financial Fluency for Founders",
-    description: "Master budgeting, financial planning, and reporting that builds credibility with funders.",
+    description:
+      "Master budgeting, financial planning, and reporting that builds credibility with funders.",
     duration: "4 weeks",
     students: "1,400",
     rating: "4.7",
@@ -100,7 +112,7 @@ const popularCourses = [
     price: "$179",
     category: "Financial Planning",
     certification: true,
-    featured: false
+    featured: false,
   },
   {
     title: "Grant Writing Mastery",
@@ -112,11 +124,12 @@ const popularCourses = [
     price: "$249",
     category: "Funding Strategy",
     certification: true,
-    featured: false
+    featured: false,
   },
   {
     title: "Social Impact Measurement",
-    description: "Track and communicate your organization's impact effectively.",
+    description:
+      "Track and communicate your organization's impact effectively.",
     duration: "3 weeks",
     students: "980",
     rating: "4.6",
@@ -124,54 +137,58 @@ const popularCourses = [
     price: "$149",
     category: "Impact",
     certification: true,
-    featured: false
-  }
+    featured: false,
+  },
 ];
 
 const communities = [
   {
     name: "Startups Under 2 Years",
     members: "2,400",
-    description: "Connect with fellow early-stage entrepreneurs navigating the startup journey."
+    description:
+      "Connect with fellow early-stage entrepreneurs navigating the startup journey.",
   },
   {
     name: "501(c)(3) Founders",
     members: "1,800",
-    description: "A community for nonprofit leaders building sustainable impact organizations."
+    description:
+      "A community for nonprofit leaders building sustainable impact organizations.",
   },
   {
     name: "Creative Entrepreneurs",
     members: "1,500",
-    description: "Artists, designers, and creative professionals scaling their businesses."
+    description:
+      "Artists, designers, and creative professionals scaling their businesses.",
   },
   {
     name: "Tech-Enabled Businesses",
     members: "2,100",
-    description: "Founders leveraging technology to solve problems and scale impact."
-  }
+    description:
+      "Founders leveraging technology to solve problems and scale impact.",
+  },
 ];
 
 const learningMethods = [
   {
     icon: Eye,
     title: "Visual",
-    description: "Watch expert-led video tutorials"
+    description: "Watch expert-led video tutorials",
   },
   {
     icon: Headphones,
     title: "Auditory",
-    description: "Listen to audio lessons + guest Q&As"
+    description: "Listen to audio lessons + guest Q&As",
   },
   {
     icon: BookOpen,
     title: "Reading/Writing",
-    description: "Follow detailed guides + worksheets"
+    description: "Follow detailed guides + worksheets",
   },
   {
     icon: Hand,
     title: "Kinesthetic",
-    description: "Complete real-world toolkits + simulations"
-  }
+    description: "Complete real-world toolkits + simulations",
+  },
 ];
 
 const Courses = () => {
@@ -182,7 +199,7 @@ const Courses = () => {
   const handleStartTrial = () => {
     if (auth.user) {
       // If logged in, go to dashboard
-      navigate('/dashboard');
+      navigate("/dashboard");
     } else {
       // If not logged in, open signup modal
       setIsAuthModalOpen(true);
@@ -191,30 +208,40 @@ const Courses = () => {
 
   const handleBrowseCourses = () => {
     // Scroll to courses section or navigate to feed
-    navigate('/feed');
+    navigate("/feed");
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 text-center bg-background dark:bg-neutral-900">
+      <section className="pt-32 pb-16 px-4 text-center bg-background">
         <div className="container mx-auto max-w-4xl">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground leading-tight">
             Real Education. Real Results.
           </h1>
-          
+
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed">
-            Explore expert-led courses that teach what funders, partners, and buyers actually want to see.
+            Explore expert-led courses that teach what funders, partners, and
+            buyers actually want to see.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="w-full sm:w-auto" onClick={handleBrowseCourses}>
+            <Button
+              size="lg"
+              className="w-full sm:w-auto"
+              onClick={handleBrowseCourses}
+            >
               <ArrowRight className="h-5 w-5 mr-2" />
               Browse All Courses
             </Button>
-            <Button variant="outline" size="lg" className="w-full sm:w-auto" onClick={handleStartTrial}>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto"
+              onClick={handleStartTrial}
+            >
               <Play className="h-5 w-5 mr-2" />
               Start Free Trial
             </Button>
@@ -223,7 +250,7 @@ const Courses = () => {
       </section>
 
       {/* Featured Tracks Section */}
-      <section className="py-16 bg-neutral-50 dark:bg-neutral-800">
+      <section className="py-16 bg-neutral-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -237,10 +264,10 @@ const Courses = () => {
               Unlock our most popular certification pathways:
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredTracks.map((course, index) => (
-              <div 
+              <div
                 key={index}
                 className="animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
@@ -267,10 +294,10 @@ const Courses = () => {
               Highlight top-rated courses and certification programs.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {popularCourses.map((course, index) => (
-              <div 
+              <div
                 key={index}
                 className="animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
@@ -286,7 +313,7 @@ const Courses = () => {
       <MicroLearning />
 
       {/* Top Communities Section */}
-      <section className="py-16 bg-background dark:bg-neutral-900">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-success/10 text-success px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -300,25 +327,32 @@ const Courses = () => {
               Connect with like-minded entrepreneurs and founders in your space.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             {communities.map((community, index) => (
-              <Card 
+              <Card
                 key={index}
                 className="group hover:shadow-medium transition-all duration-300 hover:-translate-y-1 animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl text-foreground">{community.name}</CardTitle>
-                    <Badge variant="secondary" className="flex items-center gap-1">
+                    <CardTitle className="text-xl text-foreground">
+                      {community.name}
+                    </CardTitle>
+                    <Badge
+                      variant="secondary"
+                      className="flex items-center gap-1"
+                    >
                       <User className="h-3 w-3" />
                       {community.members}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">{community.description}</p>
+                  <p className="text-muted-foreground mb-4">
+                    {community.description}
+                  </p>
                   <Button variant="outline" size="sm" className="w-full">
                     Join Community
                   </Button>
@@ -337,13 +371,14 @@ const Courses = () => {
               How You'll Learn at The Ready Lab
             </h2>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
-              Our platform supports different learning styles so you can grow with clarity — your way.
+              Our platform supports different learning styles so you can grow
+              with clarity — your way.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {learningMethods.map((method, index) => (
-              <Card 
+              <Card
                 key={index}
                 className="group hover:shadow-medium transition-all duration-300 hover:-translate-y-1 animate-scale-in text-center"
                 style={{ animationDelay: `${index * 0.1}s` }}
@@ -362,10 +397,11 @@ const Courses = () => {
               </Card>
             ))}
           </div>
-          
+
           <div className="text-center">
             <blockquote className="text-xl font-semibold text-foreground italic">
-              "The Ready Lab was built for real people — no matter how you learn, we make sure you grow."
+              "The Ready Lab was built for real people — no matter how you
+              learn, we make sure you grow."
             </blockquote>
           </div>
         </div>
@@ -377,13 +413,17 @@ const Courses = () => {
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Get Certified. Get Funded. Get Ready.
           </h2>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
               <Award className="h-5 w-5 mr-2" />
               Start Learning
             </Button>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-primary">
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-primary"
+            >
               <Users className="h-5 w-5 mr-2" />
               Join a Community
             </Button>
@@ -392,9 +432,9 @@ const Courses = () => {
       </section>
 
       <Footer />
-      
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         defaultMode="signup"
       />

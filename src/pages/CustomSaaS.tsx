@@ -9,7 +9,8 @@ const CustomSaaS = () => {
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-6">Custom Solutions</h1>
           <p className="text-lg text-muted-foreground">
-            Enterprise-grade learning management systems tailored to your organization.
+            Enterprise-grade learning management systems tailored to your
+            organization.
           </p>
         </div>
       </main>

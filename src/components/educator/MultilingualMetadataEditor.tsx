@@ -1,12 +1,24 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Languages, Save } from 'lucide-react';
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Languages, Save } from "lucide-react";
 
 interface Translation {
   title: string;
@@ -23,13 +35,13 @@ interface MultilingualMetadataEditorProps {
 }
 
 const SUPPORTED_LANGUAGES = [
-  { code: 'es', name: 'Spanish' },
-  { code: 'fr', name: 'French' },
-  { code: 'de', name: 'German' },
-  { code: 'pt', name: 'Portuguese' },
-  { code: 'zh', name: 'Chinese' },
-  { code: 'ja', name: 'Japanese' },
-  { code: 'ar', name: 'Arabic' },
+  { code: "es", name: "Spanish" },
+  { code: "fr", name: "French" },
+  { code: "de", name: "German" },
+  { code: "pt", name: "Portuguese" },
+  { code: "zh", name: "Chinese" },
+  { code: "ja", name: "Japanese" },
+  { code: "ar", name: "Arabic" },
 ];
 
 export const MultilingualMetadataEditor = ({
@@ -40,15 +52,16 @@ export const MultilingualMetadataEditor = ({
   translations = {},
   onSave,
 }: MultilingualMetadataEditorProps) => {
-  const [localTranslations, setLocalTranslations] = useState<Record<string, Translation>>(translations);
-  const [selectedLanguage, setSelectedLanguage] = useState('es');
+  const [localTranslations, setLocalTranslations] =
+    useState<Record<string, Translation>>(translations);
+  const [selectedLanguage, setSelectedLanguage] = useState("es");
 
   const handleSave = () => {
     onSave(localTranslations);
     onOpenChange(false);
   };
 
-  const updateTranslation = (field: 'title' | 'description', value: string) => {
+  const updateTranslation = (field: "title" | "description", value: string) => {
     setLocalTranslations((prev) => ({
       ...prev,
       [selectedLanguage]: {
@@ -59,8 +72,8 @@ export const MultilingualMetadataEditor = ({
   };
 
   const currentTranslation = localTranslations[selectedLanguage] || {
-    title: '',
-    description: '',
+    title: "",
+    description: "",
   };
 
   return (
@@ -80,8 +93,8 @@ export const MultilingualMetadataEditor = ({
           <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
             <TabsTrigger value="en">English</TabsTrigger>
             {SUPPORTED_LANGUAGES.map((lang) => (
-              <TabsTrigger 
-                key={lang.code} 
+              <TabsTrigger
+                key={lang.code}
                 value={lang.code}
                 onClick={() => setSelectedLanguage(lang.code)}
               >
@@ -100,17 +113,22 @@ export const MultilingualMetadataEditor = ({
               <Textarea value={baseDescription} disabled rows={4} />
             </div>
             <p className="text-sm text-muted-foreground">
-              This is your base language. Switch to other tabs to add translations.
+              This is your base language. Switch to other tabs to add
+              translations.
             </p>
           </TabsContent>
 
           {SUPPORTED_LANGUAGES.map((lang) => (
-            <TabsContent key={lang.code} value={lang.code} className="space-y-4 mt-4">
+            <TabsContent
+              key={lang.code}
+              value={lang.code}
+              className="space-y-4 mt-4"
+            >
               <div className="space-y-2">
                 <Label>Title ({lang.name})</Label>
                 <Input
                   value={currentTranslation.title}
-                  onChange={(e) => updateTranslation('title', e.target.value)}
+                  onChange={(e) => updateTranslation("title", e.target.value)}
                   placeholder={`Translate: ${baseTitle}`}
                 />
               </div>
@@ -118,22 +136,28 @@ export const MultilingualMetadataEditor = ({
                 <Label>Description ({lang.name})</Label>
                 <Textarea
                   value={currentTranslation.description}
-                  onChange={(e) => updateTranslation('description', e.target.value)}
+                  onChange={(e) =>
+                    updateTranslation("description", e.target.value)
+                  }
                   placeholder={`Translate: ${baseDescription}`}
                   rows={4}
                 />
               </div>
-              
+
               {/* Reference */}
               <div className="pt-4 border-t space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Reference (English):</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Reference (English):
+                </p>
                 <div className="bg-muted p-3 rounded-md space-y-2">
                   <div>
                     <p className="text-xs text-muted-foreground">Title:</p>
                     <p className="text-sm">{baseTitle}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Description:</p>
+                    <p className="text-xs text-muted-foreground">
+                      Description:
+                    </p>
                     <p className="text-sm">{baseDescription}</p>
                   </div>
                 </div>

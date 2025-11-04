@@ -3,7 +3,13 @@ import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -21,9 +27,12 @@ export default function PaymentSuccess() {
       }
 
       try {
-        const { data, error } = await supabase.functions.invoke("verify-payment", {
-          body: { sessionId },
-        });
+        const { data, error } = await supabase.functions.invoke(
+          "verify-payment",
+          {
+            body: { sessionId },
+          },
+        );
 
         if (error) throw error;
         if (data.error) throw new Error(data.error);
@@ -45,7 +54,9 @@ export default function PaymentSuccess() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Verifying Payment...</CardTitle>
-            <CardDescription>Please wait while we confirm your enrollment</CardDescription>
+            <CardDescription>
+              Please wait while we confirm your enrollment
+            </CardDescription>
           </CardHeader>
         </Card>
       </div>

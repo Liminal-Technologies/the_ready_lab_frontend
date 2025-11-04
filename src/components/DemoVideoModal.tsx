@@ -1,5 +1,5 @@
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { X } from 'lucide-react';
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 
 interface DemoVideoModalProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ export const DemoVideoModal = ({ isOpen, onClose }: DemoVideoModalProps) => {
         >
           <X className="h-5 w-5 text-white" />
         </button>
-        
+
         <div className="relative w-full pt-[56.25%]">
           <iframe
             className="absolute top-0 left-0 w-full h-full rounded-lg"
