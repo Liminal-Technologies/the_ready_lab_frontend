@@ -1,0 +1,60 @@
+I want to redesign only the “Get Fundable & Certified” course grid section.
+The goal is to keep all of the existing information exactly the same (course titles, tags, prices, durations, instructors, stats, and button labels), but change the layout and styling so it resembles the colorful mosaic layout in the reference image I provided.
+
+Content that must stay the same:
+
+Section label: “Certification Tracks” (or whatever label text currently exists).
+
+Heading: “Get Fundable & Certified”.
+
+Subheading paragraph under the title.
+
+For each course card:
+
+Tags (Beginner / Intermediate / Advanced, Certified, Featured, etc.)
+
+Price
+
+Category / track name
+
+Course title
+
+Description text
+
+Instructor name and avatar
+
+Duration, learners count, rating
+
+CTA buttons (“View Course”, etc.)
+
+Bottom CTA bar: “Start Your Certification Journey” button and the payment/scholarship note line.
+
+New layout + style I want (similar to the reference mosaic):
+
+Overall container with soft rounded corners and a light background (off-white).
+
+Inside, create a tiled mosaic layout instead of a uniform 3x2 grid:
+
+1–2 larger “hero” tiles that highlight a featured course or stat (e.g., best-seller, rating, total learners).
+
+The remaining courses as medium or small tiles around it.
+
+Tiles should have large border radiuses, soft shadows, and tight spacing like the reference.
+
+Use bold gradients and flat colors as backgrounds on some tiles (blues, purples, oranges), and photo/thumbnail backgrounds on others, similar to the reference image.
+
+Text and tags should sit on top of these backgrounds with good contrast (use overlays where needed).
+
+Buttons should be pill-shaped or rounded and clearly visible.
+
+Maintain a single section heading and description at the top, centered, with plenty of white space above and below, just like the reference hero block.
+
+Keep the bottom “Start Your Certification Journey” CTA as a separate full-width bar underneath the mosaic, with a strong accent color and rounded corners.
+
+Rules:
+
+Do NOT change any data, logic, or routing—only the JSX/HTML structure and styling (CSS or Tailwind).
+
+Preserve all text and numeric values exactly; only reposition and restyle them.
+
+Make the mosaic layout responsive: 3–4 tiles per row on large screens, 2 per row on tablets, and stacked on mobile.
