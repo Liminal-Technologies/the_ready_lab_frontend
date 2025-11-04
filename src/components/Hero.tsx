@@ -29,13 +29,12 @@ const Hero = () => {
 
   return (
     <section className="min-h-screen relative overflow-hidden">
-      {/* Background Image with Overlay - Zoomed Out Effect */}
+      {/* Background Image with Overlay - Full Screen */}
       <div className="absolute inset-0">
         <img 
           src={heroImage} 
           alt="Diverse entrepreneurs learning together" 
-          className="w-full h-full object-cover scale-[0.85] origin-center"
-          style={{ transform: 'scale(0.67)' }}
+          className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
       </div>
@@ -54,16 +53,15 @@ const Hero = () => {
       </div>
 
       {/* Right Floating Content Box - Centered Vertically, Right Aligned */}
-      <div className="absolute top-1/2 -translate-y-1/2 right-8 md:right-16 lg:right-24 z-20 max-w-md hidden lg:block">
-        <div className="rounded-2xl p-8 text-center">
-          <p className="text-white text-lg lg:text-xl mb-8 leading-relaxed font-medium" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+      <div className="absolute top-1/2 -translate-y-1/2 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
+        <div className="rounded-2xl p-5 text-center">
+          <p className="text-white text-sm mb-5 leading-relaxed font-normal" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
           </p>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             <Button 
               onClick={handleStartJourney}
-              size="lg"
-              className="w-full rounded-full font-bold text-lg py-6 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="w-full rounded-full font-semibold text-base py-3 transition-all duration-300 hover:scale-105 hover:shadow-lg"
               style={{ backgroundColor: '#FDB022', color: '#000' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
@@ -73,8 +71,7 @@ const Hero = () => {
             </Button>
             <Button 
               onClick={handleWatchDemo}
-              size="lg"
-              className="w-full rounded-full border-2 bg-transparent hover:bg-white/10 font-bold text-lg py-6 text-white border-white/60"
+              className="w-full rounded-full border-2 bg-transparent hover:bg-white/10 font-semibold text-base py-3 text-white border-white/60"
               data-testid="button-watch-demo"
             >
               Watch Demo
