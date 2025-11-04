@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { storage } from "./storage";
 import { insertProfileSchema, insertTrackSchema, insertEnrollmentSchema, insertPostSchema } from "@shared/schema";
 import { stripeRouter } from "./stripe-routes";
+import { streamCertificatePDF } from "./certificate-generator";
 
 export const router = express.Router();
 
@@ -115,6 +116,41 @@ router.get("/api/certifications/user/:userId", async (req: Request, res: Respons
   } catch (error) {
     console.error("Error fetching certifications:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/api/certifications/:id/download", async (req: Request, res: Response) => {
+  try {
+    const certification = await storage.getCertification(req.params.id);
+    if (!certification) {
+      return res.status(404).json({ error: "Certification not found" });
+    }
+
+    const track = await storage.getTrack(certification.trackId);
+    if (!track) {
+      return res.status(404).json({ error: "Track not found" });
+    }
+
+    const profile = await storage.getProfile(certification.userId);
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    const pdfStream = streamCertificatePDF({
+      certification,
+      track,
+      profile
+    });
+
+    const fileName = `certificate-${track.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.pdf`;
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    
+    pdfStream.pipe(res);
+  } catch (error) {
+    console.error("Error generating certificate PDF:", error);
+    res.status(500).json({ error: "Failed to generate certificate" });
   }
 });
 

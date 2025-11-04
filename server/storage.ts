@@ -24,6 +24,7 @@ export interface IStorage {
   getLessonProgress(userId: string, lessonId: string): Promise<any>;
   updateLessonProgress(userId: string, lessonId: string, data: any): Promise<any>;
   
+  getCertification(id: string): Promise<schema.Certification | undefined>;
   getCertificationsByUserId(userId: string): Promise<schema.Certification[]>;
   createCertification(data: schema.InsertCertification): Promise<schema.Certification>;
   
@@ -122,6 +123,11 @@ export class PostgresStorage implements IStorage {
         .returning();
       return progress;
     }
+  }
+
+  async getCertification(id: string): Promise<schema.Certification | undefined> {
+    const [certification] = await db.select().from(schema.certifications).where(eq(schema.certifications.id, id));
+    return certification;
   }
 
   async getCertificationsByUserId(userId: string): Promise<schema.Certification[]> {
