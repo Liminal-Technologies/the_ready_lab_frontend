@@ -30,10 +30,10 @@ const SuccessStoriesSection = () => {
               className="bg-gradient-to-br from-purple-400 to-purple-500 dark:from-purple-600 dark:to-purple-700 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-center items-center text-center min-h-[320px]"
               data-testid="card-success-rate"
             >
-              <div className="text-white">
-                <p className="text-6xl md:text-7xl font-black mb-4">95%</p>
-                <p className="text-2xl md:text-3xl font-bold mb-3">Success Rate</p>
-                <p className="text-lg md:text-xl font-medium">Graduates achieve goals within 12 months</p>
+              <div>
+                <p className="text-6xl md:text-7xl font-black mb-4 text-black dark:text-white">95%</p>
+                <p className="text-2xl md:text-3xl font-bold mb-3 text-black dark:text-white">Success Rate</p>
+                <p className="text-lg md:text-xl font-medium text-black dark:text-white">Graduates achieve goals within 12 months</p>
               </div>
             </div>
             
