@@ -81,9 +81,9 @@ const Hero = () => {
       </div>
 
       {/* Mobile Layout - Banner at Top Center, Content Below */}
-      <div className="lg:hidden absolute top-32 left-0 right-0 z-10 px-4">
+      <div className="lg:hidden absolute top-28 left-0 right-0 z-10 px-4">
         <div className="container mx-auto max-w-md text-center">
-          <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-8">
             <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
               Prepare &{" "}
             </span>
@@ -96,16 +96,15 @@ const Hero = () => {
       </div>
 
       {/* Mobile Content - Below Banner Text */}
-      <div className="absolute bottom-32 left-0 right-0 z-20 px-4 lg:hidden">
+      <div className="absolute bottom-28 left-0 right-0 z-20 px-4 lg:hidden">
         <div className="container mx-auto max-w-md text-center">
-          <p className="text-white mb-4 leading-relaxed" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+          <p className="text-white mb-3 leading-relaxed text-sm" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
           </p>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5">
             <Button 
               onClick={handleStartJourney}
-              size="lg"
-              className="w-full rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              className="w-full rounded-full font-semibold text-sm py-2.5 transition-all duration-300 hover:scale-105 hover:shadow-lg"
               style={{ backgroundColor: '#FDB022', color: '#000' }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
@@ -115,8 +114,7 @@ const Hero = () => {
             </Button>
             <Button 
               onClick={handleWatchDemo}
-              size="lg"
-              className="w-full rounded-full border-2 bg-transparent hover:bg-white/10 font-semibold text-white border-white/60"
+              className="w-full rounded-full border-2 bg-transparent hover:bg-white/10 font-semibold text-sm py-2.5 text-white border-white/60"
               data-testid="button-watch-demo-mobile"
             >
               Watch Demo
