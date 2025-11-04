@@ -4,7 +4,7 @@ import educatorImage from "@/assets/educator-1.jpg";
 
 const SuccessStoriesSection = () => {
   return (
-    <section className="py-20 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200 overflow-hidden">
+    <section className="py-20 lg:py-32 bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/20 dark:to-neutral-900 transition-colors duration-200 overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Hero Row */}
         <div className="relative mb-16 lg:mb-20 overflow-hidden">
