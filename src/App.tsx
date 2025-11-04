@@ -25,6 +25,7 @@ import EventDetail from "./pages/EventDetail";
 import { Settings } from "@/components/settings/Settings";
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
+import CourseBrowse from "./pages/CourseBrowse";
 import Products from "./pages/Products";
 import ProductDownload from "./pages/ProductDownload";
 import Pricing from "./pages/Pricing";
@@ -103,6 +104,7 @@ const AppContent = () => {
           <Route path="/community/join" element={<CommunityJoin />} />
           <Route path="/community/create" element={<CommunityCreate />} />
           <Route path="/community/:communityId" element={<CommunityDetail />} />
+          <Route path="/browse" element={<CourseBrowse />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:courseId" element={<CourseDetail />} />
           <Route path="/products" element={<Products />} />
@@ -218,6 +220,7 @@ const AppContent = () => {
         <Route path="/community/join" element={<CommunityJoin />} />
         <Route path="/community/create" element={<CommunityCreate />} />
         <Route path="/community/:communityId" element={<CommunityDetail />} />
+        <Route path="/browse" element={<CourseBrowse />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:courseId" element={<CourseDetail />} />
         <Route path="/products" element={<Products />} />

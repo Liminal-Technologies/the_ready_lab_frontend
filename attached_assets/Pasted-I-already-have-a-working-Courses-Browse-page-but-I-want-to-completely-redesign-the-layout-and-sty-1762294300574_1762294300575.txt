@@ -1,0 +1,67 @@
+I already have a working Courses / Browse page, but I want to completely redesign the layout and styling to look like the reference UI I’ll describe, while keeping all the same text/content.
+
+Important rules
+
+Do NOT change any course titles, descriptions, prices, durations, instructors, or labels – only the layout and visual design.
+
+Do NOT add real backend filtering or search; use front-end state with mock behavior.
+
+Keep the existing routing and data structures; only refactor JSX/HTML and CSS/Tailwind.
+
+Target layout (match this style):
+
+Full-width white page with rounded top corners and a light gray page background.
+
+Top toolbar above the grid:
+
+Breadcrumb like “Home › Courses”.
+
+Big heading: “Browse Courses & More” (use my existing heading text).
+
+Small text showing number of courses (can be derived from the data length or hard-coded).
+
+Right side: Filter button (for mobile), and a Sort By dropdown.
+
+Under the heading, a horizontal row of category chips (pills) for main topics (use my existing categories/tags). Clicking a chip just filters locally.
+
+Main content split into two columns:
+
+Left sidebar (filters):
+
+“Filter” heading.
+
+Filter groups like Category, Price range, Level, Format, etc., using checkboxes and sliders – wired only to local filtering.
+
+A primary “Save Filter” button at the bottom.
+
+Right grid (courses):
+
+3- or 4-column responsive grid of course cards.
+
+Each card shows course image, duration, level/tag pills, title, subtitle/short description, instructor, and key stats (students, rating) using my existing fields.
+
+Cards have large border radius, soft shadow, hover elevation, and consistent spacing like the reference.
+
+Below the grid, add pagination controls (Previous / page numbers / Next) that work in local state only.
+
+At the bottom of the page, add a wide orange CTA banner similar to the reference:
+
+Left: headline + short paragraph encouraging users to keep learning with The Ready Lab.
+
+Right: friendly instructor image (use my existing assets or a placeholder) and a “Join for Free” or equivalent primary button.
+
+Keep or restyle the existing footer to be dark with multiple columns (Account, Resources, Contact, etc.) like the reference.
+
+Responsive behavior
+
+On desktop: show sidebar + grid.
+
+On tablet/mobile: hide the sidebar by default and expose filters through the top “Filter” button that opens a slide-over / modal.
+
+Now I will paste my current Courses page component(s). Please:
+
+Rewrite the layout and styling to match this design.
+
+Implement local filtering, chip selection, and pagination using my existing course data.
+
+Return the full updated code for the page and any new components you create.
