@@ -29,6 +29,19 @@ import brandingImage from "../../attached_assets/stock_images/branding_marketing
 import aiImage from "../../attached_assets/stock_images/artificial_intellige_80651e44.jpg";
 import partnershipImage from "../../attached_assets/stock_images/partnership_handshak_d5c0b270.jpg";
 import financialImage from "../../attached_assets/stock_images/financial_planning_a_96357d65.jpg";
+import leadershipImage1 from "../../attached_assets/stock_images/leadership_training__1b0190d8.jpg";
+import leadershipImage2 from "../../attached_assets/stock_images/leadership_training__5de9c707.jpg";
+import leadershipImage3 from "../../attached_assets/stock_images/leadership_training__fa86c4b6.jpg";
+import dataImage1 from "../../attached_assets/stock_images/data_analytics_chart_9d201444.jpg";
+import dataImage2 from "../../attached_assets/stock_images/data_analytics_chart_8593535e.jpg";
+import marketingImage1 from "../../attached_assets/stock_images/digital_marketing_so_667c8e38.jpg";
+import marketingImage2 from "../../attached_assets/stock_images/digital_marketing_so_38500969.jpg";
+import salesImage1 from "../../attached_assets/stock_images/sales_presentation_b_485c21d3.jpg";
+import salesImage2 from "../../attached_assets/stock_images/sales_presentation_b_0eeaf3e1.jpg";
+import nonprofitImage1 from "../../attached_assets/stock_images/nonprofit_community__f668de9f.jpg";
+import nonprofitImage2 from "../../attached_assets/stock_images/nonprofit_community__6947926b.jpg";
+import projectImage1 from "../../attached_assets/stock_images/project_management_p_4e0802ca.jpg";
+import projectImage2 from "../../attached_assets/stock_images/project_management_p_a25fdf59.jpg";
 
 const courses = [
   {
@@ -133,10 +146,24 @@ const CATEGORIES = [
   { name: "TECHNOLOGY", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400" },
   { name: "PARTNERSHIP STRATEGY", color: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400" },
   { name: "FINANCIAL PLANNING", color: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400" },
+  { name: "LEADERSHIP", color: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400" },
+  { name: "DATA ANALYTICS", color: "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400" },
+  { name: "DIGITAL MARKETING", color: "bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400" },
+  { name: "SALES & REVENUE", color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400" },
+  { name: "NONPROFIT MANAGEMENT", color: "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400" },
+  { name: "PROJECT MANAGEMENT", color: "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400" },
+  { name: "GRANT WRITING", color: "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400" },
+  { name: "SOCIAL IMPACT", color: "bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-400" },
+  { name: "COMMUNICATION", color: "bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-400" },
 ];
 
 const LEVELS = ["Beginner", "Intermediate", "Advanced"];
-const INTERESTS = ["Funding", "Business", "Branding", "AI", "Marketing", "Operations", "Leadership", "Technology"];
+const INTERESTS = [
+  "Funding", "Business", "Branding", "AI", "Marketing", "Operations", 
+  "Leadership", "Technology", "Data", "Sales", "Nonprofit", "Strategy",
+  "Communications", "Project Management", "Social Impact", "Analytics",
+  "Revenue Growth", "Community", "Innovation", "Sustainability"
+];
 
 const CourseBrowse = () => {
   const { t } = useLanguage();
