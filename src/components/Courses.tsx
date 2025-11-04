@@ -244,7 +244,10 @@ const Courses = () => {
         <div className="bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600 rounded-3xl p-8 shadow-xl text-center">
           <Button
             size="lg"
-            className="bg-black dark:bg-white text-white dark:text-black hover:bg-black/80 dark:hover:bg-white/90 text-lg px-8 py-6 rounded-full font-bold"
+            className="text-lg px-8 py-6 rounded-full font-bold"
+            style={{ backgroundColor: '#FDB022', color: '#000' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
             data-testid="button-start-certification"
           >
             <Award className="h-6 w-6 mr-2" />
