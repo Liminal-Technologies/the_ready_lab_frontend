@@ -27,6 +27,13 @@ import {
   ChevronLeft,
   Award,
   ArrowRight,
+  Heart,
+  MessageCircle,
+  PlayCircle,
+  Eye,
+  Ear,
+  BookOpen,
+  Hand,
 } from "lucide-react";
 import fundingImage from "../../attached_assets/stock_images/business_professiona_9e1fef7d.jpg";
 import operationsImage from "../../attached_assets/stock_images/business_operations__a3e6e538.jpg";
@@ -131,12 +138,149 @@ const allCourses = [
     image: financialImage,
     instructorName: "Chris Anderson",
     format: "Video"
+  },
+  {
+    id: "7",
+    title: "Grant Writing Mastery",
+    description: "Learn to write compelling grant proposals that get funded.",
+    duration: "6 weeks",
+    students: "2,200",
+    rating: "4.9",
+    level: "Beginner",
+    price: 249,
+    category: "FUNDING STRATEGY",
+    certification: true,
+    featured: false,
+    image: fundingImage,
+    instructorName: "Dr. Emily Foster",
+    format: "Video"
+  },
+  {
+    id: "8",
+    title: "Social Impact Measurement",
+    description: "Track and communicate your organization's impact effectively.",
+    duration: "3 weeks",
+    students: "980",
+    rating: "4.6",
+    level: "Intermediate",
+    price: 149,
+    category: "IMPACT",
+    certification: true,
+    featured: false,
+    image: partnershipImage,
+    instructorName: "Jordan Lee",
+    format: "Interactive"
   }
 ];
 
-const categories = ["FUNDING STRATEGY", "OPERATIONS", "BRAND STRATEGY", "TECHNOLOGY", "PARTNERSHIP STRATEGY", "FINANCIAL PLANNING"];
+const categories = ["FUNDING STRATEGY", "OPERATIONS", "BRAND STRATEGY", "TECHNOLOGY", "PARTNERSHIP STRATEGY", "FINANCIAL PLANNING", "IMPACT"];
 const levels = ["Beginner", "Intermediate", "Advanced"];
 const formats = ["Video", "Interactive", "Live"];
+
+const microLessons = [
+  {
+    id: "m1",
+    title: "EIN Setup Essentials",
+    instructor: "Maria Rodriguez",
+    duration: "3 min",
+    level: "Beginner",
+    category: "Business Infrastructure",
+    description: "💼 Getting your EIN is step #1 to fundability!\n\n✅ Apply directly with the IRS (free!)\n✅ Takes 5-10 minutes online\n✅ Unlocks business banking & credibility\n\nSkip the paid services - do it yourself and save $200+",
+    likes: 156,
+    comments: 23,
+    timeAgo: "5m ago",
+    initials: "MR"
+  },
+  {
+    id: "m2",
+    title: "Grant vs. Investment: Know the Difference",
+    instructor: "David Kim",
+    duration: "4 min",
+    level: "Beginner",
+    category: "Funding Readiness",
+    description: "🎯 Grants = Free money (no equity lost)\nInvestments = Money for ownership\n\nGrant tip: Focus on impact, not profit in your pitch.\nInvestor tip: Show scalability and ROI potential.\n\nKnow which door you're knocking on!",
+    likes: 203,
+    comments: 41,
+    timeAgo: "12m ago",
+    initials: "DK"
+  },
+  {
+    id: "m3",
+    title: "Brand Message Formula",
+    instructor: "Jessica Chen",
+    duration: "5 min",
+    level: "Intermediate",
+    category: "Branding for Growth",
+    description: "🚀 The Ready Lab Brand Formula:\n\nWE HELP [target audience]\nTO [desired outcome]\nSO THEY CAN [bigger vision]\n\nExample: 'We help early-stage founders build fundable businesses so they can scale with confidence.'\n\nClear. Fundable. Memorable.",
+    likes: 178,
+    comments: 32,
+    timeAgo: "45m ago",
+    initials: "JC"
+  },
+  {
+    id: "m4",
+    title: "AI Prompt for Business Plans",
+    instructor: "Carlos Martinez",
+    duration: "6 min",
+    level: "Intermediate",
+    category: "AI for Entrepreneurs",
+    description: "🤖 Transform ChatGPT into your business strategist:\n\n'Act as a business consultant. Help me create a [section] for my [industry] business that [goal]. Include specific metrics and actionable steps.'\n\nSpecific prompts = better outputs. Try it!",
+    likes: 267,
+    comments: 58,
+    timeAgo: "2h ago",
+    initials: "CM"
+  }
+];
+
+const communities = [
+  {
+    id: "c1",
+    name: "Startups Under 2 Years",
+    members: "2,400",
+    description: "Connect with fellow early-stage entrepreneurs navigating the startup journey."
+  },
+  {
+    id: "c2",
+    name: "501(c)(3) Founders",
+    members: "1,800",
+    description: "A community for nonprofit leaders building sustainable impact organizations."
+  },
+  {
+    id: "c3",
+    name: "Creative Entrepreneurs",
+    members: "1,500",
+    description: "Artists, designers, and creative professionals scaling their businesses."
+  },
+  {
+    id: "c4",
+    name: "Tech-Enabled Businesses",
+    members: "2,100",
+    description: "Founders leveraging technology to solve problems and scale impact."
+  }
+];
+
+const learningStyles = [
+  {
+    icon: "🎨",
+    title: "Visual",
+    description: "Watch expert-led video tutorials"
+  },
+  {
+    icon: "🎧",
+    title: "Auditory",
+    description: "Listen to audio lessons + guest Q&As"
+  },
+  {
+    icon: "📝",
+    title: "Reading/Writing",
+    description: "Follow detailed guides + worksheets"
+  },
+  {
+    icon: "🤲",
+    title: "Kinesthetic",
+    description: "Complete real-world toolkits + simulations"
+  }
+];
 
 const CourseBrowse = () => {
   const navigate = useNavigate();
@@ -550,6 +694,163 @@ const CourseBrowse = () => {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Micro Learning Feed Section */}
+      <div className="bg-neutral-50 dark:bg-neutral-900 py-16">
+        <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-black mb-4">
+              <span className="text-black dark:text-white">Micro Learning </span>
+              <span className="text-orange-500">Feed</span>
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              2-8 minute lessons to build your fundability. Real education, real results.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {microLessons.map((lesson) => (
+              <div
+                key={lesson.id}
+                className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow border border-neutral-200 dark:border-neutral-700"
+                data-testid={`micro-lesson-${lesson.id}`}
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
+                    {lesson.initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold">{lesson.instructor}</span>
+                      <span className="text-sm text-muted-foreground">• {lesson.timeAgo}</span>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge variant="outline" className="text-xs">
+                        {lesson.level}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{lesson.duration}</span>
+                      <span className="text-xs font-semibold text-orange-500">{lesson.category}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-bold mb-3">{lesson.title}</h3>
+                <p className="text-sm text-muted-foreground whitespace-pre-line mb-4">
+                  {lesson.description}
+                </p>
+
+                <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-neutral-700">
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Heart className="h-4 w-4" />
+                      <span>{lesson.likes}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MessageCircle className="h-4 w-4" />
+                      <span>{lesson.comments}</span>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="bg-orange-500 hover:bg-orange-600 text-white"
+                    data-testid={`button-start-lesson-${lesson.id}`}
+                  >
+                    <PlayCircle className="h-4 w-4 mr-1" />
+                    Start Lesson
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => navigate("/feed")}
+              data-testid="button-view-all-lessons"
+            >
+              View All Lessons
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Join a Community Section */}
+      <div className="bg-white dark:bg-neutral-800 py-16">
+        <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-black mb-4">
+              🏘️ <span className="text-black dark:text-white">Join a Community </span>
+              <span className="text-orange-500">That Gets You</span>
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Connect with like-minded entrepreneurs and founders in your space.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {communities.map((community) => (
+              <div
+                key={community.id}
+                className="bg-neutral-50 dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700 hover:border-orange-500 transition-colors"
+                data-testid={`community-card-${community.id}`}
+              >
+                <h3 className="text-xl font-bold mb-2">{community.name}</h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                  <Users className="h-4 w-4" />
+                  <span>{community.members} members</span>
+                </div>
+                <p className="text-muted-foreground mb-6">{community.description}</p>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate("/community/join")}
+                  data-testid={`button-join-community-${community.id}`}
+                >
+                  Join Community
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* How You'll Learn Section */}
+      <div className="bg-neutral-50 dark:bg-neutral-900 py-16">
+        <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-black mb-4">
+              <span className="text-black dark:text-white">How You'll Learn at </span>
+              <span className="text-orange-500">The Ready Lab</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Our platform supports different learning styles so you can grow with clarity — your way.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {learningStyles.map((style, index) => (
+              <div
+                key={index}
+                className="bg-white dark:bg-neutral-800 rounded-2xl p-6 text-center border border-neutral-200 dark:border-neutral-700 hover:border-orange-500 transition-colors"
+                data-testid={`learning-style-${style.title.toLowerCase()}`}
+              >
+                <div className="text-5xl mb-4">{style.icon}</div>
+                <h3 className="text-xl font-bold mb-2">{style.title}</h3>
+                <p className="text-sm text-muted-foreground">{style.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center bg-gradient-to-r from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 rounded-2xl p-8">
+            <p className="text-lg italic text-foreground max-w-3xl mx-auto">
+              "The Ready Lab was built for real people — no matter how you learn, we make sure you grow."
+            </p>
           </div>
         </div>
       </div>
