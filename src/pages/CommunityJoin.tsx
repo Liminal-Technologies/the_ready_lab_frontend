@@ -5,116 +5,116 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Users, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Community {
   id: string;
   name: string;
-  description: string | null;
+  description: string;
+  category: string;
   member_count: number;
-  visibility: string;
-  created_at: string;
-  cover_photo: string | null;
+  cover_photo?: string;
 }
+
+// Mock communities data
+const MOCK_COMMUNITIES: Community[] = [
+  {
+    id: '1',
+    name: 'Funding & Grants',
+    description: 'Connect with experts in fundraising, grant writing, and securing capital for your ventures.',
+    category: 'Funding',
+    member_count: 2847,
+    cover_photo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=200&fit=crop'
+  },
+  {
+    id: '2',
+    name: 'Legal & Compliance',
+    description: 'Navigate legal challenges, contracts, and regulatory requirements with fellow entrepreneurs.',
+    category: 'Legal',
+    member_count: 1923,
+    cover_photo: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=200&fit=crop'
+  },
+  {
+    id: '3',
+    name: 'Marketing & Branding',
+    description: 'Share strategies, campaigns, and creative ideas to grow your brand and reach your audience.',
+    category: 'Branding',
+    member_count: 3521,
+    cover_photo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop'
+  },
+  {
+    id: '4',
+    name: 'Tech Infrastructure',
+    description: 'Discuss technical architecture, cloud solutions, and infrastructure best practices.',
+    category: 'Infrastructure',
+    member_count: 2156,
+    cover_photo: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=200&fit=crop'
+  },
+  {
+    id: '5',
+    name: 'Financial Planning',
+    description: 'Master budgeting, forecasting, and financial management for sustainable growth.',
+    category: 'Finance',
+    member_count: 2034,
+    cover_photo: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=200&fit=crop'
+  },
+  {
+    id: '6',
+    name: 'AI & Innovation',
+    description: 'Explore artificial intelligence, machine learning, and cutting-edge technologies.',
+    category: 'AI',
+    member_count: 4102,
+    cover_photo: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop'
+  },
+];
 
 const CommunityJoin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [communities] = useState<Community[]>(MOCK_COMMUNITIES);
+  const [joinedCommunities, setJoinedCommunities] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [joiningId, setJoiningId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCommunities();
+    // Load joined communities from localStorage
+    const stored = localStorage.getItem('joinedCommunities');
+    if (stored) {
+      setJoinedCommunities(JSON.parse(stored));
+    }
+    setLoading(false);
   }, []);
 
-  const fetchCommunities = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('communities')
-        .select('*')
-        .eq('visibility', 'open')
-        .order('member_count', { ascending: false });
-
-      if (error) throw error;
-      setCommunities(data || []);
-    } catch (error) {
-      console.error('Error fetching communities:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load communities",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  const isJoined = (communityId: string) => {
+    return joinedCommunities.includes(communityId);
   };
 
-  const handleJoinCommunity = async (communityId: string) => {
-    try {
-      setJoiningId(communityId);
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to join a community",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { error } = await supabase
-        .from('community_members')
-        .insert({
-          community_id: communityId,
-          user_id: user.id,
-          role: 'member',
-        });
-
-      if (error) {
-        if (error.code === '23505') {
-          toast({
-            title: "Already a member",
-            description: "You're already part of this community",
-          });
-        } else {
-          throw error;
-        }
-      } else {
-        toast({
-          title: "Success",
-          description: "You've joined the community!",
-        });
-        navigate(`/community/${communityId}`);
-      }
-    } catch (error) {
-      console.error('Error joining community:', error);
+  const handleToggleCommunity = (communityId: string, communityName: string) => {
+    // TODO: backend - POST/DELETE /api/community-members
+    // await fetch(`/api/community-members`, { method: 'POST', body: JSON.stringify({ communityId }) })
+    
+    const joined = isJoined(communityId);
+    
+    let updatedCommunities: string[];
+    if (joined) {
+      // Leave community
+      updatedCommunities = joinedCommunities.filter(id => id !== communityId);
       toast({
-        title: "Error",
-        description: "Failed to join community",
-        variant: "destructive",
+        title: "Left community",
+        description: `You've left ${communityName}`,
       });
-    } finally {
-      setJoiningId(null);
+    } else {
+      // Join community
+      updatedCommunities = [...joinedCommunities, communityId];
+      toast({
+        title: "Joined community! 🎉",
+        description: `Welcome to ${communityName}`,
+      });
     }
+    
+    setJoinedCommunities(updatedCommunities);
+    localStorage.setItem('joinedCommunities', JSON.stringify(updatedCommunities));
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen">
-        <Header />
-        <main className="pt-24 pb-12">
-          <div className="container mx-auto px-4 flex items-center justify-center min-h-[400px]">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen">
@@ -129,23 +129,16 @@ const CommunityJoin = () => {
               </p>
             </div>
 
-            {communities.length === 0 ? (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No communities yet</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Be the first to create a community!
-                  </p>
-                  <Button onClick={() => navigate('/community/create')}>
-                    Create Community
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-6">
-                {communities.map((community) => (
-                  <Card key={community.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+            <div className="grid md:grid-cols-2 gap-6">
+              {communities.map((community) => {
+                const joined = isJoined(community.id);
+                return (
+                  <Card 
+                    key={community.id} 
+                    className="hover:shadow-lg transition-shadow overflow-hidden cursor-pointer"
+                    onClick={() => joined && navigate(`/community/${community.id}`)}
+                    data-testid={`community-card-${community.id}`}
+                  >
                     {community.cover_photo && (
                       <div className="w-full h-32 overflow-hidden">
                         <img 
@@ -160,37 +153,56 @@ const CommunityJoin = () => {
                         <div className="p-3 rounded-lg bg-primary/10">
                           <Users className="h-6 w-6 text-primary" />
                         </div>
-                        <Badge variant="secondary">Open</Badge>
+                        <Badge variant={joined ? "default" : "secondary"}>
+                          {joined ? "Joined" : "Open"}
+                        </Badge>
                       </div>
                       <CardTitle className="text-xl">{community.name}</CardTitle>
                       <CardDescription className="flex items-center gap-2 text-sm">
                         <Users className="h-4 w-4" />
-                        {community.member_count} members
+                        {community.member_count.toLocaleString()} members
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground mb-4 line-clamp-2">
-                        {community.description || "No description available"}
+                        {community.description}
                       </p>
-                      <Button 
-                        className="w-full" 
-                        onClick={() => handleJoinCommunity(community.id)}
-                        disabled={joiningId === community.id}
-                      >
-                        {joiningId === community.id ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Joining...
-                          </>
-                        ) : (
-                          'Join Community'
+                      <div className="flex gap-2">
+                        <Button 
+                          className="flex-1" 
+                          variant={joined ? "outline" : "default"}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleCommunity(community.id, community.name);
+                          }}
+                          data-testid={`button-toggle-${community.id}`}
+                        >
+                          {joined ? (
+                            <>
+                              <Check className="h-4 w-4 mr-2" />
+                              Leave Community
+                            </>
+                          ) : (
+                            'Join Community'
+                          )}
+                        </Button>
+                        {joined && (
+                          <Button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/community/${community.id}`);
+                            }}
+                            data-testid={`button-view-${community.id}`}
+                          >
+                            View
+                          </Button>
                         )}
-                      </Button>
+                      </div>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
         </div>
       </main>
