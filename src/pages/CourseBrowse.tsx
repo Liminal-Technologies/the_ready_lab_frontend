@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -34,6 +35,8 @@ import {
   Ear,
   BookOpen,
   Hand,
+  Search,
+  X,
 } from "lucide-react";
 import fundingImage from "../../attached_assets/stock_images/business_professiona_9e1fef7d.jpg";
 import operationsImage from "../../attached_assets/stock_images/business_operations__a3e6e538.jpg";
@@ -293,6 +296,7 @@ const CourseBrowse = () => {
   const [sortBy, setSortBy] = useState("recommended");
   const [currentPage, setCurrentPage] = useState(1);
   const [activeChip, setActiveChip] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const coursesPerPage = 6;
 
   // Filter courses
@@ -303,7 +307,13 @@ const CourseBrowse = () => {
     const priceMatch = course.price >= priceRange[0] && course.price <= priceRange[1];
     const chipMatch = !activeChip || course.category === activeChip;
     
-    return categoryMatch && levelMatch && formatMatch && priceMatch && chipMatch;
+    // Search match - search in title, instructor, category, and description if available
+    const searchMatch = !searchQuery || 
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.instructorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return categoryMatch && levelMatch && formatMatch && priceMatch && chipMatch && searchMatch;
   });
 
   // Sort courses
@@ -358,6 +368,7 @@ const CourseBrowse = () => {
     setSelectedFormats([]);
     setPriceRange([0, 300]);
     setActiveChip(null);
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
@@ -475,6 +486,41 @@ const CourseBrowse = () => {
             <Link to="/" className="hover:text-foreground" data-testid="link-home">Home</Link>
             <ChevronRight className="h-4 w-4" />
             <span className="text-foreground font-medium">Courses & More</span>
+          </div>
+
+          {/* Search Bar */}
+          <div className="mb-8">
+            <div className="relative max-w-2xl">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search courses by title, instructor, or category..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1); // Reset to first page on search
+                }}
+                className="pl-12 pr-4 py-6 text-base border-2 border-neutral-200 dark:border-neutral-700 focus:border-orange-500 rounded-xl"
+                data-testid="input-search-courses"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCurrentPage(1);
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  data-testid="button-clear-search"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Found <span className="font-bold text-orange-500">{filteredCourses.length}</span> {filteredCourses.length === 1 ? 'course' : 'courses'} matching "{searchQuery}"
+              </p>
+            )}
           </div>
 
           {/* Header Section */}
