@@ -53,6 +53,9 @@ import LiveEvent from "./pages/LiveEvent";
 import CourseLessonPlayer from "./pages/CourseLessonPlayer";
 import CourseDetail from "./pages/CourseDetail";
 import Onboarding from "./pages/Onboarding";
+import EducatorOnboarding from "./pages/EducatorOnboarding";
+import { EducatorDashboard } from "./pages/EducatorDashboard";
+import LiveEventBroadcaster from "./pages/LiveEventBroadcaster";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { AIChatWidget } from "@/components/ai/AIChatWidget";
 
@@ -109,6 +112,9 @@ const AppContent = () => {
           <Route path="/live/:eventId" element={<LiveStream />} />
           <Route path="/events/:eventId" element={<EventDetail />} />
           <Route path="/events/:eventId/live" element={<LiveEvent />} />
+          <Route path="/educator/onboarding" element={<EducatorOnboarding />} />
+          <Route path="/educator/dashboard" element={<EducatorDashboard />} />
+          <Route path="/educator/events/:eventId/broadcast" element={<LiveEventBroadcaster />} />
           <Route path="/educator/events/create" element={<CreateLiveEvent />} />
           <Route path="/educator/products/create" element={<CreateProduct />} />
           <Route path="/certificates" element={<MyCertificates />} />
