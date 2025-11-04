@@ -3,12 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Award, TrendingUp, Clock, Users, Star, ArrowRight, DollarSign } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
-import fundingImage from "@assets/stock_images/business_professiona_9e1fef7d.jpg";
-import operationsImage from "@assets/stock_images/business_operations__a3e6e538.jpg";
-import brandingImage from "@assets/stock_images/branding_marketing_s_50e607b2.jpg";
-import aiImage from "@assets/stock_images/artificial_intellige_80651e44.jpg";
-import partnershipImage from "@assets/stock_images/partnership_handshak_d5c0b270.jpg";
-import financialImage from "@assets/stock_images/financial_planning_a_96357d65.jpg";
+import fundingImage from "../../attached_assets/stock_images/business_professiona_9e1fef7d.jpg";
+import operationsImage from "../../attached_assets/stock_images/business_operations__a3e6e538.jpg";
+import brandingImage from "../../attached_assets/stock_images/branding_marketing_s_50e607b2.jpg";
+import aiImage from "../../attached_assets/stock_images/artificial_intellige_80651e44.jpg";
+import partnershipImage from "../../attached_assets/stock_images/partnership_handshak_d5c0b270.jpg";
+import financialImage from "../../attached_assets/stock_images/financial_planning_a_96357d65.jpg";
 
 const courses = [
   {
