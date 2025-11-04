@@ -13,7 +13,9 @@ import {
   Settings,
   Shield,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Home,
+  ArrowLeft
 } from "lucide-react";
 import {
   Sidebar,
@@ -130,6 +132,26 @@ export function AdminSidebar() {
       </div>
 
       <SidebarContent>
+        {/* Back to Home Button */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <NavLink 
+                    to="/" 
+                    className="hover:bg-muted/50 text-muted-foreground hover:text-foreground border-b pb-2"
+                    data-testid="button-back-to-home"
+                  >
+                    <ArrowLeft className="mr-3 h-4 w-4" />
+                    {!collapsed && <span>Back to Home</span>}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
