@@ -1,0 +1,50 @@
+8) Institution Journeys – For Institutions + Admin (UI only)
+
+Build a demo experience for institutions with front-end only.
+
+Flow A – Inquiry & Sales:
+
+“For Institutions” page: hero, 3–4 value prop cards, and CTA buttons: Request Demo and Contact Sales.
+
+“Request Demo” opens a modal or separate page with the inquiry form from the PRD (org name, contact info, type, areas of interest, number of users, custom requests, optional debarment checkbox).
+
+Submitting the form shows a confirmation screen: “Thanks, our team will reach out” with a fake Calendly embed or link.
+
+Flow B – Institution Admin:
+
+Mock Institution Admin Dashboard reachable via a separate route (e.g., /institution-demo).
+
+UI sections:
+
+CSV upload UI (no parsing needed – just show a fake “20 students imported” message).
+
+Cohort creation form (name, start/end dates, assign courses via multiselect).
+
+Table listing cohorts with progress bars and stats columns.
+
+“Send invitations” button that triggers a modal summary “Invites sent to 20 students” with sample email text.
+
+Download/report section with fake CSV download buttons.
+
+Constraints:
+
+No backend; everything is static or local state.
+
+Just enough to demo what an institution admin would see.
+
+Implement these pages and hook them into the main nav or a “For Institutions” link.
+
+9) “Watch Demo” style polish prompt
+
+Do a UI/UX polish pass across the app focused on making the demo feel real, similar to the “Watch Demo” Rick Roll behavior:
+
+Whenever a journey would require a backend, show convincing placeholders: loading spinners, success toasts, confirmation screens, and simple “summary” modals.
+
+Ensure every main CTA in the PRD actually does something visible: opens a modal, moves to the next step, or updates the UI state.
+
+Standardize buttons, badges, cards, and typography so the whole app feels like one cohesive product.
+
+Add small explanatory text where needed (e.g., “This is a demo view – actual data will appear here”).
+
+Touch the minimum number of files necessary; focus on clarity of the flows.
+When you’re done, list the main journeys a demo user can click through from the homepage.

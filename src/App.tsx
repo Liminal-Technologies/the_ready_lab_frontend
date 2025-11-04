@@ -33,6 +33,8 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import ForStudents from "./pages/ForStudents";
 import ForEducators from "./pages/ForEducators";
+import ForInstitutions from "./pages/ForInstitutions";
+import InstitutionDashboard from "./pages/InstitutionDashboard";
 import CustomSaaS from "./pages/CustomSaaS";
 import Resources from "./pages/Resources";
 import Terms from "./pages/Terms";
@@ -86,6 +88,8 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/for-students" element={<ForStudents />} />
           <Route path="/for-educators" element={<ForEducators />} />
+          <Route path="/for-institutions" element={<ForInstitutions />} />
+          <Route path="/institution-demo" element={<InstitutionDashboard />} />
           <Route path="/custom-saas" element={<CustomSaaS />} />
           <Route path="/custom" element={<CustomSaaS />} />
           <Route path="/resources" element={<Resources />} />
@@ -200,6 +204,8 @@ const AppContent = () => {
         <Route path="/" element={<Index />} />
         <Route path="/for-students" element={<ForStudents />} />
         <Route path="/for-educators" element={<ForEducators />} />
+        <Route path="/for-institutions" element={<ForInstitutions />} />
+        <Route path="/institution-demo" element={<InstitutionDashboard />} />
         <Route path="/custom-saas" element={<CustomSaaS />} />
         <Route path="/custom" element={<CustomSaaS />} />
         <Route path="/resources" element={<Resources />} />
