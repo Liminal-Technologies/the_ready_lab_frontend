@@ -3,9 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Award, TrendingUp, Clock, Users, Star, ArrowRight, DollarSign } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
-import instructorFunding from "@/assets/instructor-funding.jpg";
-import instructorOperations from "@/assets/instructor-operations.jpg";
-import instructorBranding from "@/assets/instructor-branding.jpg";
+import fundingImage from "@assets/stock_images/business_professiona_9e1fef7d.jpg";
+import operationsImage from "@assets/stock_images/business_operations__a3e6e538.jpg";
+import brandingImage from "@assets/stock_images/branding_marketing_s_50e607b2.jpg";
+import aiImage from "@assets/stock_images/artificial_intellige_80651e44.jpg";
+import partnershipImage from "@assets/stock_images/partnership_handshak_d5c0b270.jpg";
+import financialImage from "@assets/stock_images/financial_planning_a_96357d65.jpg";
 
 const courses = [
   {
@@ -17,10 +20,10 @@ const courses = [
     rating: "4.9",
     level: "Beginner",
     price: "$299",
-    category: "Funding Strategy",
+    category: "FUNDING STRATEGY",
     certification: true,
     featured: true,
-    instructorImage: instructorFunding,
+    image: fundingImage,
     instructorName: "Dr. Michael Chen"
   },
   {
@@ -32,10 +35,10 @@ const courses = [
     rating: "4.8",
     level: "Beginner",
     price: "$249",
-    category: "Operations",
+    category: "OPERATIONS",
     certification: true,
     featured: false,
-    instructorImage: instructorOperations,
+    image: operationsImage,
     instructorName: "Sarah Rodriguez"
   },
   {
@@ -47,10 +50,10 @@ const courses = [
     rating: "4.9",
     level: "Intermediate",
     price: "$199",
-    category: "Brand Strategy",
+    category: "BRAND STRATEGY",
     certification: true,
     featured: false,
-    instructorImage: instructorBranding,
+    image: brandingImage,
     instructorName: "Alex Thompson"
   },
   {
@@ -62,9 +65,10 @@ const courses = [
     rating: "4.7",
     level: "Intermediate",
     price: "$229",
-    category: "Technology",
+    category: "TECHNOLOGY",
     certification: true,
-    featured: false
+    featured: false,
+    image: aiImage
   },
   {
     id: "5",
@@ -75,9 +79,10 @@ const courses = [
     rating: "4.8",
     level: "Advanced",
     price: "$279",
-    category: "Partnership Strategy",
+    category: "PARTNERSHIP STRATEGY",
     certification: true,
-    featured: true
+    featured: true,
+    image: partnershipImage
   },
   {
     id: "6",
@@ -88,9 +93,10 @@ const courses = [
     rating: "4.7",
     level: "Intermediate",
     price: "$179",
-    category: "Financial Planning",
+    category: "FINANCIAL PLANNING",
     certification: true,
-    featured: false
+    featured: false,
+    image: financialImage
   }
 ];
 
@@ -108,7 +114,10 @@ const Courses = () => {
   };
 
   return (
-    <section id="courses" className="py-20 lg:py-32 bg-neutral-50 dark:bg-neutral-900 transition-colors duration-200">
+    <section 
+      id="courses" 
+      className="py-20 lg:py-32 bg-[#FEF5ED] dark:bg-neutral-900 transition-colors duration-200"
+    >
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-16">
@@ -116,396 +125,123 @@ const Courses = () => {
             <TrendingUp className="h-4 w-4" />
             {t('courses.certificationTracks')}
           </div>
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 text-black dark:text-white">
-            {t('courses.title')}
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6">
+            <span className="text-black dark:text-white">Get Fundable & </span>
+            <span className="text-[#D97706] dark:text-orange-500">Certified</span>
           </h2>
           <p className="text-xl md:text-2xl text-neutral-600 dark:text-neutral-300 max-w-3xl mx-auto">
             {t('courses.subtitle')}
           </p>
         </div>
 
-        {/* Mosaic Grid */}
-        <div className="bg-white dark:bg-neutral-800 rounded-[3rem] p-6 lg:p-10 shadow-lg mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-            {/* Course 1 - Large Featured Card with Gradient */}
-            <div 
-              className="lg:col-span-1 lg:row-span-2 bg-gradient-to-br from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between min-h-[400px]"
-              onClick={() => navigate(`/courses/${courses[0].id}`)}
-              data-testid="course-card-1"
+        {/* Uniform Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
+          {courses.map((course) => (
+            <div
+              key={course.id}
+              className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col"
+              onClick={() => navigate(`/courses/${course.id}`)}
+              data-testid={`course-card-${course.id}`}
             >
-              <div>
+              {/* Image Section */}
+              <div className="relative h-52 overflow-hidden bg-neutral-100 dark:bg-neutral-700">
+                <img
+                  src={course.image}
+                  alt={course.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-4 right-4 flex items-center gap-1 bg-yellow-400 dark:bg-yellow-500 text-black px-3 py-1.5 rounded-full font-bold text-lg shadow-lg">
+                  <DollarSign className="h-5 w-5" />
+                  {course.price.replace('$', '')}
+                </div>
+              </div>
+
+              {/* Content Section */}
+              <div className="p-6 flex flex-col flex-grow">
+                {/* Tags */}
                 <div className="flex items-center gap-2 flex-wrap mb-4">
-                  <Badge className={`${getLevelColor(courses[0].level)} border-0`}>
-                    {courses[0].level}
+                  <Badge className={`${getLevelColor(course.level)} border-0 text-xs font-semibold px-3 py-1`}>
+                    {course.level}
                   </Badge>
-                  {courses[0].certification && (
-                    <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0">
+                  {course.certification && (
+                    <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-0 text-xs font-semibold px-3 py-1">
                       <Award className="h-3 w-3 mr-1" />
                       Certified
                     </Badge>
                   )}
-                  {courses[0].featured && (
-                    <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0">
+                  {course.featured && (
+                    <Badge className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-0 text-xs font-semibold px-3 py-1">
                       Featured
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm font-semibold text-black/70 dark:text-white/80 mb-2 uppercase tracking-wide">
-                  {courses[0].category}
+
+                {/* Category */}
+                <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400 mb-2 uppercase tracking-wide">
+                  {course.category}
                 </p>
-                <h3 className="text-2xl lg:text-3xl font-black text-black dark:text-white mb-3">
-                  {courses[0].title}
+
+                {/* Title */}
+                <h3 className="text-xl lg:text-2xl font-bold text-black dark:text-white mb-3 leading-tight">
+                  {course.title}
                 </h3>
-                <p className="text-base text-black/80 dark:text-white/90 mb-6">
-                  {courses[0].description}
+
+                {/* Description */}
+                <p className="text-sm lg:text-base text-neutral-600 dark:text-neutral-300 mb-4 flex-grow leading-relaxed">
+                  {course.description}
                 </p>
-              </div>
-              <div>
-                {courses[0].instructorImage && (
-                  <div className="flex items-center gap-3 mb-4 bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-2xl p-3">
-                    <img 
-                      src={courses[0].instructorImage} 
-                      alt={`Instructor ${courses[0].instructorName}`}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="text-xs font-medium text-black/70 dark:text-white/80">Instructor</p>
-                      <p className="text-sm font-semibold text-black dark:text-white">{courses[0].instructorName}</p>
-                    </div>
+
+                {/* Instructor (if available) */}
+                {course.instructorName && (
+                  <div className="mb-4 pb-4 border-b border-neutral-200 dark:border-neutral-700">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Instructor</p>
+                    <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+                      {course.instructorName}
+                    </p>
                   </div>
                 )}
-                <div className="flex items-center justify-between text-sm text-black/80 dark:text-white/90 mb-4">
+
+                {/* Stats */}
+                <div className="flex items-center justify-between text-sm text-neutral-600 dark:text-neutral-400 mb-4">
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
-                    {courses[0].duration}
+                    <span>{course.duration}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
-                    {courses[0].students}
+                    <span>{course.students}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-black dark:fill-white" />
-                    {courses[0].rating}
+                    <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
+                    <span>{course.rating}</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-3xl font-black text-black dark:text-white">
-                    <DollarSign className="h-6 w-6" />
-                    {courses[0].price.replace('$', '')}
-                  </div>
-                  <Button 
-                    className="bg-black dark:bg-white text-white dark:text-black hover:bg-black/80 dark:hover:bg-white/90 rounded-full"
-                    onClick={(e) => { e.stopPropagation(); navigate(`/courses/${courses[0].id}`); }}
-                    data-testid="button-view-course-1"
-                  >
-                    View Course
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
 
-            {/* Course 2 - Medium Card with Image */}
-            <div 
-              className="bg-white dark:bg-neutral-700 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer min-h-[280px] flex flex-col"
-              onClick={() => navigate(`/courses/${courses[1].id}`)}
-              data-testid="course-card-2"
-            >
-              <div className="relative h-40 overflow-hidden">
-                <img 
-                  src={courses[1].instructorImage} 
-                  alt={courses[1].title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 right-3 flex items-center gap-1 bg-yellow-400 dark:bg-yellow-500 text-black px-3 py-1 rounded-full font-bold">
-                  <DollarSign className="h-4 w-4" />
-                  {courses[1].price.replace('$', '')}
-                </div>
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center gap-2 flex-wrap mb-3">
-                  <Badge className={`${getLevelColor(courses[1].level)} border-0 text-xs`}>
-                    {courses[1].level}
-                  </Badge>
-                  {courses[1].certification && (
-                    <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-0 text-xs">
-                      <Award className="h-3 w-3 mr-1" />
-                      Certified
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-wide">
-                  {courses[1].category}
-                </p>
-                <h3 className="text-xl font-bold text-black dark:text-white mb-2">
-                  {courses[1].title}
-                </h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-3 flex-grow">
-                  {courses[1].description}
-                </p>
-                <div className="flex items-center justify-between text-xs text-neutral-600 dark:text-neutral-400">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {courses[1].duration}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    {courses[1].students}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
-                    {courses[1].rating}
-                  </div>
-                </div>
+                {/* Button */}
+                <Button
+                  className={`w-full rounded-full font-semibold ${
+                    course.featured
+                      ? 'bg-black dark:bg-white text-white dark:text-black hover:bg-black/80 dark:hover:bg-white/90'
+                      : 'bg-white dark:bg-neutral-700 text-black dark:text-white border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/courses/${course.id}`);
+                  }}
+                  data-testid={`button-view-course-${course.id}`}
+                >
+                  View Course
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
               </div>
             </div>
-
-            {/* Course 3 - Medium Card with Image */}
-            <div 
-              className="bg-white dark:bg-neutral-700 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer min-h-[280px] flex flex-col"
-              onClick={() => navigate(`/courses/${courses[2].id}`)}
-              data-testid="course-card-3"
-            >
-              <div className="relative h-40 overflow-hidden">
-                <img 
-                  src={courses[2].instructorImage} 
-                  alt={courses[2].title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 right-3 flex items-center gap-1 bg-yellow-400 dark:bg-yellow-500 text-black px-3 py-1 rounded-full font-bold">
-                  <DollarSign className="h-4 w-4" />
-                  {courses[2].price.replace('$', '')}
-                </div>
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center gap-2 flex-wrap mb-3">
-                  <Badge className={`${getLevelColor(courses[2].level)} border-0 text-xs`}>
-                    {courses[2].level}
-                  </Badge>
-                  {courses[2].certification && (
-                    <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-0 text-xs">
-                      <Award className="h-3 w-3 mr-1" />
-                      Certified
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-1 uppercase tracking-wide">
-                  {courses[2].category}
-                </p>
-                <h3 className="text-xl font-bold text-black dark:text-white mb-2">
-                  {courses[2].title}
-                </h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-3 flex-grow">
-                  {courses[2].description}
-                </p>
-                <div className="flex items-center justify-between text-xs text-neutral-600 dark:text-neutral-400">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {courses[2].duration}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    {courses[2].students}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
-                    {courses[2].rating}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Course 4 - Gradient Stat Card */}
-            <div 
-              className="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between min-h-[280px]"
-              onClick={() => navigate(`/courses/${courses[3].id}`)}
-              data-testid="course-card-4"
-            >
-              <div>
-                <div className="flex items-center gap-2 flex-wrap mb-4">
-                  <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0 text-xs">
-                    {courses[3].level}
-                  </Badge>
-                  {courses[3].certification && (
-                    <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0 text-xs">
-                      <Award className="h-3 w-3 mr-1" />
-                      Certified
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-sm font-semibold text-white/80 mb-2 uppercase tracking-wide">
-                  {courses[3].category}
-                </p>
-                <h3 className="text-2xl font-black text-white mb-3">
-                  {courses[3].title}
-                </h3>
-                <p className="text-base text-white/90 mb-4">
-                  {courses[3].description}
-                </p>
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-sm text-white/90 mb-4">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {courses[3].duration}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {courses[3].students}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-white" />
-                    {courses[3].rating}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-3xl font-black text-white">
-                    <DollarSign className="h-6 w-6" />
-                    {courses[3].price.replace('$', '')}
-                  </div>
-                  <Button 
-                    className="bg-white text-blue-600 hover:bg-white/90 rounded-full"
-                    onClick={(e) => { e.stopPropagation(); navigate(`/courses/${courses[3].id}`); }}
-                    data-testid="button-view-course-4"
-                  >
-                    View Course
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Course 5 - Large Featured Card with Purple Gradient */}
-            <div 
-              className="lg:col-span-1 lg:row-span-1 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between min-h-[280px]"
-              onClick={() => navigate(`/courses/${courses[4].id}`)}
-              data-testid="course-card-5"
-            >
-              <div>
-                <div className="flex items-center gap-2 flex-wrap mb-4">
-                  <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0 text-xs">
-                    {courses[4].level}
-                  </Badge>
-                  {courses[4].certification && (
-                    <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0 text-xs">
-                      <Award className="h-3 w-3 mr-1" />
-                      Certified
-                    </Badge>
-                  )}
-                  {courses[4].featured && (
-                    <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0 text-xs">
-                      Featured
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-sm font-semibold text-white/80 mb-2 uppercase tracking-wide">
-                  {courses[4].category}
-                </p>
-                <h3 className="text-2xl font-black text-white mb-3">
-                  {courses[4].title}
-                </h3>
-                <p className="text-base text-white/90 mb-4">
-                  {courses[4].description}
-                </p>
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-sm text-white/90 mb-4">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {courses[4].duration}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {courses[4].students}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-white" />
-                    {courses[4].rating}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-3xl font-black text-white">
-                    <DollarSign className="h-6 w-6" />
-                    {courses[4].price.replace('$', '')}
-                  </div>
-                  <Button 
-                    className="bg-white text-purple-600 hover:bg-white/90 rounded-full"
-                    onClick={(e) => { e.stopPropagation(); navigate(`/courses/${courses[4].id}`); }}
-                    data-testid="button-view-course-5"
-                  >
-                    View Course
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Course 6 - Orange Gradient Card */}
-            <div 
-              className="bg-gradient-to-br from-orange-400 to-orange-500 dark:from-orange-500 dark:to-orange-600 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between min-h-[280px]"
-              onClick={() => navigate(`/courses/${courses[5].id}`)}
-              data-testid="course-card-6"
-            >
-              <div>
-                <div className="flex items-center gap-2 flex-wrap mb-4">
-                  <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0 text-xs">
-                    {courses[5].level}
-                  </Badge>
-                  {courses[5].certification && (
-                    <Badge className="bg-white/90 dark:bg-black/50 text-black dark:text-white border-0 text-xs">
-                      <Award className="h-3 w-3 mr-1" />
-                      Certified
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-sm font-semibold text-black/70 dark:text-white/80 mb-2 uppercase tracking-wide">
-                  {courses[5].category}
-                </p>
-                <h3 className="text-2xl font-black text-black dark:text-white mb-3">
-                  {courses[5].title}
-                </h3>
-                <p className="text-base text-black/80 dark:text-white/90 mb-4">
-                  {courses[5].description}
-                </p>
-              </div>
-              <div>
-                <div className="flex items-center justify-between text-sm text-black/80 dark:text-white/90 mb-4">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {courses[5].duration}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {courses[5].students}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-black dark:fill-white" />
-                    {courses[5].rating}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-3xl font-black text-black dark:text-white">
-                    <DollarSign className="h-6 w-6" />
-                    {courses[5].price.replace('$', '')}
-                  </div>
-                  <Button 
-                    className="bg-black dark:bg-white text-white dark:text-black hover:bg-black/80 dark:hover:bg-white/90 rounded-full"
-                    onClick={(e) => { e.stopPropagation(); navigate(`/courses/${courses[5].id}`); }}
-                    data-testid="button-view-course-6"
-                  >
-                    View Course
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Bottom CTA Bar */}
         <div className="bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600 rounded-3xl p-8 shadow-xl text-center">
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="bg-black dark:bg-white text-white dark:text-black hover:bg-black/80 dark:hover:bg-white/90 text-lg px-8 py-6 rounded-full font-bold"
             data-testid="button-start-certification"
           >
