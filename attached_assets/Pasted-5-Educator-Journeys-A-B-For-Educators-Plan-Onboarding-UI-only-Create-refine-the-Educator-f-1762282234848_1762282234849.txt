@@ -1,0 +1,111 @@
+5) Educator Journeys A & B – For Educators, Plan, Onboarding (UI only)
+
+Create/refine the Educator front-end flows with mock data only.
+
+Desired flow:
+
+“For Educators” landing page: hero section explaining value, 3 benefit cards, and a primary “Explore as an Educator” CTA.
+
+Clicking “Explore as an Educator”:
+
+Open the same auth modal as students, but set user role to educator in local state.
+
+On success, show the normal student Explore pages but with an “Educator Preview Mode” badge and a floating “Create Course” button.
+
+When clicking “Create Course”, open a Plan selection modal:
+
+Cards for FREE / PRO / PREMIUM with bullets exactly as in the PRD.
+
+“Choose plan” buttons just set selectedPlan in local state; for PRO/PREMIUM, show a fake “Stripe subscription” screen with a loader then success.
+
+After plan selection, show an Educator Onboarding form:
+
+Name, photo (preview only), bio.
+
+Expertise tags (multi-select chips).
+
+Teaching styles (visual, auditory, kinesthetic, reading/writing) as selectable pills.
+
+Preferred content types (microlearning, deep learning, live, products).
+
+“Save & Continue” → Educator Dashboard.
+
+Educator Dashboard shows an onboarding checklist (Create profile, Create first course, Upload first lesson, Submit for review) with checkmarks that update as actions are completed (state only).
+
+Constraints:
+
+No Stripe or real upload; UI only.
+
+Use comments where backend/payment would eventually plug in.
+
+Implement/modify the For Educators page, plan modal, onboarding form, and basic educator dashboard checklist.
+
+6) Educator Journey C – Course Builder Wizard (UI only)
+
+Build the 5-step course builder wizard as a front-end-only experience.
+
+Steps:
+
+Course Type: radio cards for Microlearning, Deep Learning, Digital Product.
+
+Course Details: Title, Category dropdown, Level (Beginner/Intermediate/Advanced), Description, Learning Objectives (multi-line or dynamic bullet fields).
+
+Pricing: Free / Paid toggle, price input, and a static “platform fee” + “your earnings” calculation based on the PRD percentages.
+
+Upload Content:
+
+Drag-and-drop area for videos (no real upload; show fake filenames and durations).
+
+Buttons to “Generate thumbnails” and “Generate captions (EN/ES)” that just show spinners then success badges.
+
+Simple interface to group uploaded items into modules/lessons (local state).
+
+Review & Submit:
+
+Show a summary preview card of the course as a student would see it.
+
+Buttons: Save Draft and Submit for Review.
+
+On submit, show a “Submitted for review” confirmation screen mimicking a moderation step.
+
+Constraints:
+
+Everything is client-side; no calls to S3, transcription, or moderation.
+
+Put clear TODO comments where backend integrations will go.
+
+Implement the wizard as a multi-step component and route it from the educator dashboard “Create New Course” button.
+
+7) Educator Journey D & E – Dashboard + Live Events (UI only)
+
+Create a visual educator dashboard and live event flow as a demo.
+
+Dashboard:
+
+Stats cards with mock numbers: Students enrolled, Lessons completed, Avg rating, Revenue this month.
+
+Table of students with name, avatar, % progress, at-risk badge (mock logic based on progress).
+
+Section for “Latest questions” from discussion boards with a way to click and view a thread (fake).
+
+Simple charts (can be static using CSS or a small chart library already used in the repo) for completion by lesson and revenue trend.
+
+Live events:
+
+“Schedule Live Event” button on dashboard → opens a form: Title, description, date, time, duration, max attendees, associated course dropdown, checkboxes for Chat/Q&A/Polls/Recording.
+
+On submit, show a fake “Event created” card and list it under “Upcoming Events”.
+
+Clicking an event goes to a Live Event page with:
+
+“Go Live” button that opens an embedded video area (placeholder frame) and a right-side chat/Q&A panel with mock messages.
+
+When “End Stream” is clicked, show a success screen and a “Recording available soon” message that later turns into a “Watch Replay” link.
+
+Constraints:
+
+Use placeholders instead of Daily.co; just show the layout.
+
+All data in local/global state.
+
+Implement these views and connect them to existing educator navigation.
