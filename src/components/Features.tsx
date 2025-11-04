@@ -106,7 +106,7 @@ const Features = () => {
             const gradients = [
               'bg-gradient-to-br from-blue-500 to-blue-600',
               'bg-gradient-to-br from-orange-400 to-orange-500',
-              'bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700',
+              'bg-gradient-to-br from-orange-400 to-orange-500',
               'bg-gradient-to-br from-yellow-400 to-yellow-500',
               'bg-gradient-to-br from-green-500 to-green-600',
               'bg-gradient-to-br from-purple-500 to-purple-600'
