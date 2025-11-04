@@ -5,47 +5,71 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CourseCardSkeleton } from '@/components/skeletons/CourseCardSkeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Users, Settings, ArrowLeft, Shield } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Users, Settings, ArrowLeft, Shield, Send, Video, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PostTimeline } from '@/components/community/PostTimeline';
 
 interface Community {
   id: string;
   name: string;
-  description: string | null;
+  description: string;
+  category: string;
   member_count: number;
-  visibility: string;
-  created_by: string;
-  created_at: string;
-  rules: string | null;
-  cover_photo: string | null;
+  cover_photo?: string;
 }
 
 interface Member {
   id: string;
-  user_id: string;
+  name: string;
   role: string;
   joined_at: string;
-  profiles?: {
-    full_name: string | null;
-    email: string;
-  };
 }
+
+interface LiveEvent {
+  id: string;
+  title: string;
+  host: string;
+  date: string;
+  time: string;
+}
+
+// Mock data for communities
+const MOCK_COMMUNITIES: Record<string, Community> = {
+  '1': { id: '1', name: 'Funding & Grants', description: 'Connect with experts in fundraising, grant writing, and securing capital for your ventures.', category: 'Funding', member_count: 2847, cover_photo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=200&fit=crop' },
+  '2': { id: '2', name: 'Legal & Compliance', description: 'Navigate legal challenges, contracts, and regulatory requirements with fellow entrepreneurs.', category: 'Legal', member_count: 1923, cover_photo: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=200&fit=crop' },
+  '3': { id: '3', name: 'Marketing & Branding', description: 'Share strategies, campaigns, and creative ideas to grow your brand and reach your audience.', category: 'Branding', member_count: 3521, cover_photo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop' },
+  '4': { id: '4', name: 'Tech Infrastructure', description: 'Discuss technical architecture, cloud solutions, and infrastructure best practices.', category: 'Infrastructure', member_count: 2156, cover_photo: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=200&fit=crop' },
+  '5': { id: '5', name: 'Financial Planning', description: 'Master budgeting, forecasting, and financial management for sustainable growth.', category: 'Finance', member_count: 2034, cover_photo: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=200&fit=crop' },
+  '6': { id: '6', name: 'AI & Innovation', description: 'Explore artificial intelligence, machine learning, and cutting-edge technologies.', category: 'AI', member_count: 4102, cover_photo: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop' },
+};
+
+const MOCK_MEMBERS: Member[] = [
+  { id: '1', name: 'Sarah Johnson', role: 'admin', joined_at: '2024-01-15' },
+  { id: '2', name: 'Michael Chen', role: 'moderator', joined_at: '2024-02-20' },
+  { id: '3', name: 'Emma Davis', role: 'member', joined_at: '2024-03-10' },
+  { id: '4', name: 'James Wilson', role: 'member', joined_at: '2024-04-05' },
+  { id: '5', name: 'Olivia Martinez', role: 'member', joined_at: '2024-05-12' },
+];
+
+const MOCK_LIVE_EVENTS: LiveEvent[] = [
+  { id: '1', title: 'Grant Writing Workshop', host: 'Sarah Johnson', date: '2025-11-10', time: '2:00 PM EST' },
+  { id: '2', title: 'Investor Pitch Practice', host: 'Michael Chen', date: '2025-11-15', time: '4:00 PM EST' },
+  { id: '3', title: 'Q&A with VC Partner', host: 'Emma Davis', date: '2025-11-20', time: '6:00 PM EST' },
+];
 
 const CommunityDetail = () => {
   const { communityId } = useParams<{ communityId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [community, setCommunity] = useState<Community | null>(null);
-  const [members, setMembers] = useState<Member[]>([]);
+  const [members] = useState<Member[]>(MOCK_MEMBERS);
   const [loading, setLoading] = useState(true);
   const [isMember, setIsMember] = useState(false);
-  const [isModerator, setIsModerator] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [newPostContent, setNewPostContent] = useState('');
+  const [postRefreshKey, setPostRefreshKey] = useState(0);
 
   useEffect(() => {
     if (communityId) {
@@ -53,90 +77,61 @@ const CommunityDetail = () => {
     }
   }, [communityId]);
 
-  const fetchCommunityDetails = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id || null);
+  const fetchCommunityDetails = () => {
+    // TODO: backend - GET /api/communities/:id
+    // const response = await fetch(`/api/communities/${communityId}`)
+    setTimeout(() => {
+      const communityData = MOCK_COMMUNITIES[communityId || '1'];
+      setCommunity(communityData || null);
 
-      // Fetch community details
-      const { data: communityData, error: communityError } = await supabase
-        .from('communities')
-        .select('*')
-        .eq('id', communityId)
-        .single();
-
-      if (communityError) throw communityError;
-      setCommunity(communityData);
-
-      if (user) {
-        // Check if user is a member
-        const { data: memberData } = await supabase
-          .from('community_members')
-          .select('role')
-          .eq('community_id', communityId)
-          .eq('user_id', user.id)
-          .single();
-
-        setIsMember(!!memberData);
-        setIsModerator(memberData?.role === 'moderator' || memberData?.role === 'admin' || communityData.created_by === user.id);
-      }
-
-      // Fetch members
-      const { data: membersData, error: membersError } = await supabase
-        .from('community_members')
-        .select(`
-          id,
-          user_id,
-          role,
-          joined_at,
-          profiles:user_id (
-            full_name,
-            email
-          )
-        `)
-        .eq('community_id', communityId)
-        .order('joined_at', { ascending: false });
-
-      if (membersError) throw membersError;
-      setMembers(membersData || []);
-
-    } catch (error) {
-      console.error('Error fetching community:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load community details",
-        variant: "destructive",
-      });
-    } finally {
+      // Check if user is a member from localStorage
+      const joinedCommunities = JSON.parse(localStorage.getItem('joinedCommunities') || '[]');
+      setIsMember(joinedCommunities.includes(communityId));
       setLoading(false);
-    }
+    }, 500);
   };
 
-  const handleLeaveCommunity = async () => {
-    if (!currentUserId) return;
+  const handleLeaveCommunity = () => {
+    // TODO: backend - DELETE /api/community-members
+    const joinedCommunities = JSON.parse(localStorage.getItem('joinedCommunities') || '[]');
+    const updated = joinedCommunities.filter((id: string) => id !== communityId);
+    localStorage.setItem('joinedCommunities', JSON.stringify(updated));
+    
+    toast({
+      title: "Left community",
+      description: `You've left ${community?.name}`,
+    });
+    navigate('/community/join');
+  };
 
-    try {
-      const { error } = await supabase
-        .from('community_members')
-        .delete()
-        .eq('community_id', communityId)
-        .eq('user_id', currentUserId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Left community",
-        description: "You have left the community",
-      });
-      navigate('/community/join');
-    } catch (error) {
-      console.error('Error leaving community:', error);
-      toast({
-        title: "Error",
-        description: "Failed to leave community",
-        variant: "destructive",
-      });
-    }
+  const handleCreatePost = () => {
+    if (!newPostContent.trim()) return;
+    
+    // TODO: backend - POST /api/posts
+    // await fetch('/api/posts', { method: 'POST', body: JSON.stringify({ communityId, content: newPostContent }) })
+    
+    const postsKey = `communityPosts_${communityId}`;
+    const existingPosts = JSON.parse(localStorage.getItem(postsKey) || '[]');
+    
+    const newPost = {
+      id: `post_${Date.now()}`,
+      content: newPostContent,
+      author: 'Demo User',
+      created_at: new Date().toISOString(),
+      likes: 0,
+      comments: [],
+    };
+    
+    const updatedPosts = [newPost, ...existingPosts];
+    localStorage.setItem(postsKey, JSON.stringify(updatedPosts));
+    
+    setNewPostContent('');
+    setPostRefreshKey(prev => prev + 1); // Trigger PostTimeline refresh
+    
+    toast({
+      title: "Post created! 🎉",
+      description: "Your post has been shared with the community",
+    });
   };
 
   if (loading) {
@@ -144,15 +139,8 @@ const CommunityDetail = () => {
       <div className="min-h-screen">
         <Header />
         <main className="pt-24 pb-12">
-          <div className="container mx-auto px-4">
-            <div className="h-8 w-32 mb-4 bg-muted animate-pulse rounded" />
-            <div className="max-w-4xl mx-auto">
-              <div className="space-y-4">
-                <CourseCardSkeleton />
-                <CourseCardSkeleton />
-                <CourseCardSkeleton />
-              </div>
-            </div>
+          <div className="container mx-auto px-4 flex items-center justify-center min-h-[400px]">
+            <div className="animate-pulse text-muted-foreground">Loading community...</div>
           </div>
         </main>
         <Footer />
@@ -254,12 +242,96 @@ const CommunityDetail = () => {
               </TabsList>
 
               <TabsContent value="posts" className="mt-6">
-                <PostTimeline
-                  communityId={communityId!}
-                  isMember={isMember}
-                  isModerator={isModerator}
-                  currentUserId={currentUserId}
-                />
+                <div className="grid lg:grid-cols-3 gap-6">
+                  {/* Main content - Posts */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {/* Create Post Card */}
+                    {isMember && (
+                      <Card data-testid="create-post-card">
+                        <CardHeader>
+                          <CardTitle className="text-lg">Share with the community</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <Textarea
+                            placeholder="What's on your mind? Share updates, ask questions, or start a discussion..."
+                            value={newPostContent}
+                            onChange={(e) => setNewPostContent(e.target.value)}
+                            className="min-h-[100px] resize-none"
+                            data-testid="input-create-post"
+                          />
+                          <div className="flex justify-end">
+                            <Button
+                              onClick={handleCreatePost}
+                              disabled={!newPostContent.trim()}
+                              data-testid="button-submit-post"
+                            >
+                              <Send className="h-4 w-4 mr-2" />
+                              Post
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Post Timeline */}
+                    <PostTimeline
+                      key={postRefreshKey}
+                      communityId={communityId!}
+                      isMember={isMember}
+                    />
+                  </div>
+
+                  {/* Sidebar - Live Q&A Events */}
+                  <div className="space-y-4">
+                    <Card data-testid="live-qa-panel">
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Video className="h-5 w-5 text-primary" />
+                          Upcoming Live Q&A
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {MOCK_LIVE_EVENTS.map((event) => (
+                          <div
+                            key={event.id}
+                            className="p-4 border rounded-lg hover:shadow-md transition-shadow space-y-2"
+                            data-testid={`live-event-${event.id}`}
+                          >
+                            <div className="flex items-start gap-2">
+                              <Calendar className="h-4 w-4 text-muted-foreground mt-1 shrink-0" />
+                              <div className="flex-1 space-y-1">
+                                <h4 className="font-semibold text-sm">{event.title}</h4>
+                                <p className="text-xs text-muted-foreground">
+                                  Host: {event.host}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(event.date).toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                  })} at {event.time}
+                                </p>
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              className="w-full"
+                              variant="outline"
+                              data-testid={`button-join-event-${event.id}`}
+                              onClick={() => {
+                                toast({
+                                  title: "Event reminder set! 📅",
+                                  description: `You'll be notified before "${event.title}" starts`,
+                                });
+                              }}
+                            >
+                              Set Reminder
+                            </Button>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="members" className="mt-6">
