@@ -130,7 +130,7 @@ const Features = () => {
                 data-testid={`feature-card-${index}`}
               >
                 {/* Card Image */}
-                <div className="w-full h-56 lg:h-64 mb-6 overflow-hidden rounded-2xl">
+                <div className="w-full h-48 lg:h-52 mb-6 overflow-hidden rounded-2xl">
                   <img 
                     src={feature.image} 
                     alt={feature.title}
