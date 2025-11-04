@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import LearningDashboard from '@/components/LearningDashboard';
+import { WelcomeTour } from '@/components/onboarding/WelcomeTour';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -183,6 +184,7 @@ export const StudentDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <Header />
+      <WelcomeTour />
       
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
