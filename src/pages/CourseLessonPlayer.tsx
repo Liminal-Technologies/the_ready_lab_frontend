@@ -204,9 +204,6 @@ export default function CourseLessonPlayer() {
     } else {
       navigate(`/courses/${courseId}/lessons/${clickedLessonId}`);
       setMobileSheetOpen(false);
-      toast.success("Navigating", {
-        description: `Moving to lesson ${clickedLessonId}`,
-      });
     }
   };
 
