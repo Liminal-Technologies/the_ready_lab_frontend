@@ -364,14 +364,6 @@ const Community = () => {
           {/* Sidebar Filters - Desktop */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-24 space-y-6">
-              <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                  <SlidersHorizontal className="h-5 w-5 text-[#9333EA]" />
-                  Filter
-                </h2>
-                <FilterContent />
-              </div>
-
               {/* Trending Discussions Sidebar */}
               <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
                 <h3 className="font-bold mb-4 flex items-center gap-2">
@@ -393,6 +385,14 @@ const Community = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                  <SlidersHorizontal className="h-5 w-5 text-[#9333EA]" />
+                  Filter
+                </h2>
+                <FilterContent />
               </div>
             </div>
           </aside>
