@@ -29,7 +29,10 @@ import {
   Globe,
   BarChart,
   MessageSquare,
-  ThumbsUp
+  ThumbsUp,
+  Calendar,
+  Video,
+  UserPlus
 } from "lucide-react";
 
 // Import course images - use stock images
@@ -160,6 +163,32 @@ const mockCourse = {
     }
   ]
 };
+
+// Live events mock data
+const liveEvents = [
+  {
+    id: "1",
+    title: "Grant Writing Q&A Session",
+    instructor: "Dr. Michael Chen",
+    date: "Dec 15, 2024",
+    time: "2:00 PM EST",
+    duration: "60 mins",
+    attendees: 45,
+    maxAttendees: 100,
+    type: "Live Q&A"
+  },
+  {
+    id: "2",
+    title: "Pitch Deck Workshop: Get Feedback",
+    instructor: "Dr. Michael Chen",
+    date: "Dec 22, 2024",
+    time: "3:00 PM EST",
+    duration: "90 mins",
+    attendees: 28,
+    maxAttendees: 50,
+    type: "Workshop"
+  }
+];
 
 // Similar courses mock data
 const similarCourses = [
@@ -774,10 +803,15 @@ export default function CourseDetail() {
                       <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
                       <span>Certificate of completion</span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => navigate('/community')}
+                      className="flex items-center gap-3 w-full hover:bg-neutral-50 dark:hover:bg-neutral-800 p-2 rounded-lg transition-colors group"
+                      data-testid="button-community-access"
+                    >
                       <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                      <span>Access to community</span>
-                    </div>
+                      <span className="flex-1 text-left">Access to community</span>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </button>
                     <div className="flex items-center gap-3">
                       <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
                       <span>English & Spanish subtitles</span>
@@ -787,6 +821,66 @@ export default function CourseDetail() {
               </div>
             </div>
           </div>
+
+          {/* Live Events Section */}
+          {isEnrolled && liveEvents.length > 0 && (
+            <div className="max-w-7xl mx-auto mt-16">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-3xl font-bold">Upcoming Live Events</h2>
+                <Badge className="bg-[#E5A000] hover:bg-[#E5A000]/90 text-white">
+                  <Video className="h-3 w-3 mr-1" />
+                  Enrolled students only
+                </Badge>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-6">
+                {liveEvents.map((event) => (
+                  <Card
+                    key={event.id}
+                    className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-2 hover:border-[#E5A000]"
+                    onClick={() => toast.success("Event registration coming soon!")}
+                    data-testid={`live-event-${event.id}`}
+                  >
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <Badge variant="outline" className="text-[#E5A000] border-[#E5A000]">
+                          {event.type}
+                        </Badge>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Users className="h-4 w-4" />
+                          <span>{event.attendees}/{event.maxAttendees}</span>
+                        </div>
+                      </div>
+                      
+                      <h3 className="font-bold text-xl mb-3">{event.title}</h3>
+                      
+                      <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 flex-shrink-0" />
+                          <span>{event.date} at {event.time}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 flex-shrink-0" />
+                          <span>{event.duration}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <UserPlus className="h-4 w-4 flex-shrink-0" />
+                          <span>with {event.instructor}</span>
+                        </div>
+                      </div>
+
+                      <Button 
+                        className="w-full bg-[#E5A000] hover:bg-[#E5A000]/90 text-white"
+                        data-testid={`button-register-event-${event.id}`}
+                      >
+                        <Video className="h-4 w-4 mr-2" />
+                        Register for Event
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Similar Courses Section */}
           <div className="max-w-7xl mx-auto mt-16">
