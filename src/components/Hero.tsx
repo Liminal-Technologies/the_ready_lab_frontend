@@ -53,7 +53,7 @@ const Hero = () => {
       </div>
 
       {/* Right Floating Content Box - Centered Vertically, Right Aligned */}
-      <div className="absolute top-1/2 -translate-y-1/2 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
+      <div className="absolute top-1/2 -translate-y-1/2 mt-16 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
         <div className="rounded-2xl p-5 text-center">
           <p className="text-white mb-5 leading-relaxed font-normal" style={{ fontSize: '0.9375rem', textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
@@ -81,7 +81,7 @@ const Hero = () => {
       </div>
 
       {/* Mobile Layout - Banner at Top Center, Content Below */}
-      <div className="lg:hidden absolute top-40 left-0 right-0 z-10 px-4">
+      <div className="lg:hidden absolute top-28 left-0 right-0 z-10 px-4">
         <div className="container mx-auto max-w-md text-center">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-8">
             <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
