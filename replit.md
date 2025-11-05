@@ -32,6 +32,22 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 
 ## Recent Updates (Nov 5, 2025)
 
+### Solutions Page Consolidation
+- Merged "For Institutions" and "Custom Solutions" pages into unified `/solutions` page
+- New Solutions page features:
+  - Dual-offering hero section for both institutional and custom white-label solutions
+  - Solution Types section comparing pre-built platform vs. custom builds
+  - "Most Popular" badge on Ready Lab for Institutions
+  - Comprehensive feature comparison with checkmarks
+  - All original value props, enterprise features, stats, and CTAs preserved
+- Navigation updates:
+  - Header: Single "Solutions" link replaces "For Institutions" and "Custom Solutions"
+  - Mobile menu: Consolidated to single "Solutions" entry
+- Route redirects for backwards compatibility:
+  - `/for-institutions` → `/solutions`
+  - `/custom-saas` → `/solutions`
+  - `/custom` → `/solutions`
+
 ### Courses Section Unified
 - Replaced old `/courses` page with enhanced Browse experience
 - Both `/courses` and `/browse` now show the same advanced filtering interface
