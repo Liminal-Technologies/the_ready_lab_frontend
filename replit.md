@@ -18,6 +18,7 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
     *   Brand color system with dedicated themes for different sections: Orange (Courses), Green (Explore/Learner), Purple (Community), Yellow (Primary/CTAs/Course Detail), Blue (Profile).
     *   Responsive design with mobile-first approach and grid layouts (sm, md, lg breakpoints).
     *   Breadcrumb navigation, tab-based interfaces, and interactive elements (e.g., accordions, progress bars, hover effects).
+    *   **Mobile Navigation:** Bottom navigation bar with 5 tabs (Home, Explore, Courses, More, Profile). Auto-hide scroll behavior hides the nav when scrolling down and shows it when scrolling up for improved content visibility. "More" button opens a bottom sheet with links to secondary pages (Solutions, Pricing, Community, Resources, Settings, Terms, Privacy).
 *   **Core Feature Implementations:**
     *   **Student Journeys:** Course discovery, enrollment, certificate generation with LinkedIn sharing, interactive community features (post creation, comments, likes, live Q&A).
     *   **Educator Journeys:** Dedicated landing page, onboarding, dashboard with stats, 5-step course builder wizard, live event scheduling/broadcasting.
