@@ -58,7 +58,7 @@ const allCourses = [
     rating: "4.9",
     level: "Beginner",
     price: 299,
-    category: "FUNDING STRATEGY",
+    category: "Funding Strategy",
     certification: true,
     featured: true,
     image: fundingImage,
@@ -74,7 +74,7 @@ const allCourses = [
     rating: "4.8",
     level: "Beginner",
     price: 249,
-    category: "OPERATIONS",
+    category: "Operations",
     certification: true,
     featured: false,
     image: operationsImage,
@@ -90,7 +90,7 @@ const allCourses = [
     rating: "4.9",
     level: "Intermediate",
     price: 199,
-    category: "BRAND STRATEGY",
+    category: "Brand Strategy",
     certification: true,
     featured: false,
     image: brandingImage,
@@ -106,7 +106,7 @@ const allCourses = [
     rating: "4.7",
     level: "Intermediate",
     price: 229,
-    category: "TECHNOLOGY",
+    category: "Technology",
     certification: true,
     featured: false,
     image: aiImage,
@@ -122,7 +122,7 @@ const allCourses = [
     rating: "4.8",
     level: "Advanced",
     price: 279,
-    category: "PARTNERSHIP STRATEGY",
+    category: "Partnership Strategy",
     certification: true,
     featured: true,
     image: partnershipImage,
@@ -138,7 +138,7 @@ const allCourses = [
     rating: "4.7",
     level: "Intermediate",
     price: 179,
-    category: "FINANCIAL PLANNING",
+    category: "Financial Planning",
     certification: true,
     featured: false,
     image: financialImage,
@@ -154,7 +154,7 @@ const allCourses = [
     rating: "4.9",
     level: "Beginner",
     price: 249,
-    category: "FUNDING STRATEGY",
+    category: "Funding Strategy",
     certification: true,
     featured: false,
     image: fundingImage,
@@ -170,7 +170,7 @@ const allCourses = [
     rating: "4.6",
     level: "Intermediate",
     price: 149,
-    category: "IMPACT",
+    category: "Impact",
     certification: true,
     featured: false,
     image: partnershipImage,
@@ -179,7 +179,7 @@ const allCourses = [
   }
 ];
 
-const categories = ["FUNDING STRATEGY", "OPERATIONS", "BRAND STRATEGY", "TECHNOLOGY", "PARTNERSHIP STRATEGY", "FINANCIAL PLANNING", "IMPACT"];
+const categories = ["Funding Strategy", "Operations", "Brand Strategy", "Technology", "Partnership Strategy", "Financial Planning", "Impact"];
 const levels = ["Beginner", "Intermediate", "Advanced"];
 const formats = ["Video", "Interactive", "Live"];
 
