@@ -48,6 +48,7 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 
 ### Community Page (Purple Theme)
 - Complete community browsing page with purple theme (#9333EA)
+- Accessible at both `/community` and `/feed` routes
 - Similar layout to Courses and Explore pages: breadcrumb, search, sidebar filters, content grid
 - Topic-based filtering: Funding, Legal, Marketing, Infrastructure, Branding, Finance, AI, Operations
 - Community cards showing:
@@ -58,7 +59,8 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 - Trending discussions sidebar
 - Filter by type: Private Only, My Communities
 - Purple CTA banner linking to courses
-- Mobile navigation: Community button is purple when on community page
+- Mobile navigation: Community button is purple when on community or feed page
+- Note: `/feed` route redirects to Community page (replaced old LearningFeed)
 
 ### Brand Color System
 - **Orange (#FF6B35):** Courses page theme

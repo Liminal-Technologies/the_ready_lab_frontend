@@ -114,7 +114,7 @@ const AppContent = () => {
           <Route path="/educator-demo" element={<EducatorProfileDemo />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<DashboardRouter />} />
-          <Route path="/feed" element={<LearningFeed />} />
+          <Route path="/feed" element={<Community />} />
           <Route path="/lesson/:lessonId" element={<LessonDetail />} />
           <Route path="/live/:eventId" element={<LiveStream />} />
           <Route path="/events/:eventId" element={<EventDetail />} />
@@ -218,6 +218,7 @@ const AppContent = () => {
         <Route path="/educator-agreement" element={<EducatorAgreement />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/community" element={<Community />} />
+        <Route path="/feed" element={<Community />} />
         <Route path="/events/:eventId" element={<EventDetail />} />
         <Route path="/community/join" element={<CommunityJoin />} />
         <Route path="/community/create" element={<CommunityCreate />} />
