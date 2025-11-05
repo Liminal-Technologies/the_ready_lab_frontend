@@ -523,20 +523,21 @@ const CourseBrowse = () => {
           )}
 
           {/* Category Chips */}
-          <div className="flex gap-3 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+          <div className="flex flex-wrap gap-2 mb-8">
             {categories.map(category => (
-              <button
+              <Badge
                 key={category}
-                onClick={() => handleChipClick(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                variant={activeChip === category ? "default" : "outline"}
+                className={`cursor-pointer transition-colors ${
                   activeChip === category
-                    ? "bg-orange-500 text-white"
-                    : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                    ? "bg-orange-500 hover:bg-orange-600 text-white"
+                    : "hover:border-orange-500"
                 }`}
+                onClick={() => handleChipClick(category)}
                 data-testid={`chip-${category.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 {category}
-              </button>
+              </Badge>
             ))}
           </div>
 
