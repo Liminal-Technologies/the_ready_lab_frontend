@@ -491,41 +491,6 @@ const CourseBrowse = () => {
               <span className="text-foreground font-medium">Courses & More</span>
             </div>
 
-          {/* Search Bar */}
-          <div className="mb-8">
-            <div className="relative max-w-2xl">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search courses by title, instructor, or category..."
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1); // Reset to first page on search
-                }}
-                className="pl-12 pr-4 py-6 text-base border-2 border-neutral-200 dark:border-neutral-700 focus:border-orange-500 rounded-xl"
-                data-testid="input-search-courses"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => {
-                    setSearchQuery("");
-                    setCurrentPage(1);
-                  }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  data-testid="button-clear-search"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              )}
-            </div>
-            {searchQuery && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                Found <span className="font-bold text-orange-500">{filteredCourses.length}</span> {filteredCourses.length === 1 ? 'course' : 'courses'} matching "{searchQuery}"
-              </p>
-            )}
-          </div>
-
           {/* Header Section */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
             <div>
@@ -537,7 +502,7 @@ const CourseBrowse = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               {/* Mobile Filter Button */}
               <Sheet>
                 <SheetTrigger asChild>
@@ -560,6 +525,34 @@ const CourseBrowse = () => {
                 </SheetContent>
               </Sheet>
 
+              {/* Search Bar */}
+              <div className="relative flex-1 lg:flex-none lg:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search courses..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="pl-10 pr-10 h-10 text-sm border-2 border-neutral-200 dark:border-neutral-700 focus:border-orange-500 rounded-lg"
+                  data-testid="input-search-courses"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setCurrentPage(1);
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    data-testid="button-clear-search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
               {/* Sort Dropdown */}
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-[180px]" data-testid="select-sort">
@@ -575,6 +568,14 @@ const CourseBrowse = () => {
               </Select>
             </div>
           </div>
+          
+          {searchQuery && (
+            <div className="mb-4">
+              <p className="text-sm text-muted-foreground">
+                Found <span className="font-bold text-orange-500">{filteredCourses.length}</span> {filteredCourses.length === 1 ? 'course' : 'courses'} matching "{searchQuery}"
+              </p>
+            </div>
+          )}
 
           {/* Category Chips */}
           <div className="flex gap-3 overflow-x-auto pb-4 mb-8 scrollbar-hide">
