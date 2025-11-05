@@ -480,7 +480,7 @@ const CourseBrowse = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900">
+      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 pt-20">
         {/* Main Content Container */}
         <div className="bg-white dark:bg-neutral-800 shadow-lg">
           <div className="container mx-auto px-4 lg:px-8 max-w-7xl pt-8 pb-8">
