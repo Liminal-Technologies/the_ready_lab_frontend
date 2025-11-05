@@ -24,3 +24,15 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 *   **Payments:** Stripe (Connect, Subscriptions, Products APIs)
 *   **(Optional) AI Features:** OpenAI (requires API key)
 *   **(Optional) Email Notifications:** Resend (requires API key)
+
+## Recent Updates (Nov 5, 2025)
+
+### Courses Section Unified
+- Replaced old `/courses` page with enhanced Browse experience
+- Both `/courses` and `/browse` now show the same advanced filtering interface
+- All original content maintained: courses, micro-learning feed, communities, learning styles
+
+### Brand Color Refinements
+- Bottom CTA banner button changed from orange to branding yellow (#E5A000)
+- Removed top margin/curve from banner for edge-to-edge design
+- Mobile navigation active state changed from yellow to orange for better contrast

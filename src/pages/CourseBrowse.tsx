@@ -907,7 +907,7 @@ const CourseBrowse = () => {
       </div>
 
       {/* Bottom CTA Banner */}
-      <div className="relative py-16 mt-16 overflow-hidden">
+      <div className="relative py-16 overflow-hidden">
         {/* Background Image with Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center"
@@ -928,7 +928,7 @@ const CourseBrowse = () => {
               </p>
               <Button
                 size="lg"
-                className="mt-6 bg-orange-500 text-white hover:bg-orange-600 font-bold"
+                className="mt-6 bg-[#E5A000] text-white hover:bg-[#cc8f00] font-bold"
                 onClick={() => navigate("/signup")}
                 data-testid="button-join-free"
               >
@@ -937,8 +937,8 @@ const CourseBrowse = () => {
               </Button>
             </div>
             <div className="flex-shrink-0">
-              <div className="w-64 h-64 bg-orange-500/20 rounded-full flex items-center justify-center">
-                <Award className="h-32 w-32 text-orange-500" />
+              <div className="w-64 h-64 bg-[#E5A000]/20 rounded-full flex items-center justify-center">
+                <Award className="h-32 w-32 text-[#E5A000]" />
               </div>
             </div>
           </div>

@@ -51,7 +51,7 @@ const MobileBottomNav = () => {
               onClick={() => handleTabClick(tab.path, tab.authRequired)}
               className={`flex flex-col items-center justify-center gap-1 h-full flex-1 rounded-lg mx-0.5 transition-all ${
                 active 
-                  ? "bg-yellow-500 text-white" 
+                  ? "bg-orange-500 text-white" 
                   : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white"
               }`}
             >
