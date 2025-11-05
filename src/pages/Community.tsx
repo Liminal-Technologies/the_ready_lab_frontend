@@ -474,18 +474,27 @@ const Community = () => {
       </div>
 
       {/* Bottom CTA Banner */}
-      <div className="relative py-12 overflow-hidden">
-        {/* Background with purple gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#9333EA] to-[#7C3AED]"></div>
+      <div className="relative py-16 lg:py-24 overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/attached_assets/stock_images/diverse_community_pe_a18abfb1.jpg')" }}
+        ></div>
+        
+        {/* Dark Gradient Overlay for Text Visibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#9333EA]/95 via-[#7C3AED]/90 to-[#9333EA]/95"></div>
+        
+        {/* Additional Dark Overlay for Better Contrast */}
+        <div className="absolute inset-0 bg-black/30"></div>
         
         {/* Content */}
         <div className="container mx-auto px-4 lg:px-8 max-w-7xl relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex-1 text-white">
-              <h2 className="text-3xl lg:text-4xl font-black mb-4">
+            <div className="flex-1 text-white text-center lg:text-left">
+              <h2 className="text-4xl lg:text-5xl font-black mb-4 drop-shadow-lg">
                 Ready to connect?
               </h2>
-              <p className="text-lg text-white/90 max-w-2xl">
+              <p className="text-lg lg:text-xl text-white font-medium max-w-2xl drop-shadow-md">
                 Join communities that match your interests and grow alongside fellow learners and entrepreneurs.
               </p>
             </div>
@@ -493,7 +502,7 @@ const Community = () => {
               <Button 
                 size="lg"
                 onClick={() => navigate("/courses")}
-                className="bg-white text-[#9333EA] hover:bg-neutral-100 font-bold text-lg px-8"
+                className="bg-white text-[#9333EA] hover:bg-neutral-100 font-bold text-lg px-10 py-6 shadow-xl"
                 data-testid="button-browse-courses"
               >
                 Browse Courses
