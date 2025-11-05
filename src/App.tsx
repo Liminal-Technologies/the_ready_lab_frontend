@@ -57,6 +57,7 @@ import CourseDetail from "./pages/CourseDetail";
 import Onboarding from "./pages/Onboarding";
 import EducatorOnboarding from "./pages/EducatorOnboarding";
 import { EducatorDashboard } from "./pages/EducatorDashboard";
+import { StudentDashboard } from "./pages/StudentDashboard";
 import LiveEventBroadcaster from "./pages/LiveEventBroadcaster";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { AIChatWidget } from "@/components/ai/AIChatWidget";
@@ -112,6 +113,7 @@ const AppContent = () => {
           <Route path="/educator-demo" element={<EducatorProfileDemo />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<DashboardRouter />} />
+          <Route path="/student-view" element={<StudentDashboard />} />
           <Route path="/feed" element={<Community />} />
           <Route path="/lesson/:lessonId" element={<LessonDetail />} />
           <Route path="/live/:eventId" element={<LiveStream />} />
