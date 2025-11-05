@@ -62,9 +62,31 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 - Mobile navigation: Community button is purple when on community or feed page
 - Note: `/feed` route redirects to Community page (replaced old LearningFeed)
 
+### Individual Course Detail Page
+- Comprehensive course landing page with yellow (#E5A000) brand color throughout
+- **Layout:**
+  - Breadcrumb navigation (Home > Courses > Category > Course Title)
+  - Hero section with gradient background featuring course image preview (desktop sticky)
+  - Two-column layout: main content (left) + sticky enrollment sidebar (right)
+- **Tabbed Content Sections:**
+  - Overview: What You'll Learn, Course Description, Requirements, Course Stats
+  - Curriculum: Expandable accordion modules with individual lessons, duration, lock/preview/completion states
+  - Instructor: Profile with avatar, bio, rating, student count, course count
+  - Reviews: Student testimonials with ratings, helpful/reply actions
+- **Enrollment Sidebar:**
+  - Preview image with play button
+  - Pricing with BNPL options (Klarna, Afterpay, Affirm)
+  - Yellow "Enroll Now" button for non-enrolled users
+  - Green "Continue Learning" button with progress bar for enrolled users
+  - Course features checklist (lifetime access, mobile/desktop, certificate, community, subtitles)
+- **Similar Courses Section:** 3-card grid at bottom with course recommendations
+- **Features:** 26 lessons across 4 modules, preview badges, lock icons, completion checkmarks
+- Uses CSS variable `--primary` set to #E5A000 (HSL: 42, 100%, 45%) for brand consistency
+
 ### Brand Color System
 - **Orange (#FF6B35):** Courses page theme
 - **Green (#10A37F):** Explore page theme (learner brand color)
 - **Purple (#9333EA):** Community page theme
-- **Yellow (#E5A000):** Primary branding color for CTAs and default active states
+- **Yellow (#E5A000):** Primary branding color for CTAs, Course Detail page, and default active states
+- **CSS Variables:** Primary color defined as HSL(42, 100%, 45%) in index.css for consistent theming
 - Mobile navigation uses conditional colors based on active page
