@@ -72,7 +72,7 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
   - Hero section with gradient background featuring course image preview (desktop sticky)
   - Two-column layout: main content (left) + sticky enrollment sidebar (right)
 - **Tabbed Content Sections:**
-  - Overview: What You'll Learn, Course Description, Requirements, Course Stats
+  - Overview: What You'll Learn, Course Description, Requirements, Course Stats, Live Events (when enrolled), Community Access
   - Curriculum: Expandable accordion modules with individual lessons, duration, lock/preview/completion states
   - Instructor: Profile with avatar, bio, rating, student count, course count
   - Reviews: Student testimonials with ratings, helpful/reply actions
@@ -82,9 +82,38 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
   - Yellow "Enroll Now" button for non-enrolled users
   - Green "Continue Learning" button with progress bar for enrolled users
   - Course features checklist (lifetime access, mobile/desktop, certificate, community, subtitles)
+- **Interactive Elements:**
+  - Live Events section shows upcoming Q&As and workshops (visible to enrolled students)
+  - Community access button navigates to `/community` page
 - **Similar Courses Section:** 3-card grid at bottom with course recommendations
 - **Features:** 26 lessons across 4 modules, preview badges, lock icons, completion checkmarks
 - Uses CSS variable `--primary` set to #E5A000 (HSL: 42, 100%, 45%) for brand consistency
+
+### Course Lesson Player & Navigation System
+- **Dynamic URL-Based Navigation:**
+  - Lessons identified by `/courses/:courseId/lessons/:lessonId` route
+  - currentLessonId derived from URL parameter, no hard-coded state
+  - Sequential unlocking: lessons unlock when previous lesson completed
+  - Completion tracking persisted in localStorage
+- **Lesson Types:**
+  - Video lessons: React Player with EN/ES captions and auto-caption support
+  - Quiz lessons: Integrated QuizPlayer component using Supabase backend
+  - Quiz format: 5 MCQ questions, 70% pass threshold, retries allowed
+- **Progress Tracking:**
+  - Auto-completion at 95% video playback
+  - Manual "Mark Complete" button available
+  - Completion state synced across desktop sidebar and mobile sheet
+  - Green checkmarks show completed lessons
+- **Navigation Controls:**
+  - Desktop: Sidebar with collapsible modules, lesson buttons
+  - Mobile: Sheet drawer with same lesson structure
+  - "Next Lesson" button appears when current lesson completed
+  - Next button navigates to URL of next lesson, closes mobile drawer
+- **Visual States:**
+  - Current lesson highlighted with primary yellow background
+  - Locked lessons greyed out with lock icon, disabled buttons
+  - Completed lessons show green checkmark
+  - Quiz lessons indicated by type in lesson list
 
 ### Brand Color System
 - **Orange (#FF6B35):** Courses page theme
