@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import {
   Upload,
@@ -22,6 +23,10 @@ import {
   FileSpreadsheet,
   Mail,
   BarChart3,
+  ChevronRight,
+  TrendingUp,
+  Settings,
+  Eye,
 } from "lucide-react";
 
 // Mock cohorts data
@@ -93,7 +98,7 @@ export default function InstitutionDashboard() {
       totalStudents: 0,
       activeLearners: 0,
       avgProgress: 0,
-      coursesAssigned: [], // Would be from multiselect
+      coursesAssigned: [],
     };
 
     setCohorts([...cohorts, newCohort]);
@@ -126,247 +131,369 @@ export default function InstitutionDashboard() {
     });
   };
 
+  const totalStudents = cohorts.reduce((sum, c) => sum + c.totalStudents, 0);
+  const avgProgress = Math.round(cohorts.reduce((sum, c) => sum + c.avgProgress, 0) / cohorts.length);
+
   return (
-    <>
+    <div className="min-h-screen bg-background">
       <Header />
-      <div className="min-h-screen bg-background pt-20 pb-12">
-        <div className="container mx-auto px-4 space-y-8">
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">Institution Admin Dashboard</h1>
-              <p className="text-muted-foreground">
-                Manage cohorts, track student progress, and administer your learning programs
-              </p>
-              <Badge variant="secondary" className="mt-2">Demo View - No real data</Badge>
-            </div>
-            <Button onClick={() => setShowCohortModal(true)} data-testid="button-create-cohort">
-              <Plus className="mr-2 h-4 w-4" />
-              Create Cohort
-            </Button>
+      
+      {/* Breadcrumb */}
+      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-primary transition-colors" data-testid="link-home">
+              Home
+            </Link>
+            <ChevronRight className="h-4 w-4" />
+            <span className="text-foreground font-medium">Institution Dashboard</span>
           </div>
+        </div>
+      </div>
 
-          {/* Stats Cards */}
-          <div className="grid md:grid-cols-4 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Total Students
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">193</div>
-                <p className="text-xs text-muted-foreground mt-1">Across all cohorts</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  Active Cohorts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">{cohorts.length}</div>
-                <p className="text-xs text-muted-foreground mt-1">Currently running</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4" />
-                  Avg Completion
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">63%</div>
-                <p className="text-xs text-muted-foreground mt-1">Institution average</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Certificates Issued
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">127</div>
-                <p className="text-xs text-muted-foreground mt-1">This semester</p>
-              </CardContent>
-            </Card>
+      <div className="container mx-auto px-4 py-16">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">Institution Dashboard</h1>
+            <p className="text-muted-foreground mb-2">
+              Manage cohorts, track student progress, and administer your learning programs
+            </p>
+            <Badge variant="secondary">Demo View - Mock Data</Badge>
           </div>
+          <Button onClick={() => setShowCohortModal(true)} data-testid="button-create-cohort">
+            <Plus className="mr-2 h-4 w-4" />
+            Create Cohort
+          </Button>
+        </div>
 
-          {/* CSV Upload Section */}
+        {/* Stats Cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5" />
-                Import Students via CSV
-              </CardTitle>
-              <CardDescription>
-                Upload a CSV file to bulk import students into your institution
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="border-2 border-dashed rounded-lg p-8 text-center">
-                  <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <input
-                    type="file"
-                    id="csv-upload"
-                    accept=".csv"
-                    className="hidden"
-                    onChange={handleCSVUpload}
-                  />
-                  <label htmlFor="csv-upload">
-                    <Button variant="outline" asChild data-testid="button-upload-csv">
-                      <span className="cursor-pointer">
-                        <FileSpreadsheet className="mr-2 h-4 w-4" />
-                        Upload CSV File
-                      </span>
-                    </Button>
-                  </label>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    CSV should include: name, email, cohort (optional)
-                  </p>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-blue-500" />
                 </div>
-
-                {uploadedFileName && (
-                  <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                    <div className="flex-1">
-                      <div className="font-medium text-sm">Import Successful</div>
-                      <div className="text-xs text-muted-foreground">
-                        {uploadedCount} students imported from {uploadedFileName}
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <TrendingUp className="h-4 w-4 text-green-600" />
               </div>
+              <div className="text-2xl font-bold mb-1">{totalStudents}</div>
+              <p className="text-sm text-muted-foreground">Total Students</p>
+              <p className="text-xs text-green-600 mt-1">Across all cohorts</p>
             </CardContent>
           </Card>
 
-          {/* Cohorts Table */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Cohorts
-              </CardTitle>
-              <CardDescription>
-                Manage learning cohorts and track student progress
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Cohort Name</TableHead>
-                    <TableHead>Dates</TableHead>
-                    <TableHead>Students</TableHead>
-                    <TableHead>Avg Progress</TableHead>
-                    <TableHead>Courses</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {cohorts.map((cohort) => (
-                    <TableRow key={cohort.id} data-testid={`cohort-row-${cohort.id}`}>
-                      <TableCell className="font-medium">{cohort.name}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {cohort.startDate} to {cohort.endDate}
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div>{cohort.totalStudents} total</div>
-                          <div className="text-muted-foreground text-xs">
-                            {cohort.activeLearners} active
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="space-y-2">
-                          <Progress value={cohort.avgProgress} className="h-2" />
-                          <div className="text-sm text-muted-foreground">{cohort.avgProgress}%</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-xs text-muted-foreground">
-                          {cohort.coursesAssigned.length} courses
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSendInvitations(cohort)}
-                          data-testid={`button-invite-${cohort.id}`}
-                        >
-                          <Send className="mr-2 h-3 w-3" />
-                          Invite
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-purple-500" />
+                </div>
+              </div>
+              <div className="text-2xl font-bold mb-1">{cohorts.length}</div>
+              <p className="text-sm text-muted-foreground">Active Cohorts</p>
+              <p className="text-xs text-muted-foreground mt-1">Currently running</p>
             </CardContent>
           </Card>
 
-          {/* Download Reports */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Download className="h-5 w-5" />
-                Download Reports
-              </CardTitle>
-              <CardDescription>
-                Export data and generate reports for your records
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-4">
-                <Button
-                  variant="outline"
-                  className="h-auto flex-col gap-2 p-4"
-                  onClick={() => handleDownloadReport("Student Progress")}
-                  data-testid="button-download-progress"
-                >
-                  <FileSpreadsheet className="h-6 w-6" />
-                  <div className="text-sm font-medium">Student Progress</div>
-                  <div className="text-xs text-muted-foreground">CSV export of all student data</div>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="h-auto flex-col gap-2 p-4"
-                  onClick={() => handleDownloadReport("Completion")}
-                  data-testid="button-download-completion"
-                >
-                  <BarChart3 className="h-6 w-6" />
-                  <div className="text-sm font-medium">Completion Report</div>
-                  <div className="text-xs text-muted-foreground">Course completion statistics</div>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="h-auto flex-col gap-2 p-4"
-                  onClick={() => handleDownloadReport("Certificates")}
-                  data-testid="button-download-certificates"
-                >
-                  <CheckCircle2 className="h-6 w-6" />
-                  <div className="text-sm font-medium">Certificate List</div>
-                  <div className="text-xs text-muted-foreground">All issued certificates</div>
-                </Button>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                  <BarChart3 className="h-6 w-6 text-amber-500" />
+                </div>
               </div>
+              <div className="text-2xl font-bold mb-1">{avgProgress}%</div>
+              <p className="text-sm text-muted-foreground">Avg Completion</p>
+              <p className="text-xs text-muted-foreground mt-1">Institution average</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                </div>
+              </div>
+              <div className="text-2xl font-bold mb-1">127</div>
+              <p className="text-sm text-muted-foreground">Certificates Issued</p>
+              <p className="text-xs text-muted-foreground mt-1">This semester</p>
             </CardContent>
           </Card>
         </div>
+
+        {/* Tabs */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="bg-muted p-1 w-full justify-start overflow-x-auto">
+            <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
+              <BarChart3 className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="cohorts" className="flex items-center gap-2" data-testid="tab-cohorts">
+              <Users className="h-4 w-4" />
+              Cohorts
+            </TabsTrigger>
+            <TabsTrigger value="students" className="flex items-center gap-2" data-testid="tab-students">
+              <Upload className="h-4 w-4" />
+              Import Students
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-2" data-testid="tab-reports">
+              <Download className="h-4 w-4" />
+              Reports
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cohort Performance</CardTitle>
+                  <CardDescription>Average completion rates by cohort</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {cohorts.map((cohort) => (
+                    <div key={cohort.id}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium line-clamp-1">{cohort.name}</span>
+                        <span className="text-sm text-muted-foreground">{cohort.avgProgress}%</span>
+                      </div>
+                      <Progress value={cohort.avgProgress} className="h-2" />
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Common administrative tasks</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => setShowCohortModal(true)}
+                    data-testid="quick-create-cohort"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create New Cohort
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    data-testid="quick-import-students"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Import Students
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => handleDownloadReport("Progress")}
+                    data-testid="quick-download-report"
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Report
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Cohorts Tab */}
+          <TabsContent value="cohorts" className="space-y-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {cohorts.map((cohort) => (
+                <Card key={cohort.id} data-testid={`cohort-card-${cohort.id}`}>
+                  <CardHeader>
+                    <div className="flex items-start justify-between mb-2">
+                      <Badge variant={cohort.avgProgress > 50 ? 'default' : 'secondary'}>
+                        {cohort.avgProgress > 70 ? 'On Track' : 'In Progress'}
+                      </Badge>
+                      <Button variant="ghost" size="icon">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <CardTitle className="text-lg line-clamp-2">{cohort.name}</CardTitle>
+                    <CardDescription>
+                      {cohort.startDate} - {cohort.endDate}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Progress</span>
+                        <span className="font-medium">{cohort.avgProgress}%</span>
+                      </div>
+                      <Progress value={cohort.avgProgress} className="h-2" />
+                    </div>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Total Students</span>
+                        <span className="font-medium">{cohort.totalStudents}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Active Learners</span>
+                        <span className="font-medium">{cohort.activeLearners}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Courses</span>
+                        <span className="font-medium">{cohort.coursesAssigned.length}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => handleSendInvitations(cohort)}
+                        data-testid={`button-invite-${cohort.id}`}
+                      >
+                        <Send className="mr-2 h-3 w-3" />
+                        Invite
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex-1">
+                        <Eye className="mr-2 h-3 w-3" />
+                        View
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Import Students Tab */}
+          <TabsContent value="students" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Upload className="h-5 w-5" />
+                  Import Students via CSV
+                </CardTitle>
+                <CardDescription>
+                  Upload a CSV file to bulk import students into your institution
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="border-2 border-dashed rounded-lg p-12 text-center bg-muted/30 hover:bg-muted/50 transition-colors">
+                    <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <input
+                      type="file"
+                      id="csv-upload"
+                      accept=".csv"
+                      className="hidden"
+                      onChange={handleCSVUpload}
+                    />
+                    <label htmlFor="csv-upload">
+                      <Button variant="default" asChild data-testid="button-upload-csv">
+                        <span className="cursor-pointer">
+                          <FileSpreadsheet className="mr-2 h-4 w-4" />
+                          Upload CSV File
+                        </span>
+                      </Button>
+                    </label>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      CSV should include: name, email, cohort (optional)
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Supported formats: .csv (max 10MB)
+                    </p>
+                  </div>
+
+                  {uploadedFileName && (
+                    <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                      <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">Import Successful</div>
+                        <div className="text-xs text-muted-foreground">
+                          {uploadedCount} students imported from {uploadedFileName}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="bg-muted/50 rounded-lg p-4 border">
+                    <h4 className="font-medium mb-2 text-sm">CSV Format Example</h4>
+                    <pre className="text-xs text-muted-foreground font-mono bg-background p-3 rounded overflow-x-auto">
+{`name,email,cohort
+John Doe,john@example.com,Fall 2024
+Jane Smith,jane@example.com,Spring 2025`}
+                    </pre>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Download className="h-5 w-5" />
+                  Download Reports
+                </CardTitle>
+                <CardDescription>
+                  Export data and generate reports for your records
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Button
+                    variant="outline"
+                    className="h-auto flex flex-col gap-3 p-6 items-start"
+                    onClick={() => handleDownloadReport("Student Progress")}
+                    data-testid="button-download-progress"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                      <FileSpreadsheet className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-semibold mb-1">Student Progress</div>
+                      <div className="text-xs text-muted-foreground">CSV export of all student data</div>
+                    </div>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="h-auto flex flex-col gap-3 p-6 items-start"
+                    onClick={() => handleDownloadReport("Completion")}
+                    data-testid="button-download-completion"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+                      <BarChart3 className="h-6 w-6 text-green-500" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-semibold mb-1">Completion Report</div>
+                      <div className="text-xs text-muted-foreground">Course completion statistics</div>
+                    </div>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="h-auto flex flex-col gap-3 p-6 items-start"
+                    onClick={() => handleDownloadReport("Certificates")}
+                    data-testid="button-download-certificates"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                      <CheckCircle2 className="h-6 w-6 text-amber-500" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-semibold mb-1">Certificate List</div>
+                      <div className="text-xs text-muted-foreground">All issued certificates</div>
+                    </div>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Create Cohort Modal */}
@@ -493,6 +620,6 @@ export default function InstitutionDashboard() {
           )}
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

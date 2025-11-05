@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   CheckCircle2, 
   Circle, 
@@ -19,7 +20,12 @@ import {
   MessageCircle,
   Calendar,
   AlertCircle,
-  Video
+  Video,
+  ChevronRight,
+  BarChart3,
+  Settings,
+  Eye,
+  Edit
 } from 'lucide-react';
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 import { CourseBuilderWizard } from '@/components/educator/CourseBuilderWizard';
@@ -41,6 +47,12 @@ const MOCK_QUESTIONS = [
   { id: 1, student: "Sarah J.", question: "Can you explain the difference between equity and debt financing?", course: "Funding Essentials", time: "2 hours ago" },
   { id: 2, student: "Michael C.", question: "What are the tax implications of forming an LLC?", course: "Legal Framework", time: "5 hours ago" },
   { id: 3, student: "David M.", question: "How do I calculate my burn rate?", course: "Funding Essentials", time: "1 day ago" },
+];
+
+const MOCK_LIVE_EVENTS = [
+  { id: 1, title: "Q&A: Funding Your Startup", date: "2024-12-10", time: "2:00 PM EST", attendees: 24, status: "upcoming" },
+  { id: 2, title: "Workshop: Building Your Pitch Deck", date: "2024-12-15", time: "4:00 PM EST", attendees: 18, status: "upcoming" },
+  { id: 3, title: "Office Hours: Legal Questions", date: "2024-11-28", time: "3:00 PM EST", attendees: 32, status: "past" },
 ];
 
 export const EducatorDashboard = () => {
@@ -108,147 +120,327 @@ export const EducatorDashboard = () => {
   const completedCount = checklistItems.filter(item => item.completed).length;
   const progressPercentage = (completedCount / checklistItems.length) * 100;
 
+  // Get revenue share based on plan
+  const revenueShare = selectedPlan === 'pro' ? '90%' : '85%';
+
   return (
-    <>
+    <div className="min-h-screen bg-background">
       <Header />
-      <div className="min-h-screen bg-background pt-20 pb-12">
-        <div className="container mx-auto px-4 space-y-8">
-          {/* Welcome Header */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">
-                {educatorProfile ? `Welcome back, ${educatorProfile.name.split(' ')[0]}!` : 'Educator Dashboard'}
-              </h1>
-              <p className="text-muted-foreground">
-                Manage your courses, track student progress, and grow your teaching business
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowScheduleEvent(true)}
-                data-testid="button-schedule-event"
-              >
-                <Video className="mr-2 h-4 w-4" />
-                Schedule Live Event
-              </Button>
-              <Button
-                onClick={() => setShowCourseWizard(true)}
-                data-testid="button-create-course"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Create New Course
-              </Button>
-            </div>
+      
+      {/* Breadcrumb */}
+      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-primary transition-colors" data-testid="link-home">
+              Home
+            </Link>
+            <ChevronRight className="h-4 w-4" />
+            <span className="text-foreground font-medium">Dashboard</span>
           </div>
+        </div>
+      </div>
 
-          {/* Onboarding Checklist (if not complete) */}
-          {progressPercentage < 100 && (
-            <Card className="border-primary/50 bg-primary/5">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
-                  Get Started as an Educator
-                </CardTitle>
-                <CardDescription>
-                  Complete these steps to start teaching ({completedCount}/{checklistItems.length} completed)
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Progress value={progressPercentage} className="h-2" />
-                <div className="grid md:grid-cols-4 gap-3">
-                  {checklistItems.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`flex items-center gap-2 p-3 rounded-lg border ${
-                        item.completed ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' : 'bg-background'
-                      }`}
-                      data-testid={`checklist-item-${index}`}
-                    >
-                      {item.completed ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                      ) : (
-                        <Circle className="h-5 w-5 text-muted-foreground" />
-                      )}
-                      <span className={`text-sm ${item.completed ? 'font-medium' : ''}`}>
-                        {item.label}
-                      </span>
-                    </div>
-                  ))}
+      <div className="container mx-auto px-4 py-16">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">
+              {educatorProfile ? `Welcome back, ${educatorProfile.name.split(' ')[0]}!` : 'Educator Dashboard'}
+            </h1>
+            <p className="text-muted-foreground">
+              Manage your courses, track student progress, and grow your teaching business
+            </p>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            <Button
+              variant="outline"
+              onClick={() => setShowScheduleEvent(true)}
+              data-testid="button-schedule-event"
+            >
+              <Video className="mr-2 h-4 w-4" />
+              Schedule Event
+            </Button>
+            <Button
+              onClick={() => setShowCourseWizard(true)}
+              data-testid="button-create-course"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create Course
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-blue-500" />
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <TrendingUp className="h-4 w-4 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold mb-1">156</div>
+              <p className="text-sm text-muted-foreground">Total Students</p>
+              <p className="text-xs text-green-600 mt-1">+12% this month</p>
+            </CardContent>
+          </Card>
 
-          {/* Stats Cards */}
-          <div className="grid md:grid-cols-4 gap-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                  <BookOpen className="h-6 w-6 text-purple-500" />
+                </div>
+                <TrendingUp className="h-4 w-4 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold mb-1">{createdCourses.length}</div>
+              <p className="text-sm text-muted-foreground">Active Courses</p>
+              <p className="text-xs text-muted-foreground mt-1">2,341 completions</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                  <Star className="h-6 w-6 text-yellow-500" />
+                </div>
+              </div>
+              <div className="text-2xl font-bold mb-1">4.8</div>
+              <p className="text-sm text-muted-foreground">Average Rating</p>
+              <p className="text-xs text-muted-foreground mt-1">⭐⭐⭐⭐⭐ (89 reviews)</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-green-500" />
+                </div>
+                <TrendingUp className="h-4 w-4 text-green-600" />
+              </div>
+              <div className="text-2xl font-bold mb-1">$3,847</div>
+              <p className="text-sm text-muted-foreground">This Month</p>
+              <p className="text-xs text-green-600 mt-1">+24% from last month</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabs */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="bg-muted p-1 w-full justify-start overflow-x-auto">
+            <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
+              <BarChart3 className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="courses" className="flex items-center gap-2" data-testid="tab-courses">
+              <BookOpen className="h-4 w-4" />
+              My Courses
+            </TabsTrigger>
+            <TabsTrigger value="students" className="flex items-center gap-2" data-testid="tab-students">
+              <Users className="h-4 w-4" />
+              Students
+            </TabsTrigger>
+            <TabsTrigger value="qa" className="flex items-center gap-2" data-testid="tab-qa">
+              <MessageCircle className="h-4 w-4" />
+              Q&A
+            </TabsTrigger>
+            <TabsTrigger value="events" className="flex items-center gap-2" data-testid="tab-events">
+              <Calendar className="h-4 w-4" />
+              Live Events
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            {/* Onboarding Checklist */}
+            {progressPercentage < 100 && (
+              <Card className="border-primary/50 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    Get Started as an Educator
+                  </CardTitle>
+                  <CardDescription>
+                    Complete these steps to start teaching ({completedCount}/{checklistItems.length} completed)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Progress value={progressPercentage} className="h-2" />
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {checklistItems.map((item, index) => (
+                      <div
+                        key={index}
+                        className={`flex items-center gap-2 p-3 rounded-lg border ${
+                          item.completed ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' : 'bg-background'
+                        }`}
+                        data-testid={`checklist-item-${index}`}
+                      >
+                        {item.completed ? (
+                          <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        ) : (
+                          <Circle className="h-5 w-5 text-muted-foreground" />
+                        )}
+                        <span className={`text-sm ${item.completed ? 'font-medium' : ''}`}>
+                          {item.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Revenue Trend */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Revenue Trend
+                  </CardTitle>
+                  <CardDescription>Last 6 months · {revenueShare} revenue share</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {[
+                      { month: 'Sep', amount: 2100, height: 40 },
+                      { month: 'Oct', amount: 2650, height: 55 },
+                      { month: 'Nov', amount: 2890, height: 62 },
+                      { month: 'Dec', amount: 3200, height: 75 },
+                      { month: 'Jan', amount: 3100, height: 70 },
+                      { month: 'Feb', amount: 3847, height: 100 },
+                    ].map((data, index) => (
+                      <div key={index} className="flex items-center gap-3">
+                        <div className="w-12 text-sm text-muted-foreground">{data.month}</div>
+                        <div className="flex-1">
+                          <div
+                            className="bg-primary rounded h-8 transition-all flex items-center px-3 text-primary-foreground text-sm font-medium"
+                            style={{ width: `${data.height}%` }}
+                          >
+                            ${data.amount}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Common tasks and shortcuts</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => setShowCourseWizard(true)}
+                    data-testid="quick-create-course"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create New Course
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => setShowScheduleEvent(true)}
+                    data-testid="quick-schedule-event"
+                  >
+                    <Video className="mr-2 h-4 w-4" />
+                    Schedule Live Event
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    onClick={() => navigate('/educator/onboarding')}
+                    data-testid="quick-edit-profile"
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit Profile
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start"
+                    data-testid="quick-view-analytics"
+                  >
+                    <BarChart3 className="mr-2 h-4 w-4" />
+                    View Analytics
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* My Courses Tab */}
+          <TabsContent value="courses" className="space-y-6">
+            {createdCourses.length > 0 ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {createdCourses.map((course, index) => (
+                  <Card key={index} data-testid={`course-card-${index}`}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between mb-2">
+                        <Badge variant={course.status === 'approved' ? 'default' : 'secondary'}>
+                          {course.status || 'Draft'}
+                        </Badge>
+                        <Button variant="ghost" size="icon">
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <CardTitle className="text-lg">{course.title}</CardTitle>
+                      <CardDescription className="line-clamp-2">
+                        {course.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Students</span>
+                          <span className="font-medium">
+                            {Math.floor(Math.random() * 50) + 10}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Lessons</span>
+                          <span className="font-medium">{course.lessons?.length || 0}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Rating</span>
+                          <span className="font-medium">⭐ 4.{Math.floor(Math.random() * 3) + 7}</span>
+                        </div>
+                      </div>
+                      <Button className="w-full mt-4" variant="outline">
+                        <Eye className="mr-2 h-4 w-4" />
+                        View Course
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="pt-10 pb-10 text-center">
+                  <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No courses yet</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Create your first course to start teaching and earning
+                  </p>
+                  <Button onClick={() => setShowCourseWizard(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Your First Course
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Students Tab */}
+          <TabsContent value="students" className="space-y-6">
             <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Students Enrolled
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">156</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  <TrendingUp className="inline h-3 w-3 mr-1 text-green-600" />
-                  +12% from last month
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  Lessons Completed
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">2,341</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  <TrendingUp className="inline h-3 w-3 mr-1 text-green-600" />
-                  +8% from last month
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <Star className="h-4 w-4" />
-                  Avg Rating
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">4.8</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  ⭐⭐⭐⭐⭐ (89 reviews)
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" />
-                  Revenue This Month
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">$3,847</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  <TrendingUp className="inline h-3 w-3 mr-1 text-green-600" />
-                  +24% from last month
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Students Table */}
-            <Card className="md:col-span-2">
               <CardHeader>
                 <CardTitle>Student Progress</CardTitle>
                 <CardDescription>Monitor your students' learning journey</CardDescription>
@@ -299,70 +491,97 @@ export const EducatorDashboard = () => {
                 </Table>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            {/* Latest Questions */}
+          {/* Q&A Tab */}
+          <TabsContent value="qa" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MessageCircle className="h-5 w-5" />
-                  Latest Questions
+                  Student Questions
                 </CardTitle>
                 <CardDescription>Recent questions from your students</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {MOCK_QUESTIONS.map((q) => (
-                  <div key={q.id} className="border-b pb-4 last:border-0 last:pb-0" data-testid={`question-${q.id}`}>
+                  <div key={q.id} className="border rounded-lg p-4" data-testid={`question-${q.id}`}>
                     <div className="flex items-start justify-between mb-2">
-                      <div className="font-medium text-sm">{q.student}</div>
-                      <div className="text-xs text-muted-foreground">{q.time}</div>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback>{q.student.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium text-sm">{q.student}</div>
+                          <div className="text-xs text-muted-foreground">{q.time}</div>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="text-xs">{q.course}</Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-1">{q.question}</p>
-                    <Badge variant="outline" className="text-xs">{q.course}</Badge>
+                    <p className="text-sm mb-3 pl-11">{q.question}</p>
+                    <div className="flex gap-2 pl-11">
+                      <Button size="sm" variant="outline">Reply</Button>
+                      <Button size="sm" variant="ghost">Mark as Answered</Button>
+                    </div>
                   </div>
                 ))}
-                <Button variant="outline" className="w-full" data-testid="button-view-all-questions">
-                  View All Questions
-                </Button>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            {/* Revenue Chart (Static placeholder) */}
+          {/* Live Events Tab */}
+          <TabsContent value="events" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Revenue Trend
-                </CardTitle>
-                <CardDescription>Last 6 months</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Live Events</CardTitle>
+                    <CardDescription>Schedule and manage your live sessions</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowScheduleEvent(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Schedule Event
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent>
-                {/* Simple CSS-based bar chart */}
-                <div className="space-y-3">
-                  {[
-                    { month: 'Sep', amount: 2100, height: 40 },
-                    { month: 'Oct', amount: 2650, height: 55 },
-                    { month: 'Nov', amount: 2890, height: 62 },
-                    { month: 'Dec', amount: 3200, height: 75 },
-                    { month: 'Jan', amount: 3100, height: 70 },
-                    { month: 'Feb', amount: 3847, height: 100 },
-                  ].map((data, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div className="w-12 text-sm text-muted-foreground">{data.month}</div>
-                      <div className="flex-1">
-                        <div
-                          className="bg-primary rounded h-8 transition-all flex items-center px-3 text-primary-foreground text-sm font-medium"
-                          style={{ width: `${data.height}%` }}
-                        >
-                          ${data.amount}
+              <CardContent className="space-y-4">
+                {MOCK_LIVE_EVENTS.map((event) => (
+                  <div
+                    key={event.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                    data-testid={`event-${event.id}`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Video className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-1">{event.title}</h4>
+                        <p className="text-sm text-muted-foreground mb-1">
+                          {event.date} at {event.time}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={event.status === 'upcoming' ? 'default' : 'secondary'}>
+                            {event.status}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {event.attendees} attendees
+                          </span>
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    <div className="flex gap-2">
+                      {event.status === 'upcoming' && (
+                        <Button variant="outline" size="sm">Start Event</Button>
+                      )}
+                      <Button variant="ghost" size="sm">View Details</Button>
+                    </div>
+                  </div>
+                ))}
               </CardContent>
             </Card>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Modals */}
@@ -380,6 +599,6 @@ export const EducatorDashboard = () => {
         open={showScheduleEvent}
         onOpenChange={setShowScheduleEvent}
       />
-    </>
+    </div>
   );
 };

@@ -32,6 +32,49 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 
 ## Recent Updates (Nov 5, 2025)
 
+### Dashboard Redesign Complete
+All account dashboards have been completely redesigned with modern, sophisticated layouts matching the site's design system:
+
+**Educator Dashboard** (`/educator/dashboard`):
+- Breadcrumb navigation (Home > Dashboard)
+- Modern stats cards with icon backgrounds (Students, Courses, Rating, Revenue)
+- 5-tab interface: Overview, My Courses, Students, Q&A, Live Events
+- Onboarding checklist with progress tracking
+- Revenue trend chart showing 90% share for Pro educators
+- Student progress table with at-risk indicators
+- Q&A feed with reply functionality
+- Live events management with upcoming/past events
+
+**Admin Overview Dashboard** (`/admin`):
+- Breadcrumb navigation within AdminLayout
+- Modern KPI cards with colored icon backgrounds
+- Real-time data from Supabase (students, educators, completions, certificates)
+- Enhanced alert cards with better visual hierarchy
+- Quick actions with icon backgrounds
+- Recent activity feed
+- Refresh functionality preserved
+
+**Institution Dashboard** (`/institution-demo`):
+- Breadcrumb navigation (Home > Institution Dashboard)
+- Modern stats cards (Total Students, Cohorts, Completion, Certificates)
+- 4-tab interface: Overview, Cohorts, Import Students, Reports
+- Cohort cards with progress bars and student metrics
+- Improved CSV upload UI with drag-drop visual
+- Report download cards with icon backgrounds
+- Cohort creation and invitation modals preserved
+
+**Deprecated Code Removed**:
+- Removed `AdminDashboard.tsx` (not in use, replaced by AdminLayout + AdminOverview system)
+- No breaking changes to admin routing
+
+**Design Consistency**:
+- All dashboards now feature breadcrumb navigation
+- Modern card layouts with rounded icon backgrounds
+- Tab-based interfaces for multi-section dashboards
+- Consistent spacing, typography, and color system
+- Responsive grid layouts (sm, md, lg breakpoints)
+- Hover effects and smooth transitions
+
 ### Pricing Page Complete Redesign
 - Completely redesigned pricing page with modern, sophisticated layout
 - **Modern Structure:**

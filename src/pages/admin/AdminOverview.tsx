@@ -12,10 +12,15 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Eye
+  RefreshCw,
+  UserPlus,
+  BadgeCheck,
+  FileText,
+  ChevronRight
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 interface KPIData {
   activeStudents: number;
@@ -138,74 +143,96 @@ export function AdminOverview() {
       value: kpis.activeStudents,
       change: "+12%",
       icon: Users,
-      color: "text-blue-600"
+      bgColor: "bg-blue-500/10",
+      iconColor: "text-blue-500"
     },
     {
       title: "Active Educators",
       value: kpis.activeEducators,
       change: "+8%",
       icon: GraduationCap,
-      color: "text-green-600"
+      bgColor: "bg-green-500/10",
+      iconColor: "text-green-500"
     },
     {
       title: "New Subscriptions",
       value: kpis.newSubscriptions,
       change: "+23%",
       icon: TrendingUp,
-      color: "text-purple-600"
+      bgColor: "bg-purple-500/10",
+      iconColor: "text-purple-500"
     },
     {
       title: "Course Completions",
       value: kpis.courseCompletions,
       change: "+15%",
       icon: CheckCircle,
-      color: "text-emerald-600"
+      bgColor: "bg-emerald-500/10",
+      iconColor: "text-emerald-500"
     },
     {
       title: "Certificates Issued",
       value: kpis.certificatesIssued,
       change: "+18%",
       icon: Award,
-      color: "text-amber-600"
+      bgColor: "bg-amber-500/10",
+      iconColor: "text-amber-500"
     },
     {
       title: "Monthly Revenue",
       value: `$${kpis.monthlyRevenue.toLocaleString()}`,
       change: "+32%",
       icon: DollarSign,
-      color: "text-green-600"
+      bgColor: "bg-green-500/10",
+      iconColor: "text-green-500"
     }
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-8">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Link to="/" className="hover:text-primary transition-colors">
+          Home
+        </Link>
+        <ChevronRight className="h-4 w-4" />
+        <span className="text-foreground font-medium">Admin Overview</span>
+      </div>
+
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Admin Overview</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin Overview</h1>
           <p className="text-muted-foreground">
-            Welcome to The Ready Lab admin dashboard
+            Monitor platform performance and manage key metrics
           </p>
         </div>
-        <Button onClick={fetchDashboardData} disabled={loading}>
-          {loading ? <Clock className="mr-2 h-4 w-4 animate-spin" /> : <Eye className="mr-2 h-4 w-4" />}
+        <Button onClick={fetchDashboardData} disabled={loading} variant="outline">
+          {loading ? (
+            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="mr-2 h-4 w-4" />
+          )}
           Refresh Data
         </Button>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {kpiCards.map((kpi) => (
-          <Card key={kpi.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+          <Card key={kpi.title} className="hover:shadow-md transition-shadow">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-3">
+                <div className={`w-12 h-12 rounded-xl ${kpi.bgColor} flex items-center justify-center`}>
+                  <kpi.icon className={`h-6 w-6 ${kpi.iconColor}`} />
+                </div>
+                <Badge variant="secondary" className="text-green-600 border-green-200 bg-green-50">
+                  {kpi.change}
+                </Badge>
+              </div>
+              <div className="text-2xl font-bold mb-1">{kpi.value}</div>
+              <p className="text-sm text-muted-foreground">
                 {kpi.title}
-              </CardTitle>
-              <kpi.icon className={`h-4 w-4 ${kpi.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{kpi.value}</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-green-600">{kpi.change}</span> from last month
               </p>
             </CardContent>
           </Card>
@@ -213,31 +240,37 @@ export function AdminOverview() {
       </div>
 
       {/* Alerts Section */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Alerts & Notifications</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {alerts.map((alert) => (
-            <Alert key={alert.id} className={
-              alert.type === 'error' ? 'border-red-200 bg-red-50' :
-              alert.type === 'warning' ? 'border-yellow-200 bg-yellow-50' :
-              'border-blue-200 bg-blue-50'
-            }>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle className="flex items-center justify-between">
-                {alert.title}
-                {alert.count && (
-                  <Badge variant={alert.type === 'error' ? 'destructive' : 'secondary'}>
-                    {alert.count}
-                  </Badge>
-                )}
-              </AlertTitle>
-              <AlertDescription>
-                {alert.description}
-              </AlertDescription>
-            </Alert>
-          ))}
+      {alerts.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold">Alerts & Notifications</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {alerts.map((alert) => (
+              <Alert 
+                key={alert.id} 
+                variant={alert.type === 'error' ? 'destructive' : 'default'}
+                className={
+                  alert.type === 'error' ? '' :
+                  alert.type === 'warning' ? 'border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/20' :
+                  'border-blue-500/50 bg-blue-50 dark:bg-blue-950/20'
+                }
+              >
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle className="flex items-center justify-between">
+                  {alert.title}
+                  {alert.count && (
+                    <Badge variant={alert.type === 'error' ? 'destructive' : 'secondary'}>
+                      {alert.count}
+                    </Badge>
+                  )}
+                </AlertTitle>
+                <AlertDescription>
+                  {alert.description}
+                </AlertDescription>
+              </Alert>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Quick Actions */}
       <Card>
@@ -248,24 +281,75 @@ export function AdminOverview() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            <Button variant="outline" className="justify-start">
-              <Users className="mr-2 h-4 w-4" />
-              Add Admin User
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Button variant="outline" className="justify-start h-auto py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                  <UserPlus className="h-5 w-5 text-blue-500" />
+                </div>
+                <span className="text-left">Add Admin User</span>
+              </div>
             </Button>
-            <Button variant="outline" className="justify-start">
-              <GraduationCap className="mr-2 h-4 w-4" />
-              Manage Verified Badges
+            <Button variant="outline" className="justify-start h-auto py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                  <BadgeCheck className="h-5 w-5 text-green-500" />
+                </div>
+                <span className="text-left">Verified Badges</span>
+              </div>
             </Button>
-            <Button variant="outline" className="justify-start">
-              <Award className="mr-2 h-4 w-4" />
-              Issue Certificate
+            <Button variant="outline" className="justify-start h-auto py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                  <Award className="h-5 w-5 text-amber-500" />
+                </div>
+                <span className="text-left">Issue Certificate</span>
+              </div>
             </Button>
-            <Button variant="outline" className="justify-start">
-              <DollarSign className="mr-2 h-4 w-4" />
-              Process Refund
+            <Button variant="outline" className="justify-start h-auto py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                  <DollarSign className="h-5 w-5 text-purple-500" />
+                </div>
+                <span className="text-left">Process Refund</span>
+              </div>
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Recent Activity */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
+          <CardDescription>Latest platform events and user actions</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[
+              { icon: Users, text: "New user registration: emily.rodriguez@example.com", time: "5 minutes ago", color: "text-blue-500" },
+              { icon: Award, text: "Certificate issued to John Doe for Business Infrastructure", time: "12 minutes ago", color: "text-amber-500" },
+              { icon: GraduationCap, text: "New course published: Advanced Marketing Strategies", time: "1 hour ago", color: "text-green-500" },
+              { icon: DollarSign, text: "Payment processed: $299.00 for Pro subscription", time: "2 hours ago", color: "text-purple-500" },
+            ].map((activity, index) => {
+              const Icon = activity.icon;
+              return (
+                <div key={index} className="flex items-start gap-4 pb-4 border-b last:border-0 last:pb-0">
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                    <Icon className={`h-5 w-5 ${activity.color}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">{activity.text}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <Button variant="outline" className="w-full mt-4">
+            <FileText className="mr-2 h-4 w-4" />
+            View Audit Logs
+          </Button>
         </CardContent>
       </Card>
     </div>
