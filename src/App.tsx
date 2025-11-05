@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardRouter } from "@/components/DashboardRouter";
@@ -36,6 +36,7 @@ import ForEducators from "./pages/ForEducators";
 import ForInstitutions from "./pages/ForInstitutions";
 import InstitutionDashboard from "./pages/InstitutionDashboard";
 import CustomSaaS from "./pages/CustomSaaS";
+import Solutions from "./pages/Solutions";
 import Resources from "./pages/Resources";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -89,10 +90,11 @@ const AppContent = () => {
           <Route path="/" element={<Index />} />
           <Route path="/for-students" element={<ForStudents />} />
           <Route path="/for-educators" element={<ForEducators />} />
-          <Route path="/for-institutions" element={<ForInstitutions />} />
+          <Route path="/solutions" element={<Solutions />} />
+          <Route path="/for-institutions" element={<Navigate to="/solutions" replace />} />
+          <Route path="/custom-saas" element={<Navigate to="/solutions" replace />} />
+          <Route path="/custom" element={<Navigate to="/solutions" replace />} />
           <Route path="/institution-demo" element={<InstitutionDashboard />} />
-          <Route path="/custom-saas" element={<CustomSaaS />} />
-          <Route path="/custom" element={<CustomSaaS />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/terms" element={<Terms />} />
@@ -207,10 +209,11 @@ const AppContent = () => {
         <Route path="/" element={<Index />} />
         <Route path="/for-students" element={<ForStudents />} />
         <Route path="/for-educators" element={<ForEducators />} />
-        <Route path="/for-institutions" element={<ForInstitutions />} />
+        <Route path="/solutions" element={<Solutions />} />
+        <Route path="/for-institutions" element={<Navigate to="/solutions" replace />} />
+        <Route path="/custom-saas" element={<Navigate to="/solutions" replace />} />
+        <Route path="/custom" element={<Navigate to="/solutions" replace />} />
         <Route path="/institution-demo" element={<InstitutionDashboard />} />
-        <Route path="/custom-saas" element={<CustomSaaS />} />
-        <Route path="/custom" element={<CustomSaaS />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/terms" element={<Terms />} />

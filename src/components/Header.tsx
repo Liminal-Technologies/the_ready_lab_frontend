@@ -30,8 +30,7 @@ const Header = () => {
     { label: "Courses", path: "/courses" },
     { label: "Community", path: "/community" },
     { label: "Create a Community", path: "/community/create" },
-    { label: "For Institutions", path: "/for-institutions" },
-    { label: "Custom Solutions", path: "/custom" },
+    { label: "Solutions", path: "/solutions" },
     { label: "Pricing", path: "/pricing" },
   ];
 
@@ -91,21 +90,12 @@ const Header = () => {
           </Link>
 
           <Link
-            to="/for-institutions"
+            to="/solutions"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/for-institutions") ? "text-primary" : "text-neutral-900 dark:text-white"
+              isActive("/solutions") ? "text-primary" : "text-neutral-900 dark:text-white"
             }`}
           >
-            For Institutions
-          </Link>
-
-          <Link
-            to="/custom"
-            className={`text-sm font-medium transition-colors hover:text-primary ${
-              isActive("/custom") ? "text-primary" : "text-neutral-900 dark:text-white"
-            }`}
-          >
-            Custom Solutions
+            Solutions
           </Link>
           
           <Link
