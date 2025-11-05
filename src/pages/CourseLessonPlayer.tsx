@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
+import { QuizPlayer } from "@/components/quiz/QuizPlayer";
 import { 
   Play, 
   Pause, 
@@ -44,6 +45,8 @@ interface Lesson {
   completed: boolean;
   locked: boolean;
   current: boolean;
+  isQuiz?: boolean;
+  quizId?: string;
 }
 
 interface Module {
@@ -74,14 +77,16 @@ const mockModules: Module[] = [
       { id: 1, title: "Introduction", duration: "12:30", completed: true, locked: false, current: false },
       { id: 2, title: "Core Concepts", duration: "18:45", completed: false, locked: false, current: true },
       { id: 3, title: "Best Practices", duration: "15:20", completed: false, locked: true, current: false },
+      { id: 4, title: "Module 1 Quiz", duration: "15 mins", completed: false, locked: true, current: false, isQuiz: true, quizId: "quiz-module-1" },
     ],
   },
   {
     id: 2,
     title: "Advanced Topics",
     lessons: [
-      { id: 4, title: "Implementation", duration: "25:10", completed: false, locked: true, current: false },
-      { id: 5, title: "Case Studies", duration: "20:00", completed: false, locked: true, current: false },
+      { id: 5, title: "Implementation", duration: "25:10", completed: false, locked: true, current: false },
+      { id: 6, title: "Case Studies", duration: "20:00", completed: false, locked: true, current: false },
+      { id: 7, title: "Module 2 Quiz", duration: "15 mins", completed: false, locked: true, current: false, isQuiz: true, quizId: "quiz-module-2" },
     ],
   },
 ];
@@ -181,10 +186,9 @@ export default function CourseLessonPlayer() {
   const completedCount = completedLessons.length;
   const progressPercentage = Math.round((completedCount / totalLessons) * 100);
   
-  const currentLesson = mockModules
-    .flatMap(m => m.lessons)
-    .find(l => l.current);
-  const currentLessonId = currentLesson?.id || 2;
+  const allLessons = mockModules.flatMap(m => m.lessons);
+  const currentLessonId = lessonId ? parseInt(lessonId) : 2;
+  const currentLesson = allLessons.find(l => l.id === currentLessonId) || allLessons[1];
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -192,16 +196,17 @@ export default function CourseLessonPlayer() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleLessonClick = (lessonId: number, locked: boolean) => {
+  const handleLessonClick = (clickedLessonId: number, locked: boolean) => {
     if (locked) {
       toast.error("Lesson Locked", {
         description: "Complete previous lessons to unlock this one",
       });
     } else {
-      toast.success("Navigating", {
-        description: `Moving to lesson ${lessonId}`,
-      });
+      navigate(`/courses/${courseId}/lessons/${clickedLessonId}`);
       setMobileSheetOpen(false);
+      toast.success("Navigating", {
+        description: `Moving to lesson ${clickedLessonId}`,
+      });
     }
   };
 
@@ -319,13 +324,14 @@ export default function CourseLessonPlayer() {
   };
 
   const handleNextLesson = () => {
-    const allLessons = mockModules.flatMap(m => m.lessons);
     const currentIndex = allLessons.findIndex(l => l.id === currentLessonId);
-    const nextLesson = allLessons[currentIndex + 1];
+    const nextLessonToNav = allLessons[currentIndex + 1];
     
-    if (nextLesson) {
+    if (nextLessonToNav) {
+      navigate(`/courses/${courseId}/lessons/${nextLessonToNav.id}`);
+      setMobileSheetOpen(false);
       toast.success("Moving to next lesson", {
-        description: nextLesson.title,
+        description: nextLessonToNav.title,
       });
     }
   };
@@ -343,7 +349,7 @@ export default function CourseLessonPlayer() {
     }
   };
 
-  const allLessons = mockModules.flatMap(m => m.lessons);
+  // Get next lesson for navigation
   const currentIndex = allLessons.findIndex(l => l.id === currentLessonId);
   const nextLesson = allLessons[currentIndex + 1];
 
@@ -395,38 +401,43 @@ export default function CourseLessonPlayer() {
                         </div>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="space-y-1 mt-1">
-                        {module.lessons.map((lesson) => (
-                          <button
-                            key={lesson.id}
-                            onClick={() => handleLessonClick(lesson.id, lesson.locked)}
-                            className={`w-full text-left p-3 rounded-lg transition-colors ${
-                              lesson.current
-                                ? "bg-primary text-primary-foreground"
-                                : "hover:bg-accent"
-                            } ${lesson.locked ? "opacity-60" : ""}`}
-                            disabled={lesson.locked}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2 flex-1">
-                                <span className="text-xs font-medium">
-                                  L{lesson.id}:
-                                </span>
-                                <span className="text-sm">{lesson.title}</span>
+                        {module.lessons.map((lesson) => {
+                          const isLocked = lesson.locked && !completedLessons.includes(lesson.id - 1);
+                          const isCurrent = lesson.id === currentLessonId;
+                          return (
+                            <button
+                              key={lesson.id}
+                              onClick={() => handleLessonClick(lesson.id, isLocked)}
+                              className={`w-full text-left p-3 rounded-lg transition-colors ${
+                                isCurrent
+                                  ? "bg-primary text-primary-foreground"
+                                  : "hover:bg-accent"
+                              } ${isLocked ? "opacity-60" : ""}`}
+                              disabled={isLocked}
+                              data-testid={`lesson-button-${lesson.id}`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 flex-1">
+                                  <span className="text-xs font-medium">
+                                    L{lesson.id}:
+                                  </span>
+                                  <span className="text-sm">{lesson.title}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {(lesson.completed || completedLessons.includes(lesson.id)) && (
+                                    <Check className="h-4 w-4 text-green-500" />
+                                  )}
+                                  {isLocked && (
+                                    <Lock className="h-4 w-4" />
+                                  )}
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                {(lesson.completed || completedLessons.includes(lesson.id)) && (
-                                  <Check className="h-4 w-4 text-green-500" />
-                                )}
-                                {lesson.locked && (
-                                  <Lock className="h-4 w-4" />
-                                )}
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {lesson.duration}
                               </div>
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {lesson.duration}
-                            </div>
-                          </button>
-                        ))}
+                            </button>
+                          );
+                        })}
                       </CollapsibleContent>
                     </Collapsible>
                   ))}
@@ -458,96 +469,119 @@ export default function CourseLessonPlayer() {
                 />
               </div>
 
-              <h1 className="text-2xl font-bold mb-4">Core Concepts</h1>
+              <h1 className="text-2xl font-bold mb-4">{currentLesson?.title || "Core Concepts"}</h1>
               
-              {/* Video Player */}
-              <div className="relative bg-black rounded-lg overflow-hidden aspect-video mb-4">
-                <ReactPlayer
-                  ref={playerRef}
-                  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                  playing={playing}
-                  volume={volume}
-                  muted={muted}
-                  playbackRate={playbackRate}
-                  onProgress={handleProgress}
-                  onDuration={(dur: number) => setDuration(dur)}
-                  width="100%"
-                  height="100%"
-                  {...({} as any)}
-                />
-              </div>
-
-              {/* Progress Bar */}
-              <div className="mb-4">
-                <Slider
-                  value={[played * 100]}
-                  max={100}
-                  step={0.1}
-                  onValueChange={(value) => setPlayed(value[0] / 100)}
-                  className="cursor-pointer"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground mt-1">
-                  <span>{formatTime(played * duration)}</span>
-                  <span>{formatTime(duration)}</span>
-                </div>
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center gap-4 flex-wrap">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setPlaying(!playing)}
-                >
-                  {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                </Button>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setMuted(!muted)}
-                  >
-                    {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-                  </Button>
-                  <Slider
-                    value={[volume * 100]}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => setVolume(value[0] / 100)}
-                    className="w-24"
+              {/* Quiz or Video Player */}
+              {currentLesson?.isQuiz ? (
+                <div className="mb-4">
+                  <QuizPlayer
+                    quizId={currentLesson.quizId || ""}
+                    quizTitle={currentLesson.title}
+                    passThreshold={70}
+                    onComplete={(passed, score) => {
+                      if (passed) {
+                        handleMarkComplete();
+                        toast.success(`Quiz passed with ${score}%! 🎉`);
+                      } else {
+                        toast.error(`Score: ${score}%. You need 70% to pass. Try again!`);
+                      }
+                    }}
                   />
                 </div>
+              ) : (
+                <>
+                  {/* Video Player */}
+                  <div className="relative bg-black rounded-lg overflow-hidden aspect-video mb-4">
+                    <ReactPlayer
+                      ref={playerRef}
+                      url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                      playing={playing}
+                      volume={volume}
+                      muted={muted}
+                      playbackRate={playbackRate}
+                      onProgress={handleProgress}
+                      onDuration={(dur: number) => setDuration(dur)}
+                      width="100%"
+                      height="100%"
+                      {...({} as any)}
+                    />
+                  </div>
 
-                <Select value={playbackRate.toString()} onValueChange={(val) => setPlaybackRate(parseFloat(val))}>
-                  <SelectTrigger className="w-24">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0.5">0.5x</SelectItem>
-                    <SelectItem value="0.75">0.75x</SelectItem>
-                    <SelectItem value="1">1x</SelectItem>
-                    <SelectItem value="1.25">1.25x</SelectItem>
-                    <SelectItem value="1.5">1.5x</SelectItem>
-                    <SelectItem value="2">2x</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {/* Progress Bar */}
+                  <div className="mb-4">
+                    <Slider
+                      value={[played * 100]}
+                      max={100}
+                      step={0.1}
+                      onValueChange={(value) => setPlayed(value[0] / 100)}
+                      className="cursor-pointer"
+                    />
+                    <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                      <span>{formatTime(played * duration)}</span>
+                      <span>{formatTime(duration)}</span>
+                    </div>
+                  </div>
 
-                <Select value={captions} onValueChange={setCaptions}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Captions" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="spanish">Español</SelectItem>
-                    <SelectItem value="off">Off</SelectItem>
-                  </SelectContent>
-                </Select>
+                  {/* Controls */}
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setPlaying(!playing)}
+                      data-testid="button-play-pause"
+                    >
+                      {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                    </Button>
 
-                <Button variant="outline" size="icon">
-                  <Maximize className="h-4 w-4" />
-                </Button>
-              </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setMuted(!muted)}
+                        data-testid="button-mute"
+                      >
+                        {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                      </Button>
+                      <Slider
+                        value={[volume * 100]}
+                        max={100}
+                        step={1}
+                        onValueChange={(value) => setVolume(value[0] / 100)}
+                        className="w-24"
+                      />
+                    </div>
+
+                    <Select value={playbackRate.toString()} onValueChange={(val) => setPlaybackRate(parseFloat(val))}>
+                      <SelectTrigger className="w-24" data-testid="select-playback-rate">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0.5">0.5x</SelectItem>
+                        <SelectItem value="0.75">0.75x</SelectItem>
+                        <SelectItem value="1">1x</SelectItem>
+                        <SelectItem value="1.25">1.25x</SelectItem>
+                        <SelectItem value="1.5">1.5x</SelectItem>
+                        <SelectItem value="2">2x</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={captions} onValueChange={setCaptions}>
+                      <SelectTrigger className="w-32" data-testid="select-captions">
+                        <SelectValue placeholder="Captions" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="english">English</SelectItem>
+                        <SelectItem value="spanish">Español</SelectItem>
+                        <SelectItem value="off">Off</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Button variant="outline" size="icon" data-testid="button-fullscreen">
+                      <Maximize className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </>
+              )}
 
               {/* Completion and Next Lesson Buttons */}
               <div className="mt-4 flex gap-3">
@@ -811,38 +845,43 @@ export default function CourseLessonPlayer() {
                       </span>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-1 mt-1">
-                      {module.lessons.map((lesson) => (
-                        <button
-                          key={lesson.id}
-                          onClick={() => handleLessonClick(lesson.id, lesson.locked)}
-                          className={`w-full text-left p-3 rounded-lg transition-colors ${
-                            lesson.current
-                              ? "bg-primary text-primary-foreground"
-                              : "hover:bg-accent"
-                          } ${lesson.locked ? "opacity-60" : ""}`}
-                          disabled={lesson.locked}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 flex-1">
-                              <span className="text-sm font-medium">
-                                Lesson {lesson.id}:
-                              </span>
-                              <span className="text-sm">{lesson.title}</span>
+                      {module.lessons.map((lesson) => {
+                        const isLocked = lesson.locked && !completedLessons.includes(lesson.id - 1);
+                        const isCurrent = lesson.id === currentLessonId;
+                        return (
+                          <button
+                            key={lesson.id}
+                            onClick={() => handleLessonClick(lesson.id, isLocked)}
+                            className={`w-full text-left p-3 rounded-lg transition-colors ${
+                              isCurrent
+                                ? "bg-primary text-primary-foreground"
+                                : "hover:bg-accent"
+                            } ${isLocked ? "opacity-60" : ""}`}
+                            disabled={isLocked}
+                            data-testid={`mobile-lesson-button-${lesson.id}`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 flex-1">
+                                <span className="text-sm font-medium">
+                                  Lesson {lesson.id}:
+                                </span>
+                                <span className="text-sm">{lesson.title}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {(lesson.completed || completedLessons.includes(lesson.id)) && (
+                                  <Check className="h-4 w-4 text-green-500" />
+                                )}
+                                {isLocked && (
+                                  <Lock className="h-4 w-4" />
+                                )}
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              {(lesson.completed || completedLessons.includes(lesson.id)) && (
-                                <Check className="h-4 w-4 text-green-500" />
-                              )}
-                              {lesson.locked && (
-                                <Lock className="h-4 w-4" />
-                              )}
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {lesson.duration}
                             </div>
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {lesson.duration}
-                          </div>
-                        </button>
-                      ))}
+                          </button>
+                        );
+                      })}
                     </CollapsibleContent>
                   </Collapsible>
                 ))}
