@@ -363,34 +363,36 @@ const Community = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters - Desktop */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-24 bg-white dark:bg-neutral-800 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <SlidersHorizontal className="h-5 w-5 text-[#9333EA]" />
-                Filter
-              </h2>
-              <FilterContent />
-            </div>
+            <div className="sticky top-24 space-y-6">
+              <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                  <SlidersHorizontal className="h-5 w-5 text-[#9333EA]" />
+                  Filter
+                </h2>
+                <FilterContent />
+              </div>
 
-            {/* Trending Discussions Sidebar */}
-            <div className="mt-6 bg-white dark:bg-neutral-800 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
-              <h3 className="font-bold mb-4 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-[#9333EA]" />
-                Trending Discussions
-              </h3>
-              <div className="space-y-3">
-                {trendingDiscussions.map((discussion, i) => (
-                  <div key={i} className="text-sm">
-                    <p className="font-medium hover:text-[#9333EA] cursor-pointer line-clamp-2">
-                      {discussion.title}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                      <MessageCircle className="h-3 w-3" />
-                      <span>{discussion.replies} replies</span>
-                      <span>•</span>
-                      <span>{discussion.community}</span>
+              {/* Trending Discussions Sidebar */}
+              <div className="bg-white dark:bg-neutral-800 rounded-xl p-6 border border-neutral-200 dark:border-neutral-700">
+                <h3 className="font-bold mb-4 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-[#9333EA]" />
+                  Trending Discussions
+                </h3>
+                <div className="space-y-3">
+                  {trendingDiscussions.map((discussion, i) => (
+                    <div key={i} className="text-sm">
+                      <p className="font-medium hover:text-[#9333EA] cursor-pointer line-clamp-2">
+                        {discussion.title}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                        <MessageCircle className="h-3 w-3" />
+                        <span>{discussion.replies} replies</span>
+                        <span>•</span>
+                        <span>{discussion.community}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </aside>
