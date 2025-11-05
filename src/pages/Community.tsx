@@ -23,6 +23,7 @@ import {
   X,
   Calendar,
   Crown,
+  Plus,
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -322,6 +323,17 @@ const Community = () => {
                   </button>
                 )}
               </div>
+
+              {/* Create Community Button */}
+              <Button 
+                onClick={() => navigate('/community/create')}
+                className="bg-[#9333EA] hover:bg-[#7C3AED] text-white"
+                data-testid="button-create-community"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Create Community</span>
+                <span className="sm:hidden">Create</span>
+              </Button>
             </div>
           </div>
 

@@ -28,7 +28,7 @@ const Header = () => {
     { label: "Home", path: "/" },
     { label: "Explore", path: "/explore" },
     { label: "Courses", path: "/courses" },
-    { label: "Join a Community", path: "/community/join" },
+    { label: "Community", path: "/community" },
     { label: "Create a Community", path: "/community/create" },
     { label: "For Institutions", path: "/for-institutions" },
     { label: "Custom Solutions", path: "/custom" },
@@ -80,23 +80,15 @@ const Header = () => {
             </Link>
           ))}
           
-          {/* Community Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary text-neutral-900 dark:text-white">
-                Community
-                <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">
-              <DropdownMenuItem onClick={() => navigate("/community/join")}>
-                Join a Community
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/community/create")}>
-                Create a Community
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Community Link */}
+          <Link
+            to="/community"
+            className={`text-sm font-medium transition-colors hover:text-primary ${
+              isActive("/community") ? "text-primary" : "text-neutral-900 dark:text-white"
+            }`}
+          >
+            Community
+          </Link>
 
           <Link
             to="/for-institutions"

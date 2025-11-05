@@ -59,8 +59,11 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 - Trending discussions sidebar
 - Filter by type: Private Only, My Communities
 - Purple CTA banner linking to courses
+- **Navigation Unified:** Desktop and mobile both link directly to `/community` browse page
+- **Create Community Button:** Purple-themed button in header area, navigates to `/community/create`
 - Mobile navigation: Community button is purple when on community or feed page
 - Note: `/feed` route redirects to Community page (replaced old LearningFeed)
+- Old `/community/join` page removed in favor of unified browse experience
 
 ### Individual Course Detail Page
 - Comprehensive course landing page with yellow (#E5A000) brand color throughout
