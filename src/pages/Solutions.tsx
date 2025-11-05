@@ -107,7 +107,7 @@ const Solutions = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 via-background to-background">
+      <section className="py-12 bg-gradient-to-br from-primary/5 via-background to-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <Badge variant="outline" className="mb-4 border-primary text-primary">
@@ -127,7 +127,7 @@ const Solutions = () => {
       </section>
 
       {/* Solution Types */}
-      <section className="py-16">
+      <section className="pt-12 pb-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold mb-3">Choose Your Solution Type</h2>
