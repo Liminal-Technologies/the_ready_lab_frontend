@@ -81,7 +81,7 @@ const Hero = () => {
       </div>
 
       {/* Mobile Layout - Banner at Top Center, Content Below */}
-      <div className="lg:hidden absolute top-28 left-0 right-0 z-10 px-4">
+      <div className="lg:hidden absolute top-40 left-0 right-0 z-10 px-4">
         <div className="container mx-auto max-w-md text-center">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-8">
             <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
