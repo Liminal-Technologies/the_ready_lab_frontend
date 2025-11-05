@@ -1,36 +1,39 @@
 import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
-import LearningDashboard from '@/components/LearningDashboard';
 import { WelcomeTour } from '@/components/onboarding/WelcomeTour';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CourseCardSkeleton } from '@/components/skeletons/CourseCardSkeleton';
 import { EmptyCertificates } from '@/components/empty-states/EmptyCertificates';
 import { EmptyCourses } from '@/components/empty-states/EmptyCourses';
 import { EmptyBookmarks } from '@/components/empty-states/EmptyBookmarks';
-import { EmptyNotifications } from '@/components/empty-states/EmptyNotifications';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 import { 
   Award, 
   BookOpen, 
   Bookmark, 
   Bell, 
   TrendingUp, 
-  Calendar,
   Play,
   Download,
   Share2,
   X,
   Trophy,
   Clock,
-  Users
+  Users,
+  ChevronRight,
+  Home,
+  User,
+  GraduationCap,
+  Activity
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Certification {
   id: string;
@@ -68,7 +71,6 @@ interface Notification {
   notification_type: string;
 }
 
-// Mock courses for recommendations
 const MOCK_COURSES = [
   { id: '1', title: 'Startup Funding Strategies', category: 'Funding', price: 199, thumbnail: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=300&fit=crop', duration: '6 weeks', students: 1240 },
   { id: '2', title: 'Building Tech Infrastructure', category: 'Infrastructure', price: 299, thumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=300&fit=crop', duration: '8 weeks', students: 892 },
@@ -83,11 +85,11 @@ const MOCK_COURSES = [
 export const StudentDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { auth } = useAuth();
   const [certifications, setCertifications] = useState<Certification[]>([]);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [bookmarks, setBookmarks] = useState<BookmarkedItem[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [loading, setLoading] = useState(true);
   const [recommendedCourses, setRecommendedCourses] = useState<typeof MOCK_COURSES>([]);
 
@@ -98,26 +100,21 @@ export const StudentDashboard = () => {
   }, []);
 
   const loadRecommendedCourses = () => {
-    // Get interests from onboarding data
     const onboardingData = localStorage.getItem('onboardingData');
     if (onboardingData) {
       const { interests } = JSON.parse(onboardingData);
-      // Filter courses by selected interests
       const filtered = MOCK_COURSES.filter(course => 
         interests.includes(course.category)
-      ).slice(0, 4); // Show max 4 recommended courses
+      ).slice(0, 4);
       setRecommendedCourses(filtered);
     } else {
-      // Show default recommendations if no interests selected
       setRecommendedCourses(MOCK_COURSES.slice(0, 4));
     }
   };
 
   const loadMockCertificates = () => {
-    // Get certificates from localStorage or create mock ones
     const storedCerts = localStorage.getItem('mockCertificates');
     if (!storedCerts) {
-      // Create 2 mock certificates for prototype
       const mockCerts: Certification[] = [
         {
           id: 'cert-1',
@@ -146,7 +143,6 @@ export const StudentDashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch enrollments with progress
       const { data: enroll } = await supabase
         .from('enrollments')
         .select('*, track:tracks(title, thumbnail_url)')
@@ -154,16 +150,14 @@ export const StudentDashboard = () => {
         .eq('status', 'active')
         .order('updated_at', { ascending: false });
 
-      // Fetch bookmarks
       const { data: bookmarked } = await supabase
         .from('bookmarks')
         .select('*')
         .eq('user_id', user.id)
         .eq('bookmarkable_type', 'lesson')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(10);
 
-      // Fetch lesson details for bookmarks
       const bookmarksWithLessons = await Promise.all(
         (bookmarked || []).map(async (bookmark) => {
           const { data: lesson } = await supabase
@@ -176,13 +170,12 @@ export const StudentDashboard = () => {
         })
       );
 
-      // Fetch notifications
       const { data: notifs } = await supabase
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(20);
 
       setEnrollments(enroll || []);
       setBookmarks(bookmarksWithLessons || []);
@@ -211,73 +204,301 @@ export const StudentDashboard = () => {
     toast({ title: 'Bookmark removed' });
   };
 
+  const totalHours = enrollments.reduce((acc, e) => acc + (e.progress_percentage / 100) * 40, 0);
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-background">
       <Header />
       <WelcomeTour />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+      <div className="container mx-auto px-4 py-16">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8" data-testid="breadcrumb-nav">
+          <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-2">
+            <Home className="h-4 w-4" />
+            Home
+          </Link>
+          <ChevronRight className="h-4 w-4" />
+          <span className="text-foreground font-medium">Dashboard</span>
+        </nav>
+
+        {/* Header with Profile */}
+        <div className="flex items-start justify-between mb-12">
           <div>
-            <h1 className="text-4xl font-bold mb-2">My Dashboard</h1>
-            <p className="text-muted-foreground">Track your progress and outcomes</p>
+            <h1 className="text-4xl font-bold mb-3">Welcome back, {auth.user?.full_name || 'Student'}!</h1>
+            <p className="text-lg text-muted-foreground">Track your progress and continue learning</p>
           </div>
-          
-          <div className="flex gap-3">
-            <Button onClick={() => navigate('/feed')} variant="outline">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Explore Feed
-            </Button>
-            <Button 
-              variant="outline" 
-              className="relative"
-              onClick={() => setShowNotifications(!showNotifications)}
-            >
+          <Button 
+            onClick={() => navigate('/settings')}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+            data-testid="button-profile"
+          >
+            <User className="h-4 w-4 mr-2" />
+            Profile
+          </Button>
+        </div>
+
+        {/* Tab Navigation */}
+        <Tabs defaultValue="overview" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-5 h-auto p-1 bg-muted" data-testid="dashboard-tabs">
+            <TabsTrigger value="overview" className="flex items-center gap-2 py-3" data-testid="tab-overview">
+              <TrendingUp className="h-4 w-4" />
+              <span className="hidden sm:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="courses" className="flex items-center gap-2 py-3" data-testid="tab-courses">
+              <GraduationCap className="h-4 w-4" />
+              <span className="hidden sm:inline">My Courses</span>
+            </TabsTrigger>
+            <TabsTrigger value="certificates" className="flex items-center gap-2 py-3" data-testid="tab-certificates">
+              <Award className="h-4 w-4" />
+              <span className="hidden sm:inline">Certificates</span>
+            </TabsTrigger>
+            <TabsTrigger value="bookmarks" className="flex items-center gap-2 py-3" data-testid="tab-bookmarks">
+              <Bookmark className="h-4 w-4" />
+              <span className="hidden sm:inline">Bookmarks</span>
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center gap-2 py-3 relative" data-testid="tab-activity">
               <Bell className="h-4 w-4" />
               {unreadCount > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center">
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
                   {unreadCount}
                 </Badge>
               )}
-            </Button>
-          </div>
-        </div>
+              <span className="hidden sm:inline">Activity</span>
+            </TabsTrigger>
+          </TabsList>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main Content - 2 columns on large screens */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* My Certificates Section */}
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            {/* Quick Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Enrolled Courses</CardTitle>
+                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{enrollments.length}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {enrollments.filter(e => e.progress_percentage > 0).length} in progress
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Certificates Earned</CardTitle>
+                  <Trophy className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{certifications.length}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    All verified achievements
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Learning Hours</CardTitle>
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">{Math.round(totalHours)}</div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Total hours invested
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Continue Learning */}
+            {enrollments.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Play className="h-5 w-5 text-primary" />
+                    Continue Learning
+                  </CardTitle>
+                  <CardDescription>Pick up where you left off</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4">
+                    {enrollments.slice(0, 3).map((enrollment) => (
+                      <Card key={enrollment.id} className="bg-accent/30 hover:bg-accent/50 transition-colors">
+                        <CardContent className="p-4">
+                          <div className="flex gap-4">
+                            {enrollment.track.thumbnail_url && (
+                              <img
+                                src={enrollment.track.thumbnail_url}
+                                alt={enrollment.track.title}
+                                className="w-24 h-24 rounded object-cover"
+                              />
+                            )}
+                            <div className="flex-1">
+                              <h3 className="font-semibold mb-2">{enrollment.track.title}</h3>
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="text-muted-foreground">Progress</span>
+                                  <span className="font-medium">{enrollment.progress_percentage}%</span>
+                                </div>
+                                <Progress value={enrollment.progress_percentage} />
+                              </div>
+                              <Button 
+                                size="sm" 
+                                className="mt-3 bg-primary hover:bg-primary/90"
+                                onClick={() => navigate(`/courses/${enrollment.track_id}`)}
+                              >
+                                <Play className="h-4 w-4 mr-2" />
+                                Continue
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Recommended Courses */}
+            {recommendedCourses.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-primary" />
+                    Recommended for You
+                  </CardTitle>
+                  <CardDescription>Based on your selected interests</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {recommendedCourses.map((course) => (
+                      <Card 
+                        key={course.id} 
+                        className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
+                        onClick={() => navigate(`/courses/${course.id}`)}
+                        data-testid={`course-recommendation-${course.id}`}
+                      >
+                        <div className="relative aspect-video">
+                          <img 
+                            src={course.thumbnail} 
+                            alt={course.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <Badge className="absolute top-2 right-2 bg-primary">
+                            {course.category}
+                          </Badge>
+                        </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                            {course.title}
+                          </h3>
+                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              <span className="text-xs">{course.duration}</span>
+                            </div>
+                            <span className="text-lg font-bold text-primary">${course.price}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={() => navigate('/courses')}
+                    data-testid="button-explore-more"
+                  >
+                    Explore More Courses
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* My Courses Tab */}
+          <TabsContent value="courses" className="space-y-6">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <CardTitle className="flex items-center gap-2">
-                      <Award className="h-5 w-5 text-primary" />
-                      My Certificates
-                    </CardTitle>
-                    {certifications.length > 0 && (
-                      <Badge variant="secondary">{certifications.length}</Badge>
-                    )}
-                  </div>
-                  {certifications.length > 0 && (
-                    <Button variant="ghost" size="sm" onClick={() => navigate('/certificates')}>
-                      View All
-                    </Button>
-                  )}
-                </div>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  My Enrolled Courses
+                </CardTitle>
+                <CardDescription>
+                  {enrollments.length} {enrollments.length === 1 ? 'course' : 'courses'} in progress
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {loading ? (
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <CourseCardSkeleton />
+                    <CourseCardSkeleton />
+                    <CourseCardSkeleton />
+                  </div>
+                ) : enrollments.length === 0 ? (
+                  <EmptyCourses />
+                ) : (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {enrollments.map((enrollment) => (
+                      <Card key={enrollment.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                        <div className="relative aspect-video bg-gradient-to-br from-primary/20 to-primary/5">
+                          {enrollment.track.thumbnail_url && (
+                            <img
+                              src={enrollment.track.thumbnail_url}
+                              alt={enrollment.track.title}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold mb-3 line-clamp-2">{enrollment.track.title}</h3>
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-muted-foreground">Progress</span>
+                              <span className="font-medium">{enrollment.progress_percentage}%</span>
+                            </div>
+                            <Progress value={enrollment.progress_percentage} />
+                          </div>
+                          <Button 
+                            className="w-full bg-primary hover:bg-primary/90"
+                            onClick={() => navigate(`/courses/${enrollment.track_id}`)}
+                          >
+                            <Play className="h-4 w-4 mr-2" />
+                            Continue Learning
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Certificates Tab */}
+          <TabsContent value="certificates" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="h-5 w-5 text-primary" />
+                  My Certificates
+                </CardTitle>
+                <CardDescription>
+                  {certifications.length} {certifications.length === 1 ? 'certificate' : 'certificates'} earned
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <CourseCardSkeleton />
                     <CourseCardSkeleton />
                   </div>
                 ) : certifications.length === 0 ? (
                   <EmptyCertificates />
                 ) : (
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {certifications.map((cert) => (
                       <Card 
                         key={cert.id} 
@@ -326,7 +547,8 @@ export const StudentDashboard = () => {
                                 navigate(`/certificates/${cert.id}`);
                               }}
                             >
-                              View Certificate
+                              <Download className="h-4 w-4 mr-1" />
+                              Download
                             </Button>
                             <Button 
                               size="sm" 
@@ -334,8 +556,8 @@ export const StudentDashboard = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 toast({
-                                  title: "Share Certificate",
-                                  description: "Share options coming soon!",
+                                  title: "Share to LinkedIn",
+                                  description: "LinkedIn sharing coming soon!",
                                 });
                               }}
                             >
@@ -349,288 +571,136 @@ export const StudentDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
 
-            {/* Recommended for You Section */}
-            {recommendedCourses.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-primary" />
-                    Recommended for You
-                  </CardTitle>
-                  <CardDescription>Based on your selected interests</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {recommendedCourses.map((course) => (
-                      <Card 
-                        key={course.id} 
-                        className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
-                        onClick={() => navigate(`/courses/${course.id}`)}
-                        data-testid={`course-recommendation-${course.id}`}
-                      >
-                        <div className="relative aspect-video">
-                          <img 
-                            src={course.thumbnail} 
-                            alt={course.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <Badge className="absolute top-2 right-2 bg-primary">
-                            {course.category}
-                          </Badge>
-                        </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                            {course.title}
-                          </h3>
-                          <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                            <div className="flex items-center gap-2">
-                              <Clock className="h-3 w-3" />
-                              <span>{course.duration}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Users className="h-3 w-3" />
-                              <span>{course.students.toLocaleString()}</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-lg font-bold text-primary">${course.price}</span>
-                            <Button 
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/courses/${course.id}`);
-                              }}
-                              data-testid={`button-view-course-${course.id}`}
-                            >
-                              View Course
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    className="w-full mt-4"
-                    onClick={() => navigate('/explore')}
-                    data-testid="button-explore-more"
-                  >
-                    Explore More Courses
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Progress Tracker Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  My Progress
-                </CardTitle>
-                <CardDescription>Continue where you left off</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loading ? (
-                  <div className="space-y-4">
-                    <CourseCardSkeleton />
-                    <CourseCardSkeleton />
-                    <CourseCardSkeleton />
-                  </div>
-                ) : enrollments.length === 0 ? (
-                  <EmptyCourses />
-                ) : (
-                  <div className="space-y-4">
-                    {enrollments.map((enrollment) => (
-                      <Card key={enrollment.id} className="bg-accent/30">
-                        <CardContent className="p-4">
-                          <div className="flex gap-4">
-                            {enrollment.track.thumbnail_url && (
-                              <img
-                                src={enrollment.track.thumbnail_url}
-                                alt={enrollment.track.title}
-                                className="w-20 h-20 rounded object-cover"
-                              />
-                            )}
-                            <div className="flex-1">
-                              <h3 className="font-semibold mb-2">{enrollment.track.title}</h3>
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between text-sm">
-                                  <span className="text-muted-foreground">Progress</span>
-                                  <span className="font-medium">{enrollment.progress_percentage}%</span>
-                                </div>
-                                <Progress value={enrollment.progress_percentage} />
-                              </div>
-                              <Button 
-                                size="sm" 
-                                className="mt-3"
-                                onClick={() => navigate(`/courses`)}
-                              >
-                                <Play className="h-4 w-4 mr-2" />
-                                Resume
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Bookmarks Section */}
+          {/* Bookmarks Tab */}
+          <TabsContent value="bookmarks" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bookmark className="h-5 w-5 text-primary" />
                   My Bookmarks
                 </CardTitle>
-                <CardDescription>Saved lessons and resources</CardDescription>
+                <CardDescription>
+                  {bookmarks.length} saved {bookmarks.length === 1 ? 'lesson' : 'lessons'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {bookmarks.length === 0 ? (
                   <EmptyBookmarks />
                 ) : (
-                  <div className="space-y-2">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {bookmarks.map((bookmark) => (
-                      <div 
+                      <Card 
                         key={bookmark.id}
-                        className="flex items-center justify-between p-3 rounded-lg bg-accent/30 hover:bg-accent/50 transition-colors"
+                        className="group hover:shadow-md transition-all cursor-pointer"
+                        onClick={() => navigate('/courses')}
                       >
-                        <div className="flex-1">
-                          <p className="font-medium">{bookmark.lesson?.title || 'Untitled'}</p>
-                          <p className="text-sm text-muted-foreground">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <Bookmark className="h-5 w-5 text-primary shrink-0" />
+                            <Button 
+                              size="sm" 
+                              variant="ghost"
+                              className="h-8 w-8 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeBookmark(bookmark.id);
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <h3 className="font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                            {bookmark.lesson?.title || 'Untitled Lesson'}
+                          </h3>
+                          <p className="text-sm text-muted-foreground line-clamp-1">
                             {bookmark.lesson?.module?.track?.title}
                           </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="ghost">
-                            <BookOpen className="h-4 w-4" />
-                          </Button>
                           <Button 
                             size="sm" 
-                            variant="ghost"
-                            onClick={() => removeBookmark(bookmark.id)}
+                            variant="outline"
+                            className="w-full mt-3"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate('/courses');
+                            }}
                           >
-                            <X className="h-4 w-4" />
+                            <BookOpen className="h-4 w-4 mr-2" />
+                            Go to Lesson
                           </Button>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
 
-            {/* Learning Dashboard Section */}
-            <div className="mt-6">
-              <LearningDashboard />
-            </div>
-          </div>
-
-          {/* Sidebar - Notifications (Desktop) */}
-          <div className="lg:block hidden">
-            <Card className="sticky top-4">
+          {/* Activity Tab */}
+          <TabsContent value="activity" className="space-y-6">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Bell className="h-5 w-5 text-primary" />
-                  Notifications
+                  <Activity className="h-5 w-5 text-primary" />
+                  Recent Activity
                 </CardTitle>
+                <CardDescription>
+                  {unreadCount} unread {unreadCount === 1 ? 'notification' : 'notifications'}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[600px] pr-4">
                   {notifications.length === 0 ? (
-                    <EmptyNotifications />
+                    <div className="text-center py-12">
+                      <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">No notifications yet</p>
+                    </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {notifications.map((notif) => (
-                        <div 
+                        <Card
                           key={notif.id}
-                          className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                            notif.is_read 
-                              ? 'bg-background' 
-                              : 'bg-accent/50 border-primary/20'
+                          className={`p-4 cursor-pointer transition-colors ${
+                            !notif.is_read
+                              ? 'bg-primary/5 border-primary/20'
+                              : 'bg-accent/30 hover:bg-accent/50'
                           }`}
                           onClick={() => {
                             markNotificationRead(notif.id);
                             if (notif.link_url) navigate(notif.link_url);
                           }}
                         >
-                          <div className="flex items-start gap-2">
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">{notif.title}</p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {notif.message}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-2">
-                                {new Date(notif.created_at).toLocaleDateString()}
+                          <div className="flex gap-3">
+                            <Bell className={`h-5 w-5 shrink-0 ${!notif.is_read ? 'text-primary' : 'text-muted-foreground'}`} />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold mb-1 flex items-center gap-2">
+                                {notif.title}
+                                {!notif.is_read && (
+                                  <Badge variant="default" className="text-xs">New</Badge>
+                                )}
+                              </h4>
+                              <p className="text-sm text-muted-foreground mb-2">{notif.message}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(notif.created_at).toLocaleDateString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
                               </p>
                             </div>
-                            {!notif.is_read && (
-                              <div className="w-2 h-2 rounded-full bg-primary" />
-                            )}
                           </div>
-                        </div>
+                        </Card>
                       ))}
                     </div>
                   )}
                 </ScrollArea>
               </CardContent>
             </Card>
-          </div>
-        </div>
-
-        {/* Mobile Notifications Panel */}
-        {showNotifications && (
-          <div className="lg:hidden fixed inset-0 bg-background/95 z-50 p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Notifications</h2>
-              <Button variant="ghost" size="icon" onClick={() => setShowNotifications(false)}>
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <ScrollArea className="h-[calc(100vh-100px)]">
-              {notifications.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  No notifications yet
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {notifications.map((notif) => (
-                    <Card 
-                      key={notif.id}
-                      className={notif.is_read ? '' : 'border-primary/20'}
-                      onClick={() => {
-                        markNotificationRead(notif.id);
-                        if (notif.link_url) navigate(notif.link_url);
-                        setShowNotifications(false);
-                      }}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="font-medium">{notif.title}</p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {notif.message}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-2">
-                              {new Date(notif.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                          {!notif.is_read && (
-                            <div className="w-2 h-2 rounded-full bg-primary" />
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </ScrollArea>
-          </div>
-        )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
