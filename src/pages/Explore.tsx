@@ -546,14 +546,23 @@ const Explore = () => {
       </div>
 
       {/* Bottom CTA Banner */}
-      <div className="relative py-12 overflow-hidden bg-gradient-to-r from-[#10A37F] to-[#0D8A6B]">
+      <div className="relative py-12 overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(/attached_assets/stock_images/diverse_students_lea_428a0d18.jpg)` }}
+        >
+          <div className="absolute inset-0 bg-white/85 dark:bg-white/80"></div>
+        </div>
+        
+        {/* Content */}
         <div className="container mx-auto px-4 lg:px-8 max-w-7xl relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex-1 text-white">
+            <div className="flex-1 text-black dark:text-black">
               <h2 className="text-3xl lg:text-4xl font-black mb-4">
                 Ready to dive deeper?
               </h2>
-              <p className="text-lg text-white/90 max-w-2xl">
+              <p className="text-lg text-black/80 dark:text-black/80 max-w-2xl">
                 Explore our full courses and structured learning paths to take your skills to the next level.
               </p>
             </div>
@@ -561,7 +570,7 @@ const Explore = () => {
               <Button 
                 size="lg"
                 onClick={() => navigate("/courses")}
-                className="bg-white text-[#10A37F] hover:bg-neutral-100 font-bold text-lg px-8"
+                className="bg-[#10A37F] text-white hover:bg-[#0D8A6B] font-bold text-lg px-8"
                 data-testid="button-browse-courses"
               >
                 Browse Courses
