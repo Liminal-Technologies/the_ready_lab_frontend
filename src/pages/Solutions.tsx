@@ -6,11 +6,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Building2, Users, BarChart3, Shield, BookOpen, Award, TrendingUp, Globe, 
-  Zap, Code, ChevronRight, Check
+  Building2, Zap, Code, ChevronRight, Check
 } from "lucide-react";
 import { RequestDemoModal } from "@/components/institution/RequestDemoModal";
 import { ContactSalesModal } from "@/components/institution/ContactSalesModal";
+
+// Stock images paths
+const workforceDevelopmentImg = "/attached_assets/stock_images/professional_busines_9db5a1fc.jpg";
+const analyticsReportingImg = "/attached_assets/stock_images/data_analytics_dashb_3f2fed8a.jpg";
+const securityImg = "/attached_assets/stock_images/cybersecurity_shield_7ada0376.jpg";
+const certificationImg = "/attached_assets/stock_images/certificate_award_di_b545af3c.jpg";
+const learningPathsImg = "/attached_assets/stock_images/custom_learning_path_5b632256.jpg";
+const multiLanguageImg = "/attached_assets/stock_images/multilingual_global__2e3e4371.jpg";
+const infrastructureImg = "/attached_assets/stock_images/scalable_infrastruct_16a57065.jpg";
 
 const Solutions = () => {
   const [showRequestDemo, setShowRequestDemo] = useState(false);
@@ -55,31 +63,31 @@ const Solutions = () => {
 
   const valueProps = [
     {
-      icon: Users,
+      image: workforceDevelopmentImg,
       title: "Scale Workforce Development",
       description: "Train hundreds or thousands of learners with customized learning paths. Track progress, manage cohorts, and measure outcomes all in one platform.",
     },
     {
-      icon: BarChart3,
+      image: analyticsReportingImg,
       title: "Advanced Analytics & Reporting",
       description: "Get deep insights into learner engagement, completion rates, and skill development. Export custom reports for compliance and stakeholder updates.",
     },
     {
-      icon: Shield,
+      image: securityImg,
       title: "Enterprise-Grade Security",
       description: "SOC 2 compliant with SSO integration, role-based access control, and comprehensive audit logs. Your data is secure and compliant.",
     },
     {
-      icon: Award,
+      image: certificationImg,
       title: "Custom Branding & Certification",
       description: "White-label the platform with your institution's branding. Issue certificates and credentials that align with your standards and accreditation.",
     },
   ];
 
   const features = [
-    { icon: BookOpen, title: "Custom Learning Paths", description: "Tailored curricula for departments and roles" },
-    { icon: Globe, title: "Multi-Language Support", description: "Translate content into 6 languages" },
-    { icon: TrendingUp, title: "Scalable Infrastructure", description: "From 50 to 50,000 learners" },
+    { image: learningPathsImg, title: "Custom Learning Paths", description: "Tailored curricula for departments and roles" },
+    { image: multiLanguageImg, title: "Multi-Language Support", description: "Translate content into 6 languages" },
+    { image: infrastructureImg, title: "Scalable Infrastructure", description: "From 50 to 50,000 learners" },
   ];
 
   const stats = [
@@ -217,13 +225,16 @@ const Solutions = () => {
 
           <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             {valueProps.map((prop, index) => {
-              const Icon = prop.icon;
               return (
-                <Card key={index} className="hover:shadow-lg transition-shadow" data-testid={`value-prop-${index}`}>
+                <Card key={index} className="hover:shadow-lg transition-shadow overflow-hidden" data-testid={`value-prop-${index}`}>
+                  <div className="h-48 w-full overflow-hidden">
+                    <img 
+                      src={prop.image} 
+                      alt={prop.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <CardHeader>
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                      <Icon className="h-6 w-6 text-primary" />
-                    </div>
                     <CardTitle className="text-xl">{prop.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -246,13 +257,16 @@ const Solutions = () => {
             
             <div className="grid md:grid-cols-3 gap-6">
               {features.map((feature, index) => {
-                const Icon = feature.icon;
                 return (
-                  <Card key={index} className="text-center">
+                  <Card key={index} className="text-center overflow-hidden">
+                    <div className="h-40 w-full overflow-hidden">
+                      <img 
+                        src={feature.image} 
+                        alt={feature.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <CardContent className="pt-6">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 mx-auto">
-                        <Icon className="h-6 w-6 text-primary" />
-                      </div>
                       <h3 className="font-semibold mb-2">{feature.title}</h3>
                       <p className="text-sm text-muted-foreground">
                         {feature.description}
