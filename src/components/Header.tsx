@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { BookOpen, Menu, User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -12,10 +13,22 @@ const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [educatorPreviewMode, setEducatorPreviewMode] = useState(
+    localStorage.getItem('educatorPreviewMode') === 'true'
+  );
   const { auth, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { t, language, setLanguage } = useLanguage();
+  
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setEducatorPreviewMode(localStorage.getItem('educatorPreviewMode') === 'true');
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const navItems = [
     { label: "Home", path: "/" },
@@ -56,12 +69,33 @@ const Header = () => {
     navigate('/dashboard');
   };
 
+  const handleCreateCourse = () => {
+    navigate('/educator/onboarding');
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 shadow-sm transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-70" onClick={navigateToHome}>
-          <BookOpen className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold text-neutral-900 dark:text-white">The Ready Lab</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-70" onClick={navigateToHome}>
+            <BookOpen className="h-8 w-8 text-primary" />
+            <span className="text-xl font-bold text-neutral-900 dark:text-white">The Ready Lab</span>
+          </div>
+          
+          {educatorPreviewMode && (
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                Educator Preview Mode
+              </Badge>
+              <Button 
+                size="sm" 
+                className="bg-primary hover:bg-primary/90"
+                onClick={handleCreateCourse}
+              >
+                Create Your First Course
+              </Button>
+            </div>
+          )}
         </div>
         
         {/* Desktop Navigation */}

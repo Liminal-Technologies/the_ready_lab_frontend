@@ -331,7 +331,12 @@ export default function CourseLessonPlayer() {
   };
 
   const handleViewCertificate = () => {
-    navigate("/certificates");
+    toast.success("📧 Certificate Email Sent!", {
+      description: "We've emailed your certificate to your registered email address. You can also download it from your dashboard.",
+    });
+    setTimeout(() => {
+      navigate("/certificates");
+    }, 1500);
   };
 
   // Auto-complete when video reaches 95%
@@ -646,19 +651,37 @@ export default function CourseLessonPlayer() {
 
                 <TabsContent value="resources" className="space-y-4">
                   <h3 className="text-lg font-semibold">Downloadable Resources</h3>
+                  <p className="text-sm text-muted-foreground">Download these helpful resources to enhance your learning experience</p>
                   <div className="space-y-2">
                     {mockResources.map((resource) => (
-                      <Card key={resource.id} className="p-4 flex items-center justify-between hover:bg-accent transition-colors cursor-pointer">
-                        <div>
-                          <p className="font-medium">{resource.name}</p>
-                          <p className="text-sm text-muted-foreground">{resource.size}</p>
+                      <Card 
+                        key={resource.id} 
+                        className="p-4 flex items-center justify-between hover:bg-accent transition-colors cursor-pointer"
+                        onClick={() => {
+                          toast.success("Download started!", {
+                            description: `Downloading ${resource.name}...`
+                          });
+                        }}
+                        data-testid={`resource-${resource.id}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded bg-primary/10 flex items-center justify-center">
+                            <Download className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{resource.name}</p>
+                            <p className="text-sm text-muted-foreground">{resource.size}</p>
+                          </div>
                         </div>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" data-testid={`button-download-${resource.id}`}>
                           <Download className="h-4 w-4" />
                         </Button>
                       </Card>
                     ))}
                   </div>
+                  <p className="text-xs text-muted-foreground mt-4">
+                    💡 Tip: These files are available for download anytime, even after completing the course
+                  </p>
                 </TabsContent>
 
                 <TabsContent value="notes" className="space-y-4">

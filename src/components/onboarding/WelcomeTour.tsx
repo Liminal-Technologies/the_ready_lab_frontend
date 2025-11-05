@@ -1,182 +1,115 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { X, BookOpen, Search, Users, MessageCircle, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
+import Joyride, { Step, CallBackProps, STATUS } from 'react-joyride';
 
-interface TourStep {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  highlight?: string;
+interface WelcomeTourProps {
+  run?: boolean;
+  onComplete?: () => void;
 }
 
-export function WelcomeTour() {
-  const [showTour, setShowTour] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-
-  const tourSteps: TourStep[] = [
-    {
-      title: "Welcome to Your Learning Hub!",
-      description: "This is your personalized dashboard where you'll track your learning journey. Let's take a quick tour of the key features.",
-      icon: <Sparkles className="h-8 w-8 text-primary" />,
-    },
-    {
-      title: "Your Courses",
-      description: "Access all your enrolled courses here. Track your progress, resume where you left off, and see upcoming lessons.",
-      icon: <BookOpen className="h-8 w-8 text-primary" />,
-      highlight: "my-courses"
-    },
-    {
-      title: "Discover New Content",
-      description: "Browse our library of courses, live events, and digital products. Find new learning opportunities tailored to your interests.",
-      icon: <Search className="h-8 w-8 text-primary" />,
-      highlight: "browse"
-    },
-    {
-      title: "Join Communities",
-      description: "Connect with fellow learners, share insights, and participate in discussions. Learning is better together!",
-      icon: <Users className="h-8 w-8 text-primary" />,
-      highlight: "communities"
-    },
-    {
-      title: "AI Learning Assistant",
-      description: "Need help? Click the chat button anytime to get instant answers, course recommendations, and personalized guidance.",
-      icon: <MessageCircle className="h-8 w-8 text-primary" />,
-      highlight: "ai-chat"
-    }
-  ];
+export const WelcomeTour = ({ run = false, onComplete }: WelcomeTourProps) => {
+  const [runTour, setRunTour] = useState(false);
 
   useEffect(() => {
-    // Check if user has seen tour before
     const hasSeenTour = localStorage.getItem('hasSeenWelcomeTour');
     const onboardingData = localStorage.getItem('onboardingData');
     
-    // Show tour only if they just completed onboarding
     if (!hasSeenTour && onboardingData) {
       const data = JSON.parse(onboardingData);
-      // Show tour if onboarding was completed in the last 5 seconds
-      const completedAt = new Date(data.completedAt).getTime();
+      const completedAt = data.completedAt ? new Date(data.completedAt).getTime() : 0;
       const now = new Date().getTime();
-      if (now - completedAt < 5000) {
-        setTimeout(() => setShowTour(true), 800);
+      const fiveMinutes = 5 * 60 * 1000;
+      
+      if (completedAt && (now - completedAt < fiveMinutes)) {
+        setTimeout(() => {
+          setRunTour(true);
+        }, 1000);
       }
     }
   }, []);
 
-  const handleNext = () => {
-    if (currentStep < tourSteps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      handleComplete();
+  useEffect(() => {
+    if (run) {
+      setRunTour(true);
+    }
+  }, [run]);
+
+  const steps: Step[] = [
+    {
+      target: '[data-tour="recommended-courses"]',
+      content: 'Here are your personalized course recommendations based on your interests. Click any course to learn more!',
+      disableBeacon: true,
+      placement: 'bottom',
+    },
+    {
+      target: '[data-tour="navigation"]',
+      content: 'Use these tabs to navigate between your courses, certificates, bookmarks, and notifications.',
+      placement: 'bottom',
+    },
+    {
+      target: '.fixed.bottom-24',
+      content: 'Need help? Click here to chat with your AI learning assistant for personalized guidance and answers.',
+      placement: 'left',
+    },
+    {
+      target: '[data-tour="my-courses"]',
+      content: 'Track your learning progress and see all your enrolled courses here. Keep up the great work!',
+      placement: 'top',
+    },
+  ];
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+      setRunTour(false);
+      localStorage.setItem('hasSeenWelcomeTour', 'true');
+      onComplete?.();
     }
   };
-
-  const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
-    }
-  };
-
-  const handleComplete = () => {
-    localStorage.setItem('hasSeenWelcomeTour', 'true');
-    setShowTour(false);
-    // TODO: backend: save tour completion to user profile
-  };
-
-  const handleSkip = () => {
-    localStorage.setItem('hasSeenWelcomeTour', 'true');
-    setShowTour(false);
-  };
-
-  const progress = ((currentStep + 1) / tourSteps.length) * 100;
-  const step = tourSteps[currentStep];
 
   return (
-    <Dialog open={showTour} onOpenChange={setShowTour}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl">
-              {step.title}
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSkip}
-              className="h-8 w-8"
-              data-testid="button-skip-tour"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <DialogDescription>
-            Step {currentStep + 1} of {tourSteps.length}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-6 py-4">
-          {/* Icon */}
-          <div className="flex justify-center">
-            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-              {step.icon}
-            </div>
-          </div>
-
-          {/* Description */}
-          <p className="text-center text-muted-foreground leading-relaxed">
-            {step.description}
-          </p>
-
-          {/* Progress Bar */}
-          <div className="space-y-2">
-            <Progress value={progress} className="h-2" />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>{currentStep + 1}/{tourSteps.length}</span>
-              <span>{Math.round(progress)}%</span>
-            </div>
-          </div>
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between gap-2 pt-2">
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              disabled={currentStep === 0}
-              data-testid="button-tour-back"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            
-            <div className="flex gap-2">
-              {currentStep < tourSteps.length - 1 ? (
-                <Button onClick={handleNext} data-testid="button-tour-next">
-                  Next
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              ) : (
-                <Button onClick={handleComplete} className="bg-primary" data-testid="button-finish-tour">
-                  Get Started! 🚀
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Skip Link */}
-          {currentStep < tourSteps.length - 1 && (
-            <div className="text-center">
-              <button
-                onClick={handleSkip}
-                className="text-sm text-muted-foreground hover:text-foreground underline"
-                data-testid="button-skip-tour-link"
-              >
-                Skip tour
-              </button>
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <Joyride
+      steps={steps}
+      run={runTour}
+      continuous
+      showProgress
+      showSkipButton
+      callback={handleJoyrideCallback}
+      styles={{
+        options: {
+          primaryColor: '#E5A000',
+          textColor: '#1a1a1a',
+          backgroundColor: '#ffffff',
+          arrowColor: '#ffffff',
+          overlayColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 10000,
+        },
+        tooltip: {
+          borderRadius: 12,
+          padding: 20,
+        },
+        buttonNext: {
+          backgroundColor: '#E5A000',
+          borderRadius: 8,
+          padding: '8px 16px',
+          fontSize: '14px',
+          fontWeight: 600,
+        },
+        buttonBack: {
+          color: '#666',
+          marginRight: 10,
+        },
+        buttonSkip: {
+          color: '#999',
+        },
+      }}
+      locale={{
+        back: 'Back',
+        close: 'Close',
+        last: 'Finish',
+        next: 'Next',
+        skip: 'Skip tour',
+      }}
+    />
   );
-}
+};

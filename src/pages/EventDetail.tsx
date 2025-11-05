@@ -125,8 +125,8 @@ export default function EventDetail() {
     setShowSuccessModal(true);
     
     toast({
-      title: "Registration successful! 🎉",
-      description: "You're all set for the event.",
+      title: "📧 Registration Confirmed! 🎉",
+      description: "We've sent you a confirmation email with event details and calendar invite. A reminder will be sent 15 minutes before the event.",
     });
   };
 

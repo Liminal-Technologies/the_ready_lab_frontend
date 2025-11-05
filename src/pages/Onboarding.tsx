@@ -116,6 +116,8 @@ const Onboarding = () => {
         // await supabase.from('profiles').update({ preferred_language: selectedLanguage })
       }
 
+      localStorage.setItem('justCompletedOnboarding', 'true');
+      
       toast.success('Welcome to The Ready Lab! 🎉', {
         description: 'Your profile is all set up'
       });
