@@ -38,6 +38,10 @@ const MobileBottomNav = () => {
     return location.pathname === path || location.pathname.startsWith(path);
   };
 
+  const isCoursesPage = () => {
+    return location.pathname === "/courses" || location.pathname === "/browse" || location.pathname.startsWith("/courses");
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 lg:hidden transition-colors duration-200">
       <div className="flex items-center justify-around h-16 px-2">
@@ -45,13 +49,20 @@ const MobileBottomNav = () => {
           const Icon = tab.icon;
           const active = isActive(tab.path);
           
+          // Use orange for courses page, yellow for others
+          const activeColor = (tab.path === "/courses" && isCoursesPage()) 
+            ? "bg-orange-500" 
+            : active 
+              ? "bg-[#E5A000]" 
+              : "";
+          
           return (
             <button
               key={tab.path}
               onClick={() => handleTabClick(tab.path, tab.authRequired)}
               className={`flex flex-col items-center justify-center gap-1 h-full flex-1 rounded-lg mx-0.5 transition-all ${
                 active 
-                  ? "bg-orange-500 text-white" 
+                  ? `${activeColor} text-white` 
                   : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white"
               }`}
             >

@@ -35,4 +35,7 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 ### Brand Color Refinements
 - Bottom CTA banner button changed from orange to branding yellow (#E5A000)
 - Removed top margin/curve from banner for edge-to-edge design
-- Mobile navigation active state changed from yellow to orange for better contrast
+- Removed certificate icon from bottom CTA banner
+- Condensed banner height from py-16 to py-12 for more compact design
+- Removed rounded top curve from Courses & More section for cleaner appearance
+- Mobile navigation: Courses button is orange when on courses page, yellow on all other pages

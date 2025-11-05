@@ -481,8 +481,8 @@ const CourseBrowse = () => {
     <>
       <Header />
       <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 pt-20">
-        {/* Main Content Container with Rounded Top */}
-        <div className="bg-white dark:bg-neutral-800 rounded-t-[2rem] lg:rounded-t-[3rem] shadow-lg">
+        {/* Main Content Container */}
+        <div className="bg-white dark:bg-neutral-800 shadow-lg">
           <div className="container mx-auto px-4 lg:px-8 max-w-7xl py-8">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -907,7 +907,7 @@ const CourseBrowse = () => {
       </div>
 
       {/* Bottom CTA Banner */}
-      <div className="relative py-16 overflow-hidden">
+      <div className="relative py-12 overflow-hidden">
         {/* Background Image with Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center"
@@ -935,11 +935,6 @@ const CourseBrowse = () => {
                 Join For Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </div>
-            <div className="flex-shrink-0">
-              <div className="w-64 h-64 bg-[#E5A000]/20 rounded-full flex items-center justify-center">
-                <Award className="h-32 w-32 text-[#E5A000]" />
-              </div>
             </div>
           </div>
         </div>
