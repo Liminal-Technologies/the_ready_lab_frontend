@@ -40,7 +40,7 @@ const Hero = () => {
       </div>
 
       {/* Massive Headline - Bottom Left (Desktop) / Top Center (Mobile) */}
-      <div className="absolute bottom-32 md:bottom-40 left-4 md:left-8 lg:left-16 lg:block hidden z-10 max-w-4xl">
+      <div className="absolute bottom-20 md:bottom-24 left-4 md:left-8 lg:left-16 lg:block hidden z-10 max-w-4xl">
         <h1 className="font-bold leading-tight" style={{ fontSize: '6.3rem' }}>
           <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
             Prepare &{" "}
