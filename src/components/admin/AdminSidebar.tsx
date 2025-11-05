@@ -140,10 +140,10 @@ export function AdminSidebar() {
                 <SidebarMenuButton asChild>
                   <NavLink 
                     to="/" 
-                    className="hover:bg-muted/50 text-muted-foreground hover:text-foreground border-b pb-2"
+                    className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 font-semibold border-2 border-blue-200 dark:border-blue-800 rounded-md mb-3 transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm"
                     data-testid="button-back-to-home"
                   >
-                    <ArrowLeft className="mr-3 h-4 w-4" />
+                    <ArrowLeft className="mr-3 h-5 w-5" />
                     {!collapsed && <span>Back to Home</span>}
                   </NavLink>
                 </SidebarMenuButton>
