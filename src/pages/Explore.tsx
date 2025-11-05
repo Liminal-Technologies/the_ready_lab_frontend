@@ -139,7 +139,7 @@ const liveEvents = [
     scheduledAt: "Today at 3:00 PM",
     attendees: 234,
     maxAttendees: 500,
-    thumbnail: "/attached_assets/stock_images/business_professiona_9e1fef7d.jpg"
+    thumbnail: "/attached_assets/stock_images/business_workshop_pr_bcd8278d.jpg"
   },
   {
     id: "live2",
@@ -148,7 +148,7 @@ const liveEvents = [
     scheduledAt: "Tomorrow at 2:00 PM",
     attendees: 156,
     maxAttendees: 300,
-    thumbnail: "/attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg"
+    thumbnail: "/attached_assets/stock_images/funding_investment_b_3e5d93c1.jpg"
   }
 ];
 
@@ -413,8 +413,11 @@ const Explore = () => {
                     className="bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-md border border-neutral-200 dark:border-neutral-700 hover:border-[#10A37F] transition-colors"
                     data-testid={`live-event-${event.id}`}
                   >
-                    <div className="h-32 bg-gradient-to-br from-[#10A37F] to-[#0D8A6B] flex items-center justify-center">
-                      <Calendar className="h-12 w-12 text-white opacity-50" />
+                    <div 
+                      className="h-32 bg-cover bg-center relative"
+                      style={{ backgroundImage: `url(${event.thumbnail})` }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20"></div>
                     </div>
                     <div className="p-4">
                       <h3 className="font-bold mb-2">{event.title}</h3>
