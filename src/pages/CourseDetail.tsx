@@ -36,6 +36,7 @@ import {
 const fundingImage = "/attached_assets/stock_images/business_professiona_9e1fef7d.jpg";
 const partnershipImage = "/attached_assets/stock_images/hands_on_learning_ac_8ca82f64.jpg";
 const operationsImage = "/attached_assets/stock_images/business_operations__a3e6e538.jpg";
+const instructorImage = "/attached_assets/stock_images/person_watching_educ_8ccc0366.jpg";
 
 // Mock course data with expanded curriculum
 const mockCourse = {
@@ -58,7 +59,7 @@ const mockCourse = {
     name: "Dr. Michael Chen",
     title: "Funding Strategy Expert & Grant Consultant",
     bio: "Dr. Chen has over 20 years of experience in nonprofit funding and grant writing. He has helped organizations secure over $50 million in funding and has trained thousands of professionals in fundraising strategies. He holds a Ph.D. in Nonprofit Management and serves as a consultant for major foundations.",
-    avatar: "",
+    avatar: instructorImage,
     students: "15,000+",
     courses: 8,
     rating: "4.9"
@@ -356,9 +357,17 @@ export default function CourseDetail() {
 
                   {/* Instructor Info Preview */}
                   <div className="flex items-center gap-3 pt-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center flex-shrink-0">
-                      <Users className="h-6 w-6 text-white" />
-                    </div>
+                    {mockCourse.instructor.avatar ? (
+                      <img 
+                        src={mockCourse.instructor.avatar}
+                        alt={mockCourse.instructor.name}
+                        className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-primary/20"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center flex-shrink-0">
+                        <Users className="h-6 w-6 text-white" />
+                      </div>
+                    )}
                     <div>
                       <p className="text-sm text-muted-foreground">Created by</p>
                       <p className="font-semibold">{mockCourse.instructor.name}</p>
@@ -549,9 +558,17 @@ export default function CourseDetail() {
                       <h2 className="text-2xl font-bold mb-6">Your Instructor</h2>
                       <div className="flex flex-col md:flex-row gap-6">
                         <div className="flex-shrink-0">
-                          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center shadow-lg">
-                            <Users className="h-16 w-16 text-white" />
-                          </div>
+                          {mockCourse.instructor.avatar ? (
+                            <img 
+                              src={mockCourse.instructor.avatar}
+                              alt={mockCourse.instructor.name}
+                              className="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-primary/20"
+                            />
+                          ) : (
+                            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center shadow-lg">
+                              <Users className="h-16 w-16 text-white" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 space-y-4">
                           <div>
@@ -642,14 +659,14 @@ export default function CourseDetail() {
               {/* Right Column - Enrollment Card */}
               <div className="lg:col-span-1">
                 <Card className="p-6 sticky top-24 shadow-lg border-2">
-                  <div className="aspect-video bg-neutral-900 rounded-lg mb-4 flex items-center justify-center overflow-hidden lg:hidden">
+                  <div className="aspect-video bg-neutral-900 rounded-lg mb-4 relative flex items-center justify-center overflow-hidden lg:hidden">
                     <img 
                       src={mockCourse.image} 
                       alt={mockCourse.title}
                       className="w-full h-full object-cover opacity-80"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                      <div className="w-16 h-16 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors flex items-center justify-center cursor-pointer shadow-lg">
+                      <div className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 transition-colors flex items-center justify-center cursor-pointer shadow-lg">
                         <PlayCircle className="h-8 w-8 text-white" />
                       </div>
                     </div>
