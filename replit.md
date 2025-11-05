@@ -30,12 +30,24 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 ### Courses Section Unified
 - Replaced old `/courses` page with enhanced Browse experience
 - Both `/courses` and `/browse` now show the same advanced filtering interface
-- All original content maintained: courses, micro-learning feed, communities, learning styles
+- All original content maintained: courses, communities, learning styles
+- Added proper padding between header and page content
 
-### Brand Color Refinements
-- Bottom CTA banner button changed from orange to branding yellow (#E5A000)
-- Removed top margin/curve from banner for edge-to-edge design
-- Removed certificate icon from bottom CTA banner
-- Condensed banner height from py-16 to py-12 for more compact design
-- Removed rounded top curve from Courses & More section for cleaner appearance
-- Mobile navigation: Courses button is orange when on courses page, yellow on all other pages
+### Explore Page Redesign (Green Theme)
+- Complete redesign with LinkedIn Learning-inspired layout
+- **Green theme (#10A37F)** throughout to match learner branding
+- Moved micro-learning feed from Courses to Explore (6 bite-sized lessons)
+- Similar layout to Courses page: breadcrumb, search, sidebar filters, content grid
+- Interest-based filtering: Funding, Business, Branding, AI, Marketing, Operations, Leadership, Technology, Design
+- Added community poll with green progress bars
+- Live events section showcasing upcoming Q&A sessions and workshops
+- Featured resources section for downloadable templates
+- Bookmark functionality for lessons
+- Green CTA banner linking to full courses
+- Mobile navigation: Explore button is green when on explore page
+
+### Brand Color System
+- **Orange (#FF6B35):** Courses page theme
+- **Green (#10A37F):** Explore page theme (learner brand color)
+- **Yellow (#E5A000):** Primary branding color for CTAs and default active states
+- Mobile navigation uses conditional colors based on active page
