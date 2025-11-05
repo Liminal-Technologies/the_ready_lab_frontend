@@ -480,10 +480,10 @@ const CourseBrowse = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 pt-20">
+      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900">
         {/* Main Content Container */}
         <div className="bg-white dark:bg-neutral-800 shadow-lg">
-          <div className="container mx-auto px-4 lg:px-8 max-w-7xl py-8">
+          <div className="container mx-auto px-4 lg:px-8 max-w-7xl pt-8 pb-8">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
               <Link to="/" className="hover:text-foreground" data-testid="link-home">Home</Link>
