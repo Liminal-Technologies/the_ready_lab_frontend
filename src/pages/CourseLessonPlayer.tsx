@@ -330,9 +330,6 @@ export default function CourseLessonPlayer() {
     if (nextLessonToNav) {
       navigate(`/courses/${courseId}/lessons/${nextLessonToNav.id}`);
       setMobileSheetOpen(false);
-      toast.success("Moving to next lesson", {
-        description: nextLessonToNav.title,
-      });
     }
   };
 
