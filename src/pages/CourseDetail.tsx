@@ -32,10 +32,10 @@ import {
   ThumbsUp
 } from "lucide-react";
 
-// Import course images
-import fundingImage from "@assets/funding-strategy.jpg";
-import partnershipImage from "@assets/partnership-strategy.jpg";
-import operationsImage from "@assets/operations-management.jpg";
+// Import course images - use stock images
+const fundingImage = "/attached_assets/stock_images/business_professiona_9e1fef7d.jpg";
+const partnershipImage = "/attached_assets/stock_images/hands_on_learning_ac_8ca82f64.jpg";
+const operationsImage = "/attached_assets/stock_images/business_operations__a3e6e538.jpg";
 
 // Mock course data with expanded curriculum
 const mockCourse = {
