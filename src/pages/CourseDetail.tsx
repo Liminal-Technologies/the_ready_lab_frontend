@@ -306,11 +306,11 @@ export default function CourseDetail() {
 
           {/* Hero Section with Background */}
           <div className="max-w-7xl mx-auto mb-12">
-            <div className="relative bg-gradient-to-r from-yellow-500/10 to-orange-500/10 dark:from-yellow-500/5 dark:to-orange-500/5 rounded-2xl p-8 md:p-12 mb-8">
+            <div className="relative bg-gradient-to-r from-primary/10 to-orange-500/10 dark:from-primary/5 dark:to-orange-500/5 rounded-2xl p-8 md:p-12 mb-8">
               <div className="grid lg:grid-cols-3 gap-8">
                 {/* Left Column - Course Info */}
                 <div className="lg:col-span-2 space-y-4">
-                  <Badge className="bg-yellow-500 hover:bg-yellow-600 text-white border-0" data-testid="badge-category">
+                  <Badge className="bg-primary hover:bg-primary/90 text-white border-0" data-testid="badge-category">
                     {mockCourse.category}
                   </Badge>
                   <h1 className="text-4xl md:text-5xl font-bold">{mockCourse.title}</h1>
@@ -320,7 +320,7 @@ export default function CourseDetail() {
                   
                   <div className="flex flex-wrap items-center gap-4 text-sm pt-2">
                     <div className="flex items-center gap-2">
-                      <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                      <Star className="h-5 w-5 text-primary fill-current" />
                       <span className="font-bold">{mockCourse.rating}</span>
                       <span className="text-muted-foreground">({mockCourse.reviews.length} reviews)</span>
                     </div>
@@ -344,7 +344,7 @@ export default function CourseDetail() {
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
                     {mockCourse.certification && (
-                      <Badge variant="outline" className="border-yellow-500 text-yellow-600 dark:text-yellow-500">
+                      <Badge variant="outline" className="border-primary text-primary">
                         <Award className="h-3 w-3 mr-1" />
                         Certificate included
                       </Badge>
@@ -356,7 +356,7 @@ export default function CourseDetail() {
 
                   {/* Instructor Info Preview */}
                   <div className="flex items-center gap-3 pt-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center flex-shrink-0">
                       <Users className="h-6 w-6 text-white" />
                     </div>
                     <div>
@@ -376,11 +376,11 @@ export default function CourseDetail() {
                         className="w-full h-full object-cover opacity-80"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <div className="w-16 h-16 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors flex items-center justify-center cursor-pointer shadow-lg">
+                        <div className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 transition-colors flex items-center justify-center cursor-pointer shadow-lg">
                           <PlayCircle className="h-8 w-8 text-white" />
                         </div>
                       </div>
-                      <Badge className="absolute top-4 right-4 bg-yellow-500 text-white border-0">
+                      <Badge className="absolute top-4 right-4 bg-primary text-white border-0">
                         Preview
                       </Badge>
                     </div>
@@ -405,7 +405,7 @@ export default function CourseDetail() {
                   <TabsContent value="overview" className="space-y-6">
                     <Card className="p-6">
                       <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                        <Target className="h-6 w-6 text-yellow-500" />
+                        <Target className="h-6 w-6 text-primary" />
                         What You'll Learn
                       </h2>
                       <div className="grid md:grid-cols-2 gap-x-6 gap-y-3">
@@ -429,7 +429,7 @@ export default function CourseDetail() {
                         <ul className="space-y-2">
                           {mockCourse.requirements.map((req, index) => (
                             <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
-                              <span className="text-yellow-500">•</span>
+                              <span className="text-primary">•</span>
                               <span>{req}</span>
                             </li>
                           ))}
@@ -443,22 +443,22 @@ export default function CourseDetail() {
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="text-center p-4 rounded-lg bg-muted/50">
-                          <Users className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                          <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <p className="text-2xl font-bold">{mockCourse.students}</p>
                           <p className="text-sm text-muted-foreground">Students</p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-muted/50">
-                          <BookOpen className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                          <BookOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <p className="text-2xl font-bold">{totalLessons}</p>
                           <p className="text-sm text-muted-foreground">Lessons</p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-muted/50">
-                          <Clock className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                          <Clock className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <p className="text-2xl font-bold">{mockCourse.duration}</p>
                           <p className="text-sm text-muted-foreground">Duration</p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-muted/50">
-                          <Award className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                          <Award className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <p className="text-2xl font-bold">Yes</p>
                           <p className="text-sm text-muted-foreground">Certificate</p>
                         </div>
@@ -511,20 +511,20 @@ export default function CourseDetail() {
                                         lesson.completed ? (
                                           <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
                                         ) : (
-                                          <PlayCircle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                                          <PlayCircle className="h-5 w-5 text-primary flex-shrink-0" />
                                         )
                                       ) : lesson.preview ? (
-                                        <PlayCircle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                                        <PlayCircle className="h-5 w-5 text-primary flex-shrink-0" />
                                       ) : (
                                         <Lock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                                       )}
-                                      <span className="text-sm font-medium group-hover:text-yellow-500 transition-colors">
+                                      <span className="text-sm font-medium group-hover:text-primary transition-colors">
                                         {lesson.title}
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-3">
                                       {lesson.preview && !isEnrolled && (
-                                        <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-600 dark:text-yellow-500">
+                                        <Badge variant="outline" className="text-xs border-primary text-primary">
                                           Preview
                                         </Badge>
                                       )}
@@ -549,7 +549,7 @@ export default function CourseDetail() {
                       <h2 className="text-2xl font-bold mb-6">Your Instructor</h2>
                       <div className="flex flex-col md:flex-row gap-6">
                         <div className="flex-shrink-0">
-                          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg">
+                          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center shadow-lg">
                             <Users className="h-16 w-16 text-white" />
                           </div>
                         </div>
@@ -561,7 +561,7 @@ export default function CourseDetail() {
                           
                           <div className="flex flex-wrap gap-6 text-sm">
                             <div className="flex items-center gap-2">
-                              <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                              <Star className="h-5 w-5 text-primary fill-current" />
                               <span className="font-semibold">{mockCourse.instructor.rating}</span>
                               <span className="text-muted-foreground">Instructor Rating</span>
                             </div>
@@ -604,7 +604,7 @@ export default function CourseDetail() {
                           <div key={review.id} className="border rounded-lg p-4">
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
                                   <span className="text-white font-semibold text-sm">
                                     {review.name.charAt(0)}
                                   </span>
@@ -688,7 +688,7 @@ export default function CourseDetail() {
                       </div>
 
                       <Button 
-                        className="w-full mb-4 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold shadow-md hover:shadow-lg transition-all" 
+                        className="w-full mb-4 bg-primary hover:bg-primary/90 text-white font-semibold shadow-md hover:shadow-lg transition-all" 
                         size="lg"
                         onClick={handleEnrollClick}
                         disabled={isProcessing}
@@ -790,10 +790,10 @@ export default function CourseDetail() {
                     />
                   </div>
                   <div className="p-5">
-                    <Badge className="mb-2 bg-yellow-500 hover:bg-yellow-600 text-white border-0">
+                    <Badge className="mb-2 bg-primary hover:bg-primary/90 text-white border-0">
                       {course.category}
                     </Badge>
-                    <h3 className="font-bold text-lg mb-2 group-hover:text-yellow-500 transition-colors">
+                    <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">
                       {course.title}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-3">

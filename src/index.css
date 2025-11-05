@@ -15,9 +15,9 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 20% 15%;
 
-    --primary: 45 92% 50%;
+    --primary: 42 100% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 45 92% 58%;
+    --primary-glow: 42 100% 55%;
 
     --secondary: 202 100% 20%;
     --secondary-foreground: 0 0% 100%;
@@ -33,23 +33,23 @@
 
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 45 92% 50%;
+    --ring: 42 100% 45%;
 
     /* EdTech specific colors */
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-    --warning: 45 92% 50%;
+    --warning: 42 100% 45%;
     --warning-foreground: 0 0% 100%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(45 92% 50%), hsl(202 71% 46%));
-    --gradient-hero: linear-gradient(135deg, hsl(45 92% 50%) 0%, hsl(202 71% 46%) 50%, hsl(202 100% 20%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(42 100% 45%), hsl(202 71% 46%));
+    --gradient-hero: linear-gradient(135deg, hsl(42 100% 45%) 0%, hsl(202 71% 46%) 50%, hsl(202 100% 20%) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(45 33% 98%) 100%);
     
     /* Shadows */
-    --shadow-soft: 0 4px 6px -1px hsl(45 92% 50% / 0.1), 0 2px 4px -1px hsl(45 92% 50% / 0.06);
-    --shadow-medium: 0 10px 15px -3px hsl(45 92% 50% / 0.1), 0 4px 6px -2px hsl(45 92% 50% / 0.05);
-    --shadow-glow: 0 0 30px hsl(45 92% 50% / 0.3);
+    --shadow-soft: 0 4px 6px -1px hsl(42 100% 45% / 0.1), 0 2px 4px -1px hsl(42 100% 45% / 0.06);
+    --shadow-medium: 0 10px 15px -3px hsl(42 100% 45% / 0.1), 0 4px 6px -2px hsl(42 100% 45% / 0.05);
+    --shadow-glow: 0 0 30px hsl(42 100% 45% / 0.3);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -84,7 +84,7 @@
     --popover: 0 0% 12%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 45 95% 55%;
+    --primary: 42 100% 50%;
     --primary-foreground: 0 0% 9%;
 
     --secondary: 0 0% 20%;
@@ -101,16 +101,16 @@
 
     --border: 0 0% 26%;
     --input: 0 0% 26%;
-    --ring: 45 95% 55%;
+    --ring: 42 100% 50%;
     
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 45 95% 55%;
+    --sidebar-primary: 42 100% 50%;
     --sidebar-primary-foreground: 0 0% 9%;
     --sidebar-accent: 0 0% 20%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 26%;
-    --sidebar-ring: 45 95% 55%;
+    --sidebar-ring: 42 100% 50%;
   }
 }
 
