@@ -1,0 +1,532 @@
+The Ready Lab - MVP User Journeys & Requirements
+MVP Scope Reminder
+In Scope:
+5 core learning tracks
+Video lessons with auto-captions (EN/ES)
+Digital certification
+Live streaming
+AI chat assistant ( ASK ) 
+Community boards
+Digital products
+Payment processing
+Out of Scope:
+AI roadmap generator (use manual recommendations)
+White-label
+Mobile apps
+Advanced analytics
+Institution self-service
+1. STUDENT JOURNEY - MVP
+Journey A: Discovery → First Lesson (Day 0)
+Steps:
+Land on homepage → See value prop, browse courses (no login required)
+Click "Enroll" → Auth modal appears
+Sign up → Google or Email
+Onboarding (3 screens):
+Screen 1: Select interests (multi-select checkboxes: Funding, Infrastructure, Branding, Finance, Legal, AI)
+Screen 2: Choose language (English or Español)
+Screen 3: Optional profile (name, photo, bio) - can skip
+Welcome tooltip overlay → Quick 4-step tour of dashboard
+Land on dashboard → See recommended courses based on interests
+Requirements:
+Multi-select interest tags (visual highlight on/off)
+Language selection persists across platform
+Profile photo upload to S3
+Dashboard shows "Recommended for You" section based on selected interests
+Can browse without account, but need account to enroll
+Success Metrics:
+15% visitor → signup conversion
+80% complete onboarding
+Average time to first lesson: <5 minutes
+
+Journey B: Enroll in Course (Day 0-1)
+Steps:
+Click course card → Course detail page
+View course info:
+Preview video
+Curriculum outline
+Instructor bio
+Price (or "Included in subscription")
+Click "Enroll Now"
+If free course: Instant enrollment → Redirect to Lesson 1
+If paid course:
+Check if already subscribed → Instant enrollment
+If not subscribed → Stripe Checkout:
+Select payment: Card, Klarna, Afterpay, Affirm
+Complete payment
+Redirect to Course Player
+Requirements:
+Free courses = instant access
+Paid courses = Stripe integration
+BNPL options enabled in Stripe (just configuration, no custom code)
+Individual course purchase OR subscription access (both supported)
+After enrollment, add to "My Courses"
+Success Metrics:
+Browse → enroll: 25%
+Payment completion: <60 seconds
+Payment success rate: >95%
+
+Journey C: Learn & Complete Course (Day 1-30)
+Steps:
+Course Player page:
+Video player (center) with progress bar
+Sidebar (right) showing module/lesson list
+Tabs below video: Overview | Resources | Notes | Discussion
+Watch video:
+Auto-saves progress at 95% watched
+Can select captions: English/Spanish/Off
+Speed controls (0.5x - 2x)
+Interact with lesson:
+Take notes (auto-saved to profile)
+Download resources (PDFs, templates)
+Post question in discussion
+Ask AI coach (floating button)
+Complete lesson:
+Marked complete at 95% watched
+Progress updated in dashboard
+Take quiz (if required):
+5 multiple choice questions
+Need 70% to pass
+Unlimited retries
+Next lesson unlocks → Repeat
+Requirements:
+Video player with resume capability
+Caption selection (EN/ES)
+Progress tracking per lesson
+Quiz system with scoring
+Notes saved per lesson
+Discussion board per lesson
+AI chat widget always visible
+Sequential lesson unlocking (but allow skip with warning)
+Success Metrics:
+Average session: >20 minutes
+Completion rate: >40%
+Quiz pass rate (first attempt): >70%
+Return within 7 days: >60%
+
+Journey D: Earn Certificate (Day 30-45)
+Steps:
+Complete all lessons + pass all quizzes → Automatic trigger
+System generates certificate:
+PDF with student name, course title, date, serial number, QR code
+Uploads to S3
+Creates database record
+Email sent: "Congratulations! Certificate Ready" with PDF attached
+Redirect to certificate page:
+Preview certificate
+Download PDF
+Share to LinkedIn (pre-filled post)
+Copy verification link
+Dashboard updated: New badge in "My Certificates"
+Requirements:
+Auto-detect 100% lesson completion + quiz pass
+PDF generation with brand design
+QR code links to public verification page
+Email with PDF attachment
+Social share with Open Graph metadata
+Public verification URL: /certificate/[serial]
+Success Metrics:
+Certificate generated: <30 seconds
+Email delivery: >99%
+Social shares: >30% of certificates
+
+Journey E: Join Community (Ongoing)
+Steps:
+After certification → Prompted to join community
+Browse communities → By topic (Funding, Legal, Marketing, etc.)
+Join community → One click
+Participate:
+Create posts
+Comment on discussions
+React to posts
+Join live Q&As
+Requirements:
+Open communities (anyone can join)
+Private communities (need invitation)
+Post with rich text
+Comment threading
+Like/react functionality
+Live Q&A integration with live events
+Success Metrics:
+50% of certified students join ≥1 community
+Average 3 posts per active member/month
+
+2. EDUCATOR JOURNEY - MVP
+Journey A: Discovery & Exploration (Day 0)
+Steps:
+Land on "For Educators" page → Value prop
+Click "Explore as an Educator" → Auth modal
+Sign up → Google or Email, select "Educator"
+Explore mode unlocked:
+Browse platform like a student
+See example courses
+Badge: "Educator Preview Mode"
+Persistent CTA: "Ready to create your first course?"
+Requirements:
+Separate landing page for educators
+Browse mode without plan selection
+Clear CTAs to create course
+Success Metrics:
+Time on site: >5 minutes
+View ≥3 example courses
+Click "Create Course": >40%
+
+Journey B: Select Plan & Onboarding (Day 0-1)
+Steps:
+Click "Create Course" → Plan selection modal appears:
+ FREE ($0)- 1 course- 10% platform feePRO ($79.99/mo) ⭐ BEST VALUE- 10 courses- 5% platform fee- Live streamingPREMIUM ($199.99/mo)- Unlimited courses- 2% platform fee- White-label
+
+
+Select plan:
+FREE → Skip payment, go to profile
+PRO/PREMIUM → Stripe subscription, then profile
+Profile setup:
+Name, photo, bio
+Expertise tags (multi-select)
+Teaching styles (visual, auditory, kinesthetic, reading/writing) - FLAG: usage TBD
+Preferred content types (microlearning, deep learning, live, products)
+Complete setup → Redirect to educator dashboard
+Requirements:
+Plan comparison modal
+Stripe subscription setup (monthly/annual)
+Profile form with image upload
+Teaching style tags saved (even if not used yet in MVP)
+Onboarding checklist appears on first dashboard visit
+Success Metrics:
+30% select paid plan
+Profile completion: >90%
+
+Journey C: Create First Course (Day 1-7)
+Steps:
+Dashboard shows checklist:
+
+
+☑ Create profile
+☐ Create first course ← YOU ARE HERE
+☐ Upload first lesson
+☐ Submit for review
+Click "Create New Course" → Wizard opens:
+
+ Step 1: Course Type
+
+
+Microlearning (5-10 min)
+Deep Learning (30-60 min)
+Digital Product
+Step 2: Course Details
+
+
+Title
+Category
+Level (Beginner/Intermediate/Advanced)
+Description
+Learning objectives (bullets)
+Step 3: Pricing
+
+
+Free or Paid ($5-$500 suggested)
+Shows platform fee calculation
+Shows educator earnings per sale
+Step 4: Upload Content
+
+
+Drag & drop videos (MP4, MOV, max 2GB)
+Auto-generates:
+Thumbnail
+Duration
+English captions
+Spanish captions (auto-translated)
+Organize into Modules/Lessons
+Step 5: Review & Submit
+
+
+Preview as student
+[Save Draft] [Submit for Review]
+Submit for review:
+
+
+Automatic content moderation (Perspective API)
+If score <0.3: Auto-approve
+If score >0.3: Manual admin review (24-48 hrs)
+Approved → Course appears in Explore feed
+
+
+Requirements:
+Course builder wizard (5 steps)
+Video upload to AWS S3 (presigned URLs)
+Auto-transcription (Deepgram or AssemblyAI)
+Auto-translation to Spanish (OpenAI)
+Caption files (.vtt) stored in S3
+Thumbnail generation from video frame
+Content moderation API integration (Google Perspective)
+Admin review queue for flagged content
+Email notifications (approval/rejection)
+Success Metrics:
+Time to create course: <2 hours
+Upload success: >95%
+Auto-approval: >80%
+Manual review turnaround: <48 hours
+
+Journey D: Manage Students & Revenue (Day 7+)
+Steps:
+Students enroll → Educator gets notification
+Dashboard shows real-time stats:
+Students enrolled
+Lessons completed
+Avg rating
+Revenue this month
+View student list:
+See all enrolled students
+Track individual progress
+AI flags "at-risk" students (low engagement)
+Send announcements
+Answer questions:
+Discussion board notifications
+Pin helpful answers
+View analytics:
+Completion rates by lesson
+Drop-off points
+Quiz performance
+Revenue trends
+Request payout:
+Accumulates earnings (minus platform fee)
+Minimum $50
+Stripe Connect transfer (2-5 days)
+Requirements:
+Real-time dashboard metrics
+Student list with progress tracking
+AI flagging of at-risk students (based on inactivity)
+Discussion board management
+Analytics dashboard with charts
+Stripe Connect for payouts
+Platform fee deduction (10%/5%/2% based on plan)
+Success Metrics:
+Avg educator earnings: $500+/month
+Course rating: >4.5 stars
+Response time: <24 hours
+Payout processing: 100% within 7 days
+
+Journey E: Host Live Event (Day 30+)
+Steps:
+Click "Schedule Live Event" → Form:
+Title, description
+Date, time, duration
+Max attendees
+Associated course (optional)
+Features: Chat, Q&A, Polls, Recording
+Event created → Appears on:
+Educator profile
+Explore page
+Course page (if linked)
+Students register → Get confirmation email + calendar invite
+15 min before: Educator tests camera/mic
+Go Live:
+Daily.co room opens
+Students see "Join Live" button
+Educator can share screen, moderate Q&A, launch polls
+End stream:
+Recording auto-saved (if enabled)
+Available for replay
+Analytics: attendee count, watch time, engagement
+Requirements:
+Live event scheduling form
+Daily.co integration (room creation)
+Email invitations with .ics calendar file
+Pre-event camera/mic test
+Daily.co embed for streaming
+Chat, Q&A, polls within stream
+Recording to Daily.co cloud (not Supabase)
+Webhook to capture recording URL
+Replay page
+Event analytics
+Success Metrics:
+Event creation: <5 minutes
+Attendee rate: 50% of registrants
+Recording availability: <30 min after event
+
+3. INSTITUTION JOURNEY - MVP (SIMPLIFIED)
+Journey A: Inquiry & Sales (Day 0-30)
+Steps:
+Land on homepage → Click "For Institutions"
+Enterprise landing page:
+Value props: White-label, cohort management, reporting
+CTA: "Request Demo" or "Contact Sales"
+Enterprise inquiry form:
+Organization name
+Contact info
+Type of organization
+Areas of interest
+Number of users needed
+Custom requests
+Debarment question (FLAG: Required for MVP?)
+Submit form:
+Confirmation email sent
+Option to schedule call (Calendly)
+Sales process (MANUAL for MVP):
+Discovery call
+Custom proposal
+Negotiation
+Contract signed
+TRL team provisions account:
+Create institution admin account
+Send login credentials
+Initial setup/configuration
+Kickoff call
+Requirements:
+Enterprise landing page
+Inquiry form with validation
+Email confirmation
+Calendly integration for scheduling
+Admin portal for TRL team to manually provision accounts (not self-service)
+Welcome email with credentials
+Success Metrics:
+Form completion: >60%
+Response time: <24 hours
+Sales cycle: <60 days
+Avg contract value: $50K+
+
+Journey B: Institution Admin Setup (Day 30-45)
+Steps:
+Receive credentials → Login to institution dashboard
+Upload student list → CSV with names, emails
+Create cohort:
+Cohort name
+Start/end dates
+Assign students
+Assign courses
+Send invitations → Bulk email to students
+Monitor enrollment:
+Track who signed up
+Troubleshoot issues
+View progress:
+Completion rates by cohort
+Certifications issued
+At-risk students
+Generate reports:
+Export CSV for funders/accreditors
+Requirements:
+Institution admin dashboard
+CSV upload for student bulk invite
+Cohort creation and management
+Bulk email invitations
+Progress tracking by cohort
+Certification tracking
+Report export (CSV)
+Analytics dashboard
+Success Metrics:
+Admin login: <48 hours after credentials
+First cohort: <7 days
+Student signup: >80% within 14 days
+Admin logins: 3x/week
+
+4. KEY MVP FEATURES & REQUIREMENTS
+Feature 1: Student Onboarding
+3-screen flow: Interests → Language → Profile
+Multi-select interests with visual feedback
+Language selection (EN/ES)
+Optional profile setup
+Welcome tutorial overlay
+Status: ❌ Not built
+
+Feature 2: AI Chat Assistant
+Floating widget (bottom right)
+Context-aware responses
+Suggested questions per page
+Rate limiting (10 msgs/hr free, unlimited paid)
+Conversation history (session storage)
+Course recommendations
+Status: ❌ Not built (admin mockup exists)
+
+Feature 3: Video Upload + Auto-Captions
+Drag-drop upload to AWS S3
+Auto-generate thumbnail
+Auto-transcribe to English (Deepgram/AssemblyAI)
+Auto-translate to Spanish (OpenAI)
+Store .vtt files in S3
+Video player with CC selector
+Status: ⚠️ Partial (translation function exists, needs API keys)
+
+Feature 4: Live Streaming
+Schedule live event form
+Daily.co integration
+Student registration + email reminders
+Educator pre-event testing
+Live stream with chat/Q&A
+Auto-recording to Daily.co cloud
+Replay page
+Status: ⚠️ Broken (currently just records locally)
+
+Feature 5: Digital Products
+Product upload form (PDF, DOCX, XLSX, ZIP)
+Product listing page
+Purchase via Stripe
+Download via presigned S3 URLs
+Educator revenue (same platform fee)
+Status: ❌ Not built
+
+Feature 6: Certificate Generation
+Auto-detect completion (100% lessons + quiz pass)
+PDF generation with brand design
+QR code for verification
+Email with PDF attachment
+Public verification page
+Social sharing (LinkedIn, Twitter)
+Status: ⚠️ Partial (creates DB record, no PDF)
+
+Feature 7: Content Moderation
+Auto-moderation via Perspective API
+Admin review queue
+Approve/Request Changes/Reject
+Educator notifications
+Auto-approve if score <0.3
+Manual review if score >0.3
+Status: ❌ Not built
+
+Feature 8: Payment Processing
+Stripe Checkout integration
+Individual course purchase
+Subscription plans (student, educator)
+BNPL options (Klarna, Afterpay, Affirm) - just enable in Stripe
+Stripe Connect for educator payouts
+Platform fee deduction
+Status: ✅ Exists (mostly working)
+
+5. OPEN QUESTIONS FOR WEDNESDAY
+Critical Decisions:
+Onboarding: Email verification before accessing courses? (Adds friction)
+Free Access: Free trial = preview 1 course, or full access for 14 days?
+Educator Plans: Can educators explore before selecting plan? (Recommendation: Yes)
+Course Approval: Auto-publish or require admin review? (Recommendation: Auto with moderation API)
+Teaching Styles: How do teaching style tags affect platform? (Not defined in journey map)
+AI Roadmap: Launch blocker or Phase 2? (Recommendation: Phase 2, use manual recommendations)
+Digital Products: Just templates/PDFs, or integrate with Shopify/Etsy?
+Debarment: Required for MVP or compliance feature for Phase 2?
+Institution Onboarding: Manual for first 3 partners, or build self-service?
+Certificate Approval: Instant or admin approval? (Recommendation: Instant for paid, approval for free)
+Content Questions:
+When will 5 learning tracks have actual lesson content?
+Who creates Spanish translations/captions?
+Timeline for Compton contract - what do they need specifically?
+Technical Questions:
+Transcription: Deepgram or AssemblyAI?
+Video storage: Keep all in hot storage or move old videos to Glacier after 30 days?
+SSL/Custom domain ready?
+Error monitoring/analytics setup? (Sentry, Mixpanel, PostHog?)
+6. ESTIMATED DEVELOPMENT TIME
+Week 1: Core Features (40 hours)
+Student onboarding flow (6h)
+Educator onboarding flow (8h)
+AI chat assistant (8h)
+Video upload + auto-captions (6h)
+Live streaming (Daily.co) (6h)
+Admin moderation portal (6h)
+Week 2: Secondary Features (32 hours)
+Certificate PDF generation (4h)
+Digital products marketplace (8h)
+Email system setup (Resend) (4h)
+AWS S3 configuration (4h)
+Auto-translation setup (4h)
+Free/paid access control (4h)
+Testing & bug fixes (4h)
+Total: 72 hours (2 weeks full-time, or 1 week with 2 devs)
+
+
