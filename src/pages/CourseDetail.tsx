@@ -541,7 +541,14 @@ export default function CourseDetail() {
                                 {module.lessons.map((lesson, lessonIndex) => (
                                   <div
                                     key={lesson.id}
-                                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors group"
+                                    onClick={() => {
+                                      if (isEnrolled || lesson.preview) {
+                                        navigate(`/courses/${courseId}/lessons/${lesson.id}`);
+                                      }
+                                    }}
+                                    className={`flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors group ${
+                                      isEnrolled || lesson.preview ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'
+                                    }`}
                                     data-testid={`lesson-${lesson.id}`}
                                   >
                                     <div className="flex items-center gap-3 flex-1">
