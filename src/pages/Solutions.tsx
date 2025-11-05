@@ -1,9 +1,14 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, BarChart3, Shield, BookOpen, Award, TrendingUp, Globe, Zap, Palette, Code } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Building2, Users, BarChart3, Shield, BookOpen, Award, TrendingUp, Globe, 
+  Zap, Code, ChevronRight, Check
+} from "lucide-react";
 import { RequestDemoModal } from "@/components/institution/RequestDemoModal";
 import { ContactSalesModal } from "@/components/institution/ContactSalesModal";
 
@@ -15,30 +20,36 @@ const Solutions = () => {
     {
       icon: Building2,
       title: "Ready Lab for Institutions",
-      description: "Pre-built, feature-rich LMS platform ready to deploy for universities, nonprofits, and enterprises. Get started in days, not months.",
+      description: "Pre-built, feature-rich LMS platform ready to deploy for universities, nonprofits, and enterprises.",
       features: [
         "Cohort management & tracking",
         "Advanced analytics & reporting",
         "SSO & enterprise security",
         "Custom branding options",
         "Multi-language support",
+        "White-label capabilities"
       ],
       cta: "Request Demo",
+      ctaAction: () => setShowRequestDemo(true),
       popular: true,
+      color: "primary",
     },
     {
       icon: Code,
       title: "Custom White-Label Solutions",
-      description: "Fully branded, custom-built LMS tailored to your exact specifications. Complete ownership and unlimited flexibility.",
+      description: "Fully branded, custom-built LMS tailored to your exact specifications with complete ownership.",
       features: [
         "100% custom design & branding",
         "Tailored feature development",
         "Full source code ownership",
         "Dedicated development team",
         "Ongoing support & maintenance",
+        "Unlimited customization"
       ],
       cta: "Discuss Custom Build",
+      ctaAction: () => setShowContactSales(true),
       popular: false,
+      color: "secondary",
     },
   ];
 
@@ -66,121 +77,112 @@ const Solutions = () => {
   ];
 
   const features = [
-    {
-      icon: BookOpen,
-      title: "Custom Learning Paths",
-      description: "Create tailored curricula for different departments, roles, or skill levels. Combine courses, live events, and assessments.",
-    },
-    {
-      icon: Globe,
-      title: "Multi-Language Support",
-      description: "Automatically translate content into 6 languages. Serve diverse learners globally without additional overhead.",
-    },
-    {
-      icon: TrendingUp,
-      title: "Scalable Infrastructure",
-      description: "From 50 to 50,000 learners, our platform scales with your needs. No performance degradation, guaranteed uptime.",
-    },
+    { icon: BookOpen, title: "Custom Learning Paths", description: "Tailored curricula for departments and roles" },
+    { icon: Globe, title: "Multi-Language Support", description: "Translate content into 6 languages" },
+    { icon: TrendingUp, title: "Scalable Infrastructure", description: "From 50 to 50,000 learners" },
+  ];
+
+  const stats = [
+    { value: "500+", label: "Organizations Served" },
+    { value: "1M+", label: "Learners Trained" },
+    { value: "94%", label: "Completion Rate" },
+    { value: "4.9/5", label: "Average Rating" },
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Header />
       
+      {/* Breadcrumb */}
+      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-primary transition-colors" data-testid="link-home">
+              Home
+            </Link>
+            <ChevronRight className="h-4 w-4" />
+            <span className="text-foreground font-medium">Solutions</span>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-br from-primary/10 via-background to-background">
+      <section className="py-16 bg-gradient-to-br from-primary/5 via-background to-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
-              <Building2 className="h-4 w-4" />
-              <span className="text-sm font-medium">Trusted by 500+ Organizations</span>
-            </div>
+            <Badge variant="outline" className="mb-4 border-primary text-primary">
+              <Building2 className="h-3 w-3 mr-1" />
+              Trusted by 500+ Organizations
+            </Badge>
             
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Enterprise & Custom<br />Learning Solutions
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Enterprise & Custom Learning Solutions
             </h1>
             
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Whether you need a ready-to-deploy LMS or a fully custom white-label solution, we have the perfect fit for your organization's learning and development needs.
-            </p>
-            
-            <div className="flex gap-4 justify-center flex-wrap">
-              <Button 
-                size="lg" 
-                className="text-lg px-8 py-6 h-auto"
-                onClick={() => setShowRequestDemo(true)}
-                data-testid="button-request-demo"
-              >
-                <Building2 className="mr-2 h-5 w-5" />
-                Request Demo
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="text-lg px-8 py-6 h-auto"
-                onClick={() => setShowContactSales(true)}
-                data-testid="button-contact-sales"
-              >
-                Discuss Custom Build
-              </Button>
-            </div>
-            
-            <p className="text-sm text-muted-foreground mt-6">
-              Custom pricing for organizations • Free trial available
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+              Choose the perfect fit for your organization. Deploy quickly with our ready-made platform or build a fully custom solution tailored to your exact needs.
             </p>
           </div>
         </div>
       </section>
 
       {/* Solution Types */}
-      <section className="py-20">
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Choose Your Solution Type</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold mb-3">Choose Your Solution Type</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               Select the approach that best fits your timeline, budget, and customization needs
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto mb-16">
             {solutionTypes.map((solution, index) => {
               const Icon = solution.icon;
               return (
                 <Card 
                   key={index} 
-                  className={`hover:shadow-xl transition-all ${solution.popular ? 'border-primary border-2' : ''}`}
+                  className={`relative hover:shadow-lg transition-all ${
+                    solution.popular ? 'border-primary border-2 shadow-md' : ''
+                  }`}
                   data-testid={`solution-type-${index}`}
                 >
-                  <CardHeader>
-                    {solution.popular && (
-                      <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-4 w-fit">
-                        <Zap className="h-3 w-3" />
+                  {solution.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-primary text-primary-foreground px-3 py-1">
+                        <Zap className="h-3 w-3 mr-1" />
                         Most Popular
-                      </div>
-                    )}
-                    <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                      <Icon className="h-7 w-7 text-primary" />
+                      </Badge>
                     </div>
-                    <CardTitle className="text-2xl mb-2">{solution.title}</CardTitle>
-                    <CardDescription className="text-base">
+                  )}
+                  
+                  <CardHeader className="pb-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                      <Icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-2xl">{solution.title}</CardTitle>
+                    <CardDescription className="text-base mt-2">
                       {solution.description}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3 mb-6">
-                      {solution.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start gap-2">
-                          <div className="mt-1 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <div className="h-2 w-2 rounded-full bg-primary"></div>
+                  
+                  <CardContent className="space-y-6">
+                    <div className="space-y-3">
+                      {solution.features.map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
+                          <div className="mt-0.5 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Check className="h-3 w-3 text-primary" />
                           </div>
                           <span className="text-sm text-muted-foreground">{feature}</span>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
+                    
                     <Button 
                       className="w-full"
+                      size="lg"
                       variant={solution.popular ? "default" : "outline"}
-                      onClick={() => solution.popular ? setShowRequestDemo(true) : setShowContactSales(true)}
+                      onClick={solution.ctaAction}
                       data-testid={`button-${index}-cta`}
                     >
                       {solution.cta}
@@ -190,26 +192,36 @@ const Solutions = () => {
               );
             })}
           </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto p-8 bg-muted/30 rounded-2xl">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-primary mb-1">{stat.value}</div>
+                <div className="text-sm text-muted-foreground">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Value Propositions */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Why Organizations Choose The Ready Lab</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold mb-3">Why Organizations Choose The Ready Lab</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               Everything you need to run successful learning programs at scale
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             {valueProps.map((prop, index) => {
               const Icon = prop.icon;
               return (
                 <Card key={index} className="hover:shadow-lg transition-shadow" data-testid={`value-prop-${index}`}>
                   <CardHeader>
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
                       <Icon className="h-6 w-6 text-primary" />
                     </div>
                     <CardTitle className="text-xl">{prop.title}</CardTitle>
@@ -226,25 +238,27 @@ const Solutions = () => {
         </div>
       </section>
 
-      {/* Additional Features */}
-      <section className="py-20">
+      {/* Enterprise Features */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-12 text-center">Enterprise Features</h2>
+            <h2 className="text-3xl font-bold mb-10 text-center">Enterprise Features</h2>
             
             <div className="grid md:grid-cols-3 gap-6">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
-                  <div key={index} className="flex flex-col items-center text-center p-6 bg-background rounded-lg border">
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                      <Icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {feature.description}
-                    </p>
-                  </div>
+                  <Card key={index} className="text-center">
+                    <CardContent className="pt-6">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 mx-auto">
+                        <Icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <h3 className="font-semibold mb-2">{feature.title}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {feature.description}
+                      </p>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </div>
@@ -252,38 +266,11 @@ const Solutions = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-12 text-center">Proven Results</h2>
-            <div className="grid md:grid-cols-4 gap-8 text-center">
-              <div>
-                <div className="text-4xl font-bold text-primary mb-2">500+</div>
-                <div className="text-sm text-muted-foreground">Organizations Served</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-primary mb-2">1M+</div>
-                <div className="text-sm text-muted-foreground">Learners Trained</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-primary mb-2">94%</div>
-                <div className="text-sm text-muted-foreground">Completion Rate</div>
-              </div>
-              <div>
-                <div className="text-4xl font-bold text-primary mb-2">4.9/5</div>
-                <div className="text-sm text-muted-foreground">Average Rating</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Final CTA */}
-      <section className="py-20">
+      <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <Card className="max-w-3xl mx-auto bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-            <CardContent className="pt-12 pb-12 text-center">
+            <CardContent className="pt-10 pb-10 text-center">
               <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Learning Programs?</h2>
               <p className="text-lg text-muted-foreground mb-8">
                 Schedule a personalized demo or discuss your custom solution needs with our team.
@@ -291,7 +278,6 @@ const Solutions = () => {
               <div className="flex gap-4 justify-center flex-wrap">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 h-auto"
                   onClick={() => setShowRequestDemo(true)}
                   data-testid="button-cta-demo"
                 >
@@ -300,7 +286,6 @@ const Solutions = () => {
                 <Button 
                   size="lg" 
                   variant="outline"
-                  className="text-lg px-8 py-6 h-auto"
                   onClick={() => setShowContactSales(true)}
                   data-testid="button-cta-sales"
                 >
