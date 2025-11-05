@@ -7,7 +7,6 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -60,7 +59,7 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 shadow-sm transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={navigateToHome}>
+        <div className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-70" onClick={navigateToHome}>
           <BookOpen className="h-8 w-8 text-primary" />
           <span className="text-xl font-bold text-neutral-900 dark:text-white">The Ready Lab</span>
         </div>
@@ -110,7 +109,6 @@ const Header = () => {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-3">
-          <ThemeToggle />
           {auth.user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
