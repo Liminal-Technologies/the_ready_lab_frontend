@@ -192,7 +192,7 @@ const Community = () => {
               />
               <label
                 htmlFor={`topic-${topic}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer break-words"
               >
                 {topic}
               </label>
@@ -214,7 +214,7 @@ const Community = () => {
             />
             <label
               htmlFor="filter-private"
-              className="text-sm font-medium leading-none cursor-pointer"
+              className="text-sm font-medium leading-tight cursor-pointer break-words"
             >
               Private Only
             </label>
@@ -228,7 +228,7 @@ const Community = () => {
             />
             <label
               htmlFor="filter-joined"
-              className="text-sm font-medium leading-none cursor-pointer"
+              className="text-sm font-medium leading-tight cursor-pointer break-words"
             >
               My Communities
             </label>
