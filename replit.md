@@ -46,8 +46,23 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 - Green CTA banner linking to full courses
 - Mobile navigation: Explore button is green when on explore page
 
+### Community Page (Purple Theme)
+- Complete community browsing page with purple theme (#9333EA)
+- Similar layout to Courses and Explore pages: breadcrumb, search, sidebar filters, content grid
+- Topic-based filtering: Funding, Legal, Marketing, Infrastructure, Branding, Finance, AI, Operations
+- Community cards showing:
+  - Community icon/image
+  - Member count and activity (posts today)
+  - Open/Private badges
+  - Join status indicators
+- Trending discussions sidebar
+- Filter by type: Private Only, My Communities
+- Purple CTA banner linking to courses
+- Mobile navigation: Community button is purple when on community page
+
 ### Brand Color System
 - **Orange (#FF6B35):** Courses page theme
 - **Green (#10A37F):** Explore page theme (learner brand color)
+- **Purple (#9333EA):** Community page theme
 - **Yellow (#E5A000):** Primary branding color for CTAs and default active states
 - Mobile navigation uses conditional colors based on active page

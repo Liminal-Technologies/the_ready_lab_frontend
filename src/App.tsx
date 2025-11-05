@@ -41,6 +41,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import EducatorAgreement from "./pages/EducatorAgreement";
 import Explore from "./pages/Explore";
+import Community from "./pages/Community";
 import CommunityJoin from "./pages/CommunityJoin";
 import CommunityCreate from "./pages/CommunityCreate";
 import CommunityDetail from "./pages/CommunityDetail";
@@ -99,6 +100,7 @@ const AppContent = () => {
           <Route path="/educator-agreement" element={<EducatorAgreement />} />
           <Route path="/verify/:serial" element={<VerifyCertificate />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/community" element={<Community />} />
           <Route path="/events/:eventId" element={<EventDetail />} />
           <Route path="/community/join" element={<CommunityJoin />} />
           <Route path="/community/create" element={<CommunityCreate />} />
@@ -215,6 +217,7 @@ const AppContent = () => {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/educator-agreement" element={<EducatorAgreement />} />
         <Route path="/explore" element={<Explore />} />
+        <Route path="/community" element={<Community />} />
         <Route path="/events/:eventId" element={<EventDetail />} />
         <Route path="/community/join" element={<CommunityJoin />} />
         <Route path="/community/create" element={<CommunityCreate />} />
