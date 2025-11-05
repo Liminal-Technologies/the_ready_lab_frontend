@@ -25,6 +25,11 @@ The project is built as a full-stack monorepo. The frontend utilizes React with 
 *   **(Optional) AI Features:** OpenAI (requires API key)
 *   **(Optional) Email Notifications:** Resend (requires API key)
 
+## Deployment Configuration
+- **Start Script:** Added `"start": "tsx server/index.ts"` to package.json for production deployment
+- **Build Script:** `"build": "vite build"` compiles the frontend assets
+- **Development:** `npm run dev` runs both Express backend and Vite frontend with hot reloading
+
 ## Recent Updates (Nov 5, 2025)
 
 ### Courses Section Unified
