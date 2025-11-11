@@ -14,7 +14,9 @@ import {
   Settings,
   Eye,
   Edit,
-  Trash2
+  Trash2,
+  Ban,
+  CheckCircle
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -34,6 +36,7 @@ interface Community {
   created_by: string;
   created_at: string;
   rules?: string;
+  is_active?: boolean;
 }
 
 export function AdminCommunities() {
@@ -42,6 +45,9 @@ export function AdminCommunities() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
+  const [disabledCommunities, setDisabledCommunities] = useState<Set<string>>(
+    new Set(JSON.parse(localStorage.getItem('disabledCommunities') || '[]'))
+  );
   const { toast } = useToast();
 
   useEffect(() => {
@@ -89,6 +95,27 @@ export function AdminCommunities() {
     }
 
     setFilteredCommunities(filtered);
+  };
+
+  const toggleCommunityStatus = (communityId: string, currentStatus: boolean) => {
+    const newDisabledSet = new Set(disabledCommunities);
+    const newStatus = !currentStatus;
+    
+    if (newStatus) {
+      // Enabling - remove from disabled set
+      newDisabledSet.delete(communityId);
+    } else {
+      // Disabling - add to disabled set
+      newDisabledSet.add(communityId);
+    }
+    
+    setDisabledCommunities(newDisabledSet);
+    localStorage.setItem('disabledCommunities', JSON.stringify(Array.from(newDisabledSet)));
+    
+    toast({
+      title: "Success",
+      description: `Community ${newStatus ? 'enabled' : 'disabled'} successfully`,
+    });
   };
 
   const deleteCommunity = async (communityId: string) => {
@@ -262,7 +289,16 @@ export function AdminCommunities() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{getVisibilityBadge(community.visibility)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {getVisibilityBadge(community.visibility)}
+                        {disabledCommunities.has(community.id) && (
+                          <Badge variant="destructive" className="text-xs">
+                            Disabled
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
@@ -291,6 +327,21 @@ export function AdminCommunities() {
                           <DropdownMenuItem>
                             <Settings className="mr-2 h-4 w-4" />
                             Moderate Posts
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => toggleCommunityStatus(community.id, !disabledCommunities.has(community.id))}
+                          >
+                            {disabledCommunities.has(community.id) ? (
+                              <>
+                                <CheckCircle className="mr-2 h-4 w-4" />
+                                Enable Community
+                              </>
+                            ) : (
+                              <>
+                                <Ban className="mr-2 h-4 w-4" />
+                                Disable Community
+                              </>
+                            )}
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             className="text-destructive"

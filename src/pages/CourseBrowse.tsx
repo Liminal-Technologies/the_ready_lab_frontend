@@ -63,7 +63,8 @@ const allCourses = [
     featured: true,
     image: fundingImage,
     instructorName: "Dr. Michael Chen",
-    format: "Video"
+    format: "Video",
+    learningStyle: "visual"
   },
   {
     id: "2",
@@ -79,7 +80,8 @@ const allCourses = [
     featured: false,
     image: operationsImage,
     instructorName: "Sarah Rodriguez",
-    format: "Video"
+    format: "Video",
+    learningStyle: "reading"
   },
   {
     id: "3",
@@ -95,7 +97,8 @@ const allCourses = [
     featured: false,
     image: brandingImage,
     instructorName: "Alex Thompson",
-    format: "Interactive"
+    format: "Interactive",
+    learningStyle: "visual"
   },
   {
     id: "4",
@@ -111,7 +114,8 @@ const allCourses = [
     featured: false,
     image: aiImage,
     instructorName: "Jamie Lee",
-    format: "Video"
+    format: "Video",
+    learningStyle: "kinesthetic"
   },
   {
     id: "5",
@@ -127,7 +131,8 @@ const allCourses = [
     featured: true,
     image: partnershipImage,
     instructorName: "Morgan Taylor",
-    format: "Interactive"
+    format: "Interactive",
+    learningStyle: "auditory"
   },
   {
     id: "6",
@@ -137,13 +142,14 @@ const allCourses = [
     students: "1,400",
     rating: "4.7",
     level: "Intermediate",
-    price: 179,
+    price: 0,
     category: "Financial Planning",
     certification: true,
     featured: false,
     image: financialImage,
     instructorName: "Chris Anderson",
-    format: "Video"
+    format: "Video",
+    learningStyle: "visual"
   },
   {
     id: "7",
@@ -159,7 +165,8 @@ const allCourses = [
     featured: false,
     image: fundingImage,
     instructorName: "Dr. Emily Foster",
-    format: "Video"
+    format: "Video",
+    learningStyle: "reading"
   },
   {
     id: "8",
@@ -169,13 +176,14 @@ const allCourses = [
     students: "980",
     rating: "4.6",
     level: "Intermediate",
-    price: 149,
+    price: 0,
     category: "Impact",
     certification: true,
     featured: false,
     image: partnershipImage,
     instructorName: "Jordan Lee",
-    format: "Interactive"
+    format: "Interactive",
+    learningStyle: "kinesthetic"
   }
 ];
 
@@ -238,6 +246,8 @@ const CourseBrowse = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+  const [selectedLearningStyles, setSelectedLearningStyles] = useState<string[]>([]);
+  const [paidFilter, setPaidFilter] = useState<"all" | "free" | "paid">("all");
   const [priceRange, setPriceRange] = useState([0, 300]);
   const [sortBy, setSortBy] = useState("recommended");
   const [currentPage, setCurrentPage] = useState(1);
@@ -250,6 +260,10 @@ const CourseBrowse = () => {
     const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(course.category);
     const levelMatch = selectedLevels.length === 0 || selectedLevels.includes(course.level);
     const formatMatch = selectedFormats.length === 0 || selectedFormats.includes(course.format);
+    const learningStyleMatch = selectedLearningStyles.length === 0 || selectedLearningStyles.includes(course.learningStyle);
+    const paidFilterMatch = paidFilter === "all" || 
+      (paidFilter === "free" && course.price === 0) ||
+      (paidFilter === "paid" && course.price > 0);
     const priceMatch = course.price >= priceRange[0] && course.price <= priceRange[1];
     const chipMatch = !activeChip || course.category === activeChip;
     
@@ -259,7 +273,7 @@ const CourseBrowse = () => {
       course.instructorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.category.toLowerCase().includes(searchQuery.toLowerCase());
     
-    return categoryMatch && levelMatch && formatMatch && priceMatch && chipMatch && searchMatch;
+    return categoryMatch && levelMatch && formatMatch && learningStyleMatch && paidFilterMatch && priceMatch && chipMatch && searchMatch;
   });
 
   // Sort courses
@@ -303,6 +317,12 @@ const CourseBrowse = () => {
     );
   };
 
+  const toggleLearningStyle = (style: string) => {
+    setSelectedLearningStyles(prev =>
+      prev.includes(style) ? prev.filter(s => s !== style) : [...prev, style]
+    );
+  };
+
   const handleChipClick = (category: string) => {
     setActiveChip(activeChip === category ? null : category);
     setCurrentPage(1);
@@ -312,6 +332,8 @@ const CourseBrowse = () => {
     setSelectedCategories([]);
     setSelectedLevels([]);
     setSelectedFormats([]);
+    setSelectedLearningStyles([]);
+    setPaidFilter("all");
     setPriceRange([0, 300]);
     setActiveChip(null);
     setSearchQuery("");
@@ -339,6 +361,39 @@ const CourseBrowse = () => {
               </label>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-bold text-lg mb-4">Free/Paid</h3>
+        <div className="flex gap-2">
+          <Button
+            variant={paidFilter === "all" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPaidFilter("all")}
+            className={paidFilter === "all" ? "bg-orange-500 hover:bg-orange-600" : ""}
+            data-testid="button-filter-all"
+          >
+            All
+          </Button>
+          <Button
+            variant={paidFilter === "free" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPaidFilter("free")}
+            className={paidFilter === "free" ? "bg-orange-500 hover:bg-orange-600" : ""}
+            data-testid="button-filter-free"
+          >
+            Free
+          </Button>
+          <Button
+            variant={paidFilter === "paid" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setPaidFilter("paid")}
+            className={paidFilter === "paid" ? "bg-orange-500 hover:bg-orange-600" : ""}
+            data-testid="button-filter-paid"
+          >
+            Paid
+          </Button>
         </div>
       </div>
 
@@ -398,6 +453,34 @@ const CourseBrowse = () => {
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
               >
                 {format}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-bold text-lg mb-4">Learning Style</h3>
+        <div className="space-y-3">
+          {[
+            { value: "visual", label: "Visual", icon: "🎨" },
+            { value: "auditory", label: "Auditory", icon: "🎧" },
+            { value: "reading", label: "Reading/Writing", icon: "📝" },
+            { value: "kinesthetic", label: "Kinesthetic", icon: "🤲" }
+          ].map(style => (
+            <div key={style.value} className="flex items-center space-x-2">
+              <Checkbox
+                id={`learning-${style.value}`}
+                checked={selectedLearningStyles.includes(style.value)}
+                onCheckedChange={() => toggleLearningStyle(style.value)}
+                data-testid={`checkbox-learning-${style.value}`}
+              />
+              <label
+                htmlFor={`learning-${style.value}`}
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2"
+              >
+                <span>{style.icon}</span>
+                <span>{style.label}</span>
               </label>
             </div>
           ))}

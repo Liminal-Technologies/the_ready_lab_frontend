@@ -76,6 +76,7 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [level, setLevel] = useState("beginner");
+  const [learningStyle, setLearningStyle] = useState("");
   const [description, setDescription] = useState("");
   const [objectives, setObjectives] = useState<string[]>(["", "", ""]);
   
@@ -176,6 +177,7 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
       title,
       category,
       level,
+      learningStyle,
       description,
       objectives: objectives.filter(o => o.trim()),
       pricing: { isPaid, price: isPaid ? priceNumber : 0 },
@@ -204,6 +206,7 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
       title,
       category,
       level,
+      learningStyle,
       description,
       objectives: objectives.filter(o => o.trim()),
       pricing: { isPaid, price: isPaid ? priceNumber : 0 },
@@ -226,6 +229,7 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
     setTitle("");
     setCategory("");
     setLevel("beginner");
+    setLearningStyle("");
     setDescription("");
     setObjectives(["", "", ""]);
     setIsPaid(false);
@@ -337,6 +341,24 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
                   ))}
                 </div>
               </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="learning-style">Learning Style (Optional)</Label>
+              <Select value={learningStyle} onValueChange={setLearningStyle}>
+                <SelectTrigger data-testid="select-learning-style">
+                  <SelectValue placeholder="Select primary learning style" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="visual">Visual (Images, diagrams, charts)</SelectItem>
+                  <SelectItem value="auditory">Auditory (Lectures, discussions)</SelectItem>
+                  <SelectItem value="kinesthetic">Kinesthetic (Hands-on, interactive)</SelectItem>
+                  <SelectItem value="reading">Reading/Writing (Text-based)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                This helps students find courses that match their preferred learning method
+              </p>
             </div>
 
             <div className="space-y-2">

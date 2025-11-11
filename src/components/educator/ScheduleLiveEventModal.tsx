@@ -14,11 +14,32 @@ interface ScheduleLiveEventModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const TIMEZONES = [
+  { value: "America/New_York", label: "Eastern Time (ET)" },
+  { value: "America/Chicago", label: "Central Time (CT)" },
+  { value: "America/Denver", label: "Mountain Time (MT)" },
+  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
+  { value: "America/Phoenix", label: "Arizona (MST)" },
+  { value: "America/Anchorage", label: "Alaska Time (AKT)" },
+  { value: "Pacific/Honolulu", label: "Hawaii Time (HST)" },
+  { value: "Europe/London", label: "London (GMT/BST)" },
+  { value: "Europe/Paris", label: "Central European (CET)" },
+  { value: "Asia/Tokyo", label: "Tokyo (JST)" },
+  { value: "Asia/Shanghai", label: "Beijing (CST)" },
+  { value: "Asia/Dubai", label: "Dubai (GST)" },
+  { value: "Australia/Sydney", label: "Sydney (AEDT)" },
+];
+
 export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEventModalProps) {
+  // Get browser timezone as default
+  const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const defaultTimezone = TIMEZONES.find(tz => tz.value === browserTimezone)?.value || "America/New_York";
+  
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [timezone, setTimezone] = useState(defaultTimezone);
   const [duration, setDuration] = useState("60");
   const [maxAttendees, setMaxAttendees] = useState("100");
   const [associatedCourse, setAssociatedCourse] = useState("");
@@ -46,6 +67,7 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
       description,
       date,
       time,
+      timezone,
       duration: parseInt(duration),
       maxAttendees: parseInt(maxAttendees),
       associatedCourse,
@@ -75,6 +97,7 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
     setDescription("");
     setDate("");
     setTime("");
+    setTimezone(defaultTimezone);
     setDuration("60");
     setMaxAttendees("100");
     setAssociatedCourse("");
@@ -125,7 +148,7 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
             />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
             {/* Date */}
             <div className="space-y-2">
               <Label htmlFor="event-date" className="flex items-center gap-2">
@@ -154,6 +177,23 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
                 onChange={(e) => setTime(e.target.value)}
                 data-testid="input-event-time"
               />
+            </div>
+
+            {/* Timezone */}
+            <div className="space-y-2">
+              <Label htmlFor="event-timezone">Timezone *</Label>
+              <Select value={timezone} onValueChange={setTimezone}>
+                <SelectTrigger data-testid="select-event-timezone">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TIMEZONES.map((tz) => (
+                    <SelectItem key={tz.value} value={tz.value}>
+                      {tz.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

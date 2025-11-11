@@ -189,21 +189,21 @@ export function AdminOverview() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen bg-background dark:bg-neutral-900 p-6 space-y-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
         <Link to="/" className="hover:text-primary transition-colors">
           Home
         </Link>
         <ChevronRight className="h-4 w-4" />
-        <span className="text-foreground font-medium">Admin Overview</span>
+        <span className="text-neutral-900 dark:text-white font-medium">Admin Overview</span>
       </div>
 
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin Overview</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-neutral-900 dark:text-white">Admin Overview</h1>
+          <p className="text-neutral-600 dark:text-neutral-400">
             Monitor platform performance and manage key metrics
           </p>
         </div>
