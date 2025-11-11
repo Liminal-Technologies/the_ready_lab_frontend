@@ -115,12 +115,12 @@ export const StudentSettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className="min-h-screen bg-background dark:bg-neutral-900 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">{t('settings.title')}</h1>
-            <p className="text-muted-foreground">Manage your account preferences and security settings</p>
+            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">{t('settings.title')}</h1>
+            <p className="text-neutral-600 dark:text-neutral-400">Manage your account preferences and security settings</p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => window.location.href = '/'}>

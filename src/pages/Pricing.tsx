@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -27,9 +27,33 @@ import {
   Sparkles,
   BarChart3,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authDefaultMode, setAuthDefaultMode] = useState<'login' | 'signup'>('signup');
+  const navigate = useNavigate();
+  const { auth } = useAuth();
+
+  const handlePlanClick = (role: 'student' | 'educator') => {
+    if (!auth.user) {
+      setAuthDefaultMode('signup');
+      setIsAuthModalOpen(true);
+    } else {
+      // Navigate to appropriate page based on plan role
+      if (role === 'educator') {
+        navigate('/educator/dashboard');
+      } else {
+        navigate('/courses');
+      }
+    }
+  };
+
+  const handleDemoRequest = () => {
+    navigate('/solutions');
+  };
 
   const studentPlans = [
     {
@@ -46,6 +70,7 @@ const Pricing = () => {
       cta: "Get Started Free",
       popular: false,
       color: "default" as const,
+      role: "student" as const,
     },
     {
       name: "Pro",
@@ -63,6 +88,7 @@ const Pricing = () => {
       cta: "Start Free Trial",
       popular: true,
       color: "primary" as const,
+      role: "student" as const,
     },
   ];
 
@@ -82,6 +108,7 @@ const Pricing = () => {
       cta: "Join as Educator",
       popular: false,
       color: "default" as const,
+      role: "educator" as const,
     },
     {
       name: "Pro Educator",
@@ -99,6 +126,7 @@ const Pricing = () => {
       cta: "Upgrade to Pro",
       popular: true,
       color: "primary" as const,
+      role: "educator" as const,
     },
   ];
 
@@ -277,6 +305,7 @@ const Pricing = () => {
                         className="w-full"
                         variant={plan.popular ? "default" : "outline"}
                         size="lg"
+                        onClick={() => handlePlanClick(plan.role)}
                         data-testid={`button-plan-${index}`}
                       >
                         {plan.cta}
@@ -336,6 +365,7 @@ const Pricing = () => {
                         className="w-full"
                         variant={plan.popular ? "default" : "outline"}
                         size="lg"
+                        onClick={() => handlePlanClick(plan.role)}
                         data-testid={`button-educator-${index}`}
                       >
                         {plan.cta}
@@ -463,10 +493,26 @@ const Pricing = () => {
                 Join thousands of learners, educators, and institutions transforming education
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
-                <Button size="lg" data-testid="button-cta-signup">
+                <Button 
+                  size="lg" 
+                  onClick={() => {
+                    if (!auth.user) {
+                      setAuthDefaultMode('signup');
+                      setIsAuthModalOpen(true);
+                    } else {
+                      navigate('/courses');
+                    }
+                  }}
+                  data-testid="button-cta-signup"
+                >
                   Sign Up Free
                 </Button>
-                <Button size="lg" variant="outline" data-testid="button-cta-demo">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  onClick={handleDemoRequest}
+                  data-testid="button-cta-demo"
+                >
                   Book a Demo
                 </Button>
               </div>
@@ -476,6 +522,12 @@ const Pricing = () => {
       </section>
 
       <Footer />
+      
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultMode={authDefaultMode}
+      />
     </div>
   );
 };
