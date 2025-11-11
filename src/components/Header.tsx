@@ -56,8 +56,12 @@ const Header = () => {
   const handleSignOut = async () => {
     try {
       await signOut();
+      // Navigate to home page after sign out
+      navigate('/');
     } catch (error) {
       console.error('Sign out error:', error);
+      // Still navigate to home even if there's an error
+      navigate('/');
     }
   };
 

@@ -124,7 +124,11 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
 
           <div className="space-y-2">
             <Label htmlFor="role">I want to join as a...</Label>
-            <Select onValueChange={(value) => setValue('role', value as 'student' | 'educator')}>
+            <Select 
+              defaultValue="student" 
+              value={selectedRole}
+              onValueChange={(value) => setValue('role', value as 'student' | 'educator')}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select your role" />
               </SelectTrigger>

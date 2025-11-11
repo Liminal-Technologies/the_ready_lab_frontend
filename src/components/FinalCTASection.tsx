@@ -1,9 +1,34 @@
 import { Button } from "@/components/ui/button";
 import { Award, Users, ArrowRight, CheckCircle2 } from "lucide-react";
 import ctaBackground from "/attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { AuthModal } from "./auth/AuthModal";
+import { useAuth } from "@/hooks/useAuth";
 
 const FinalCTASection = () => {
+  const navigate = useNavigate();
+  const { auth } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const handleStartLearning = () => {
+    if (auth.user) {
+      navigate('/courses');
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
+
+  const handleJoinCommunity = () => {
+    if (auth.user) {
+      navigate('/community');
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
+
   return (
+    <>
     <section className="py-16 lg:py-24 relative text-white overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
@@ -31,6 +56,7 @@ const FinalCTASection = () => {
               size="lg" 
               className="w-full sm:w-auto font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
               style={{ backgroundColor: '#FDB022', color: '#000' }}
+              onClick={handleStartLearning}
               data-testid="button-start-learning-cta"
             >
               <Award className="h-5 w-5 mr-2" />
@@ -40,6 +66,7 @@ const FinalCTASection = () => {
               size="lg" 
               variant="outline"
               className="w-full sm:w-auto font-semibold border-2 border-gray-800 bg-white hover:bg-gray-100 text-gray-900 shadow-lg hover:shadow-xl transition-all"
+              onClick={handleJoinCommunity}
               data-testid="button-join-community-cta"
             >
               <Users className="h-5 w-5 mr-2" />
@@ -63,7 +90,15 @@ const FinalCTASection = () => {
           </div>
         </div>
       </div>
+
     </section>
+
+    <AuthModal 
+      isOpen={isAuthModalOpen} 
+      onClose={() => setIsAuthModalOpen(false)}
+      defaultMode="signup"
+    />
+    </>
   );
 };
 
