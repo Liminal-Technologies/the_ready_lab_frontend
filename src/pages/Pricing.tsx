@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -36,6 +36,11 @@ const Pricing = () => {
   const [authDefaultMode, setAuthDefaultMode] = useState<'login' | 'signup'>('signup');
   const navigate = useNavigate();
   const { auth } = useAuth();
+
+  // Scroll to top when the page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handlePlanClick = (role: 'student' | 'educator') => {
     if (!auth.user) {
