@@ -61,8 +61,8 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
         toast.success("Account created successfully! 🎉", {
           description: "Let's get you set up",
         });
-        // Redirect to onboarding for students
-        navigate('/onboarding');
+        // Redirect to pricing for students
+        navigate('/pricing');
       }
     } catch (error: any) {
       // Error is stored in auth.error by useAuth hook
@@ -74,8 +74,8 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
     toast.success("Account created successfully! 🎉", {
       description: "Let's get you set up",
     });
-    // Redirect to onboarding after educator plan selection
-    navigate('/onboarding');
+    // Redirect to pricing after educator plan selection
+    navigate('/pricing');
   };
 
   return (
