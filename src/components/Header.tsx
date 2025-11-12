@@ -8,6 +8,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 
 const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -148,6 +149,9 @@ const Header = () => {
 
         {/* Desktop Actions */}
         <div className="hidden lg:flex items-center gap-3">
+          {/* Demo Mode Role Switcher */}
+          <RoleSwitcher />
+
           {auth.user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
