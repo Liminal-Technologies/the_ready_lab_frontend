@@ -120,7 +120,7 @@ const Courses = () => {
     >
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-4 py-2 rounded-full text-sm font-semibold mb-6">
             <TrendingUp className="h-4 w-4" />
             {t('courses.certificationTracks')}

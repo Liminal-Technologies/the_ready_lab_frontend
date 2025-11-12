@@ -77,7 +77,7 @@ const Features = () => {
     <section id="about" className="py-24 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200 overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Hero Header */}
-        <div className="relative mb-12">
+        <div className="relative mb-6">
           {/* Main Content */}
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left: Headline */}

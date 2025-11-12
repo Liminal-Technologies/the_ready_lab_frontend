@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { LoginForm } from './LoginForm';
 import { SignupForm } from './SignupForm';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface AuthModalProps {
 
 export const AuthModal = ({ isOpen, onClose, defaultMode = 'login' }: AuthModalProps) => {
   const [mode, setMode] = useState<'login' | 'signup'>(defaultMode);
+  const { auth, clearError } = useAuth();
 
   useEffect(() => {
     if (isOpen) {
@@ -20,17 +22,29 @@ export const AuthModal = ({ isOpen, onClose, defaultMode = 'login' }: AuthModalP
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
+      // Don't allow closing if there's an auth error
+      if (auth.error) {
+        return;
+      }
+      // Clear any auth errors when modal closes successfully
+      clearError();
       onClose();
     }
+  };
+
+  // Close modal and clear error when switching modes
+  const handleSwitchMode = (newMode: 'login' | 'signup') => {
+    clearError();
+    setMode(newMode);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md p-0 border-0">
         {mode === 'login' ? (
-          <LoginForm onSwitchToSignup={() => setMode('signup')} />
+          <LoginForm onSwitchToSignup={() => handleSwitchMode('signup')} />
         ) : (
-          <SignupForm onSwitchToLogin={() => setMode('login')} />
+          <SignupForm onSwitchToLogin={() => handleSwitchMode('login')} />
         )}
       </DialogContent>
     </Dialog>

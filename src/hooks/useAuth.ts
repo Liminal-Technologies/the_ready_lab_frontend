@@ -8,6 +8,7 @@ const AuthContext = createContext<{
   signUp: (email: string, password: string, role: string, fullName: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  clearError: () => void;
 } | null>(null);
 
 export const useAuth = () => {
@@ -245,11 +246,16 @@ export const useAuthState = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const clearError = () => {
+    setAuth(prev => ({ ...prev, error: null }));
+  };
+
   return {
     auth,
     signUp,
     signIn,
-    signOut
+    signOut,
+    clearError
   };
 };
 

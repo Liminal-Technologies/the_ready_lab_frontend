@@ -7,7 +7,7 @@ const SuccessStoriesSection = () => {
     <section className="py-20 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-6">
           {/* Small Purple Label */}
           <div className="mb-6">
             <span className="inline-block px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-sm font-semibold">
