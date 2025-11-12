@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,7 +37,6 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [signupRole, setSignupRole] = useState<string>('');
-  const [signupError, setSignupError] = useState<string>('');
   const { signUp, auth } = useAuth();
   
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SignupFormData>({
@@ -50,7 +49,6 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
   const selectedRole = watch('role');
 
   const onSubmit = async (data: SignupFormData) => {
-    setSignupError('');
     try {
       await signUp(data.email, data.password, data.role, data.fullName);
       
@@ -67,7 +65,8 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
         navigate('/onboarding');
       }
     } catch (error: any) {
-      setSignupError(error.message || "There was an error creating your account");
+      // Error is stored in auth.error by useAuth hook
+      console.log('Signup failed, error in auth.error:', auth.error);
     }
   };
 
@@ -89,11 +88,11 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {signupError && (
+          {auth.error && (
             <Alert variant="destructive" data-testid="alert-signup-error">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {signupError}
+                {auth.error}
               </AlertDescription>
             </Alert>
           )}
