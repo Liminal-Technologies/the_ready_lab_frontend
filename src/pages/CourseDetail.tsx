@@ -234,6 +234,11 @@ export default function CourseDetail() {
   const [lastWatchedLesson, setLastWatchedLesson] = useState<number>(1);
   const [activeTab, setActiveTab] = useState("overview");
 
+  // Scroll to top when the page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [courseId]);
+
   // Check enrollment status from localStorage
   useEffect(() => {
     const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
