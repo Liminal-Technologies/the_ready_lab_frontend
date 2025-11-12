@@ -47,6 +47,8 @@ import financialImage from "../../attached_assets/stock_images/financial_plannin
 import ctaBackgroundImage from "../../attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { useAuth } from "@/hooks/useAuth";
 
 const allCourses = [
   {
@@ -243,6 +245,7 @@ const learningStyles = [
 
 const CourseBrowse = () => {
   const navigate = useNavigate();
+  const { auth } = useAuth();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
@@ -253,12 +256,21 @@ const CourseBrowse = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeChip, setActiveChip] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const coursesPerPage = 6;
 
   // Scroll to top when the page loads
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleJoinFree = () => {
+    if (auth.user) {
+      navigate('/courses');
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
 
   // Filter courses
   const filteredCourses = allCourses.filter(course => {
@@ -882,7 +894,7 @@ const CourseBrowse = () => {
               <Button
                 size="lg"
                 className="mt-6 bg-[#E5A000] text-white hover:bg-[#cc8f00] font-bold"
-                onClick={() => navigate("/signup")}
+                onClick={handleJoinFree}
                 data-testid="button-join-free"
               >
                 Join For Free
@@ -896,6 +908,12 @@ const CourseBrowse = () => {
       {/* Footer */}
       <Footer />
       </div>
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultMode="signup"
+      />
     </>
   );
 };
