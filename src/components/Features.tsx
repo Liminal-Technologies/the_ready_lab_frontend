@@ -146,7 +146,7 @@ const Features = () => {
     </section>
 
     {/* Unified Learning Section - Modern Green Theme */}
-    <section className="py-20 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200">
+    <section className="pt-12 pb-20 lg:pt-16 lg:pb-32 bg-white dark:bg-neutral-900 transition-colors duration-200">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Header */}
         <div className="mb-12 lg:mb-16">
