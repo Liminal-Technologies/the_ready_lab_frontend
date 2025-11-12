@@ -18,8 +18,14 @@ export const AuthModal = ({ isOpen, onClose, defaultMode = 'login' }: AuthModalP
     }
   }, [isOpen, defaultMode]);
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md p-0 border-0">
         {mode === 'login' ? (
           <LoginForm onSwitchToSignup={() => setMode('signup')} />
