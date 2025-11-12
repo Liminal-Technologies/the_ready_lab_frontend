@@ -16,41 +16,21 @@ import {
   UserPlus,
   BadgeCheck,
   FileText,
-  ChevronRight
+  ChevronRight,
+  Globe,
+  Mail
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
-
-interface KPIData {
-  activeStudents: number;
-  activeEducators: number;
-  newSubscriptions: number;
-  courseCompletions: number;
-  certificatesIssued: number;
-  monthlyRevenue: number;
-}
-
-interface Alert {
-  id: string;
-  type: 'error' | 'warning' | 'info';
-  title: string;
-  description: string;
-  count?: number;
-}
+import { useAdminDataSource } from "@/hooks/useAdminDataSource";
+import type { KPIData, Alert as AdminAlert } from "@/services/AdminDataService";
 
 export function AdminOverview() {
-  const [kpis, setKpis] = useState<KPIData>({
-    activeStudents: 0,
-    activeEducators: 0,
-    newSubscriptions: 0,
-    courseCompletions: 0,
-    certificatesIssued: 0,
-    monthlyRevenue: 0
-  });
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [kpis, setKpis] = useState<KPIData | null>(null);
+  const [alerts, setAlerts] = useState<AdminAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const dataSource = useAdminDataSource();
 
   useEffect(() => {
     fetchDashboardData();
@@ -60,70 +40,13 @@ export function AdminOverview() {
     try {
       setLoading(true);
 
-      // Fetch KPI data
-      const [
-        studentsResult,
-        educatorsResult,
-        enrollmentsResult,
-        certificatesResult,
-        productsResult
-      ] = await Promise.all([
-        supabase.from('profiles').select('id').eq('role', 'student').eq('subscription_status', 'active'),
-        supabase.from('profiles').select('id').eq('role', 'educator'),
-        supabase.from('enrollments').select('id').eq('status', 'active'),
-        supabase.from('certifications').select('id').eq('status', 'issued'),
-        supabase.from('digital_products').select('id').eq('status', 'pending')
+      // Use service layer instead of direct Supabase calls
+      const [kpiData, alertsData] = await Promise.all([
+        dataSource.kpis.getKPIs(),
+        dataSource.kpis.getAlerts(),
       ]);
 
-      // Count completions this month
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
-      const { data: completions } = await supabase
-        .from('enrollments')
-        .select('id')
-        .eq('status', 'completed')
-        .gte('completion_date', thirtyDaysAgo.toISOString());
-
-      const { data: newSubs } = await supabase
-        .from('profiles')
-        .select('id')
-        .in('subscription_status', ['active', 'trial'])
-        .gte('created_at', thirtyDaysAgo.toISOString());
-
-      setKpis({
-        activeStudents: studentsResult.data?.length || 0,
-        activeEducators: educatorsResult.data?.length || 0,
-        newSubscriptions: newSubs?.length || 0,
-        courseCompletions: completions?.length || 0,
-        certificatesIssued: certificatesResult.data?.length || 0,
-        monthlyRevenue: 12450 // Mock data - would integrate with Stripe
-      });
-
-      // Generate alerts
-      const alertsData: Alert[] = [];
-      
-      if (productsResult.data && productsResult.data.length > 0) {
-        alertsData.push({
-          id: 'pending-products',
-          type: 'warning',
-          title: 'Pending Product Approvals',
-          description: 'Digital products waiting for review',
-          count: productsResult.data.length
-        });
-      }
-
-      // Mock additional alerts
-      alertsData.push(
-        {
-          id: 'failed-payments',
-          type: 'error',
-          title: 'Failed Payments',
-          description: 'Payment failures requiring attention',
-          count: 3
-        }
-      );
-
+      setKpis(kpiData);
       setAlerts(alertsData);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -137,7 +60,7 @@ export function AdminOverview() {
     }
   };
 
-  const kpiCards = [
+  const kpiCards = kpis ? [
     {
       title: "Active Students",
       value: kpis.activeStudents,
@@ -155,12 +78,20 @@ export function AdminOverview() {
       iconColor: "text-green-500"
     },
     {
+      title: "Active Communities",
+      value: kpis.activeCommunities,
+      change: "+18%",
+      icon: Users,
+      bgColor: "bg-purple-500/10",
+      iconColor: "text-purple-500"
+    },
+    {
       title: "New Subscriptions",
       value: kpis.newSubscriptions,
       change: "+23%",
       icon: TrendingUp,
-      bgColor: "bg-purple-500/10",
-      iconColor: "text-purple-500"
+      bgColor: "bg-yellow-500/10",
+      iconColor: "text-yellow-500"
     },
     {
       title: "Course Completions",
@@ -183,10 +114,10 @@ export function AdminOverview() {
       value: `$${kpis.monthlyRevenue.toLocaleString()}`,
       change: "+32%",
       icon: DollarSign,
-      bgColor: "bg-green-500/10",
-      iconColor: "text-green-500"
+      bgColor: "bg-pink-500/10",
+      iconColor: "text-pink-500"
     }
-  ];
+  ] : [];
 
   return (
     <div className="min-h-screen bg-background dark:bg-neutral-900 p-6 space-y-8">
@@ -220,7 +151,7 @@ export function AdminOverview() {
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {kpiCards.map((kpi) => (
-          <Card key={kpi.title} className="hover:shadow-md transition-shadow">
+          <Card key={kpi.title} className="hover:shadow-md transition-shadow" data-testid={`kpi-${kpi.title.toLowerCase().replace(/\s+/g, '-')}`}>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-3">
                 <div className={`w-12 h-12 rounded-xl ${kpi.bgColor} flex items-center justify-center`}>
@@ -230,7 +161,7 @@ export function AdminOverview() {
                   {kpi.change}
                 </Badge>
               </div>
-              <div className="text-2xl font-bold mb-1">{kpi.value}</div>
+              <div className="text-2xl font-bold mb-1" data-testid={`value-${kpi.title.toLowerCase().replace(/\s+/g, '-')}`}>{kpi.value}</div>
               <p className="text-sm text-muted-foreground">
                 {kpi.title}
               </p>
@@ -238,6 +169,72 @@ export function AdminOverview() {
           </Card>
         ))}
       </div>
+
+      {/* Integration Status */}
+      {kpis && (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold">Platform Integrations</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Stripe Integration Status */}
+            <Card className={kpis.stripeConnected ? "border-green-500/50" : "border-red-500/50"}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" />
+                    Stripe Payments
+                  </CardTitle>
+                  <Badge variant={kpis.stripeConnected ? "default" : "destructive"} data-testid="badge-stripe-status">
+                    {kpis.stripeConnected ? "Connected" : "Not Connected"}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {kpis.stripeConnected 
+                    ? `Platform fee: ${kpis.platformFeePercent}% | Total GMV: $${kpis.totalGMV.toLocaleString()}`
+                    : "Connect Stripe to enable payments, subscriptions, and educator payouts"
+                  }
+                </p>
+                <Link to="/admin/payments">
+                  <Button variant={kpis.stripeConnected ? "outline" : "default"} className="w-full" data-testid="button-manage-stripe">
+                    {kpis.stripeConnected ? "Manage Stripe" : "Connect Stripe"}
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Email/CRM Integration Status */}
+            <Card className={kpis.emailProviderConnected ? "border-green-500/50" : "border-yellow-500/50"}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Email & CRM
+                  </CardTitle>
+                  <Badge variant={kpis.emailProviderConnected ? "default" : "secondary"} data-testid="badge-email-status">
+                    {kpis.emailProviderConnected ? kpis.emailProvider : "Not Connected"}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {kpis.emailProviderConnected
+                    ? "Sending certificates, notifications, and marketing emails via " + kpis.emailProvider
+                    : "Connect an email provider to send course updates, certificates, and notifications"
+                  }
+                </p>
+                <Link to="/admin/settings">
+                  <Button variant={kpis.emailProviderConnected ? "outline" : "default"} className="w-full" data-testid="button-manage-email">
+                    {kpis.emailProviderConnected ? "Manage Email" : "Connect Provider"}
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
 
       {/* Alerts Section */}
       {alerts.length > 0 && (
