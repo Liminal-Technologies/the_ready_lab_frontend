@@ -21,6 +21,13 @@ const Header = () => {
   const location = useLocation();
   const { t, language, setLanguage } = useLanguage();
   
+  const handleCloseAuthModal = () => {
+    // Don't close if there's an auth error - user needs to see it
+    if (!auth.error) {
+      setIsAuthModalOpen(false);
+    }
+  };
+  
   useEffect(() => {
     const handleStorageChange = () => {
       setEducatorPreviewMode(localStorage.getItem('educatorPreviewMode') === 'true');
@@ -216,7 +223,7 @@ const Header = () => {
       
       <AuthModal 
         isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)}
+        onClose={handleCloseAuthModal}
         defaultMode={authMode}
       />
     </header>

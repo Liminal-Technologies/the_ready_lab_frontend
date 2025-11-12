@@ -199,11 +199,11 @@ export const useAuthState = () => {
           }, 0);
         } else {
           console.log('No user session, setting loading to false');
-          setAuth({
+          setAuth(prev => ({
             user: null,
             loading: false,
-            error: null
-          });
+            error: prev.error  // Preserve existing error instead of clearing it
+          }));
         }
       }
     );
