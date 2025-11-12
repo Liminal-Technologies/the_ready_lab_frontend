@@ -248,6 +248,7 @@ const Courses = () => {
             style={{ backgroundColor: '#FDB022', color: '#000' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
+            onClick={() => navigate('/pricing')}
             data-testid="button-start-certification"
           >
             <Award className="h-5 w-5 md:h-6 md:w-6 mr-2" />
