@@ -17,7 +17,7 @@ import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(10, 'Password must be at least 10 characters'),
   confirmPassword: z.string(),
   role: z.enum(['student', 'educator']).default('student')
 }).refine((data) => data.password === data.confirmPassword, {
