@@ -77,12 +77,12 @@ const Features = () => {
     <section id="about" className="py-24 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200 overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Hero Header */}
-        <div className="relative mb-20 lg:mb-24">
+        <div className="relative mb-12">
           {/* Main Content */}
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             {/* Left: Headline */}
             <div>
-              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-4">
+              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight">
                 <span className="text-black dark:text-white">Why Choose The </span>
                 <span style={{ color: '#FDB022' }}>Ready Lab</span>
                 <span className="text-black dark:text-white">?</span>

@@ -7,7 +7,7 @@ const SuccessStoriesSection = () => {
     <section className="py-20 lg:py-32 bg-white dark:bg-neutral-900 transition-colors duration-200">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-12 lg:mb-16">
+        <div className="mb-12">
           {/* Small Purple Label */}
           <div className="mb-6">
             <span className="inline-block px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-sm font-semibold">
@@ -16,7 +16,7 @@ const SuccessStoriesSection = () => {
           </div>
           
           {/* Large Headline */}
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight">
             <span className="text-black dark:text-white">Real Results from </span>
             <span className="text-purple-600 dark:text-purple-500">Real People</span>
           </h2>
