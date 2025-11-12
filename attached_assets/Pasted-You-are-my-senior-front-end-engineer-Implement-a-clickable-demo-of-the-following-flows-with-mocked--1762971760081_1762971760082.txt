@@ -1,0 +1,73 @@
+You are my senior front-end engineer. Implement a clickable demo of the following flows with mocked data/services only (no real back end). Keep code clean and production-ish. Use React + TypeScript + React Router, Tailwind, and componentized UI. Add clear TODOs and integration stubs where APIs will connect later (Stripe, email/CRM, auth).
+
+Global Requirements
+
+Design/Accessibility
+
+Fix any text contrast issues: audit all pages where white/very-light backgrounds are causing low contrast (e.g., “Admin Overview”). Ensure AA contrast for text and interactive elements.
+
+Create a light + dark theme toggle; default to light with readable neutrals. Use bg-neutral-50/100, text neutral-800, and utility classes to guarantee contrast.
+
+Add a reusable Modal with header, body, footer, Close (X) and Cancel actions everywhere a modal appears.
+
+Add toast notifications for success/error.
+
+Add a shared ConfirmDialog component for destructive actions (disable user, close community, etc.).
+
+Navigation & State
+
+React Router layout: /super-admin/*, /student/*, /educator/*.
+
+Add a persistent top nav with role switcher for demo purposes (no real auth). Include Sign out (routes to /).
+
+Add a useMockAuth() hook to “log in” as Super Admin / Educator / Student; store role in memory.
+
+Data
+
+Use a simple mock store (/src/mocks/) with JSON for communities, users, courses, payouts, certifications, events.
+
+Provide a MockApi service that returns promises with small delays to simulate async.
+
+Integration Stubs
+
+Stripe: Add a StripeStub.ts with functions: connectAccount(), getAccountStatus(), createCheckoutSession(). Include .env placeholders: VITE_STRIPE_PUBLISHABLE_KEY="pk_test_..." (do not expose secrets). UI should show “Connected”/“Not Connected” from stubbed state.
+
+Email/CRM: Add EmailCrmStub.ts with connectProvider(provider: 'HubSpot'|'Salesforce'|'Klaviyo'|'Mailchimp'|'Custom'), sendTestEmail(), mapFields(). Add a “Mapping” UI for first name/last name/email/segments/tags. Show provider status badges.
+
+Collaborators & Roles: Role model: Super Admin, Admin, Educator, Student. Build a RolesGuard component and a “Collaborators” manager (mock invite flow).
+
+SUPER ADMIN AREA (/super-admin)
+
+Create a dashboard with tabs/cards for:
+
+Overview
+
+Fix background/text so “Admin Overview” is clearly legible.
+
+KPIs (mock): active communities, pending approvals, total students, monthly GMV, Stripe status, email provider status.
+
+All buttons on the page must work (navigate, open modal, or trigger toast). No dead buttons.
+
+Communities
+
+Table of communities: Name, Owner, Members, Status (Active, Disabled, Archived), Created date, Actions.
+
+Row actions:
+
+Disable Community → opens ConfirmDialog explaining effects (hides from search, blocks posts, notifies owner). On confirm, set status to Disabled and show toast.
+
+Shut Down (Archive) → stronger confirmation; requires typing the community name; sets status Archived, disables all activity.
+
+View → opens side panel with details and recent activity (mock).
+
+Bulk actions (checkbox select): Disable / Archive (confirm).
+
+Filter by status; search by name/owner.
+
+Users
+
+Unified list with filter for Student / Educator / Admin.
+
+Row actions: Disable User, Re-enable, Reset Password (stub).
+
+For disabling: require reason dropdown + notes; reflect status badge on row.

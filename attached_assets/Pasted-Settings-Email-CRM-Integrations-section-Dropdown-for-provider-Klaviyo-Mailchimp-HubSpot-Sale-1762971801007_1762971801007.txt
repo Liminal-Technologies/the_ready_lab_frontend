@@ -1,0 +1,299 @@
+Settings
+
+
+Email / CRM Integrations section:
+
+
+Dropdown for provider (Klaviyo/Mailchimp/HubSpot/Salesforce/Custom Webhook).
+
+
+“Connect” button opens a modal to simulate OAuth; on “Complete” set provider connected.
+
+
+Field mapping UI: app fields → CRM fields (email, firstName, lastName, segment/tags).
+
+
+Send Test Email button calls sendTestEmail() (stub) and shows toast.
+
+
+
+
+Roles & Collaborators:
+
+
+Page to add collaborators: email, role (Super Admin/Admin). On “Invite”, show pending invites list with Resend/Cancel (stub).
+
+
+Editable role per collaborator with guard rails (cannot downgrade self).
+
+
+
+
+General: Platform branding, logo upload (stub), theme toggle (light/dark).
+
+
+
+
+Questions to facilitate later (place as inline help tooltips):
+
+
+Where do disable/shutdown actions live? → In Communities and Users tabs + mirrored shortcuts in Settings.
+
+
+What is the workflow for deactivating a student vs. educator? → Disable user (retains data), or archive (hard stop), with re-enable action.
+
+
+
+STUDENT DASHBOARD (/student)
+
+
+Home
+
+
+Cards: Current courses, Recommended, Certifications.
+
+
+
+
+Certifications
+
+
+Show certificates as stylish cards with “razzle dazzle”: add subtle gradients, embossed borders, holographic shimmer on hover, and a “Not an accredited educational cert — certificate of completion” disclaimer.
+
+
+Click opens a Certificate Modal with:
+
+
+certificate preview,
+
+
+Download (stub, generates PNG via canvas),
+
+
+Share (stub),
+
+
+Close button (IMPORTANT: previously missing — must add!) and Esc to close.
+
+
+
+
+
+
+Settings → Profile
+
+
+Allow profile pic upload (client-side preview only in demo). Persist to mock store.
+
+
+Fix any background color issues that make text disappear (use high-contrast neutrals).
+
+
+Editable fields: name, headline, bio, socials; Save shows toast.
+
+
+
+
+Sign out
+
+
+Visible in top-right user menu; routes to /.
+
+
+
+
+
+EDUCATOR DASHBOARD (/educator)
+
+
+Quick Actions
+
+
+Edit Profile opens a modal with full form and Close/Cancel buttons (was missing).
+
+
+
+
+Schedule Live Event
+
+
+If not working, implement as a usable form:
+
+
+Title, Description, Date picker, Time (dropdown: 30-min increments), Time Zone (PST, MST, CST, EST, UTC selection).
+
+
+Delivery: Virtual (URL) or In-Person (address).
+
+
+Capacity, Visibility (Public/Private/Unlisted).
+
+
+Create Event saves to mock store; show success toast and appear in “Upcoming Events.”
+
+
+
+
+
+
+Create Course
+
+
+Existing layout looks great; extend with:
+
+
+Microlearning Duration: range 30 seconds → 10 minutes (input with min/max validation; both seconds and minutes UI acceptable).
+
+
+Learning Style: multiselect (e.g., Visual, Auditory, Kinesthetic, Read/Write, Project-based).
+
+
+Pricing:
+
+
+Toggle Free / Paid.
+
+
+If Paid, show Price and a Fee Breakdown explainer:
+
+
+“Price” → “Platform Fee (x%)” → “Processing (Stripe est.)” → “Educator Share (net)”.
+
+
+Provide an info tooltip that this is illustrative; actual analytics will live in Sales Analytics.
+
+
+
+
+Integrate with Stripe stub: “Create Checkout Session (Demo)” button appears and toasts a success message with a fake session id.
+
+
+
+
+AI features (already present): keep AI-generated caption and thumbnail buttons, but pipe to stub functions returning mock text/image.
+
+
+
+
+Add a Sales Analytics (Preview) tab for educators:
+
+
+Show mock charts/tables: views, add-to-cart, purchases, conversion rate, revenue share, refunds (all seeded from mock).
+
+
+Filters by date range.
+
+
+
+
+
+
+
+Interaction Rules (No Dead Buttons)
+
+
+Every visible button must:
+
+
+Navigate to a route, open a modal/side panel, trigger a toast, or run a stubbed async action.
+
+
+
+
+Add loading states for all async stubs (Stripe connect, email connect, send test, create event, save course, etc.).
+
+
+
+File/Structure Hints
+
+
+src/routes/super-admin/* (Overview.tsx, Communities.tsx, Users.tsx, Payments.tsx, Settings.tsx)
+
+
+src/routes/student/* (Home.tsx, Certifications.tsx, Settings.tsx)
+
+
+src/routes/educator/* (Dashboard.tsx, ScheduleEvent.tsx, CreateCourse.tsx, SalesAnalytics.tsx)
+
+
+src/components/common/* (Modal, ConfirmDialog, ToastHost, Badge, Tabs, DataTable, EmptyState)
+
+
+src/mocks/* (db.json, MockApi.ts, StripeStub.ts, EmailCrmStub.ts, seed.ts)
+
+
+src/hooks/* (useMockAuth.ts, useTheme.ts)
+
+
+src/styles/* (tailwind.css; ensure accessible color tokens)
+
+
+
+Seed Data (put in mocks/seed.ts)
+
+
+Communities: 6+ records with different statuses.
+
+
+Users: 12+ users across roles; include a few disabled.
+
+
+Courses: 10+ with various pricing; some microlearning.
+
+
+Certifications: 3+ for the logged-in student.
+
+
+Events: 4+ (upcoming/past).
+
+
+Platform Settings: platformFee = 15% (example), stripeConnected=false, emailProvider=null.
+
+
+
+QA / Acceptance Criteria Checklist
+
+
+ “Admin Overview” text is fully readable on all themes.
+
+
+ All buttons do something meaningful (no dead UI).
+
+
+ Super Admin can Disable and Shut Down communities with confirmations and visible status changes.
+
+
+ Super Admin can Disable/Re-enable users with reason capture.
+
+
+ Super Admin can Connect Stripe (stub) and see status reflected; fee settings persist in mock store.
+
+
+ Super Admin can Connect Email/CRM, map fields, and send a Test Email (stub) with success toast.
+
+
+ Super Admin can Invite Collaborators with roles and see/manage them.
+
+
+ Student certification modal includes a Close button and keyboard Esc.
+
+
+ Student profile supports profile picture upload (client-side preview) and high-contrast text.
+
+
+ Educator Schedule Live Event works with Time dropdown and Time Zone selection.
+
+
+ Educator Create Course includes Microlearning 30s–10m, Learning Style, Free/Paid with Fee Breakdown explainer, and Stripe checkout demo button (stub).
+
+
+ Educator Edit Profile quick action has a Cancel/Close control.
+
+
+ Sales Analytics preview shows mock metrics and date filters.
+
+
+ Global Sign out routes to /.
+
+
+Implement all of the above now as a front-end demo. Keep integration points modular with clear TODOs. Do not remove any existing working copy; refactor incrementally and leave helpful comments.
