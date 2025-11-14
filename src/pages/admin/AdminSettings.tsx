@@ -1,91 +1,110 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Settings, 
-  Save,
-  Palette,
-  Mail,
-  Flag,
-  Upload,
-  Eye,
-  Edit,
-  Trash2,
-  Plus
-} from "lucide-react";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  AlertCircle,
+  CheckCircle,
+  Mail,
+  Users,
+  XCircle,
+  MoreVertical,
+  Send,
+  Settings as SettingsIcon,
+  RefreshCw,
+  UserPlus
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAdminDataSource } from "@/hooks/useAdminDataSource";
+import { useMockAuth } from "@/hooks/useMockAuth";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { EmailCrmStub, EmailProvider } from "@/mocks/EmailCrmStub";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface FeatureFlag {
+interface Collaborator {
   id: string;
-  flag_name: string;
-  description: string;
-  is_enabled: boolean;
-  updated_at: string;
-  updated_by?: string;
+  email: string;
+  fullName: string;
+  role: string;
+  status: 'active' | 'pending';
+  addedAt: string;
 }
 
 export function AdminSettings() {
-  const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newFlag, setNewFlag] = useState({ flag_name: "", description: "" });
-  const [brandingSettings, setBrandingSettings] = useState({
-    site_name: "The Ready Lab",
-    site_description: "Professional learning platform for educators",
-    primary_color: "#6366f1",
-    logo_url: "",
-    favicon_url: ""
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+  const [emailProviderConnected, setEmailProviderConnected] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<EmailProvider | ''>('');
+  const [currentProvider, setCurrentProvider] = useState<EmailProvider | null>(null);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  
+  const [inviteForm, setInviteForm] = useState({
+    email: '',
+    role: '',
+    permissions: {
+      viewAnalytics: false,
+      manageUsers: false,
+      manageContent: false,
+      managePayments: false,
+    },
   });
-  const [emailSettings, setEmailSettings] = useState({
-    smtp_host: "",
-    smtp_port: "587",
-    smtp_user: "",
-    smtp_password: "",
-    from_email: "noreply@thereadylab.com",
-    from_name: "The Ready Lab"
+  
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    action: () => Promise<void>;
+    variant?: 'danger' | 'warning';
+    requireTypedConfirmation?: string;
+  }>({
+    open: false,
+    title: '',
+    description: '',
+    action: async () => {},
   });
-  const [supportSettings, setSupportSettings] = useState({
-    support_email: "support@thereadylab.com",
-    support_phone: "+1 (555) 123-4567",
-    support_hours: "Mon-Fri 9AM-5PM EST"
-  });
+
   const { toast } = useToast();
+  const { isDemo, toggleDemo } = useMockAuth();
+  const dataSource = useAdminDataSource();
 
   useEffect(() => {
-    fetchFeatureFlags();
+    loadSettings();
   }, []);
 
-  const fetchFeatureFlags = async () => {
+  const loadSettings = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('feature_flags')
-        .select('*')
-        .order('flag_name');
+      
+      const [collaboratorsData, emailConfig] = await Promise.all([
+        dataSource.settings.getCollaborators(),
+        Promise.resolve(EmailCrmStub.getProviderConfig()),
+      ]);
 
-      if (error) throw error;
-      setFeatureFlags(data || []);
+      setCollaborators(collaboratorsData);
+      
+      if (emailConfig?.connected) {
+        setEmailProviderConnected(true);
+        setCurrentProvider(emailConfig.provider);
+      }
     } catch (error) {
-      console.error('Error fetching feature flags:', error);
+      console.error('Error loading settings:', error);
       toast({
         title: "Error",
-        description: "Failed to load feature flags",
+        description: "Failed to load platform settings",
         variant: "destructive",
       });
     } finally {
@@ -93,96 +112,135 @@ export function AdminSettings() {
     }
   };
 
-  const toggleFeatureFlag = async (id: string, currentValue: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('feature_flags')
-        .update({ 
-          is_enabled: !currentValue,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      await supabase.rpc('log_admin_action', {
-        _action: currentValue ? 'disable_feature_flag' : 'enable_feature_flag',
-        _entity_type: 'feature_flag',
-        _entity_id: id
-      });
-
-      toast({
-        title: "Success",
-        description: `Feature flag ${currentValue ? 'disabled' : 'enabled'}`,
-      });
-
-      fetchFeatureFlags();
-    } catch (error) {
-      console.error('Error updating feature flag:', error);
+  const handleConnectProvider = async () => {
+    if (!selectedProvider) {
       toast({
         title: "Error",
-        description: "Failed to update feature flag",
+        description: "Please select a provider",
         variant: "destructive",
       });
+      return;
     }
-  };
 
-  const createFeatureFlag = async () => {
-    if (!newFlag.flag_name || !newFlag.description) {
+    if (!apiKey) {
       toast({
         title: "Error",
-        description: "Please fill in all fields",
+        description: "Please enter an API key",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const { error } = await supabase
-        .from('feature_flags')
-        .insert({
-          flag_name: newFlag.flag_name,
-          description: newFlag.description,
-          is_enabled: false
-        });
-
-      if (error) throw error;
-
+      await EmailCrmStub.connectProvider(selectedProvider, { apiKey });
+      
+      setEmailProviderConnected(true);
+      setCurrentProvider(selectedProvider);
+      setConnectModalOpen(false);
+      setSelectedProvider('');
+      setApiKey('');
+      
       toast({
-        title: "Success",
-        description: "Feature flag created successfully",
+        title: "Provider Connected Successfully",
+        description: `${selectedProvider} has been connected. Email notifications are now enabled.`,
       });
-
-      setNewFlag({ flag_name: "", description: "" });
-      fetchFeatureFlags();
     } catch (error) {
-      console.error('Error creating feature flag:', error);
       toast({
-        title: "Error",
-        description: "Failed to create feature flag",
+        title: "Connection Failed",
+        description: "Failed to connect email provider. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const saveBrandingSettings = () => {
-    toast({
-      title: "Success",
-      description: "Branding settings saved successfully",
+  const handleDisconnectProvider = () => {
+    setConfirmDialog({
+      open: true,
+      title: 'Disconnect Email Provider?',
+      description: 'This will disable all email notifications including course updates, certificates, and user communications. Type "DISCONNECT" to confirm.',
+      variant: 'danger',
+      requireTypedConfirmation: 'DISCONNECT',
+      action: async () => {
+        await EmailCrmStub.disconnectProvider();
+        setEmailProviderConnected(false);
+        setCurrentProvider(null);
+        toast({
+          title: "Provider Disconnected",
+          description: "Email provider has been disconnected. Notifications are now disabled.",
+        });
+      },
     });
   };
 
-  const saveEmailSettings = () => {
-    toast({
-      title: "Success",
-      description: "Email settings saved successfully",
-    });
+  const handleTestEmail = async () => {
+    try {
+      await EmailCrmStub.sendTestEmail("admin@thereadylab.com");
+      toast({
+        title: "Test Email Sent",
+        description: "A test email has been sent successfully. Check your inbox to verify the integration.",
+      });
+    } catch (error) {
+      toast({
+        title: "Test Failed",
+        description: "Failed to send test email. Please check your configuration.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const saveSupportSettings = () => {
-    toast({
-      title: "Success",
-      description: "Support settings saved successfully",
+  const handleInviteCollaborator = async () => {
+    if (!inviteForm.email || !inviteForm.role) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await dataSource.settings.inviteCollaborator(inviteForm.email, inviteForm.role as any);
+      
+      toast({
+        title: "Invitation Sent",
+        description: `An invitation has been sent to ${inviteForm.email}`,
+      });
+      
+      setInviteModalOpen(false);
+      setInviteForm({
+        email: '',
+        role: '',
+        permissions: {
+          viewAnalytics: false,
+          manageUsers: false,
+          manageContent: false,
+          managePayments: false,
+        },
+      });
+      
+      loadSettings();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send invitation. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRemoveCollaborator = (collaborator: Collaborator) => {
+    setConfirmDialog({
+      open: true,
+      title: 'Remove Collaborator?',
+      description: `Are you sure you want to remove ${collaborator.fullName} (${collaborator.email}) from the team? This action cannot be undone.`,
+      variant: 'danger',
+      action: async () => {
+        toast({
+          title: "Collaborator Removed",
+          description: `${collaborator.fullName} has been removed from the team.`,
+        });
+        loadSettings();
+      },
     });
   };
 
@@ -190,388 +248,458 @@ export function AdminSettings() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Settings & Feature Flags</h1>
-          <p className="text-muted-foreground">
-            Configure platform settings and manage feature flags
+          <h1 className="text-3xl font-bold" data-testid="text-page-title">Platform Settings</h1>
+          <p className="text-muted-foreground" data-testid="text-page-subtitle">
+            Manage integrations and team access
           </p>
         </div>
-        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-          Admin Controls
-        </Badge>
       </div>
 
-      <Tabs defaultValue="feature-flags" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="feature-flags">Feature Flags</TabsTrigger>
-          <TabsTrigger value="branding">Branding</TabsTrigger>
-          <TabsTrigger value="email">Email</TabsTrigger>
-          <TabsTrigger value="support">Support</TabsTrigger>
-        </TabsList>
+      {!isDemo && !loading && (
+        <Alert variant="destructive" data-testid="alert-demo-mode">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Demo Mode Required</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>Platform settings features are currently only available in demo mode. Please enable demo mode to explore this functionality.</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleDemo}
+              className="ml-4"
+              data-testid="button-enable-demo"
+            >
+              Enable Demo Mode
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
-        <TabsContent value="feature-flags" className="space-y-6">
-          {/* Create Feature Flag */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Plus className="h-5 w-5" />
-                Create Feature Flag
-              </CardTitle>
-              <CardDescription>
-                Add new feature flags to control platform functionality
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="flag-name">Flag Name</Label>
-                  <Input
-                    id="flag-name"
-                    placeholder="e.g., verified_educators"
-                    value={newFlag.flag_name}
-                    onChange={(e) => setNewFlag({ ...newFlag, flag_name: e.target.value })}
-                  />
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Email & CRM Integration Section */}
+        <Card data-testid="card-email-crm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Email & CRM Provider
+            </CardTitle>
+            <CardDescription>
+              Connect an email/CRM provider to send notifications and sync user data
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <RefreshCw className="h-6 w-6 animate-spin" data-testid="icon-loading" />
+              </div>
+            ) : emailProviderConnected && currentProvider ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 p-4 border rounded-lg bg-green-50 dark:bg-green-950">
+                  <CheckCircle className="h-6 w-6 text-green-600" data-testid="icon-provider-connected" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium" data-testid="text-provider-name">{currentProvider}</span>
+                      <Badge className="bg-green-500" data-testid="badge-provider-connected">Connected</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Email notifications are active
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="flag-description">Description</Label>
-                  <Input
-                    id="flag-description"
-                    placeholder="Brief description of the feature"
-                    value={newFlag.description}
-                    onChange={(e) => setNewFlag({ ...newFlag, description: e.target.value })}
-                  />
+                
+                <div className="space-y-3 pt-2">
+                  <div className="p-3 border rounded-lg bg-muted/50">
+                    <p className="text-sm font-medium mb-2">Field Mappings</p>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="flex justify-between">
+                        <span>First Name →</span>
+                        <code className="text-xs bg-background px-2 py-0.5 rounded">firstName</code>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Email →</span>
+                        <code className="text-xs bg-background px-2 py-0.5 rounded">email</code>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={handleTestEmail}
+                      data-testid="button-test-email"
+                    >
+                      <Send className="mr-2 h-4 w-4" />
+                      Test Email
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="flex-1"
+                      onClick={handleDisconnectProvider}
+                      data-testid="button-disconnect-provider"
+                    >
+                      <XCircle className="mr-2 h-4 w-4" />
+                      Disconnect
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <Button onClick={createFeatureFlag}>
-                <Save className="mr-2 h-4 w-4" />
-                Create Flag
-              </Button>
-            </CardContent>
-          </Card>
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="provider-select">Select Provider</Label>
+                  <Select value={selectedProvider} onValueChange={(value: EmailProvider) => setSelectedProvider(value)}>
+                    <SelectTrigger id="provider-select" data-testid="select-provider">
+                      <SelectValue placeholder="Choose email/CRM provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Resend">Resend</SelectItem>
+                      <SelectItem value="Mailchimp">Mailchimp</SelectItem>
+                      <SelectItem value="HubSpot">HubSpot</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <Button
+                  onClick={() => setConnectModalOpen(true)}
+                  disabled={!selectedProvider}
+                  className="w-full"
+                  data-testid="button-open-connect-modal"
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Connect Provider
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* Feature Flags Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Feature Flags ({featureFlags.length})</CardTitle>
-              <CardDescription>
-                Control which features are enabled on the platform
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-auto">
+        {/* Team Collaborators Section */}
+        <Card data-testid="card-collaborators">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Team & Collaborators
+                </CardTitle>
+                <CardDescription>
+                  Manage team members with admin access
+                </CardDescription>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => setInviteModalOpen(true)}
+                data-testid="button-open-invite-modal"
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Invite
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <RefreshCw className="h-6 w-6 animate-spin" />
+              </div>
+            ) : (
+              <div className="border rounded-lg">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Flag Name</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Last Updated</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead data-testid="table-header-name">Name</TableHead>
+                      <TableHead data-testid="table-header-email">Email</TableHead>
+                      <TableHead data-testid="table-header-role">Role</TableHead>
+                      <TableHead data-testid="table-header-status">Status</TableHead>
+                      <TableHead data-testid="table-header-actions">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {featureFlags.map((flag) => (
-                      <TableRow key={flag.id}>
-                        <TableCell>
-                          <code className="bg-muted px-2 py-1 rounded text-sm">
-                            {flag.flag_name}
-                          </code>
-                        </TableCell>
-                        <TableCell>{flag.description}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Switch
-                              checked={flag.is_enabled}
-                              onCheckedChange={() => toggleFeatureFlag(flag.id, flag.is_enabled)}
-                            />
-                            <Badge variant={flag.is_enabled ? "default" : "secondary"}>
-                              {flag.is_enabled ? 'Enabled' : 'Disabled'}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(flag.updated_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button variant="ghost" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-destructive">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                    {collaborators.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                          No collaborators yet. Invite team members to get started.
                         </TableCell>
                       </TableRow>
-                    ))}
+                    ) : (
+                      collaborators.map((collaborator) => (
+                        <TableRow key={collaborator.id} data-testid={`row-collaborator-${collaborator.id}`}>
+                          <TableCell className="font-medium" data-testid={`text-name-${collaborator.id}`}>
+                            {collaborator.fullName}
+                          </TableCell>
+                          <TableCell data-testid={`text-email-${collaborator.id}`}>
+                            {collaborator.email}
+                          </TableCell>
+                          <TableCell data-testid={`text-role-${collaborator.id}`}>
+                            <Badge variant="outline">
+                              {collaborator.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell data-testid={`badge-status-${collaborator.id}`}>
+                            <Badge variant={collaborator.status === 'active' ? 'default' : 'secondary'}>
+                              {collaborator.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  data-testid={`button-actions-${collaborator.id}`}
+                                >
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem data-testid={`action-view-${collaborator.id}`}>
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem data-testid={`action-change-role-${collaborator.id}`}>
+                                  Change Role
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  className="text-destructive"
+                                  onClick={() => handleRemoveCollaborator(collaborator)}
+                                  data-testid={`action-remove-${collaborator.id}`}
+                                >
+                                  Remove
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
-        <TabsContent value="branding" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
-                Branding Settings
-              </CardTitle>
-              <CardDescription>
-                Customize the platform's visual identity and branding
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="site-name">Site Name</Label>
-                  <Input
-                    id="site-name"
-                    value={brandingSettings.site_name}
-                    onChange={(e) => setBrandingSettings({ 
-                      ...brandingSettings, 
-                      site_name: e.target.value 
-                    })}
-                  />
+      {/* Connect Provider Modal */}
+      <Dialog open={connectModalOpen} onOpenChange={setConnectModalOpen}>
+        <DialogContent data-testid="modal-connect-provider">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <SettingsIcon className="h-5 w-5" />
+              Configure {selectedProvider}
+            </DialogTitle>
+            <DialogDescription>
+              Enter your API credentials to connect {selectedProvider}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="api-key">API Key</Label>
+              <Input
+                id="api-key"
+                type="password"
+                placeholder="Enter your API key"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                data-testid="input-api-key"
+              />
+              <p className="text-xs text-muted-foreground">
+                Find your API key in your {selectedProvider} account settings
+              </p>
+            </div>
+
+            <div className="p-3 border rounded-lg bg-muted/50">
+              <p className="text-sm font-medium mb-2">Field Mapping Preview</p>
+              <div className="space-y-1 text-sm text-muted-foreground">
+                <div className="flex justify-between">
+                  <span>First Name →</span>
+                  <code className="text-xs bg-background px-2 py-0.5 rounded">firstName</code>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="primary-color">Primary Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="primary-color"
-                      type="color"
-                      value={brandingSettings.primary_color}
-                      onChange={(e) => setBrandingSettings({ 
-                        ...brandingSettings, 
-                        primary_color: e.target.value 
-                      })}
-                      className="w-20"
-                    />
-                    <Input
-                      value={brandingSettings.primary_color}
-                      onChange={(e) => setBrandingSettings({ 
-                        ...brandingSettings, 
-                        primary_color: e.target.value 
-                      })}
-                      className="flex-1"
-                    />
-                  </div>
+                <div className="flex justify-between">
+                  <span>Email →</span>
+                  <code className="text-xs bg-background px-2 py-0.5 rounded">email</code>
                 </div>
               </div>
+            </div>
+          </div>
 
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setConnectModalOpen(false);
+                setApiKey('');
+              }}
+              data-testid="button-cancel-connect"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConnectProvider}
+              data-testid="button-save-configuration"
+            >
+              Save Configuration
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Invite Collaborator Modal */}
+      <Dialog open={inviteModalOpen} onOpenChange={setInviteModalOpen}>
+        <DialogContent data-testid="modal-invite-collaborator">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Invite Collaborator
+            </DialogTitle>
+            <DialogDescription>
+              Send an invitation to join your admin team
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="invite-email">Email Address</Label>
+              <Input
+                id="invite-email"
+                type="email"
+                placeholder="colleague@example.com"
+                value={inviteForm.email}
+                onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
+                data-testid="input-invite-email"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="invite-role">Role</Label>
+              <Select 
+                value={inviteForm.role} 
+                onValueChange={(value) => setInviteForm({ ...inviteForm, role: value })}
+              >
+                <SelectTrigger id="invite-role" data-testid="select-invite-role">
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="super_admin">Super Admin</SelectItem>
+                  <SelectItem value="content_admin">Content Admin</SelectItem>
+                  <SelectItem value="finance_admin">Finance Admin</SelectItem>
+                  <SelectItem value="community_admin">Community Admin</SelectItem>
+                  <SelectItem value="support_agent">Support Agent</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-3">
+              <Label>Permissions</Label>
               <div className="space-y-2">
-                <Label htmlFor="site-description">Site Description</Label>
-                <Textarea
-                  id="site-description"
-                  value={brandingSettings.site_description}
-                  onChange={(e) => setBrandingSettings({ 
-                    ...brandingSettings, 
-                    site_description: e.target.value 
-                  })}
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="logo-url">Logo URL</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="logo-url"
-                      placeholder="https://example.com/logo.png"
-                      value={brandingSettings.logo_url}
-                      onChange={(e) => setBrandingSettings({ 
-                        ...brandingSettings, 
-                        logo_url: e.target.value 
-                      })}
-                    />
-                    <Button variant="outline" size="sm">
-                      <Upload className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="favicon-url">Favicon URL</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="favicon-url"
-                      placeholder="https://example.com/favicon.ico"
-                      value={brandingSettings.favicon_url}
-                      onChange={(e) => setBrandingSettings({ 
-                        ...brandingSettings, 
-                        favicon_url: e.target.value 
-                      })}
-                    />
-                    <Button variant="outline" size="sm">
-                      <Upload className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <Button onClick={saveBrandingSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Branding Settings
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="email" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                Email Configuration
-              </CardTitle>
-              <CardDescription>
-                Configure SMTP settings for platform emails
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="smtp-host">SMTP Host</Label>
-                  <Input
-                    id="smtp-host"
-                    placeholder="smtp.gmail.com"
-                    value={emailSettings.smtp_host}
-                    onChange={(e) => setEmailSettings({ 
-                      ...emailSettings, 
-                      smtp_host: e.target.value 
-                    })}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="perm-analytics"
+                    checked={inviteForm.permissions.viewAnalytics}
+                    onCheckedChange={(checked) => 
+                      setInviteForm({ 
+                        ...inviteForm, 
+                        permissions: { ...inviteForm.permissions, viewAnalytics: checked as boolean } 
+                      })
+                    }
+                    data-testid="checkbox-perm-analytics"
                   />
+                  <Label htmlFor="perm-analytics" className="font-normal">
+                    View Analytics
+                  </Label>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtp-port">SMTP Port</Label>
-                  <Input
-                    id="smtp-port"
-                    value={emailSettings.smtp_port}
-                    onChange={(e) => setEmailSettings({ 
-                      ...emailSettings, 
-                      smtp_port: e.target.value 
-                    })}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="perm-users"
+                    checked={inviteForm.permissions.manageUsers}
+                    onCheckedChange={(checked) => 
+                      setInviteForm({ 
+                        ...inviteForm, 
+                        permissions: { ...inviteForm.permissions, manageUsers: checked as boolean } 
+                      })
+                    }
+                    data-testid="checkbox-perm-users"
                   />
+                  <Label htmlFor="perm-users" className="font-normal">
+                    Manage Users
+                  </Label>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="smtp-user">SMTP Username</Label>
-                  <Input
-                    id="smtp-user"
-                    value={emailSettings.smtp_user}
-                    onChange={(e) => setEmailSettings({ 
-                      ...emailSettings, 
-                      smtp_user: e.target.value 
-                    })}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="perm-content"
+                    checked={inviteForm.permissions.manageContent}
+                    onCheckedChange={(checked) => 
+                      setInviteForm({ 
+                        ...inviteForm, 
+                        permissions: { ...inviteForm.permissions, manageContent: checked as boolean } 
+                      })
+                    }
+                    data-testid="checkbox-perm-content"
                   />
+                  <Label htmlFor="perm-content" className="font-normal">
+                    Manage Content
+                  </Label>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtp-password">SMTP Password</Label>
-                  <Input
-                    id="smtp-password"
-                    type="password"
-                    value={emailSettings.smtp_password}
-                    onChange={(e) => setEmailSettings({ 
-                      ...emailSettings, 
-                      smtp_password: e.target.value 
-                    })}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="perm-payments"
+                    checked={inviteForm.permissions.managePayments}
+                    onCheckedChange={(checked) => 
+                      setInviteForm({ 
+                        ...inviteForm, 
+                        permissions: { ...inviteForm.permissions, managePayments: checked as boolean } 
+                      })
+                    }
+                    data-testid="checkbox-perm-payments"
                   />
+                  <Label htmlFor="perm-payments" className="font-normal">
+                    Manage Payments
+                  </Label>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="from-email">From Email</Label>
-                  <Input
-                    id="from-email"
-                    value={emailSettings.from_email}
-                    onChange={(e) => setEmailSettings({ 
-                      ...emailSettings, 
-                      from_email: e.target.value 
-                    })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="from-name">From Name</Label>
-                  <Input
-                    id="from-name"
-                    value={emailSettings.from_name}
-                    onChange={(e) => setEmailSettings({ 
-                      ...emailSettings, 
-                      from_name: e.target.value 
-                    })}
-                  />
-                </div>
-              </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setInviteModalOpen(false);
+                setInviteForm({
+                  email: '',
+                  role: '',
+                  permissions: {
+                    viewAnalytics: false,
+                    manageUsers: false,
+                    manageContent: false,
+                    managePayments: false,
+                  },
+                });
+              }}
+              data-testid="button-cancel-invite"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleInviteCollaborator}
+              data-testid="button-send-invitation"
+            >
+              <Send className="mr-2 h-4 w-4" />
+              Send Invitation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-              <Button onClick={saveEmailSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Email Settings
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="support" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Support Contact Settings
-              </CardTitle>
-              <CardDescription>
-                Configure support contact information displayed to users
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="support-email">Support Email</Label>
-                <Input
-                  id="support-email"
-                  type="email"
-                  value={supportSettings.support_email}
-                  onChange={(e) => setSupportSettings({ 
-                    ...supportSettings, 
-                    support_email: e.target.value 
-                  })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="support-phone">Support Phone</Label>
-                <Input
-                  id="support-phone"
-                  value={supportSettings.support_phone}
-                  onChange={(e) => setSupportSettings({ 
-                    ...supportSettings, 
-                    support_phone: e.target.value 
-                  })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="support-hours">Support Hours</Label>
-                <Input
-                  id="support-hours"
-                  placeholder="Mon-Fri 9AM-5PM EST"
-                  value={supportSettings.support_hours}
-                  onChange={(e) => setSupportSettings({ 
-                    ...supportSettings, 
-                    support_hours: e.target.value 
-                  })}
-                />
-              </div>
-
-              <Button onClick={saveSupportSettings}>
-                <Save className="mr-2 h-4 w-4" />
-                Save Support Settings
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
+        onConfirm={confirmDialog.action}
+        variant={confirmDialog.variant}
+        requireTypedConfirmation={confirmDialog.requireTypedConfirmation}
+      />
     </div>
   );
 }

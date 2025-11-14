@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,46 +6,39 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   Search, 
-  Filter, 
   MoreHorizontal, 
   UserCheck, 
   UserX, 
-  CreditCard,
+  Eye,
+  AlertCircle,
+  RefreshCw,
+  Key,
+  Users,
   Shield,
-  Mail,
   Calendar
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
-interface User {
-  id: string;
-  email: string;
-  full_name?: string;
-  role: string;
-  subscription_status: string;
-  subscription_tier?: string;
-  avatar_url?: string;
-  created_at: string;
-}
+import { useAdminDataSource } from "@/hooks/useAdminDataSource";
+import { useMockAuth } from "@/hooks/useMockAuth";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import type { User } from "@/services/AdminDataService";
 
 export function AdminUsers() {
   const [users, setUsers] = useState<User[]>([]);
@@ -55,18 +48,23 @@ export function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [actionDialog, setActionDialog] = useState<{
+  const [userDetailDialog, setUserDetailDialog] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
-    action: string;
     title: string;
     description: string;
-  }>({ open: false, action: '', title: '', description: '' });
-  const [emailDialog, setEmailDialog] = useState(false);
-  const [newEmail, setNewEmail] = useState('');
-  const [addAdminDialog, setAddAdminDialog] = useState(false);
-  const [adminEmail, setAdminEmail] = useState('');
-  const [adminRole, setAdminRole] = useState<string>('content_admin');
+    action: () => Promise<void>;
+    variant?: 'danger' | 'warning';
+    requireTypedConfirmation?: string;
+  }>({
+    open: false,
+    title: '',
+    description: '',
+    action: async () => {},
+  });
   const { toast } = useToast();
+  const { isDemo, toggleDemo } = useMockAuth();
+  const dataSource = useAdminDataSource();
 
   useEffect(() => {
     fetchUsers();
@@ -79,13 +77,8 @@ export function AdminUsers() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setUsers(data || []);
+      const data = await dataSource.users.getUsers();
+      setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -104,7 +97,7 @@ export function AdminUsers() {
     if (searchTerm) {
       filtered = filtered.filter(user => 
         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        user.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -113,257 +106,111 @@ export function AdminUsers() {
     }
 
     if (statusFilter !== "all") {
-      filtered = filtered.filter(user => user.subscription_status === statusFilter);
+      filtered = filtered.filter(user => user.status === statusFilter);
     }
 
     setFilteredUsers(filtered);
   };
 
-  const handleUserAction = async (action: string) => {
-    if (!selectedUser) return;
-
-    try {
-      // Log the admin action
-      await supabase.rpc('log_admin_action', {
-        _action: action,
-        _entity_type: 'user',
-        _entity_id: selectedUser.id,
-        _metadata: { email: selectedUser.email }
-      });
-
-      switch (action) {
-        case 'approve_educator':
-          await supabase
-            .from('profiles')
-            .update({ role: 'educator', subscription_status: 'active' })
-            .eq('id', selectedUser.id);
-          break;
-        case 'revoke_educator':
-          await supabase
-            .from('profiles')
-            .update({ role: 'student' })
-            .eq('id', selectedUser.id);
-          break;
-        case 'cancel_subscription':
-          await supabase
-            .from('profiles')
-            .update({ subscription_status: 'cancelled' })
-            .eq('id', selectedUser.id);
-          break;
-        case 'reset_password':
-          // This would typically send a password reset email
-          toast({
-            title: "Password Reset",
-            description: "Password reset email sent to user",
-          });
-          break;
-      }
-
-      toast({
-        title: "Success",
-        description: "User action completed successfully",
-      });
-
-      fetchUsers();
-    } catch (error) {
-      console.error('Error performing user action:', error);
-      toast({
-        title: "Error",
-        description: "Failed to perform action",
-        variant: "destructive",
-      });
-    }
-
-    setActionDialog({ open: false, action: '', title: '', description: '' });
-    setSelectedUser(null);
-  };
-
-  const handleUpdateEmail = async () => {
-    if (!selectedUser || !newEmail) return;
-
-    try {
-      // Update email in auth.users via admin API
-      const { error: authError } = await supabase.auth.admin.updateUserById(
-        selectedUser.id,
-        { email: newEmail }
-      );
-
-      if (authError) throw authError;
-
-      // Update email in profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ email: newEmail })
-        .eq('id', selectedUser.id);
-
-      if (profileError) throw profileError;
-
-      // Log the admin action
-      await supabase.rpc('log_admin_action', {
-        _action: 'update_email',
-        _entity_type: 'user',
-        _entity_id: selectedUser.id,
-        _metadata: { old_email: selectedUser.email, new_email: newEmail }
-      });
-
-      toast({
-        title: "Success",
-        description: "Email updated successfully",
-      });
-
-      fetchUsers();
-      setEmailDialog(false);
-      setNewEmail('');
-      setSelectedUser(null);
-    } catch (error) {
-      console.error('Error updating email:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update email. Make sure you have admin privileges.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const openEmailDialog = (user: User) => {
+  const handleViewDetails = (user: User) => {
     setSelectedUser(user);
-    setNewEmail(user.email);
-    setEmailDialog(true);
+    setUserDetailDialog(true);
   };
 
-  const handleAddAdmin = async () => {
-    if (!adminEmail || !adminRole) {
-      toast({
-        title: "Error",
-        description: "Please enter email and select a role",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      // Find user by email
-      const { data: profiles, error: profileError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', adminEmail)
-        .single();
-
-      if (profileError || !profiles) {
-        toast({
-          title: "Error",
-          description: "User not found with that email address",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Insert admin role
-      const { error: roleError } = await supabase
-        .from('admin_roles')
-        .insert([{
-          user_id: profiles.id,
-          role: adminRole as any,
-          granted_by: (await supabase.auth.getUser()).data.user?.id,
-          is_active: true
-        }]);
-
-      if (roleError) {
-        if (roleError.code === '23505') {
-          toast({
-            title: "Error",
-            description: "This user already has that admin role",
-            variant: "destructive",
-          });
-        } else {
-          throw roleError;
-        }
-        return;
-      }
-
-      // Log the admin action
-      await supabase.rpc('log_admin_action', {
-        _action: 'grant_admin_role',
-        _entity_type: 'user',
-        _entity_id: profiles.id,
-        _metadata: { email: adminEmail, role: adminRole }
-      });
-
-      toast({
-        title: "Success",
-        description: `Admin role ${adminRole} granted successfully`,
-      });
-
-      setAddAdminDialog(false);
-      setAdminEmail('');
-      setAdminRole('content_admin');
-      fetchUsers();
-    } catch (error) {
-      console.error('Error adding admin:', error);
-      toast({
-        title: "Error",
-        description: "Failed to grant admin role",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const openActionDialog = (user: User, action: string) => {
-    setSelectedUser(user);
-    
-    const dialogConfig = {
-      approve_educator: {
-        title: "Approve Educator",
-        description: `Are you sure you want to approve ${user.email} as an educator? This will grant them access to create courses.`
-      },
-      revoke_educator: {
-        title: "Revoke Educator Status",
-        description: `Are you sure you want to revoke educator status for ${user.email}? They will lose access to course creation.`
-      },
-      cancel_subscription: {
-        title: "Cancel Subscription",
-        description: `Are you sure you want to cancel the subscription for ${user.email}?`
-      },
-      reset_password: {
-        title: "Reset Password",
-        description: `Send a password reset email to ${user.email}?`
-      }
-    };
-
-    const config = dialogConfig[action as keyof typeof dialogConfig];
-    setActionDialog({
+  const handleDisableUser = (user: User) => {
+    setConfirmDialog({
       open: true,
-      action,
-      title: config.title,
-      description: config.description
+      title: `Disable ${user.fullName}?`,
+      description: `This will prevent ${user.email} from accessing the platform. Type "${user.email}" to confirm.`,
+      variant: 'danger',
+      requireTypedConfirmation: user.email,
+      action: async () => {
+        await dataSource.users.disableUser(user.id, 'Disabled by admin');
+        toast({
+          title: "Success",
+          description: `${user.fullName} has been disabled`,
+        });
+        fetchUsers();
+      },
     });
   };
 
-  const getRoleBadge = (role: string) => {
-    const colors = {
-      admin: "bg-red-100 text-red-800",
-      educator: "bg-blue-100 text-blue-800",
-      student: "bg-green-100 text-green-800"
+  const handleEnableUser = (user: User) => {
+    setConfirmDialog({
+      open: true,
+      title: `Enable ${user.fullName}?`,
+      description: `This will restore full access for ${user.fullName}. Type "${user.email}" to confirm.`,
+      variant: 'warning',
+      requireTypedConfirmation: user.email,
+      action: async () => {
+        await dataSource.users.enableUser(user.id);
+        toast({
+          title: "Success",
+          description: `${user.fullName} has been enabled`,
+        });
+        fetchUsers();
+      },
+    });
+  };
+
+  const handleResetPassword = (user: User) => {
+    setConfirmDialog({
+      open: true,
+      title: `Reset Password for ${user.fullName}?`,
+      description: `In demo mode, this will only show a notification. In production, this would send a password reset email to ${user.email}.`,
+      variant: 'warning',
+      action: async () => {
+        await dataSource.users.resetPassword(user.id);
+        toast({
+          title: "Demo Mode",
+          description: `Password reset email would be sent to ${user.email} in production`,
+        });
+      },
+    });
+  };
+
+  const getRoleBadge = (role: User['role'], userId: string) => {
+    const roleConfig = {
+      super_admin: { color: "bg-purple-100 text-purple-800", label: "Super Admin" },
+      admin: { color: "bg-red-100 text-red-800", label: "Admin" },
+      educator: { color: "bg-blue-100 text-blue-800", label: "Educator" },
+      student: { color: "bg-green-100 text-green-800", label: "Student" },
     };
+    const config = roleConfig[role];
     return (
-      <Badge className={colors[role as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
-        {role.charAt(0).toUpperCase() + role.slice(1)}
+      <Badge className={config.color} data-testid={`badge-role-${role}-${userId}`}>
+        {config.label}
       </Badge>
     );
   };
 
-  const getStatusBadge = (status: string) => {
-    const colors = {
-      active: "bg-green-100 text-green-800",
-      trial: "bg-yellow-100 text-yellow-800",
-      inactive: "bg-gray-100 text-gray-800",
-      cancelled: "bg-red-100 text-red-800"
-    };
-    return (
-      <Badge className={colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
+  const getStatusBadge = (status: User['status'], userId: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge variant="default" className="bg-green-500" data-testid={`badge-status-active-${userId}`}>Active</Badge>;
+      case 'disabled':
+        return <Badge variant="destructive" data-testid={`badge-status-disabled-${userId}`}>Disabled</Badge>;
+      default:
+        return null;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -372,13 +219,87 @@ export function AdminUsers() {
         <div>
           <h1 className="text-3xl font-bold">User Management</h1>
           <p className="text-muted-foreground">
-            Manage users, roles, and subscriptions
+            Manage users, roles, and access permissions
           </p>
         </div>
-        <Button onClick={() => setAddAdminDialog(true)}>
-          <Shield className="mr-2 h-4 w-4" />
-          Add Admin User
-        </Button>
+      </div>
+
+      {/* Demo Mode Required Alert */}
+      {!isDemo && users.length === 0 && !loading && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Demo Mode Required</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>User management features are currently only available in demo mode. Please enable demo mode to explore this functionality.</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleDemo}
+              className="ml-4"
+              data-testid="button-enable-demo"
+            >
+              Enable Demo Mode
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{users.length}</div>
+            <p className="text-xs text-muted-foreground">
+              All registered users
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+            <UserCheck className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {users.filter(u => u.status === 'active').length}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Currently active
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Educators</CardTitle>
+            <Shield className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {users.filter(u => u.role === 'educator').length}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Content creators
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Disabled Users</CardTitle>
+            <UserX className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {users.filter(u => u.status === 'disabled').length}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Require attention
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters */}
@@ -396,11 +317,12 @@ export function AdminUsers() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
+                  data-testid="input-search-users"
                 />
               </div>
             </div>
             <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[150px]" data-testid="select-role-filter">
                 <SelectValue placeholder="Role" />
               </SelectTrigger>
               <SelectContent>
@@ -408,20 +330,28 @@ export function AdminUsers() {
                 <SelectItem value="student">Student</SelectItem>
                 <SelectItem value="educator">Educator</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="super_admin">Super Admin</SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[150px]" data-testid="select-status-filter">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="trial">Trial</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="disabled">Disabled</SelectItem>
               </SelectContent>
             </Select>
+            <Button
+              variant="outline"
+              onClick={fetchUsers}
+              disabled={loading}
+              data-testid="button-refresh-users"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -435,201 +365,217 @@ export function AdminUsers() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Subscription</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={user.avatar_url} />
-                          <AvatarFallback>
-                            {user.full_name?.charAt(0) || user.email.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{user.full_name || 'No name'}</div>
-                          <div className="text-sm text-muted-foreground">{user.email}</div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{getRoleBadge(user.role)}</TableCell>
-                    <TableCell>{getStatusBadge(user.subscription_status)}</TableCell>
-                    <TableCell>
-                      {user.subscription_tier ? (
-                        <Badge variant="outline">{user.subscription_tier}</Badge>
-                      ) : (
-                        <span className="text-muted-foreground">None</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(user.created_at).toLocaleDateString()}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => openEmailDialog(user)}>
-                            <Mail className="mr-2 h-4 w-4" />
-                            Edit Email
-                          </DropdownMenuItem>
-                          {user.role === 'educator' && (
-                            <DropdownMenuItem onClick={() => openActionDialog(user, 'revoke_educator')}>
-                              <UserX className="mr-2 h-4 w-4" />
-                              Revoke Educator Status
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem onClick={() => openActionDialog(user, 'reset_password')}>
-                            <Mail className="mr-2 h-4 w-4" />
-                            Reset Password
-                          </DropdownMenuItem>
-                          {user.subscription_status === 'active' && (
-                            <DropdownMenuItem onClick={() => openActionDialog(user, 'cancel_subscription')}>
-                              <CreditCard className="mr-2 h-4 w-4" />
-                              Cancel Subscription
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <div className="overflow-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Joined</TableHead>
+                    <TableHead>Last Active</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.map((user) => (
+                    <TableRow key={user.id} data-testid={`row-user-${user.id}`}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={user.avatarUrl} />
+                            <AvatarFallback data-testid={`avatar-${user.id}`}>
+                              {user.fullName?.charAt(0) || user.email.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium" data-testid={`text-name-${user.id}`}>
+                              {user.fullName || 'No name'}
+                            </div>
+                            <div className="text-sm text-muted-foreground" data-testid={`text-email-${user.id}`}>
+                              {user.email}
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>{getRoleBadge(user.role, user.id)}</TableCell>
+                      <TableCell>{getStatusBadge(user.status, user.id)}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground" data-testid={`text-joined-${user.id}`}>
+                          <Calendar className="h-3 w-3" />
+                          {formatDate(user.createdAt)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm text-muted-foreground" data-testid={`text-last-active-${user.id}`}>
+                          {formatDateTime(user.lastActive)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" data-testid={`button-actions-${user.id}`}>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem 
+                              onClick={() => handleViewDetails(user)}
+                              data-testid={`menuitem-view-details-${user.id}`}
+                            >
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {user.status === 'active' ? (
+                              <DropdownMenuItem 
+                                onClick={() => handleDisableUser(user)}
+                                data-testid={`menuitem-disable-${user.id}`}
+                              >
+                                <UserX className="mr-2 h-4 w-4" />
+                                Disable User
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem 
+                                onClick={() => handleEnableUser(user)}
+                                data-testid={`menuitem-enable-${user.id}`}
+                              >
+                                <UserCheck className="mr-2 h-4 w-4" />
+                                Enable User
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem 
+                              onClick={() => handleResetPassword(user)}
+                              data-testid={`menuitem-reset-password-${user.id}`}
+                            >
+                              <Key className="mr-2 h-4 w-4" />
+                              Reset Password
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Action Confirmation Dialog */}
-      <Dialog open={actionDialog.open} onOpenChange={(open) => setActionDialog(prev => ({ ...prev, open }))}>
-        <DialogContent>
+      {/* User Detail Dialog */}
+      <Dialog open={userDetailDialog} onOpenChange={setUserDetailDialog}>
+        <DialogContent className="max-w-2xl" data-testid="dialog-user-details">
           <DialogHeader>
-            <DialogTitle>{actionDialog.title}</DialogTitle>
-            <DialogDescription>{actionDialog.description}</DialogDescription>
+            <DialogTitle>User Details</DialogTitle>
+            <DialogDescription>
+              Complete information for {selectedUser?.fullName || selectedUser?.email}
+            </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setActionDialog(prev => ({ ...prev, open: false }))}
-            >
-              Cancel
-            </Button>
-            <Button onClick={() => handleUserAction(actionDialog.action)}>
-              Confirm
-            </Button>
-          </DialogFooter>
+          {selectedUser && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src={selectedUser.avatarUrl} />
+                  <AvatarFallback className="text-xl">
+                    {selectedUser.fullName?.charAt(0) || selectedUser.email.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="text-lg font-semibold" data-testid="detail-name">
+                    {selectedUser.fullName || 'No name provided'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground" data-testid="detail-email">
+                    {selectedUser.email}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Role</p>
+                  <div data-testid="detail-role">{getRoleBadge(selectedUser.role, selectedUser.id)}</div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Status</p>
+                  <div data-testid="detail-status">{getStatusBadge(selectedUser.status, selectedUser.id)}</div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Joined</p>
+                  <p className="text-sm" data-testid="detail-joined">{formatDate(selectedUser.createdAt)}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">Last Active</p>
+                  <p className="text-sm" data-testid="detail-last-active">{formatDateTime(selectedUser.lastActive)}</p>
+                </div>
+              </div>
+
+              {selectedUser.status === 'disabled' && selectedUser.disabledReason && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>User Disabled</AlertTitle>
+                  <AlertDescription data-testid="detail-disabled-reason">
+                    <p className="font-medium">Reason: {selectedUser.disabledReason}</p>
+                    {selectedUser.disabledAt && (
+                      <p className="text-sm mt-1">Disabled on: {formatDateTime(selectedUser.disabledAt)}</p>
+                    )}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex justify-end gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setUserDetailDialog(false)}
+                  data-testid="button-close-details"
+                >
+                  Close
+                </Button>
+                {selectedUser.status === 'active' ? (
+                  <Button 
+                    variant="destructive" 
+                    onClick={() => {
+                      setUserDetailDialog(false);
+                      handleDisableUser(selectedUser);
+                    }}
+                    data-testid="button-disable-from-details"
+                  >
+                    <UserX className="mr-2 h-4 w-4" />
+                    Disable User
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={() => {
+                      setUserDetailDialog(false);
+                      handleEnableUser(selectedUser);
+                    }}
+                    data-testid="button-enable-from-details"
+                  >
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    Enable User
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
-      {/* Edit Email Dialog */}
-      <Dialog open={emailDialog} onOpenChange={setEmailDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Update Email Address</DialogTitle>
-            <DialogDescription>
-              Update the email address for {selectedUser?.full_name || selectedUser?.email}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Input
-              type="email"
-              placeholder="Enter new email address"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-            />
-          </div>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setEmailDialog(false);
-                setNewEmail('');
-                setSelectedUser(null);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleUpdateEmail}>
-              Update Email
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Admin User Dialog */}
-      <Dialog open={addAdminDialog} onOpenChange={setAddAdminDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Grant Admin Role</DialogTitle>
-            <DialogDescription>
-              Grant an admin role to an existing user by their email address
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">User Email</label>
-              <Input
-                type="email"
-                placeholder="user@example.com"
-                value={adminEmail}
-                onChange={(e) => setAdminEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Admin Role</label>
-              <Select value={adminRole} onValueChange={setAdminRole}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="super_admin">Super Admin</SelectItem>
-                  <SelectItem value="content_admin">Content Admin</SelectItem>
-                  <SelectItem value="finance_admin">Finance Admin</SelectItem>
-                  <SelectItem value="community_admin">Community Admin</SelectItem>
-                  <SelectItem value="compliance_admin">Compliance Admin</SelectItem>
-                  <SelectItem value="support_agent">Support Agent</SelectItem>
-                  <SelectItem value="institution_manager">Institution Manager</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setAddAdminDialog(false);
-                setAdminEmail('');
-                setAdminRole('content_admin');
-              }}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleAddAdmin}>
-              Grant Role
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
+        onConfirm={confirmDialog.action}
+        variant={confirmDialog.variant}
+        requireTypedConfirmation={confirmDialog.requireTypedConfirmation}
+      />
     </div>
   );
 }

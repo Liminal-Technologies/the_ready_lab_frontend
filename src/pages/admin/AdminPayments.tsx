@@ -3,387 +3,504 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  CreditCard,
   DollarSign,
   TrendingUp,
   Users,
+  CreditCard,
+  AlertCircle,
+  CheckCircle,
   RefreshCw,
-  Eye,
-  Download,
-  AlertCircle
+  XCircle
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-
-// Mock data - In real implementation, this would come from Stripe
-const mockTransactions = [
-  {
-    id: "pi_1234567890",
-    customer_email: "john@example.com",
-    amount: 4900,
-    currency: "usd",
-    status: "succeeded",
-    description: "Educator Pro Plan",
-    created: "2024-01-15T10:30:00Z",
-    payment_method: "card",
-    last4: "4242"
-  },
-  {
-    id: "pi_0987654321",
-    customer_email: "sarah@example.com",
-    amount: 12900,
-    currency: "usd",
-    status: "succeeded",
-    description: "Educator Premium Plan",
-    created: "2024-01-14T15:45:00Z",
-    payment_method: "card",
-    last4: "4444"
-  }
-];
-
-const mockSubscriptions = [
-  {
-    id: "sub_1234567890",
-    customer_email: "john@example.com",
-    status: "active",
-    plan: "Educator Pro",
-    amount: 4900,
-    interval: "month",
-    current_period_start: "2024-01-15T00:00:00Z",
-    current_period_end: "2024-02-15T00:00:00Z",
-    created: "2024-01-15T10:30:00Z"
-  }
-];
+import { useAdminDataSource } from "@/hooks/useAdminDataSource";
+import { useMockAuth } from "@/hooks/useMockAuth";
+import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { StripeStub } from "@/mocks/StripeStub";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 export function AdminPayments() {
-  const [transactions, setTransactions] = useState(mockTransactions);
-  const [subscriptions, setSubscriptions] = useState(mockSubscriptions);
-  const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [stripeConnected, setStripeConnected] = useState(false);
+  const [stripeEmail, setStripeEmail] = useState("");
+  const [platformFeePercent, setPlatformFeePercent] = useState(15);
+  const [payoutSchedule, setPayoutSchedule] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [minPayoutAmount, setMinPayoutAmount] = useState(50);
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    action: () => Promise<void>;
+    variant?: 'danger' | 'warning';
+    requireTypedConfirmation?: string;
+  }>({
+    open: false,
+    title: '',
+    description: '',
+    action: async () => {},
+  });
   const { toast } = useToast();
+  const { isDemo, toggleDemo } = useMockAuth();
+  const dataSource = useAdminDataSource();
 
-  const refreshStripeData = async () => {
-    setLoading(true);
-    // In real implementation, this would call Stripe API
-    setTimeout(() => {
-      setLoading(false);
+  // Mock revenue data for chart (last 6 months)
+  const revenueData = [
+    { month: 'Jun', gmv: 8500 },
+    { month: 'Jul', gmv: 12300 },
+    { month: 'Aug', gmv: 15800 },
+    { month: 'Sep', gmv: 18200 },
+    { month: 'Oct', gmv: 22100 },
+    { month: 'Nov', gmv: 28400 },
+  ];
+
+  const chartConfig = {
+    gmv: {
+      label: "GMV",
+      color: "hsl(var(--primary))",
+    },
+  };
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      setLoading(true);
+      const settings = await dataSource.settings.getPlatformSettings();
+      setPlatformFeePercent(settings.platformFeePercent);
+      setPayoutSchedule(settings.payoutSchedule);
+      setMinPayoutAmount(settings.minPayoutAmount);
+      
+      // Check Stripe connection status
+      const stripeStatus = await StripeStub.getAccountStatus();
+      if (stripeStatus) {
+        setStripeConnected(stripeStatus.connected);
+        setStripeEmail(stripeStatus.email || "");
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
       toast({
-        title: "Data Refreshed",
-        description: "Payment data has been synced with Stripe",
+        title: "Error",
+        description: "Failed to load platform settings",
+        variant: "destructive",
       });
-    }, 2000);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getStatusBadge = (status: string) => {
-    const colors = {
-      succeeded: "bg-green-100 text-green-800",
-      pending: "bg-yellow-100 text-yellow-800",
-      failed: "bg-red-100 text-red-800",
-      active: "bg-green-100 text-green-800",
-      canceled: "bg-red-100 text-red-800",
-      past_due: "bg-orange-100 text-orange-800"
-    };
-    return (
-      <Badge className={colors[status as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
+  const handleConnectStripe = async () => {
+    try {
+      // Simulate Stripe OAuth connection
+      const mockEmail = "admin@thereadylab.com";
+      await StripeStub.connectAccount(mockEmail);
+      
+      setStripeConnected(true);
+      setStripeEmail(mockEmail);
+      setConnectModalOpen(false);
+      
+      toast({
+        title: "Stripe Connected Successfully",
+        description: "Your Stripe account has been connected. Platform payments are now enabled.",
+      });
+    } catch (error) {
+      toast({
+        title: "Connection Failed",
+        description: "Failed to connect Stripe account. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const formatAmount = (amount: number, currency: string = 'usd') => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency.toUpperCase(),
-    }).format(amount / 100);
+  const handleDisconnectStripe = () => {
+    setConfirmDialog({
+      open: true,
+      title: 'Disconnect Stripe Account?',
+      description: 'This will disable all platform payments and educator payouts. Students will not be able to purchase courses until you reconnect. Type "DISCONNECT" to confirm.',
+      variant: 'danger',
+      requireTypedConfirmation: 'DISCONNECT',
+      action: async () => {
+        await StripeStub.disconnectAccount();
+        setStripeConnected(false);
+        setStripeEmail("");
+        toast({
+          title: "Stripe Disconnected",
+          description: "Your Stripe account has been disconnected. Platform payments are now disabled.",
+        });
+      },
+    });
   };
+
+  const handleSaveSettings = async () => {
+    try {
+      await dataSource.settings.updatePlatformSettings({
+        platformFeePercent,
+        payoutSchedule,
+        minPayoutAmount,
+      });
+      
+      toast({
+        title: "Settings Saved",
+        description: "Platform fee configuration has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save settings. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Mock KPI calculations
+  const totalGMV = revenueData.reduce((sum, d) => sum + d.gmv, 0);
+  const platformRevenue = Math.round(totalGMV * (platformFeePercent / 100));
+  const pendingPayouts = 4234;
+  const activeEducatorsWithStripe = 12;
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Payment Management</h1>
-          <p className="text-muted-foreground">
-            Monitor transactions, subscriptions, and payouts
+          <h1 className="text-3xl font-bold" data-testid="text-page-title">Payment Management</h1>
+          <p className="text-muted-foreground" data-testid="text-page-subtitle">
+            Manage Stripe integration and platform fees
           </p>
         </div>
-        <Button onClick={refreshStripeData} disabled={loading}>
-          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          Sync with Stripe
-        </Button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Demo Mode Alert */}
+      {!isDemo && !loading && (
+        <Alert variant="destructive" data-testid="alert-demo-mode">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Demo Mode Required</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>Payment management features are currently only available in demo mode. Please enable demo mode to explore this functionality.</span>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleDemo}
+              className="ml-4"
+              data-testid="button-enable-demo"
+            >
+              Enable Demo Mode
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
+        <Card data-testid="card-kpi-gmv">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Total GMV</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$12,847</div>
+            <div className="text-2xl font-bold" data-testid="text-total-gmv">
+              ${totalGMV.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">
-              +15.2% from last month
+              Last 6 months
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card data-testid="card-kpi-revenue">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">89</div>
-            <p className="text-xs text-muted-foreground">
-              +7 new this month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Failed Payments</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
-              Require attention
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
+            <CardTitle className="text-sm font-medium">Platform Revenue</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$4,234</div>
+            <div className="text-2xl font-bold" data-testid="text-platform-revenue">
+              ${platformRevenue.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {platformFeePercent}% platform fee
+            </p>
+          </CardContent>
+        </Card>
+        <Card data-testid="card-kpi-payouts">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending Payouts</CardTitle>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" data-testid="text-pending-payouts">
+              ${pendingPayouts.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">
               To educators
             </p>
           </CardContent>
         </Card>
+        <Card data-testid="card-kpi-educators">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Educators with Stripe</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold" data-testid="text-active-educators">
+              {activeEducatorsWithStripe}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Connected accounts
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
-      <Tabs defaultValue="transactions" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-          <TabsTrigger value="refunds">Refunds</TabsTrigger>
-          <TabsTrigger value="payouts">Educator Payouts</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="transactions" className="space-y-6">
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Filters</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-4 flex-wrap">
-                <div className="flex-1 min-w-[200px]">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search by email or transaction ID..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
+      {/* Stripe Connection Section */}
+      <Card data-testid="card-stripe-connection">
+        <CardHeader>
+          <CardTitle>Stripe Connection</CardTitle>
+          <CardDescription>
+            Connect your Stripe account to enable platform payments and educator payouts
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <RefreshCw className="h-6 w-6 animate-spin" />
+            </div>
+          ) : stripeConnected ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 border rounded-lg bg-green-50 dark:bg-green-950">
+                <CheckCircle className="h-6 w-6 text-green-600" data-testid="icon-stripe-connected" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Connected</span>
+                    <Badge className="bg-green-500" data-testid="badge-stripe-connected">Active</Badge>
                   </div>
+                  <p className="text-sm text-muted-foreground mt-1" data-testid="text-stripe-email">
+                    {stripeEmail}
+                  </p>
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="succeeded">Succeeded</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="failed">Failed</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Button
+                  variant="destructive"
+                  onClick={handleDisconnectStripe}
+                  data-testid="button-disconnect-stripe"
+                >
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Disconnect
+                </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Transactions Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
-              <CardDescription>
-                All payment transactions processed through Stripe
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Transaction ID</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {transactions.map((transaction) => (
-                      <TableRow key={transaction.id}>
-                        <TableCell className="font-mono text-sm">
-                          {transaction.id}
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium">{transaction.customer_email}</div>
-                            <div className="text-sm text-muted-foreground">
-                              Card ending in {transaction.last4}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {formatAmount(transaction.amount, transaction.currency)}
-                        </TableCell>
-                        <TableCell>{getStatusBadge(transaction.status)}</TableCell>
-                        <TableCell>{transaction.description}</TableCell>
-                        <TableCell>
-                          {new Date(transaction.created).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View in Stripe
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Download className="mr-2 h-4 w-4" />
-                                Download Receipt
-                              </DropdownMenuItem>
-                              {transaction.status === 'succeeded' && (
-                                <DropdownMenuItem>
-                                  <RefreshCw className="mr-2 h-4 w-4" />
-                                  Issue Refund
-                                </DropdownMenuItem>
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <div className="grid grid-cols-3 gap-4 pt-4">
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">✓</div>
+                  <p className="text-sm font-medium mt-2">Charges Enabled</p>
+                </div>
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">✓</div>
+                  <p className="text-sm font-medium mt-2">Payouts Enabled</p>
+                </div>
+                <div className="text-center p-4 border rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">✓</div>
+                  <p className="text-sm font-medium mt-2">Details Submitted</p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Stripe Not Connected</h3>
+              <p className="text-muted-foreground mb-6">
+                Connect your Stripe account to start accepting payments and processing educator payouts
+              </p>
+              <Button
+                size="lg"
+                onClick={() => setConnectModalOpen(true)}
+                data-testid="button-connect-stripe"
+              >
+                <CreditCard className="mr-2 h-4 w-4" />
+                Connect Stripe Account
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-        <TabsContent value="subscriptions" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Active Subscriptions</CardTitle>
-              <CardDescription>
-                All active educator subscriptions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Subscription ID</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Plan</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Next Billing</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {subscriptions.map((subscription) => (
-                      <TableRow key={subscription.id}>
-                        <TableCell className="font-mono text-sm">
-                          {subscription.id}
-                        </TableCell>
-                        <TableCell>{subscription.customer_email}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{subscription.plan}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          {formatAmount(subscription.amount)}/{subscription.interval}
-                        </TableCell>
-                        <TableCell>{getStatusBadge(subscription.status)}</TableCell>
-                        <TableCell>
-                          {new Date(subscription.current_period_end).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View in Stripe
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <RefreshCw className="mr-2 h-4 w-4" />
-                                Cancel Subscription
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+      {/* Platform Fee Configuration */}
+      <Card data-testid="card-fee-configuration">
+        <CardHeader>
+          <CardTitle>Platform Fee Configuration</CardTitle>
+          <CardDescription>
+            Configure platform fees and payout settings for educator revenue sharing
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="platform-fee">Platform Fee Percentage</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="platform-fee"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={platformFeePercent}
+                  onChange={(e) => setPlatformFeePercent(Number(e.target.value))}
+                  data-testid="input-platform-fee"
+                />
+                <span className="text-muted-foreground">%</span>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              <p className="text-xs text-muted-foreground">
+                Percentage of each transaction charged as platform fee (default: 15%)
+              </p>
+            </div>
 
-        <TabsContent value="refunds">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <RefreshCw className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Refund Management</h3>
-              <p className="text-muted-foreground">Refund processing features coming soon...</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            <div className="space-y-2">
+              <Label htmlFor="payout-schedule">Payout Schedule</Label>
+              <Select value={payoutSchedule} onValueChange={(value: any) => setPayoutSchedule(value)}>
+                <SelectTrigger id="payout-schedule" data-testid="select-payout-schedule">
+                  <SelectValue placeholder="Select schedule" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                How often educators receive payouts
+              </p>
+            </div>
 
-        <TabsContent value="payouts">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Educator Payouts</h3>
-              <p className="text-muted-foreground">Payout management features coming soon...</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            <div className="space-y-2">
+              <Label htmlFor="min-payout">Minimum Payout Amount</Label>
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">$</span>
+                <Input
+                  id="min-payout"
+                  type="number"
+                  min="0"
+                  value={minPayoutAmount}
+                  onChange={(e) => setMinPayoutAmount(Number(e.target.value))}
+                  data-testid="input-min-payout"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Minimum balance required before processing payout
+              </p>
+            </div>
+
+            <div className="flex items-end">
+              <Button
+                onClick={handleSaveSettings}
+                className="w-full"
+                data-testid="button-save-settings"
+              >
+                Save Configuration
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Revenue Chart */}
+      <Card data-testid="card-revenue-chart">
+        <CardHeader>
+          <CardTitle>Revenue Overview</CardTitle>
+          <CardDescription>
+            Gross Merchandise Value (GMV) - Last 6 Months
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+            <BarChart data={revenueData} accessibilityLayer>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value.toLocaleString()}`}
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar
+                dataKey="gmv"
+                fill="var(--color-gmv)"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
+
+      {/* Stripe Connection Modal */}
+      <Dialog open={connectModalOpen} onOpenChange={setConnectModalOpen}>
+        <DialogContent data-testid="modal-connect-stripe">
+          <DialogHeader>
+            <DialogTitle>Connect Your Stripe Account</DialogTitle>
+            <DialogDescription>
+              Connect your Stripe account to enable platform payments and educator payouts.
+              By connecting, you authorize The Ready Lab to:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+              <div>
+                <p className="font-medium">Process payments on your behalf</p>
+                <p className="text-sm text-muted-foreground">Accept course purchases and subscriptions</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+              <div>
+                <p className="font-medium">Manage educator payouts</p>
+                <p className="text-sm text-muted-foreground">Distribute revenue to connected educator accounts</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+              <div>
+                <p className="font-medium">Access transaction data</p>
+                <p className="text-sm text-muted-foreground">View payment history and analytics</p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConnectModalOpen(false)}
+              data-testid="button-cancel-connect"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConnectStripe}
+              className="bg-[#635bff] hover:bg-[#4f46e5]"
+              data-testid="button-confirm-connect"
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Connect with Stripe
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Disconnect Confirmation Dialog */}
+      <ConfirmDialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
+        onConfirm={confirmDialog.action}
+        variant={confirmDialog.variant}
+        requireTypedConfirmation={confirmDialog.requireTypedConfirmation}
+      />
     </div>
   );
 }

@@ -57,7 +57,7 @@ export function AdminCommunities() {
     action: async () => {},
   });
   const { toast } = useToast();
-  const { isDemo, setIsDemo } = useMockAuth();
+  const { isDemo, toggleDemo } = useMockAuth();
   const dataSource = useAdminDataSource();
 
   useEffect(() => {
@@ -249,7 +249,7 @@ export function AdminCommunities() {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setIsDemo(true)}
+              onClick={toggleDemo}
               className="ml-4"
               data-testid="button-enable-demo"
             >
