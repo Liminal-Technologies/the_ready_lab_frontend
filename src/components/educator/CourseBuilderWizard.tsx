@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
 import { 
   ChevronRight, 
@@ -22,7 +23,8 @@ import {
   FileText,
   Sparkles,
   X,
-  Plus
+  Plus,
+  Clock
 } from "lucide-react";
 
 interface CourseBuilderWizardProps {
@@ -65,6 +67,27 @@ const COURSE_TYPES = [
   },
 ];
 
+const LEARNING_STYLES = [
+  { id: "visual", label: "Visual" },
+  { id: "auditory", label: "Auditory" },
+  { id: "kinesthetic", label: "Kinesthetic" },
+  { id: "reading", label: "Reading/Writing" },
+  { id: "project-based", label: "Project-Based" },
+];
+
+const LANGUAGES = [
+  { code: "en", name: "English" },
+  { code: "es", name: "Spanish" },
+  { code: "fr", name: "French" },
+  { code: "de", name: "German" },
+  { code: "zh", name: "Chinese" },
+  { code: "ja", name: "Japanese" },
+  { code: "pt", name: "Portuguese" },
+  { code: "ar", name: "Arabic" },
+  { code: "hi", name: "Hindi" },
+  { code: "it", name: "Italian" },
+];
+
 export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: CourseBuilderWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -76,7 +99,9 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [level, setLevel] = useState("beginner");
-  const [learningStyle, setLearningStyle] = useState("");
+  const [learningStyles, setLearningStyles] = useState<string[]>([]);
+  const [courseLanguage, setCourseLanguage] = useState("en");
+  const [microlearningDuration, setMicrolearningDuration] = useState(5);
   const [description, setDescription] = useState("");
   const [objectives, setObjectives] = useState<string[]>(["", "", ""]);
   
@@ -171,13 +196,23 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
     setModules([...modules, { name: `Module ${modules.length + 1}`, lessons: [] }]);
   };
 
+  const toggleLearningStyle = (styleId: string) => {
+    setLearningStyles(prev =>
+      prev.includes(styleId)
+        ? prev.filter(s => s !== styleId)
+        : [...prev, styleId]
+    );
+  };
+
   const handleSaveDraft = () => {
     const draft = {
       courseType,
       title,
       category,
       level,
-      learningStyle,
+      learningStyles,
+      courseLanguage,
+      microlearningDuration: courseType === "microlearning" ? microlearningDuration : undefined,
       description,
       objectives: objectives.filter(o => o.trim()),
       pricing: { isPaid, price: isPaid ? priceNumber : 0 },
@@ -206,7 +241,9 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
       title,
       category,
       level,
-      learningStyle,
+      learningStyles,
+      courseLanguage,
+      microlearningDuration: courseType === "microlearning" ? microlearningDuration : undefined,
       description,
       objectives: objectives.filter(o => o.trim()),
       pricing: { isPaid, price: isPaid ? priceNumber : 0 },
@@ -229,7 +266,9 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
     setTitle("");
     setCategory("");
     setLevel("beginner");
-    setLearningStyle("");
+    setLearningStyles([]);
+    setCourseLanguage("en");
+    setMicrolearningDuration(5);
     setDescription("");
     setObjectives(["", "", ""]);
     setIsPaid(false);
@@ -330,12 +369,12 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
             </div>
 
             <div className="space-y-2">
-              <Label>Level *</Label>
+              <Label>Difficulty Level *</Label>
               <RadioGroup value={level} onValueChange={setLevel}>
                 <div className="flex gap-4">
                   {["beginner", "intermediate", "advanced"].map((l) => (
                     <label key={l} className="flex items-center gap-2 cursor-pointer">
-                      <RadioGroupItem value={l} />
+                      <RadioGroupItem value={l} data-testid={`radio-level-${l}`} />
                       <span className="capitalize">{l}</span>
                     </label>
                   ))}
@@ -343,22 +382,66 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
               </RadioGroup>
             </div>
 
+            {/* Microlearning Duration Slider */}
+            {courseType === "microlearning" && (
+              <div className="space-y-3 p-4 border rounded-lg bg-muted/50">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="microlearning-duration" className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    Microlearning Duration
+                  </Label>
+                  <Badge variant="outline">{microlearningDuration} min</Badge>
+                </div>
+                <Slider
+                  id="microlearning-duration"
+                  min={0.5}
+                  max={10}
+                  step={0.5}
+                  value={[microlearningDuration]}
+                  onValueChange={(value) => setMicrolearningDuration(value[0])}
+                  data-testid="slider-microlearning-duration"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Set the target duration for each microlearning lesson (30 seconds to 10 minutes)
+                </p>
+              </div>
+            )}
+
             <div className="space-y-2">
-              <Label htmlFor="learning-style">Learning Style (Optional)</Label>
-              <Select value={learningStyle} onValueChange={setLearningStyle}>
-                <SelectTrigger data-testid="select-learning-style">
-                  <SelectValue placeholder="Select primary learning style" />
+              <Label>Learning Style Tags (Multi-select)</Label>
+              <div className="flex flex-wrap gap-2">
+                {LEARNING_STYLES.map((style) => (
+                  <Badge
+                    key={style.id}
+                    variant={learningStyles.includes(style.id) ? "default" : "outline"}
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => toggleLearningStyle(style.id)}
+                    data-testid={`badge-learning-style-${style.id}`}
+                  >
+                    {learningStyles.includes(style.id) && <CheckCircle2 className="h-3 w-3 mr-1" />}
+                    {style.label}
+                  </Badge>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Select all learning styles that apply to this course
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="course-language">Course Language *</Label>
+              <Select value={courseLanguage} onValueChange={setCourseLanguage}>
+                <SelectTrigger data-testid="select-course-language">
+                  <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="visual">Visual (Images, diagrams, charts)</SelectItem>
-                  <SelectItem value="auditory">Auditory (Lectures, discussions)</SelectItem>
-                  <SelectItem value="kinesthetic">Kinesthetic (Hands-on, interactive)</SelectItem>
-                  <SelectItem value="reading">Reading/Writing (Text-based)</SelectItem>
+                  {LANGUAGES.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
-                This helps students find courses that match their preferred learning method
-              </p>
             </div>
 
             <div className="space-y-2">

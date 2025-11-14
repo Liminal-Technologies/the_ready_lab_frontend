@@ -6,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
-import { Calendar, Clock, Users, Video } from "lucide-react";
+import { Calendar, Clock, Users, Video, DollarSign } from "lucide-react";
 
 interface ScheduleLiveEventModalProps {
   open: boolean;
@@ -43,6 +44,8 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
   const [duration, setDuration] = useState("60");
   const [maxAttendees, setMaxAttendees] = useState("100");
   const [associatedCourse, setAssociatedCourse] = useState("");
+  const [isPaid, setIsPaid] = useState(false);
+  const [price, setPrice] = useState("0");
   const [enableChat, setEnableChat] = useState(true);
   const [enableQA, setEnableQA] = useState(true);
   const [enablePolls, setEnablePolls] = useState(false);
@@ -71,6 +74,10 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
       duration: parseInt(duration),
       maxAttendees: parseInt(maxAttendees),
       associatedCourse,
+      pricing: {
+        isPaid,
+        price: isPaid ? parseFloat(price) : 0,
+      },
       features: {
         chat: enableChat,
         qa: enableQA,
@@ -101,6 +108,8 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
     setDuration("60");
     setMaxAttendees("100");
     setAssociatedCourse("");
+    setIsPaid(false);
+    setPrice("0");
     setEnableChat(true);
     setEnableQA(true);
     setEnablePolls(false);
@@ -232,7 +241,7 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
 
           {/* Associated Course */}
           <div className="space-y-2">
-            <Label htmlFor="associated-course">Associated Course (Optional)</Label>
+            <Label htmlFor="associated-course">Link to a Course (Optional)</Label>
             <Select value={associatedCourse} onValueChange={setAssociatedCourse}>
               <SelectTrigger data-testid="select-associated-course">
                 <SelectValue placeholder="Select a course" />
@@ -246,6 +255,40 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Pricing */}
+          <div className="space-y-4 border rounded-lg p-4 bg-muted/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <div>
+                  <Label htmlFor="event-paid-toggle" className="font-semibold">Paid Event</Label>
+                  <p className="text-xs text-muted-foreground">Charge attendees for access</p>
+                </div>
+              </div>
+              <Switch
+                id="event-paid-toggle"
+                checked={isPaid}
+                onCheckedChange={setIsPaid}
+                data-testid="switch-event-paid"
+              />
+            </div>
+            {isPaid && (
+              <div className="space-y-2 pt-2">
+                <Label htmlFor="event-price">Price (USD)</Label>
+                <Input
+                  id="event-price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="0.00"
+                  data-testid="input-event-price"
+                />
+              </div>
+            )}
           </div>
 
           {/* Features */}

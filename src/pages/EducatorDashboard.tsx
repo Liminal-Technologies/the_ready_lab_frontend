@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { 
   CheckCircle2, 
   Circle, 
@@ -25,7 +26,9 @@ import {
   BarChart3,
   Settings,
   Eye,
-  Edit
+  Edit,
+  CreditCard,
+  ShoppingCart
 } from 'lucide-react';
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 import { CourseBuilderWizard } from '@/components/educator/CourseBuilderWizard';
@@ -53,6 +56,32 @@ const MOCK_LIVE_EVENTS = [
   { id: 1, title: "Q&A: Funding Your Startup", date: "2024-12-10", time: "2:00 PM EST", attendees: 24, status: "upcoming" },
   { id: 2, title: "Workshop: Building Your Pitch Deck", date: "2024-12-15", time: "4:00 PM EST", attendees: 18, status: "upcoming" },
   { id: 3, title: "Office Hours: Legal Questions", date: "2024-11-28", time: "3:00 PM EST", attendees: 32, status: "past" },
+];
+
+// Mock analytics data
+const REVENUE_TREND_DATA = [
+  { month: 'Jul', revenue: 2100 },
+  { month: 'Aug', revenue: 2650 },
+  { month: 'Sep', revenue: 2890 },
+  { month: 'Oct', revenue: 3200 },
+  { month: 'Nov', revenue: 3100 },
+  { month: 'Dec', revenue: 3847 },
+];
+
+const TOP_COURSES_DATA = [
+  { id: 1, name: "Funding Essentials", students: 45, revenue: 4455 },
+  { id: 2, name: "Legal Framework", students: 38, revenue: 3762 },
+  { id: 3, name: "Marketing Basics", students: 32, revenue: 3168 },
+  { id: 4, name: "Operations Guide", students: 28, revenue: 2772 },
+  { id: 5, name: "Product Development", students: 13, revenue: 1287 },
+];
+
+const RECENT_TRANSACTIONS = [
+  { id: 1, student: "Sarah Johnson", course: "Funding Essentials", amount: 99, date: "2 hours ago", status: "completed" },
+  { id: 2, student: "Michael Chen", course: "Legal Framework", amount: 99, date: "5 hours ago", status: "completed" },
+  { id: 3, student: "Emma Davis", course: "Funding Essentials", amount: 99, date: "1 day ago", status: "completed" },
+  { id: 4, student: "David Martinez", course: "Marketing Basics", amount: 99, date: "1 day ago", status: "completed" },
+  { id: 5, student: "Lisa Anderson", course: "Operations Guide", amount: 99, date: "2 days ago", status: "completed" },
 ];
 
 export const EducatorDashboard = () => {
@@ -250,6 +279,10 @@ export const EducatorDashboard = () => {
             <TabsTrigger value="events" className="flex items-center gap-2" data-testid="tab-events">
               <Calendar className="h-4 w-4" />
               Live Events
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2" data-testid="tab-analytics">
+              <TrendingUp className="h-4 w-4" />
+              Analytics
             </TabsTrigger>
           </TabsList>
 
@@ -580,6 +613,204 @@ export const EducatorDashboard = () => {
                 ))}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            {/* Revenue KPI Cards */}
+            <div className="grid gap-4 md:grid-cols-4">
+              <Card data-testid="card-total-revenue">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold" data-testid="text-total-revenue">
+                    $17,787
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Last 6 months
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card data-testid="card-this-month">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">This Month</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold" data-testid="text-this-month">
+                    $3,847
+                  </div>
+                  <p className="text-xs text-green-600">
+                    +24% from last month
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card data-testid="card-avg-per-student">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Avg Per Student</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold" data-testid="text-avg-per-student">
+                    $114
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Per enrolled student
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card data-testid="card-course-sales">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Course Sales Count</CardTitle>
+                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold" data-testid="text-course-sales">
+                    156
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Total enrollments
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Revenue Trend Chart */}
+            <Card data-testid="card-revenue-chart">
+              <CardHeader>
+                <CardTitle>6-Month Revenue Trend</CardTitle>
+                <CardDescription>
+                  Your earnings over the last 6 months
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={REVENUE_TREND_DATA}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="month"
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `$${value}`}
+                    />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="rounded-lg border bg-background p-2 shadow-sm">
+                              <div className="flex flex-col">
+                                <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                  Revenue
+                                </span>
+                                <span className="font-bold text-muted-foreground">
+                                  ${payload[0].value}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={2}
+                      dot={{ fill: "hsl(var(--primary))" }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Top Performing Courses */}
+              <Card data-testid="card-top-courses">
+                <CardHeader>
+                  <CardTitle>Top Performing Courses</CardTitle>
+                  <CardDescription>Your best sellers this period</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Course Name</TableHead>
+                        <TableHead className="text-right">Students</TableHead>
+                        <TableHead className="text-right">Revenue</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {TOP_COURSES_DATA.map((course) => (
+                        <TableRow key={course.id} data-testid={`top-course-${course.id}`}>
+                          <TableCell className="font-medium">{course.name}</TableCell>
+                          <TableCell className="text-right" data-testid={`top-course-students-${course.id}`}>
+                            {course.students}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold" data-testid={`top-course-revenue-${course.id}`}>
+                            ${course.revenue.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              {/* Recent Transactions */}
+              <Card data-testid="card-recent-transactions">
+                <CardHeader>
+                  <CardTitle>Recent Transactions</CardTitle>
+                  <CardDescription>Latest 5 course purchases</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {RECENT_TRANSACTIONS.map((transaction) => (
+                      <div
+                        key={transaction.id}
+                        className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"
+                        data-testid={`transaction-${transaction.id}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <CreditCard className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <div className="font-medium text-sm" data-testid={`transaction-student-${transaction.id}`}>
+                              {transaction.student}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {transaction.course}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold" data-testid={`transaction-amount-${transaction.id}`}>
+                            ${transaction.amount}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {transaction.date}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
