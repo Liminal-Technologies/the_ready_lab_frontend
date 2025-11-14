@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { UserProfile } from '@/types/auth';
 
 export type MockUserRole = 'super_admin' | 'admin' | 'educator' | 'student';
 
@@ -44,6 +45,35 @@ const mockUsers: Record<MockUserRole, MockUser> = {
     fullName: 'John Student',
     role: 'student',
   },
+};
+
+export const convertMockUserToProfile = (mockUser: MockUser): UserProfile => {
+  const baseRole = mockUser.role === 'super_admin' || mockUser.role === 'admin' ? 'admin' : mockUser.role;
+  
+  const profile: UserProfile = {
+    id: mockUser.id,
+    email: mockUser.email,
+    role: baseRole as 'student' | 'educator' | 'admin',
+    full_name: mockUser.fullName,
+    created_at: new Date().toISOString(),
+    subscription_status: 'active',
+    subscription_tier: 'premium',
+    avatar_url: mockUser.avatarUrl || null,
+    admin_roles: []
+  };
+
+  if (mockUser.role === 'super_admin') {
+    profile.admin_roles = [{
+      id: 'mock-admin-role-1',
+      role: 'super_admin' as const,
+      granted_by: null,
+      granted_at: new Date().toISOString(),
+      is_active: true,
+      feature_flags: {}
+    }];
+  }
+
+  return profile;
 };
 
 export const useMockAuth = create<MockAuthStore>()(

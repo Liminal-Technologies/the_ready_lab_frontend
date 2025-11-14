@@ -2,6 +2,7 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import { UserProfile, AuthState } from '@/types/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
+import { useMockAuth, convertMockUserToProfile } from './useMockAuth';
 
 const AuthContext = createContext<{
   auth: AuthState;
@@ -20,6 +21,7 @@ export const useAuth = () => {
 };
 
 export const useAuthState = () => {
+  const mockAuth = useMockAuth();
   const [auth, setAuth] = useState<AuthState>({
     user: null,
     loading: true,
@@ -157,6 +159,16 @@ export const useAuthState = () => {
     try {
       setAuth(prev => ({ ...prev, loading: true }));
       
+      if (mockAuth.isDemo) {
+        mockAuth.logout();
+        setAuth({
+          user: null,
+          loading: false,
+          error: null
+        });
+        return;
+      }
+      
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
@@ -172,6 +184,29 @@ export const useAuthState = () => {
 
   useEffect(() => {
     console.log('useAuth useEffect: Setting up auth state listener');
+    
+    // Check demo mode FIRST - if active, bypass Supabase entirely
+    if (mockAuth.isDemo && mockAuth.user) {
+      console.log('Demo mode active, using mock user:', mockAuth.user);
+      const demoProfile = convertMockUserToProfile(mockAuth.user);
+      setAuth({
+        user: demoProfile,
+        loading: false,
+        error: null
+      });
+      return; // Exit early, no Supabase subscription needed
+    }
+
+    // If demo mode but no user, show logged out state
+    if (mockAuth.isDemo && !mockAuth.user) {
+      console.log('Demo mode active but no mock user selected');
+      setAuth({
+        user: null,
+        loading: false,
+        error: null
+      });
+      return;
+    }
     
     // Set up auth state listener FIRST to prevent missing events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -244,7 +279,7 @@ export const useAuthState = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [mockAuth.isDemo, mockAuth.user]);
 
   const clearError = () => {
     setAuth(prev => ({ ...prev, error: null }));

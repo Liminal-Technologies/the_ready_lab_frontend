@@ -31,7 +31,7 @@ const roleRoutes: Record<MockUserRole, string> = {
   super_admin: '/admin',
   admin: '/admin',
   educator: '/educator/dashboard',
-  student: '/student/dashboard',
+  student: '/dashboard',
 };
 
 export function RoleSwitcher() {
