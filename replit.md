@@ -9,6 +9,13 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Prefers minimal API keys for initial development
 
 ## Recent Changes (November 15, 2024)
+- **Secure Profile Creation Fix (COMPLETED):**
+  - Fixed profile creation issue caused by Supabase Auth and Neon DB being separate databases
+  - Created secure server-side endpoint `/api/profiles/create-on-signup` with JWT verification
+  - Server verifies Supabase tokens using SUPABASE_SERVICE_ROLE_KEY before creating profiles
+  - Role sanitization: only 'student' or 'educator' roles allowed, preventing privilege escalation
+  - User ID derived from verified JWT token, not client-supplied data
+  - Profile created in Neon DB immediately after Supabase user creation during signup
 - **Email Confirmation Flow (COMPLETED):**
   - Implemented production-ready email confirmation system with Supabase
   - Created EmailConfirmation component with "Check your email" screen, resend functionality, and 60-second cooldown
