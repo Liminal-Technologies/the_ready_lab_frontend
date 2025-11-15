@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, ChevronDown } from "lucide-react";
+import { BookOpen, Mail, Phone, MapPin, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Accordion,
@@ -6,7 +6,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import logoImage from "@/assets/ready-lab-logo.png";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -76,7 +75,10 @@ const Footer = () => {
 
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div className="space-y-4">
-            <img src={logoImage} alt="The Ready Lab - Digital Prep School for Growth-Ready Entrepreneurs" className="h-24 md:h-32 w-auto" />
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-8 w-8 text-primary" />
+              <span className="text-xl font-bold">The Ready Lab</span>
+            </div>
             <p className="text-white/70">
               Empowering learners and educators with accessible, quality education.
             </p>

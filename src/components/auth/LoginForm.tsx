@@ -12,7 +12,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import logoImage from "@/assets/ready-lab-logo.png";
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -83,13 +82,10 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-center space-y-4">
-        <div className="flex justify-center">
-          <img src={logoImage} alt="The Ready Lab - Digital Prep School for Growth-Ready Entrepreneurs" className="h-28 w-auto" />
-        </div>
+      <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
         <CardDescription>
-          Sign in to continue your learning journey
+          Sign in to continue your learning journey at The Ready Lab
         </CardDescription>
       </CardHeader>
       <CardContent>
