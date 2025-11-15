@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
+import { useMockAuth } from '@/hooks/useMockAuth';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, GraduationCap, AlertCircle, CreditCard } from 'lucide-react';
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
@@ -56,6 +57,7 @@ export const SignupForm = ({ onSwitchToLogin, selectedPlan }: SignupFormProps) =
   const [paymentError, setPaymentError] = useState('');
   
   const { signUp, auth } = useAuth();
+  const mockAuth = useMockAuth();
   
   const { register, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -116,95 +118,60 @@ export const SignupForm = ({ onSwitchToLogin, selectedPlan }: SignupFormProps) =
   
   const onSubmit = async (data: SignupFormData) => {
     try {
-      console.log('Starting signup process...');
+      console.log('Starting demo signup process...');
       
-      // Check if this is a paid plan that requires payment first
+      // Check if this is a paid plan that requires payment validation
       const isPaidPlan = selectedPlan && selectedPlan.price[selectedPlan.billingCycle] > 0;
       
       if (isPaidPlan) {
-        console.log('Processing payment for paid plan:', selectedPlan.name);
+        console.log('Validating payment for demo (paid plan):', selectedPlan.name);
         
-        // Validate payment fields before processing
+        // Validate payment fields for UX (but won't actually process)
         if (!validatePaymentFields()) {
           console.log('Payment validation failed');
           return;
         }
         
-        // TODO: Replace with actual Stripe payment processing
-        // const { error: paymentError } = await processStripePayment({
-        //   amount: selectedPlan.price[selectedPlan.billingCycle],
-        //   billingCycle: selectedPlan.billingCycle,
-        //   plan: selectedPlan.name,
-        //   cardNumber,
-        //   expiry,
-        //   cvc
-        // });
-        // if (paymentError) {
-        //   setPaymentError(paymentError.message);
-        //   return;
-        // }
-        
-        // Simulate payment processing (2 second delay)
+        // Show payment processing UX for demo
         toast.info('Processing payment...', {
-          description: 'Please wait while we securely process your payment.'
+          description: 'Demo mode: Simulating payment processing'
         });
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Simulate random payment failures (10% chance for demo purposes)
-        if (Math.random() < 0.1) {
-          throw new Error('Payment declined. Please check your card details and try again.');
-        }
-        
-        console.log('Payment successful, creating account...');
         toast.success('Payment successful!', {
-          description: 'Now creating your account...'
+          description: 'Demo mode: Creating your account...'
         });
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
       
-      // After payment succeeds (or for free plans), create Supabase account
-      await signUp(data.email, data.password, data.role, data.fullName);
+      // Use mock authentication for instant demo login
+      console.log('Demo mode: Logging in with mock auth as', data.role);
+      mockAuth.login(data.role as 'student' | 'educator');
       
-      console.log('Signup completed, checking auth state...');
+      // Show success message
+      toast.success('Welcome to The Ready Lab!', {
+        description: `Account created successfully. Redirecting to your ${data.role} dashboard...`
+      });
       
-      // Wait a moment for auth state to update
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Small delay for UX, then redirect to role-based dashboard
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Check if user was auto-logged in (session established immediately)
-      if (auth.user) {
-        console.log('User auto-logged in, redirecting to dashboard');
-        toast.success('Account created successfully!', {
-          description: 'Redirecting you to your dashboard...'
-        });
-        
-        // Redirect to role-based dashboard
-        const dashboardPath = data.role === 'educator' ? '/educator-dashboard' : '/student-dashboard';
-        navigate(dashboardPath);
-      } else {
-        // Email confirmation required
-        console.log('Email confirmation required, showing confirmation screen');
-        setSignupEmail(data.email);
-        setSignupRole(data.role);
-        
-        // Show plan selection modal for educators if no plan was pre-selected, otherwise show email confirmation
-        if (data.role === 'educator' && !selectedPlan) {
-          console.log('Showing educator plan modal');
-          setShowPlanModal(true);
-        } else {
-          console.log('Showing email confirmation');
-          setShowEmailConfirmation(true);
-        }
-      }
+      const dashboardPath = data.role === 'educator' ? '/educator-dashboard' : '/student-dashboard';
+      console.log('Redirecting to:', dashboardPath);
+      navigate(dashboardPath);
+      
     } catch (error: any) {
-      // Check if this is a payment error or signup error
+      // Handle any errors (primarily payment validation errors)
       if (error.message && error.message.includes('Payment')) {
         setPaymentError(error.message);
-        toast.error('Payment failed', {
+        toast.error('Payment validation failed', {
           description: error.message
         });
       } else {
-        // Error is stored in auth.error by useAuth hook for signup errors
-        console.log('Signup failed, error in auth.error:', auth.error);
-        console.error('Signup error caught:', error);
+        console.error('Signup error:', error);
+        toast.error('Signup failed', {
+          description: 'Please try again'
+        });
       }
     }
   };
