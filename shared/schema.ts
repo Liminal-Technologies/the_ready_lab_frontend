@@ -287,7 +287,7 @@ export const bookmarks = pgTable("bookmarks", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const insertProfileSchema = createInsertSchema(profiles).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertProfileSchema = createInsertSchema(profiles).omit({ createdAt: true, updatedAt: true });
 export const insertTrackSchema = createInsertSchema(tracks).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertModuleSchema = createInsertSchema(modules).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertLessonSchema = createInsertSchema(lessons).omit({ id: true, createdAt: true, updatedAt: true });

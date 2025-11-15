@@ -132,7 +132,31 @@ export const useAuthState = () => {
 
       if (data.user) {
         console.log('User created successfully:', data.user);
-        // Profile will be automatically created by database trigger
+        
+        // Create profile in Neon database with the Supabase user ID
+        try {
+          const profileResponse = await fetch('/api/profiles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: data.user.id,
+              email: email,
+              fullName: fullName,
+              role: role
+            })
+          });
+          
+          if (!profileResponse.ok) {
+            console.error('Failed to create profile in Neon:', await profileResponse.text());
+            throw new Error('Failed to create user profile in database');
+          }
+          
+          console.log('Profile created in Neon database');
+        } catch (profileError) {
+          console.error('Error creating profile:', profileError);
+          throw new Error('Failed to create user profile. Please contact support.');
+        }
+        
         // Fetch the created profile
         const userProfile = await fetchUserProfile(data.user);
         console.log('User profile:', userProfile);
