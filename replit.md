@@ -9,6 +9,15 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Prefers minimal API keys for initial development
 
 ## Recent Changes (November 15, 2025)
+- **Auto-Login After Signup (COMPLETED):**
+  - Implemented immediate auto-login after successful signup (no email confirmation wait)
+  - Updated `useAuth.signUp()` to check for session after signup and auto-login if session exists
+  - Updated `SignupForm` to detect auto-login and redirect to role-based dashboard
+  - Free tier: Instant access to dashboard after account creation
+  - Paid tier: Instant access after payment succeeds
+  - **CONFIGURATION REQUIRED**: Supabase email confirmation must be disabled for auto-login (see SUPABASE_SETUP.md)
+  - Email confirmation flow still supported as fallback if Supabase requires confirmation
+  - Flow: Signup → [if session] dashboard redirect, [else] email confirmation screen
 - **Pricing-First Signup Flow (COMPLETED):**
   - Redesigned signup flow to route users through pricing page first
   - "Sign Up" buttons in Header and LoginForm now navigate to /pricing instead of opening modal directly
@@ -17,11 +26,11 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
   - Payment UI integrated for paid plans: card number, expiry date (MM/YY), CVC fields
   - Strict payment validation: card number (13-16 digits), expiry month (01-12), CVC (3-4 digits)
   - All payment inputs sanitize to digits-only in real-time (no alphabetic characters allowed)
-  - Payment-first logic: For paid plans → validate payment → simulate processing (2s) → create account → email confirmation
-  - Free tier flow: Bypasses payment, goes directly to account creation → email confirmation
+  - Payment-first logic: For paid plans → validate payment → simulate processing (2s) → create account → auto-login
+  - Free tier flow: Bypasses payment, goes directly to account creation → auto-login
   - State management: Payment fields reset when plan changes, role resets when no plan selected
   - Error handling: Payment failures shown inline with clear error messages and toast notifications
-  - Complete user journey: Click "Sign Up" → /pricing → select plan → fill form → payment (if paid) → account created → email confirmation → dashboard
+  - Complete user journey: Click "Sign Up" → /pricing → select plan → fill form → payment (if paid) → account created → auto-login → dashboard
   - TODO: Replace simulated payment with actual Stripe checkout integration
 
 ## Previous Changes (November 15, 2024)
