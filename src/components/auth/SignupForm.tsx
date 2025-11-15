@@ -156,7 +156,7 @@ export const SignupForm = ({ onSwitchToLogin, selectedPlan }: SignupFormProps) =
       // Small delay for UX, then redirect to role-based dashboard
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      const dashboardPath = data.role === 'educator' ? '/educator-dashboard' : '/student-dashboard';
+      const dashboardPath = data.role === 'educator' ? '/educator/dashboard' : '/student-view';
       console.log('Redirecting to:', dashboardPath);
       navigate(dashboardPath);
       
