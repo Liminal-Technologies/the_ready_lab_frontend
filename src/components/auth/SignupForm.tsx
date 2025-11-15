@@ -53,21 +53,26 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
+      console.log('Starting signup process...');
       await signUp(data.email, data.password, data.role, data.fullName);
       
+      console.log('Signup completed, storing email and showing confirmation...');
       // Store email and role for confirmation screen
       setSignupEmail(data.email);
       setSignupRole(data.role);
       
       // Show plan selection modal for educators, otherwise show email confirmation
       if (data.role === 'educator') {
+        console.log('Showing educator plan modal');
         setShowPlanModal(true);
       } else {
+        console.log('Showing email confirmation for student');
         setShowEmailConfirmation(true);
       }
     } catch (error: any) {
       // Error is stored in auth.error by useAuth hook
       console.log('Signup failed, error in auth.error:', auth.error);
+      console.error('Signup error caught:', error);
     }
   };
 
