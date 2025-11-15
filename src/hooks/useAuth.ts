@@ -130,43 +130,14 @@ export const useAuthState = () => {
         throw error;
       }
 
-      if (data.user && data.session) {
+      if (data.user) {
         console.log('User created successfully:', data.user);
         
-        // Create profile in Neon database using secure endpoint with JWT verification
-        try {
-          const { data: sessionData } = await supabase.auth.getSession();
-          const accessToken = sessionData.session?.access_token;
-          
-          if (!accessToken) {
-            throw new Error('No access token available');
-          }
-          
-          const profileResponse = await fetch('/api/profiles/create-on-signup', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`
-            }
-          });
-          
-          if (!profileResponse.ok) {
-            const errorText = await profileResponse.text();
-            console.error('Failed to create profile in Neon:', errorText);
-            throw new Error('Failed to create user profile in database');
-          }
-          
-          console.log('Profile created in Neon database');
-        } catch (profileError) {
-          console.error('Error creating profile:', profileError);
-          throw new Error('Failed to create user profile. Please contact support.');
-        }
-        
-        // Fetch the created profile
-        const userProfile = await fetchUserProfile(data.user);
-        console.log('User profile:', userProfile);
+        // If email confirmation is required, data.session will be null
+        // Profile will be created after email confirmation
+        // Just set loading to false and let the SignupForm show the confirmation screen
         setAuth({
-          user: userProfile,
+          user: null,
           loading: false,
           error: null
         });
