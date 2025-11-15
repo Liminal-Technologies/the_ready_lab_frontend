@@ -132,29 +132,21 @@ export const SignupForm = ({ onSwitchToLogin, selectedPlan }: SignupFormProps) =
           return;
         }
         
-        // Show payment processing UX for demo
-        toast.info('Processing payment...', {
-          description: 'Demo mode: Simulating payment processing'
-        });
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        toast.success('Payment successful!', {
-          description: 'Demo mode: Creating your account...'
-        });
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Brief delay to simulate validation
+        await new Promise(resolve => setTimeout(resolve, 800));
       }
       
       // Use mock authentication for instant demo login
       console.log('Demo mode: Logging in with mock auth as', data.role);
       mockAuth.login(data.role as 'student' | 'educator');
       
-      // Show success message
+      // Show single success message
       toast.success('Welcome to The Ready Lab!', {
-        description: `Account created successfully. Redirecting to your ${data.role} dashboard...`
+        description: 'Redirecting to your dashboard...'
       });
       
-      // Small delay for UX, then redirect to role-based dashboard
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Brief delay for UX, then redirect to role-based dashboard
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       const dashboardPath = data.role === 'educator' ? '/educator/dashboard' : '/student-view';
       console.log('Redirecting to:', dashboardPath);
