@@ -236,7 +236,7 @@ export default function CourseDetail() {
 
   // Scroll to top when the page loads
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [courseId]);
 
   // Check enrollment status from localStorage
