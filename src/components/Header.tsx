@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
-import logoImage from "@assets/ready-lab-logo.png";
+import logoImage from "@/assets/ready-lab-logo.png";
 
 const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -85,7 +85,7 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="cursor-pointer transition-opacity hover:opacity-70" onClick={navigateToHome}>
-            <img src={logoImage} alt="The Ready Lab" className="h-12 w-auto" />
+            <img src={logoImage} alt="The Ready Lab" className="h-14 md:h-16 w-auto" />
           </div>
           
           {educatorPreviewMode && (
