@@ -37,7 +37,24 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [signupRole, setSignupRole] = useState<string>('');
+  const [justSignedUp, setJustSignedUp] = useState(false);
   const { signUp, auth } = useAuth();
+
+  // Handle redirect after successful signup and profile creation
+  useEffect(() => {
+    if (justSignedUp && auth.user && !auth.loading) {
+      // Profile successfully created, show toast and navigate to role-specific dashboard
+      toast.success("Account created successfully! 🎉", {
+        description: "Welcome to The Ready Lab!",
+        duration: 5000,
+      });
+      
+      // Navigate based on user role
+      const dashboardPath = auth.user.role === 'educator' ? '/educator-dashboard' : '/student-dashboard';
+      navigate(dashboardPath);
+      setJustSignedUp(false);
+    }
+  }, [auth.user, auth.loading, justSignedUp, navigate]);
   
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -53,29 +70,22 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
       await signUp(data.email, data.password, data.role, data.fullName);
       
       setSignupRole(data.role);
+      setJustSignedUp(true); // Trigger redirect when auth.user updates
       
-      // Show plan selection modal for educators
+      // Show plan selection modal for educators, toast and redirect happen in useEffect
       if (data.role === 'educator') {
         setShowPlanModal(true);
-      } else {
-        toast.success("Account created successfully! 🎉", {
-          description: "Let's get you set up",
-        });
-        // Redirect to pricing for students
-        navigate('/pricing');
       }
     } catch (error: any) {
       // Error is stored in auth.error by useAuth hook
       console.log('Signup failed, error in auth.error:', auth.error);
+      setJustSignedUp(false);
     }
   };
 
   const handlePlanSelected = (plan: string) => {
-    toast.success("Account created successfully! 🎉", {
-      description: "Let's get you set up",
-    });
-    // Redirect to pricing after educator plan selection
-    navigate('/pricing');
+    setShowPlanModal(false);
+    setJustSignedUp(true); // Trigger redirect when auth.user updates (toast happens in useEffect)
   };
 
   return (

@@ -28,18 +28,36 @@ export const useAuthState = () => {
     error: null
   });
 
-  const fetchUserProfile = async (user: User): Promise<UserProfile | null> => {
+  const fetchUserProfile = async (user: User, retries = 3, delay = 1000): Promise<UserProfile | null> => {
     try {
-      // Fetch user profile
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      // Fetch user profile with retry logic for new signups
+      let profile = null;
+      let profileError = null;
+      
+      for (let i = 0; i < retries; i++) {
+        const result = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        profile = result.data;
+        profileError = result.error;
+        
+        if (profile && !profileError) {
+          break; // Profile found, exit retry loop
+        }
+        
+        // If this is a new signup (profile not found), wait for trigger to complete
+        if (i < retries - 1) {
+          console.log(`Profile not found, retrying in ${delay}ms... (attempt ${i + 1}/${retries})`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
 
       if (profileError || !profile) {
-        console.error('Error fetching profile:', profileError);
-        return null;
+        console.error('Error fetching profile after retries:', profileError);
+        throw new Error('Failed to create user profile. Please contact support or try again.');
       }
 
       // Fetch user role from user_roles table using RPC
@@ -81,7 +99,8 @@ export const useAuthState = () => {
       };
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
-      return null;
+      // Rethrow error so it propagates to signUp
+      throw error;
     }
   };
 
