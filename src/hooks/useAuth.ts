@@ -133,14 +133,45 @@ export const useAuthState = () => {
       if (data.user) {
         console.log('User created successfully:', data.user);
         
-        // If email confirmation is required, data.session will be null
-        // Profile will be created after email confirmation
-        // Just set loading to false and let the SignupForm show the confirmation screen
-        setAuth({
-          user: null,
-          loading: false,
-          error: null
-        });
+        // Check if we have a session (email confirmation disabled or auto-confirmed)
+        if (data.session) {
+          console.log('Session established, logging user in immediately');
+          
+          // Create profile in Neon database
+          try {
+            const profileResponse = await fetch('/api/profiles/create-on-signup', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${data.session.access_token}`
+              }
+            });
+            
+            if (!profileResponse.ok) {
+              console.error('Failed to create profile');
+            } else {
+              console.log('Profile created successfully');
+            }
+          } catch (profileError) {
+            console.error('Error creating profile:', profileError);
+          }
+          
+          // Fetch user profile and set auth state
+          const userProfile = await fetchUserProfile(data.user);
+          setAuth({
+            user: userProfile,
+            loading: false,
+            error: null
+          });
+        } else {
+          // Email confirmation required - show confirmation screen
+          console.log('Email confirmation required');
+          setAuth({
+            user: null,
+            loading: false,
+            error: null
+          });
+        }
       }
     } catch (error: any) {
       console.error('SignUp function error:', error);

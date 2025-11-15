@@ -164,18 +164,35 @@ export const SignupForm = ({ onSwitchToLogin, selectedPlan }: SignupFormProps) =
       // After payment succeeds (or for free plans), create Supabase account
       await signUp(data.email, data.password, data.role, data.fullName);
       
-      console.log('Signup completed, storing email and showing confirmation...');
-      // Store email and role for confirmation screen
-      setSignupEmail(data.email);
-      setSignupRole(data.role);
+      console.log('Signup completed, checking auth state...');
       
-      // Show plan selection modal for educators if no plan was pre-selected, otherwise show email confirmation
-      if (data.role === 'educator' && !selectedPlan) {
-        console.log('Showing educator plan modal');
-        setShowPlanModal(true);
+      // Wait a moment for auth state to update
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Check if user was auto-logged in (session established immediately)
+      if (auth.user) {
+        console.log('User auto-logged in, redirecting to dashboard');
+        toast.success('Account created successfully!', {
+          description: 'Redirecting you to your dashboard...'
+        });
+        
+        // Redirect to role-based dashboard
+        const dashboardPath = data.role === 'educator' ? '/educator-dashboard' : '/student-dashboard';
+        navigate(dashboardPath);
       } else {
-        console.log('Showing email confirmation');
-        setShowEmailConfirmation(true);
+        // Email confirmation required
+        console.log('Email confirmation required, showing confirmation screen');
+        setSignupEmail(data.email);
+        setSignupRole(data.role);
+        
+        // Show plan selection modal for educators if no plan was pre-selected, otherwise show email confirmation
+        if (data.role === 'educator' && !selectedPlan) {
+          console.log('Showing educator plan modal');
+          setShowPlanModal(true);
+        } else {
+          console.log('Showing email confirmation');
+          setShowEmailConfirmation(true);
+        }
       }
     } catch (error: any) {
       // Check if this is a payment error or signup error
