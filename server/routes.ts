@@ -3,10 +3,39 @@ import { storage } from "./storage";
 import { insertProfileSchema, insertTrackSchema, insertEnrollmentSchema, insertPostSchema } from "@shared/schema";
 import { stripeRouter } from "./stripe-routes";
 import { streamCertificatePDF } from "./certificate-generator";
+import { verifySupabaseToken } from "./supabase";
 
 export const router = express.Router();
 
 router.use(stripeRouter);
+
+router.post("/api/profiles/create-on-signup", async (req: Request, res: Response) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    const user = await verifySupabaseToken(authHeader || null);
+    
+    const role = user.user_metadata?.role || 'student';
+    const fullName = user.user_metadata?.full_name || user.email;
+    
+    const allowedRoles = ['student', 'educator'];
+    const sanitizedRole = allowedRoles.includes(role) ? role : 'student';
+    
+    const profileData = {
+      id: user.id,
+      email: user.email!,
+      fullName: fullName,
+      role: sanitizedRole
+    };
+    
+    const profile = await storage.createProfile(profileData);
+    
+    res.status(201).json(profile);
+  } catch (error: any) {
+    console.error("Error creating profile on signup:", error);
+    res.status(401).json({ error: error.message || "Unauthorized" });
+  }
+});
 
 router.get("/api/profiles/:id", async (req: Request, res: Response) => {
   try {

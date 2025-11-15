@@ -130,24 +130,29 @@ export const useAuthState = () => {
         throw error;
       }
 
-      if (data.user) {
+      if (data.user && data.session) {
         console.log('User created successfully:', data.user);
         
-        // Create profile in Neon database with the Supabase user ID
+        // Create profile in Neon database using secure endpoint with JWT verification
         try {
-          const profileResponse = await fetch('/api/profiles', {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const accessToken = sessionData.session?.access_token;
+          
+          if (!accessToken) {
+            throw new Error('No access token available');
+          }
+          
+          const profileResponse = await fetch('/api/profiles/create-on-signup', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: data.user.id,
-              email: email,
-              fullName: fullName,
-              role: role
-            })
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${accessToken}`
+            }
           });
           
           if (!profileResponse.ok) {
-            console.error('Failed to create profile in Neon:', await profileResponse.text());
+            const errorText = await profileResponse.text();
+            console.error('Failed to create profile in Neon:', errorText);
             throw new Error('Failed to create user profile in database');
           }
           
