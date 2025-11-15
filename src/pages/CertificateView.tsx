@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Share2, Copy, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Download, Share2, Copy, CheckCircle2, ArrowLeft, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -109,14 +109,24 @@ export default function CertificateView() {
         </div>
 
         <main className="container mx-auto px-4 py-8 print:py-0">
-          <div className="no-print mb-6">
+          <div className="no-print mb-6 flex items-center justify-between">
             <Button
               variant="ghost"
               onClick={() => navigate('/certificates')}
               className="mb-4"
+              data-testid="button-back-to-certificates"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Certificates
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/student-view')}
+              className="mb-4"
+              data-testid="button-close-certificate"
+            >
+              <X className="h-5 w-5" />
             </Button>
           </div>
 
