@@ -145,11 +145,11 @@ export const EducatorSettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className="min-h-screen bg-background dark:bg-neutral-900 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Educator Settings</h1>
+            <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">Educator Settings</h1>
             <p className="text-muted-foreground">Manage your educator profile, billing, and payouts</p>
           </div>
           <div className="flex items-center gap-2">

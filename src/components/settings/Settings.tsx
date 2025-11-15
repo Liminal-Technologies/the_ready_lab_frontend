@@ -10,11 +10,11 @@ export const Settings = () => {
 
   if (auth.loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-background dark:bg-neutral-900 flex items-center justify-center">
         <Card>
           <CardContent className="p-8 flex items-center gap-4">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span>Loading settings...</span>
+            <span className="text-neutral-900 dark:text-white">Loading settings...</span>
           </CardContent>
         </Card>
       </div>
@@ -40,10 +40,10 @@ export const Settings = () => {
       return <EducatorSettings />;
     default:
       return (
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="min-h-screen bg-background dark:bg-neutral-900 flex items-center justify-center">
           <Card>
             <CardContent className="p-8 text-center">
-              <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+              <h2 className="text-xl font-semibold mb-2 text-neutral-900 dark:text-white">Access Denied</h2>
               <p className="text-muted-foreground">Your account role is not recognized.</p>
             </CardContent>
           </Card>

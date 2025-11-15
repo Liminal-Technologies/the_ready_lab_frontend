@@ -173,7 +173,7 @@ export function AdminOverview() {
       {/* Integration Status */}
       {kpis && (
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">Platform Integrations</h2>
+          <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">Platform Integrations</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {/* Stripe Integration Status */}
             <Card className={kpis.stripeConnected ? "border-green-500/50" : "border-red-500/50"}>
@@ -239,7 +239,7 @@ export function AdminOverview() {
       {/* Alerts Section */}
       {alerts.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">Alerts & Notifications</h2>
+          <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">Alerts & Notifications</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {alerts.map((alert) => (
               <Alert 
