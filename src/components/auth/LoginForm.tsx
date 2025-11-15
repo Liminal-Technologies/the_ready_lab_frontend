@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -162,12 +163,12 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
-            <button
-              onClick={onSwitchToSignup}
+            <Link 
+              to="/pricing" 
               className="text-primary hover:underline font-medium"
             >
               Sign up here
-            </button>
+            </Link>
           </p>
         </div>
       </CardContent>

@@ -6,13 +6,21 @@ import { useAuth } from '@/hooks/useAuth';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+interface SelectedPlan {
+  name: string;
+  price: { monthly: number; annual: number };
+  role: 'student' | 'educator';
+  billingCycle: 'monthly' | 'annual';
+}
+
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultMode?: 'login' | 'signup';
+  selectedPlan?: SelectedPlan | null;
 }
 
-export const AuthModal = ({ isOpen, onClose, defaultMode = 'login' }: AuthModalProps) => {
+export const AuthModal = ({ isOpen, onClose, defaultMode = 'login', selectedPlan }: AuthModalProps) => {
   const [mode, setMode] = useState<'login' | 'signup'>(defaultMode);
   const { auth, clearError } = useAuth();
 
@@ -63,7 +71,10 @@ export const AuthModal = ({ isOpen, onClose, defaultMode = 'login' }: AuthModalP
         {mode === 'login' ? (
           <LoginForm onSwitchToSignup={() => handleSwitchMode('signup')} />
         ) : (
-          <SignupForm onSwitchToLogin={() => handleSwitchMode('login')} />
+          <SignupForm 
+            onSwitchToLogin={() => handleSwitchMode('login')} 
+            selectedPlan={selectedPlan}
+          />
         )}
       </DialogContent>
     </Dialog>

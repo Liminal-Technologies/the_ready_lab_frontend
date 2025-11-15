@@ -30,10 +30,18 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
 
+interface SelectedPlan {
+  name: string;
+  price: { monthly: number; annual: number };
+  role: 'student' | 'educator';
+  billingCycle: 'monthly' | 'annual';
+}
+
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authDefaultMode, setAuthDefaultMode] = useState<'login' | 'signup'>('signup');
+  const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
   const navigate = useNavigate();
   const { auth } = useAuth();
 
@@ -42,13 +50,17 @@ const Pricing = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handlePlanClick = (role: 'student' | 'educator') => {
+  const handlePlanClick = (plan: { name: string; price: { monthly: number; annual: number }; role: 'student' | 'educator' }) => {
     if (!auth.user) {
+      setSelectedPlan({
+        ...plan,
+        billingCycle
+      });
       setAuthDefaultMode('signup');
       setIsAuthModalOpen(true);
     } else {
       // Navigate to appropriate page based on plan role
-      if (role === 'educator') {
+      if (plan.role === 'educator') {
         navigate('/educator/dashboard');
       } else {
         navigate('/courses');
@@ -310,7 +322,7 @@ const Pricing = () => {
                         className="w-full"
                         variant={plan.popular ? "default" : "outline"}
                         size="lg"
-                        onClick={() => handlePlanClick(plan.role)}
+                        onClick={() => handlePlanClick(plan)}
                         data-testid={`button-plan-${index}`}
                       >
                         {plan.cta}
@@ -370,7 +382,7 @@ const Pricing = () => {
                         className="w-full"
                         variant={plan.popular ? "default" : "outline"}
                         size="lg"
-                        onClick={() => handlePlanClick(plan.role)}
+                        onClick={() => handlePlanClick(plan)}
                         data-testid={`button-educator-${index}`}
                       >
                         {plan.cta}
@@ -502,6 +514,12 @@ const Pricing = () => {
                   size="lg" 
                   onClick={() => {
                     if (!auth.user) {
+                      setSelectedPlan({
+                        name: 'Free',
+                        price: { monthly: 0, annual: 0 },
+                        role: 'student',
+                        billingCycle
+                      });
                       setAuthDefaultMode('signup');
                       setIsAuthModalOpen(true);
                     } else {
@@ -532,6 +550,7 @@ const Pricing = () => {
         isOpen={isAuthModalOpen} 
         onClose={() => setIsAuthModalOpen(false)}
         defaultMode={authDefaultMode}
+        selectedPlan={selectedPlan}
       />
     </div>
   );

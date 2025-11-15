@@ -180,7 +180,7 @@ const Header = () => {
               <Button variant="ghost" onClick={() => openAuthModal('login')}>
                 Login
               </Button>
-              <Button onClick={() => openAuthModal('signup')}>
+              <Button onClick={() => navigate('/pricing')}>
                 Sign Up
               </Button>
             </>
