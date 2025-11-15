@@ -9,12 +9,16 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Prefers minimal API keys for initial development
 
 ## Recent Changes (November 15, 2024)
-- **Authentication & User Flow Fixes:**
+- **Authentication & User Flow Fixes (COMPLETED):**
   - Fixed Supabase Auth integration: Created SQL script to properly configure `handle_new_user` trigger for automatic profile creation
   - Resolved "PGRST116: The result contains 0 rows" error on signup by ensuring profiles table is populated via trigger
+  - Implemented robust error handling: Profile fetch retries with exponential backoff, errors properly propagate to UI
+  - Fixed signup flow: Toast and redirect only occur after auth.user is confirmed (no silent failures)
+  - Role-based routing: Students → /student-dashboard, Educators → /educator-dashboard
   - Fixed pricing page CTAs (PricingHero, StudentPlans, EducatorPlans) to check auth state before showing signup
-  - Logged-in users now redirected to /dashboard instead of seeing signup modal when clicking pricing CTAs
+  - Logged-in users now redirected to their role-specific dashboard instead of seeing signup modal
   - Button text dynamically changes: "Get Started" → "Go to Dashboard" for authenticated users
+  - Educator plan modal properly integrated with auth flow (no duplicate toasts)
 - **Demo Mode Architecture:** Implemented comprehensive demo system with mock authentication and data services
   - Created `useMockAuth` hook with role switcher (Super Admin, Admin, Educator, Student)
   - Built MockApi service with seed data for communities, users, courses, certificates, events
