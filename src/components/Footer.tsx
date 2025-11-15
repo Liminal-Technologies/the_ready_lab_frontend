@@ -76,7 +76,7 @@ const Footer = () => {
 
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div className="space-y-4">
-            <img src={logoImage} alt="The Ready Lab" className="h-16 md:h-20 w-auto" />
+            <img src={logoImage} alt="The Ready Lab - Digital Prep School for Growth-Ready Entrepreneurs" className="h-24 md:h-32 w-auto" />
             <p className="text-white/70">
               Empowering learners and educators with accessible, quality education.
             </p>

@@ -85,7 +85,7 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center space-y-4">
         <div className="flex justify-center">
-          <img src={logoImage} alt="The Ready Lab" className="h-20 w-auto" />
+          <img src={logoImage} alt="The Ready Lab - Digital Prep School for Growth-Ready Entrepreneurs" className="h-28 w-auto" />
         </div>
         <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
         <CardDescription>
