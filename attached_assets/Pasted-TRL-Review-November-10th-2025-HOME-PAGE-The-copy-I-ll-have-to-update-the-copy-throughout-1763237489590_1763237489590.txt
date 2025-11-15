@@ -1,0 +1,139 @@
+TRL Review
+November 10th, 2025
+
+
+HOME PAGE:
+The copy: 
+I’ll have to update the copy throughout the website. 
+404 message: 
+Error message pops up after signing out
+Sign up
+Sign up function not working (I tried 3 different emails)
+Close the gap above built for every learner section.
+
+Also in the section above real results, real people.
+Get Funded & Get Certified
+How the courses are preview looks great but when I click on the link it takes me to the bottom of the course page. 
+Start your certification button
+The button should lead to signing up or the pricing page. 
+Footer:
+All links work. 
+Resources: There are two pathways to resources; TRL Free resources which they need to sign up to receive or Educator Free resources which are available to users after signing up and at the educator discretion join their (Paid or Free community) and can have access to those resources (Free or Paid)
+Terms, Privacy and Educator Agreement
+I’ll draft the first version of these items and review them with a lawyer. I have a template of the terms and privacy from a previous project which was completed by a lawyer we can utilize. 
+
+EXPLORE PAGE: 
+I Love the explore page but I want to get clear on its function. This page is basically the “Feed” similar to the style of social media (Tik-Tok, IG etc..) This is where users will get a wide array of what's happening and they have the capability to engage. My only concern in general is this particular content will be public vs private in subscribed communities. 
+How can we define this function for Educators/creators?
+Community Poll
+I love this idea but in order for someone to participate they’ll have to at least have a free student account. Also, maybe TRL can have its own community page for all things TRL, announcements, resources, etc… to stay connected & engaged to our growing community (I can have someone manage the page) Also, it's a way we can collect data about what people actually need. 
+Business plan download is a nice touch! This is great for freebies.
+Join course button
+Goes to the bottom of the course page
+
+
+COURSE PAGE
+Price Range
+I think adding a filter for ‘Free’ and ‘Paid’ could be great. 
+I like the slider too
+Filters
+Maybe adding the style of learning as well. (Auditory, Visual Learning etc.) so users can navigate to those particular style of learning. 
+Join for free button (Bottom of page)
+Not working
+
+COMMUNITY PAGE
+
+Love this page. No notes right now.
+
+
+
+
+SOLUTIONS PAGE
+
+Let’s discuss this page and the full scope of work and sales component for this piece of the business model. 
+
+Cohort management & tracking- We have to define what “Cohort Management” means because we are not managing their program. We should make sure thats clear. 
+THIS!!!! LOVE IT! “I certify that my organization is not currently debarred, suspended, or otherwise excluded from participation in federal assistance programs.”
+
+PRICING
+
+Let’s discuss the pricing model for students, educators and institutions in detail. There were updates I made to the 1-sheet. I want to make sure we can agree on the current model. THE READY LAB- 1 Sheet v.10 (Partnerships/FINAL)
+
+None of the buttons on this page work.
+
+Footer
+I think it would be great to add FAQ at the button of the page as well. 
+
+
+
+
+
+
+
+
+[See Below]
+
+
+
+
+
+
+
+
+
+DASHBOARDS
+
+SUPER ADMIN
+The background color: I cannot see some of the text “Admin Overview”
+
+None of the buttons work
+Communities function is not working
+Payments; I have a stripe account! We’ll have to connect to the super admin account. 
+Settings
+Email: How can we connect this function to our internal CRM system and email marketing? 
+I have an email marketing expert who can set this up and or give us direction. 
+
+Questions to discuss
+How do we shutdown a community or disable a user (Student or Eductor) community? What does that process look like? Would this be in the admin setting? (Screenshot below)
+
+As the super admin, how to add our internal team as collaborators? (Super Admin, Admin…)
+
+
+STUDENT DASHBOARD
+
+Certifications
+I love this! We’ll just have to add some razzle dazzle to the visual design of the certification and make sure it's clear this is not an educational institution certification. It's a certification of completion. However, accredited certifications will be available on the platform but we’ll have to verify that those persons and or institutions are legitimate. Let's discuss this as well. 
+After viewing my certification there is no close function. I have to go back to my dashboard. 
+
+Settings
+Profile
+Add profile pic for users. 
+Background color “white” causes the text to disappear. 
+
+
+
+[See Below]
+
+
+
+
+
+Sign out: 
+
+
+EDUCATOR DASHBOARD
+
+Schedule Live Event: I don’t think this function is working.
+Time: Update to drop down to view time. Also, add time zone option (PST, CST etc.)
+
+Create Course: Looks great!
+Microlearning timeframe 30 seconds to 10 minutes. 
+Add: Learning style 
+Add Free or Paid option
+Paid Option. The platform fee is confusing, I am assuming we are providing a breakdown of the price they select and how much TRL shared revenue? Not sure if this is valuable here. Also, let's think about how sales analytics are shared with educators. Integrate fees w/ stripe. [See below]
+
+
+I love the AI generated caption and thumbnail feature! 
+
+Quick Actions
+Edit Profile: Add a close out function or cancel. 
