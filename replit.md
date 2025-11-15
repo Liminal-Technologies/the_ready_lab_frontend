@@ -9,6 +9,16 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Prefers minimal API keys for initial development
 
 ## Recent Changes (November 15, 2024)
+- **Email Confirmation Flow (COMPLETED):**
+  - Implemented production-ready email confirmation system with Supabase
+  - Created EmailConfirmation component with "Check your email" screen, resend functionality, and 60-second cooldown
+  - Built ConfirmEmail page that handles email link callbacks, validates tokens, and establishes authenticated sessions
+  - Updated SignupForm to show confirmation screen after signup instead of auto-redirect
+  - Updated LoginForm to detect unconfirmed emails and offer resend option
+  - Added /confirm-email route for handling Supabase email confirmation callbacks
+  - Complete flow: Signup → confirmation screen → click email → session established → role-based dashboard redirect
+  - Proper error handling: expired/invalid tokens show helpful recovery options
+  - Both student and educator roles fully supported with correct dashboard routing
 - **Authentication & User Flow Fixes (COMPLETED):**
   - Fixed Supabase Auth integration: Created SQL script to properly configure `handle_new_user` trigger for automatic profile creation
   - Resolved "PGRST116: The result contains 0 rows" error on signup by ensuring profiles table is populated via trigger
