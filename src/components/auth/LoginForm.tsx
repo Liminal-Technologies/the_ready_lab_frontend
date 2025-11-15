@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -23,22 +25,57 @@ interface LoginFormProps {
 
 export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showUnconfirmedEmail, setShowUnconfirmedEmail] = useState(false);
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState('');
+  const [isResending, setIsResending] = useState(false);
   const { signIn, auth } = useAuth();
   
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+  const { register, handleSubmit, formState: { errors }, getValues } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema)
   });
 
+  const handleResendConfirmation = async () => {
+    setIsResending(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: unconfirmedEmail,
+      });
+
+      if (error) throw error;
+
+      toast.success("Confirmation email sent!", {
+        description: "Please check your inbox and click the confirmation link.",
+      });
+      setShowUnconfirmedEmail(false);
+    } catch (error: any) {
+      toast.error("Failed to resend email", {
+        description: error.message,
+      });
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const onSubmit = async (data: LoginFormData) => {
     try {
+      setShowUnconfirmedEmail(false);
       await signIn(data.email, data.password);
       toast.success("Welcome back! 🎉", {
         description: "You've successfully signed in to The Ready Lab",
       });
     } catch (error: any) {
-      toast.error("Sign in failed", {
-        description: error.message || "Please check your credentials and try again",
-      });
+      // Check if it's an email confirmation error
+      if (error.message?.includes('Email not confirmed') || 
+          error.message?.includes('email_not_confirmed') ||
+          error.message?.includes('not confirmed')) {
+        setUnconfirmedEmail(data.email);
+        setShowUnconfirmedEmail(true);
+      } else {
+        toast.error("Sign in failed", {
+          description: error.message || "Please check your credentials and try again",
+        });
+      }
     }
   };
 
@@ -52,6 +89,25 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {showUnconfirmedEmail && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="flex flex-col gap-2">
+                <p>Please confirm your email address before signing in.</p>
+                <Button
+                  type="button"
+                  onClick={handleResendConfirmation}
+                  disabled={isResending}
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                >
+                  {isResending ? "Sending..." : "Resend confirmation email"}
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">

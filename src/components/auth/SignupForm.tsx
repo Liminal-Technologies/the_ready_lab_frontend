@@ -13,6 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, GraduationCap, AlertCircle } from 'lucide-react';
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
+import { EmailConfirmation } from './EmailConfirmation';
 
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
@@ -36,25 +37,10 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [signupEmail, setSignupEmail] = useState('');
   const [signupRole, setSignupRole] = useState<string>('');
-  const [justSignedUp, setJustSignedUp] = useState(false);
   const { signUp, auth } = useAuth();
-
-  // Handle redirect after successful signup and profile creation
-  useEffect(() => {
-    if (justSignedUp && auth.user && !auth.loading) {
-      // Profile successfully created, show toast and navigate to role-specific dashboard
-      toast.success("Account created successfully! 🎉", {
-        description: "Welcome to The Ready Lab!",
-        duration: 5000,
-      });
-      
-      // Navigate based on user role
-      const dashboardPath = auth.user.role === 'educator' ? '/educator-dashboard' : '/student-dashboard';
-      navigate(dashboardPath);
-      setJustSignedUp(false);
-    }
-  }, [auth.user, auth.loading, justSignedUp, navigate]);
   
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -69,24 +55,36 @@ export const SignupForm = ({ onSwitchToLogin }: SignupFormProps) => {
     try {
       await signUp(data.email, data.password, data.role, data.fullName);
       
+      // Store email and role for confirmation screen
+      setSignupEmail(data.email);
       setSignupRole(data.role);
-      setJustSignedUp(true); // Trigger redirect when auth.user updates
       
-      // Show plan selection modal for educators, toast and redirect happen in useEffect
+      // Show plan selection modal for educators, otherwise show email confirmation
       if (data.role === 'educator') {
         setShowPlanModal(true);
+      } else {
+        setShowEmailConfirmation(true);
       }
     } catch (error: any) {
       // Error is stored in auth.error by useAuth hook
       console.log('Signup failed, error in auth.error:', auth.error);
-      setJustSignedUp(false);
     }
   };
 
   const handlePlanSelected = (plan: string) => {
     setShowPlanModal(false);
-    setJustSignedUp(true); // Trigger redirect when auth.user updates (toast happens in useEffect)
+    setShowEmailConfirmation(true);
   };
+
+  const handleBackToSignup = () => {
+    setShowEmailConfirmation(false);
+    setSignupEmail('');
+  };
+
+  // Show email confirmation screen after successful signup
+  if (showEmailConfirmation) {
+    return <EmailConfirmation email={signupEmail} onBack={handleBackToSignup} />;
+  }
 
   return (
     <Card className="w-full max-w-md mx-auto">

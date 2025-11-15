@@ -60,6 +60,7 @@ import EducatorOnboarding from "./pages/EducatorOnboarding";
 import { EducatorDashboard } from "./pages/EducatorDashboard";
 import { StudentDashboard } from "./pages/StudentDashboard";
 import LiveEventBroadcaster from "./pages/LiveEventBroadcaster";
+import ConfirmEmail from "./pages/ConfirmEmail";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { AIChatWidget } from "@/components/ai/AIChatWidget";
 
@@ -88,6 +89,7 @@ const AppContent = () => {
       <>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/confirm-email" element={<ConfirmEmail />} />
           <Route path="/for-students" element={<ForStudents />} />
           <Route path="/for-educators" element={<ForEducators />} />
           <Route path="/solutions" element={<Solutions />} />
@@ -207,6 +209,7 @@ const AppContent = () => {
     <>
       <Routes>
         <Route path="/" element={<Index />} />
+        <Route path="/confirm-email" element={<ConfirmEmail />} />
         <Route path="/for-students" element={<ForStudents />} />
         <Route path="/for-educators" element={<ForEducators />} />
         <Route path="/solutions" element={<Solutions />} />
