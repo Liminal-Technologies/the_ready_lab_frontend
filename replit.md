@@ -8,7 +8,13 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Stripe integration to be improved later
 - Prefers minimal API keys for initial development
 
-## Recent Changes (November 12, 2024)
+## Recent Changes (November 15, 2024)
+- **Authentication & User Flow Fixes:**
+  - Fixed Supabase Auth integration: Created SQL script to properly configure `handle_new_user` trigger for automatic profile creation
+  - Resolved "PGRST116: The result contains 0 rows" error on signup by ensuring profiles table is populated via trigger
+  - Fixed pricing page CTAs (PricingHero, StudentPlans, EducatorPlans) to check auth state before showing signup
+  - Logged-in users now redirected to /dashboard instead of seeing signup modal when clicking pricing CTAs
+  - Button text dynamically changes: "Get Started" → "Go to Dashboard" for authenticated users
 - **Demo Mode Architecture:** Implemented comprehensive demo system with mock authentication and data services
   - Created `useMockAuth` hook with role switcher (Super Admin, Admin, Educator, Student)
   - Built MockApi service with seed data for communities, users, courses, certificates, events
@@ -17,8 +23,6 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
   - Created RoleSwitcher component for top nav with demo mode toggle
   - Added ConfirmDialog component for destructive actions with typed confirmation requirement
 - **Navigation Fixes:** All course/pricing/browse buttons now scroll to top of destination pages
-- **Authentication Improvements:** Fixed signup flow, password validation (10 chars min), dialog close button handling
-- **Database Updates:** Corrected handle_new_user trigger to properly insert roles with fallback to 'student'
 
 ## System Architecture
 The project is built as a full-stack monorepo. The frontend utilizes React with TypeScript, Vite, TailwindCSS, and shadcn/ui. The backend is powered by Express.js and TypeScript, providing RESTful API services. Data persistence is handled by Neon PostgreSQL, accessed via Drizzle ORM. Stripe is integrated for payment processing.
