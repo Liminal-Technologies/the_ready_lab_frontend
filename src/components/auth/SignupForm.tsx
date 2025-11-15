@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, Mail, Lock, User, GraduationCap, AlertCircle, CreditCard } from 'lucide-react';
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 import { EmailConfirmation } from './EmailConfirmation';
+import logoImage from "@assets/ready-lab-logo.png";
 
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
@@ -178,7 +179,10 @@ export const SignupForm = ({ onSwitchToLogin, selectedPlan }: SignupFormProps) =
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-center">
+      <CardHeader className="text-center space-y-4">
+        <div className="flex justify-center">
+          <img src={logoImage} alt="The Ready Lab" className="h-16 w-auto" />
+        </div>
         <CardTitle className="text-2xl font-bold">Join The Ready Lab</CardTitle>
         <CardDescription>
           Create your account and start building your fundable business
