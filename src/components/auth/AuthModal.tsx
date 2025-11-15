@@ -55,7 +55,7 @@ export const AuthModal = ({ isOpen, onClose, defaultMode = 'login', selectedPlan
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 border-0" showClose={false}>
+      <DialogContent className="sm:max-w-md p-0 border-0 max-h-[90vh] overflow-y-auto" showClose={false}>
         {/* Custom close button that always works */}
         <Button
           variant="ghost"
