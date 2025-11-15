@@ -1,9 +1,24 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 const StudentPlans = () => {
+  const { auth } = useAuth();
+  const navigate = useNavigate();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const handleGetStarted = () => {
+    if (auth.user) {
+      navigate('/dashboard');
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
   const studentPlans = [
     {
       name: "Free Trial",
@@ -101,8 +116,10 @@ const StudentPlans = () => {
                       ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
                       : 'variant-outline border-primary text-primary hover:bg-primary hover:text-primary-foreground'
                   }`}
+                  onClick={handleGetStarted}
+                  data-testid={`button-student-plan-${index}`}
                 >
-                  Get Started
+                  {auth.user ? "Go to Dashboard" : "Get Started"}
                 </Button>
               </CardHeader>
               
@@ -139,6 +156,12 @@ const StudentPlans = () => {
           </ul>
         </div>
       </div>
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultMode="signup"
+      />
     </section>
   );
 };
