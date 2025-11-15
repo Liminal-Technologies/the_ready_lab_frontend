@@ -12,12 +12,13 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - **Demo Click-Through Signup (COMPLETED):**
   - Converted signup flow to pure demo mode using mock authentication
   - No Supabase authentication required - instant click-through experience
-  - Free plans: Fill form → instant login → dashboard redirect
-  - Paid plans: Fill form + payment details → validation shows payment works → instant login → dashboard
-  - Payment validation still active for UX (shows processing, validates card format)
+  - Free plans: Fill form → instant dashboard redirect (no popups, no waiting)
+  - Paid plans: Fill form + payment details → instant dashboard redirect
+  - Payment validation still active for UX (validates card format before proceeding)
   - Uses existing mock auth system for instant session creation
-  - Perfect for demos: Zero wait time, no email confirmation needed
+  - Perfect for demos: Zero notifications, zero wait time, zero friction
   - Flow: /pricing → select plan → fill form → [payment validation if paid] → instant dashboard redirect
+  - Clean UX: No toast notifications or confirmation screens during signup
 - **Pricing-First Signup Flow (COMPLETED):**
   - Redesigned signup flow to route users through pricing page first
   - "Sign Up" buttons in Header and LoginForm now navigate to /pricing instead of opening modal directly

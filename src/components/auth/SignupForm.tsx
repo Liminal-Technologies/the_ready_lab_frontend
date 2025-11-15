@@ -140,14 +140,7 @@ export const SignupForm = ({ onSwitchToLogin, selectedPlan }: SignupFormProps) =
       console.log('Demo mode: Logging in with mock auth as', data.role);
       mockAuth.login(data.role as 'student' | 'educator');
       
-      // Show single success message
-      toast.success('Welcome to The Ready Lab!', {
-        description: 'Redirecting to your dashboard...'
-      });
-      
-      // Brief delay for UX, then redirect to role-based dashboard
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      // Redirect immediately to role-based dashboard
       const dashboardPath = data.role === 'educator' ? '/educator/dashboard' : '/student-view';
       console.log('Redirecting to:', dashboardPath);
       navigate(dashboardPath);
