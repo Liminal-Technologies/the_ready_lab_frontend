@@ -9,15 +9,15 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Prefers minimal API keys for initial development
 
 ## Recent Changes (November 15, 2025)
-- **Auto-Login After Signup (COMPLETED):**
-  - Implemented immediate auto-login after successful signup (no email confirmation wait)
-  - Updated `useAuth.signUp()` to check for session after signup and auto-login if session exists
-  - Updated `SignupForm` to detect auto-login and redirect to role-based dashboard
-  - Free tier: Instant access to dashboard after account creation
-  - Paid tier: Instant access after payment succeeds
-  - **CONFIGURATION REQUIRED**: Supabase email confirmation must be disabled for auto-login (see SUPABASE_SETUP.md)
-  - Email confirmation flow still supported as fallback if Supabase requires confirmation
-  - Flow: Signup → [if session] dashboard redirect, [else] email confirmation screen
+- **Demo Click-Through Signup (COMPLETED):**
+  - Converted signup flow to pure demo mode using mock authentication
+  - No Supabase authentication required - instant click-through experience
+  - Free plans: Fill form → instant login → dashboard redirect
+  - Paid plans: Fill form + payment details → validation shows payment works → instant login → dashboard
+  - Payment validation still active for UX (shows processing, validates card format)
+  - Uses existing mock auth system for instant session creation
+  - Perfect for demos: Zero wait time, no email confirmation needed
+  - Flow: /pricing → select plan → fill form → [payment validation if paid] → instant dashboard redirect
 - **Pricing-First Signup Flow (COMPLETED):**
   - Redesigned signup flow to route users through pricing page first
   - "Sign Up" buttons in Header and LoginForm now navigate to /pricing instead of opening modal directly
