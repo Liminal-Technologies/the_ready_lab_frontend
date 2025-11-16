@@ -147,7 +147,7 @@ export const AIChatWidget = () => {
           <TooltipTrigger asChild>
             <Button
               onClick={() => setIsOpen(true)}
-              className="fixed bottom-24 lg:bottom-6 right-6 h-[90px] w-[90px] aspect-square p-0 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 z-[1000] flex items-center justify-center"
+              className="fixed bottom-24 lg:bottom-6 right-6 min-h-[90px] min-w-[90px] h-[90px] w-[90px] aspect-square p-0 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 z-[1000] flex items-center justify-center shrink-0"
               data-testid="button-ai-chat"
             >
               <Sparkles className="h-8 w-8" />
@@ -166,7 +166,7 @@ export const AIChatWidget = () => {
       className={`fixed right-6 shadow-2xl z-[1000] transition-all duration-300 flex flex-col ${
         isMinimized 
           ? 'bottom-24 lg:bottom-6 w-[300px] h-[60px] overflow-hidden' 
-          : 'bottom-24 lg:bottom-6 w-[90vw] lg:w-[400px] max-w-[400px] h-[450px] lg:h-[600px] animate-slide-in-right overflow-hidden'
+          : 'bottom-24 lg:bottom-6 w-[90vw] lg:w-[400px] max-w-[400px] h-[450px] lg:h-[500px] lg:max-h-[calc(100vh-100px)] animate-slide-in-right overflow-hidden'
       }`}
       data-testid="card-ai-chat"
     >
