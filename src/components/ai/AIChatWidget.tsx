@@ -145,13 +145,13 @@ export const AIChatWidget = () => {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
+            <button
               onClick={() => setIsOpen(true)}
-              className="fixed bottom-24 lg:bottom-6 right-6 min-h-[90px] min-w-[90px] h-[90px] w-[90px] aspect-square p-0 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 z-[1000] flex items-center justify-center shrink-0"
+              className="fixed bottom-24 lg:bottom-6 right-6 h-[90px] w-[90px] min-h-[90px] min-w-[90px] p-0 rounded-full bg-yellow-500 text-white hover:bg-yellow-600 shadow-lg hover:shadow-xl transition-all hover:scale-110 z-[1000] flex items-center justify-center shrink-0 border-0"
               data-testid="button-ai-chat"
             >
               <Sparkles className="h-8 w-8" />
-            </Button>
+            </button>
           </TooltipTrigger>
           <TooltipContent side="left">
             <p>Ask AI</p>
