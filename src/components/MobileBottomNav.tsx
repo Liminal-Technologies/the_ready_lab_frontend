@@ -25,11 +25,21 @@ const MobileBottomNav = () => {
     { icon: User, label: "Profile", path: "/dashboard", authRequired: true, isButton: false },
   ];
 
-  const handleTabClick = (path: string, authRequired: boolean, isButton: boolean) => {
+  const handleTabClick = (path: string, authRequired: boolean, isButton: boolean, label?: string) => {
     if (isButton) {
       setIsMoreMenuOpen(true);
     } else if (authRequired && !auth.user) {
       navigate("/");
+    } else if (label === "Profile" && auth.user) {
+      // Use role-based routing for Profile button (matching Header navigation)
+      const hasAdminRole = auth.user.admin_roles && auth.user.admin_roles.length > 0;
+      const isAdmin = auth.user.role === 'admin';
+      
+      if (hasAdminRole || isAdmin) {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } else {
       navigate(path);
     }
@@ -82,7 +92,7 @@ const MobileBottomNav = () => {
           return (
             <button
               key={tab.path}
-              onClick={() => handleTabClick(tab.path, tab.authRequired, tab.isButton)}
+              onClick={() => handleTabClick(tab.path, tab.authRequired, tab.isButton, tab.label)}
               className={`flex flex-col items-center justify-center gap-1 h-full flex-1 rounded-lg mx-0.5 transition-all ${
                 active 
                   ? `${activeColor} text-white` 

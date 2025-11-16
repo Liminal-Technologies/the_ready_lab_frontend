@@ -147,10 +147,10 @@ export const AIChatWidget = () => {
           <TooltipTrigger asChild>
             <Button
               onClick={() => setIsOpen(true)}
-              className="fixed bottom-24 lg:bottom-6 right-6 h-[60px] w-[60px] rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 z-[1000]"
+              className="fixed bottom-24 lg:bottom-6 right-6 h-[70px] w-[70px] rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 z-[1000]"
               size="icon"
             >
-              <Sparkles className="h-6 w-6" />
+              <Sparkles className="h-7 w-7" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="left">
@@ -163,14 +163,14 @@ export const AIChatWidget = () => {
 
   return (
     <Card 
-      className={`fixed right-6 shadow-2xl z-[1000] overflow-hidden transition-all duration-300 ${
+      className={`fixed right-6 shadow-2xl z-[1000] overflow-hidden transition-all duration-300 flex flex-col ${
         isMinimized 
           ? 'bottom-24 lg:bottom-6 w-[300px] h-[60px]' 
-          : 'bottom-24 lg:bottom-6 w-[90vw] lg:w-[400px] max-w-[400px] h-[500px] lg:h-[600px] animate-slide-in-right'
+          : 'bottom-24 lg:bottom-6 w-[90vw] lg:w-[400px] max-w-[400px] h-[450px] lg:h-[600px] animate-slide-in-right'
       }`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-primary/5">
+      <div className="flex items-center justify-between p-4 border-b bg-primary/5 flex-shrink-0">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />
           <h3 className="font-semibold">AI Learning Assistant</h3>
@@ -201,7 +201,7 @@ export const AIChatWidget = () => {
       {!isMinimized && (
         <>
           {/* Messages Area */}
-          <ScrollArea className="flex-1 p-4 h-[calc(600px-240px)]">
+          <ScrollArea className="flex-1 p-4 min-h-0">
             <div className="space-y-4">
 
               {messages.map((message) => (
@@ -244,7 +244,7 @@ export const AIChatWidget = () => {
           </ScrollArea>
 
           {/* Contextual Suggestions */}
-          <div className="px-4 py-3 border-t border-b bg-muted/30">
+          <div className="px-4 py-3 border-t border-b bg-muted/30 flex-shrink-0">
             <div className="flex items-center gap-2 mb-2">
               <Lightbulb className="h-3.5 w-3.5 text-primary" />
               <span className="text-xs text-muted-foreground">
@@ -277,7 +277,7 @@ export const AIChatWidget = () => {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 bg-background border-t">
+          <div className="p-4 bg-background border-t flex-shrink-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
