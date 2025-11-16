@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { SuggestedActions, SuggestedAction } from "@/components/dashboard/SuggestedActions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -134,22 +136,45 @@ export default function InstitutionDashboard() {
   const totalStudents = cohorts.reduce((sum, c) => sum + c.totalStudents, 0);
   const avgProgress = Math.round(cohorts.reduce((sum, c) => sum + c.avgProgress, 0) / cohorts.length);
 
+  const suggestedActions: SuggestedAction[] = [
+    {
+      icon: Upload,
+      title: "Import Student Data",
+      description: "Upload CSV files with student information to quickly enroll learners into your cohorts.",
+      ctaText: "Upload CSV",
+      ctaLink: "#",
+      variant: "default" as const,
+      badge: uploadedCount === 0 ? "Start Here" : undefined,
+    },
+    {
+      icon: FileSpreadsheet,
+      title: "Download Progress Reports",
+      description: "Generate comprehensive reports on student progress, completion rates, and engagement metrics.",
+      ctaText: "View Reports",
+      ctaLink: "#",
+    },
+    {
+      icon: Users,
+      title: "Manage Cohorts",
+      description: "Create new cohorts, assign courses, and organize your students into learning groups.",
+      ctaText: "Manage Cohorts",
+      ctaLink: "#",
+    },
+    {
+      icon: BarChart3,
+      title: "Track Performance",
+      description: "Monitor overall institution metrics, student completion rates, and identify areas for improvement.",
+      ctaText: "View Analytics",
+      ctaLink: "#",
+      variant: "secondary" as const,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Breadcrumb */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-primary transition-colors" data-testid="link-home">
-              Home
-            </Link>
-            <ChevronRight className="h-4 w-4" />
-            <span className="text-foreground font-medium">Institution Dashboard</span>
-          </div>
-        </div>
-      </div>
+      <PageBreadcrumb />
 
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
@@ -300,6 +325,12 @@ export default function InstitutionDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            <SuggestedActions 
+              actions={suggestedActions}
+              title="Recommended Actions"
+              description="Streamline your institution management with these guided tasks"
+            />
           </TabsContent>
 
           {/* Cohorts Tab */}
