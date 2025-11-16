@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { SuggestedActions, SuggestedAction } from "@/components/dashboard/SuggestedActions";
 import { 
   Users, 
   GraduationCap, 
@@ -119,16 +121,42 @@ export function AdminOverview() {
     }
   ] : [];
 
+  const suggestedActions: SuggestedAction[] = [
+    {
+      icon: Users,
+      title: "Manage User Accounts",
+      description: "View, edit, and moderate user accounts across students, educators, and institutions.",
+      ctaText: "View Users",
+      ctaLink: "/admin/users",
+      variant: "default" as const,
+    },
+    {
+      icon: Globe,
+      title: "Monitor Platform Health",
+      description: "Check system status, integration connections, and platform performance metrics.",
+      ctaText: "System Status",
+      ctaLink: "#",
+    },
+    {
+      icon: FileText,
+      title: "Review Content",
+      description: "Moderate courses, communities, and user-generated content for quality and compliance.",
+      ctaText: "Content Review",
+      ctaLink: "/admin/courses",
+    },
+    {
+      icon: BadgeCheck,
+      title: "Platform Settings",
+      description: "Configure platform features, integrations, legal policies, and administrative controls.",
+      ctaText: "Settings",
+      ctaLink: "/admin/settings",
+      variant: "secondary" as const,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background dark:bg-neutral-900 p-6 space-y-8">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
-        <Link to="/" className="hover:text-primary transition-colors">
-          Home
-        </Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="text-neutral-900 dark:text-white font-medium">Admin Overview</span>
-      </div>
+      <PageBreadcrumb />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -268,6 +296,12 @@ export function AdminOverview() {
           </div>
         </div>
       )}
+
+      <SuggestedActions 
+        actions={suggestedActions}
+        title="Admin Quick Actions"
+        description="Manage your platform efficiently with these essential administrative tasks"
+      />
 
       {/* Quick Actions */}
       <Card>
