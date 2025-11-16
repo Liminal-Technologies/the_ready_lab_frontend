@@ -181,6 +181,7 @@ export default function CourseLessonPlayer() {
   const [completedLessons, setCompletedLessons] = useState<number[]>([1]); // Lesson 1 is already complete
   const [currentLessonComplete, setCurrentLessonComplete] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [shownMilestones, setShownMilestones] = useState<number[]>([]); // Track shown milestone percentages
   
   const totalLessons = mockModules.reduce((acc, module) => acc + module.lessons.length, 0);
   const completedCount = completedLessons.length;
@@ -306,16 +307,48 @@ export default function CourseLessonPlayer() {
 
   const handleMarkComplete = () => {
     if (!completedLessons.includes(currentLessonId)) {
-      setCompletedLessons([...completedLessons, currentLessonId]);
+      const newCompletedLessons = [...completedLessons, currentLessonId];
+      const newCompletedCount = newCompletedLessons.length;
+      const newProgressPercentage = Math.round((newCompletedCount / totalLessons) * 100);
+      
+      setCompletedLessons(newCompletedLessons);
       setCurrentLessonComplete(true);
       
-      toast.success("Lesson completed! 🎉", {
-        description: "Great job! You're making excellent progress",
-      });
+      // Check for milestone achievements (25%, 50%, 75%, 100%)
+      const milestones = [
+        { threshold: 25, emoji: "🌟", title: "Quarter Complete!", description: "You've completed 25% of the course. Keep up the great work!" },
+        { threshold: 50, emoji: "🔥", title: "Halfway There!", description: "You're 50% done! You're on fire - keep going!" },
+        { threshold: 75, emoji: "💪", title: "Almost Done!", description: "75% complete! You're so close to finishing!" },
+        { threshold: 100, emoji: "🎓", title: "Course Complete!", description: "Congratulations! You've mastered this course!" }
+      ];
+      
+      let milestoneReached = false;
+      for (const milestone of milestones) {
+        if (newProgressPercentage >= milestone.threshold && !shownMilestones.includes(milestone.threshold)) {
+          // Show milestone toast with delay to separate from lesson completion
+          setTimeout(() => {
+            toast.success(`${milestone.emoji} ${milestone.title}`, {
+              description: milestone.description,
+              duration: 5000,
+            });
+          }, 1000);
+          
+          setShownMilestones([...shownMilestones, milestone.threshold]);
+          milestoneReached = true;
+          break; // Only show one milestone at a time
+        }
+      }
+      
+      // Show regular lesson completion toast if no milestone
+      if (!milestoneReached) {
+        toast.success("Lesson completed! 🎉", {
+          description: "Great job! You're making excellent progress",
+        });
+      }
 
       // Check if this was the last lesson
-      if (completedLessons.length + 1 === totalLessons) {
-        setTimeout(() => setShowCelebration(true), 1000);
+      if (newCompletedCount === totalLessons) {
+        setTimeout(() => setShowCelebration(true), 2000);
       }
     }
   };
