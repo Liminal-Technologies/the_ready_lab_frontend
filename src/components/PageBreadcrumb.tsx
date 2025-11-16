@@ -50,7 +50,7 @@ export function PageBreadcrumb({ customSegments, className }: PageBreadcrumbProp
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link to="/" data-testid="breadcrumb-home">
-                <Home className="h-4 w-4" />
+                <Home className="h-3.5 w-3.5" />
               </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -104,7 +104,7 @@ export function PageBreadcrumb({ customSegments, className }: PageBreadcrumbProp
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link to="/" data-testid="breadcrumb-home">
-              <Home className="h-4 w-4" />
+              <Home className="h-3.5 w-3.5" />
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>

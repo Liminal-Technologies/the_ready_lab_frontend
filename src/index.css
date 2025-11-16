@@ -121,6 +121,31 @@
 
   body {
     @apply bg-background text-foreground;
+    font-size: 14px;
+  }
+  
+  h1 {
+    @apply text-3xl font-bold;
+  }
+  
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+  
+  h3 {
+    @apply text-xl font-semibold;
+  }
+  
+  h4 {
+    @apply text-lg font-medium;
+  }
+  
+  h5 {
+    @apply text-base font-medium;
+  }
+  
+  h6 {
+    @apply text-sm font-medium;
   }
 }
 
@@ -142,16 +167,33 @@
   }
   
   .card-interactive:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.1), 
-                0 8px 16px -4px rgba(0, 0, 0, 0.06),
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1), 
+                0 4px 8px -4px rgba(0, 0, 0, 0.06),
                 0 0 0 1px rgba(0, 0, 0, 0.04);
   }
   
   .dark .card-interactive:hover {
-    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.3), 
-                0 8px 16px -4px rgba(0, 0, 0, 0.2),
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.3), 
+                0 4px 8px -4px rgba(0, 0, 0, 0.2),
                 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Compact spacing utilities for increased density */
+  .section-compact {
+    @apply py-8 md:py-12;
+  }
+  
+  .container-compact {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  .card-compact {
+    @apply p-4;
+  }
+  
+  .grid-compact {
+    @apply gap-4;
   }
 }
 
