@@ -9,6 +9,13 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Prefers minimal API keys for initial development
 
 ## Recent Changes (November 16, 2025)
+- **Duplicate Toast Fix (COMPLETED):**
+  - Fixed duplicate "Welcome back!" notification popups appearing on login
+  - Root cause: Double-clicking submit button before auth loading state updated
+  - Solution: Added local `isSubmitting` state to LoginForm for immediate button disabling
+  - Submit button now disabled instantly when clicked, preventing double-submission
+  - Both toast systems (shadcn/ui Toaster and Sonner) preserved to avoid breaking existing features
+  - App uses both systems: Sonner (8 files, mainly auth) and shadcn/ui toast (33 files, rest of app)
 - **Logo Update (COMPLETED):**
   - Replaced old BookOpen icon + text logo with new "THE READY LAB" branded logo throughout the site
   - Added @assets alias to vite.config.ts for easy logo importing
