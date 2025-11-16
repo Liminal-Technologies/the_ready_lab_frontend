@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Menu, User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { Menu, User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
+import logoImage from "@assets/ready-lab-logo.png";
 
 const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -83,10 +84,12 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 shadow-sm transition-colors duration-200">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-70" onClick={navigateToHome}>
-            <BookOpen className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold text-neutral-900 dark:text-white">The Ready Lab</span>
-          </div>
+          <img 
+            src={logoImage} 
+            alt="The Ready Lab" 
+            className="h-10 w-auto cursor-pointer transition-opacity hover:opacity-70" 
+            onClick={navigateToHome}
+          />
           
           {educatorPreviewMode && (
             <div className="flex items-center gap-2">
