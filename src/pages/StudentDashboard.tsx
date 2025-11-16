@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { WelcomeTour } from '@/components/onboarding/WelcomeTour';
 import { PageBreadcrumb } from '@/components/PageBreadcrumb';
+import { SuggestedActions, SuggestedAction } from '@/components/dashboard/SuggestedActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,7 +39,8 @@ import {
   Upload,
   Camera,
   Trash2,
-  Star
+  Star,
+  Video
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -383,6 +385,41 @@ export const StudentDashboard = () => {
   const totalHours = enrollments.reduce((acc, e) => acc + (e.progress_percentage / 100) * 40, 0);
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
+  // Suggested actions for student journey
+  const suggestedActions: SuggestedAction[] = [
+    {
+      icon: GraduationCap,
+      title: "Explore New Courses",
+      description: "Discover courses in business, technology, creative arts, and more to expand your skills.",
+      ctaText: "Browse Catalog",
+      ctaLink: "/courses",
+      badge: "Popular",
+    },
+    {
+      icon: Users,
+      title: "Join a Community",
+      description: "Connect with fellow learners, share insights, and participate in discussions.",
+      ctaText: "Explore Communities",
+      ctaLink: "/community",
+    },
+    {
+      icon: Video,
+      title: "Attend Live Events",
+      description: "Join upcoming workshops, webinars, and Q&A sessions with industry experts.",
+      ctaText: "View Events",
+      ctaLink: "/courses",
+      badge: "New",
+    },
+    {
+      icon: Trophy,
+      title: "Earn Your Certificate",
+      description: "Complete your enrolled courses to earn professional certificates you can share.",
+      ctaText: "View Progress",
+      ctaLink: "#",
+      variant: "secondary" as const,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -462,10 +499,17 @@ export const StudentDashboard = () => {
         </Card>
 
         {/* Header with Welcome */}
-        <div className="mb-12">
+        <div className="mb-8">
           <h1 className="text-4xl font-bold mb-3">Welcome back, {auth.user?.full_name || 'Student'}!</h1>
           <p className="text-lg text-muted-foreground">Track your progress and continue learning</p>
         </div>
+
+        {/* Suggested Next Actions */}
+        <SuggestedActions 
+          actions={suggestedActions}
+          title="Suggested Next Steps"
+          description="Continue your learning journey with these recommended actions"
+        />
 
         {/* Tab Navigation */}
         <Tabs defaultValue="overview" className="space-y-8">
