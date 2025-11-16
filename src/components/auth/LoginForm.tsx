@@ -66,9 +66,7 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
       setIsSubmitting(true);
       setShowUnconfirmedEmail(false);
       await signIn(data.email, data.password);
-      toast.success("Welcome back! 🎉", {
-        description: "You've successfully signed in to The Ready Lab",
-      });
+      // Success feedback is provided by modal closing and dashboard redirect
     } catch (error: any) {
       // Check if it's an email confirmation error
       if (error.message?.includes('Email not confirmed') || 
