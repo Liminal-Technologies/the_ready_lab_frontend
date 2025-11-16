@@ -8,7 +8,16 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Stripe integration to be improved later
 - Prefers minimal API keys for initial development
 
-## Recent Changes (November 15, 2025)
+## Recent Changes (November 16, 2025)
+- **Logo Update (COMPLETED):**
+  - Replaced old BookOpen icon + text logo with new "THE READY LAB" branded logo throughout the site
+  - Added @assets alias to vite.config.ts for easy logo importing
+  - Updated Header: Logo sized to h-16 (64px) with optimized navbar padding (py-2)
+  - Updated Footer: Logo sized to h-12 (48px) for appropriate footer display
+  - Maintained all existing hover effects (opacity transitions) and navigation functionality
+  - Logo displays consistently across all pages with yellow branding and trapezoid frame design
+
+## Previous Changes (November 15, 2025)
 - **Demo Click-Through Signup (COMPLETED):**
   - Converted signup flow to pure demo mode using mock authentication
   - No Supabase authentication required - instant click-through experience
