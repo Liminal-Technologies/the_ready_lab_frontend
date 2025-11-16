@@ -9,6 +9,10 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Prefers minimal API keys for initial development
 
 ## Recent Changes (November 16, 2025)
+- **Investor Demo Improvements (IN PROGRESS):**
+  - **LinkedIn Certificate Sharing:** Added professional share button with pre-filled message including course title, certificate ID, verification URL, and hashtags - copies to clipboard and opens LinkedIn
+  - **Enhanced Empty States:** Redesigned EmptyCourses, EmptyCertificates, and EmptyCommunity with glowing icons, dashed card borders, better copy, and clear CTAs
+  - **Breadcrumb Navigation:** Created PageBreadcrumb component with auto-generation from routes, added to Student Dashboard for wayfinding
 - **Duplicate Toast Fix (COMPLETED):**
   - Fixed duplicate "Welcome back!" notification popups appearing on login
   - Root cause: Double-clicking submit button before auth loading state updated

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { WelcomeTour } from '@/components/onboarding/WelcomeTour';
+import { PageBreadcrumb } from '@/components/PageBreadcrumb';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -388,15 +389,8 @@ export const StudentDashboard = () => {
       <WelcomeTour />
       
       <div className="container mx-auto px-4 py-16">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8" data-testid="breadcrumb-nav">
-          <Link to="/" className="hover:text-foreground transition-colors flex items-center gap-2">
-            <Home className="h-4 w-4" />
-            Home
-          </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground font-medium">Dashboard</span>
-        </nav>
+        {/* Breadcrumb Navigation */}
+        <PageBreadcrumb className="mb-8" />
 
         {/* Profile Photo Section */}
         <Card className="mb-8" data-testid="profile-section">

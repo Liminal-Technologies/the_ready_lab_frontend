@@ -3,7 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Share2, Copy, CheckCircle2, ArrowLeft, X } from 'lucide-react';
+import { Download, Copy, CheckCircle2, ArrowLeft, X } from 'lucide-react';
+import { SiLinkedin } from 'react-icons/si';
 import { toast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -54,13 +55,44 @@ export default function CertificateView() {
   const handleShareLinkedIn = () => {
     if (!certificate) return;
     
-    const linkedInText = `I'm excited to share that I've completed ${certificate.courseTitle} on The Ready Lab! 🎓`;
+    // Create verification URL for the certificate
     const verificationUrl = `https://thereadylab.com/verify/${certificate.serialNumber}`;
     
-    toast({
-      title: "Share to LinkedIn",
-      description: linkedInText,
-      duration: 5000,
+    // Create pre-filled share message for LinkedIn
+    const shareMessage = `I'm excited to share that I've earned a certificate in ${certificate.courseTitle}! 🎓
+
+This professional certification from The Ready Lab demonstrates my commitment to continuous learning and skill development.
+
+Certificate ID: ${certificate.serialNumber}
+Verify: ${verificationUrl}
+
+#ProfessionalDevelopment #ContinuousLearning #TheReadyLab`;
+    
+    // Copy share message to clipboard
+    navigator.clipboard.writeText(shareMessage).then(() => {
+      // LinkedIn share URL
+      const linkedInShareUrl = 'https://www.linkedin.com/feed/?shareActive=true';
+      
+      // Open LinkedIn in new window
+      window.open(
+        linkedInShareUrl,
+        'linkedin-share',
+        'width=600,height=700,left=200,top=100'
+      );
+      
+      // Show helpful toast
+      toast({
+        title: "Share message copied! 📋",
+        description: "Paste it into LinkedIn to share your achievement with your network.",
+        duration: 5000,
+      });
+    }).catch((err) => {
+      console.error('Failed to copy:', err);
+      toast({
+        title: "Unable to copy message",
+        description: "Please try again or manually share your certificate.",
+        duration: 3000,
+      });
     });
   };
 
@@ -252,11 +284,12 @@ export default function CertificateView() {
               <Button
                 onClick={handleShareLinkedIn}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 bg-[#0A66C2] hover:bg-[#004182] text-white hover:text-white border-[#0A66C2]"
                 size="lg"
+                data-testid="button-share-linkedin"
               >
-                <Share2 className="h-5 w-5 mr-2" />
-                Share to LinkedIn
+                <SiLinkedin className="h-5 w-5 mr-2" />
+                Share on LinkedIn
               </Button>
               <Button
                 onClick={handleCopyVerificationLink}
