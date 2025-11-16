@@ -10,7 +10,10 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 
 ## Recent Bug Fixes (November 16, 2025)
 - **Toast System**: Fixed duplicate toast notifications by consolidating to a single Sonner toaster component in App.tsx (removed duplicate instances from main.tsx)
-- **Navigation**: Fixed Profile button navigation to correctly route admin users to /admin and other authenticated users to /dashboard (which uses DashboardRouter for role-specific routing)
+- **Navigation**: Fixed Profile button navigation in Header to correctly route admin users to /admin and other authenticated users to /dashboard (which uses DashboardRouter for role-specific routing)
+- **AI Chat Widget**: Increased bubble size from 60×60px to 70×70px for better visibility
+- **AI Chat Popup**: Fixed mobile layout overflow by restructuring with flexbox - reduced mobile height to 450px while maintaining 600px on desktop, ensuring all sections (header, messages, suggestions, input) remain accessible
+- **Mobile Navigation**: Fixed Profile button in mobile bottom nav to use role-based routing matching Header logic (admins → /admin, others → /dashboard)
 
 ## System Architecture
 The project is built as a full-stack monorepo with a frontend utilizing React, TypeScript, Vite, TailwindCSS, and shadcn/ui. The backend is powered by Express.js and TypeScript, providing RESTful API services. Data persistence is handled by Neon PostgreSQL, accessed via Drizzle ORM. Stripe is integrated for payment processing.
