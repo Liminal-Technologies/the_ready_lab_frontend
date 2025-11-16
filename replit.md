@@ -8,6 +8,10 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Stripe integration to be improved later
 - Prefers minimal API keys for initial development
 
+## Recent Bug Fixes (November 16, 2025)
+- **Toast System**: Fixed duplicate toast notifications by consolidating to a single Sonner toaster component in App.tsx (removed duplicate instances from main.tsx)
+- **Navigation**: Fixed Profile button navigation to correctly route admin users to /admin and other authenticated users to /dashboard (which uses DashboardRouter for role-specific routing)
+
 ## System Architecture
 The project is built as a full-stack monorepo with a frontend utilizing React, TypeScript, Vite, TailwindCSS, and shadcn/ui. The backend is powered by Express.js and TypeScript, providing RESTful API services. Data persistence is handled by Neon PostgreSQL, accessed via Drizzle ORM. Stripe is integrated for payment processing.
 

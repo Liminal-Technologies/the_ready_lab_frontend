@@ -1,4 +1,3 @@
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -247,8 +246,7 @@ const AppContent = () => {
 const App = () => (
   <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
+      <Sonner position="top-right" richColors />
       <AuthProvider>
         <AppContent />
       </AuthProvider>

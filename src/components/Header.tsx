@@ -73,7 +73,19 @@ const Header = () => {
   };
 
   const navigateToDashboard = () => {
-    navigate('/dashboard');
+    // Navigate to dashboard - DashboardRouter will handle role-specific routing
+    // This function is only called when auth.user exists (button only renders when logged in)
+    if (!auth.user) return;
+
+    // Check if user has admin privileges
+    const hasAdminRole = auth.user.admin_roles && auth.user.admin_roles.length > 0;
+    const isAdmin = auth.user.role === 'admin';
+
+    if (hasAdminRole || isAdmin) {
+      navigate('/admin');
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   const handleCreateCourse = () => {
