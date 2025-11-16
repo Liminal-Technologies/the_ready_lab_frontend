@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
+import { PageBreadcrumb } from '@/components/PageBreadcrumb';
+import { SuggestedActions, SuggestedAction } from '@/components/dashboard/SuggestedActions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -152,24 +154,48 @@ export const EducatorDashboard = () => {
   // Get revenue share based on plan
   const revenueShare = selectedPlan === 'pro' ? '90%' : '85%';
 
+  // Suggested actions for educator journey
+  const suggestedActions: SuggestedAction[] = [
+    {
+      icon: Plus,
+      title: "Create Your First Course",
+      description: "Build and publish a course to start teaching and earning. Our wizard makes it easy to get started.",
+      ctaText: "Launch Course Builder",
+      ctaLink: "#",
+      variant: "default" as const,
+      badge: createdCourses.length === 0 ? "Start Here" : undefined,
+    },
+    {
+      icon: Video,
+      title: "Schedule a Live Event",
+      description: "Host live Q&A sessions, workshops, or office hours to engage with your students in real-time.",
+      ctaText: "Schedule Event",
+      ctaLink: "#",
+    },
+    {
+      icon: BarChart3,
+      title: "View Your Analytics",
+      description: "Track student progress, course performance, and revenue metrics to optimize your teaching.",
+      ctaText: "See Analytics",
+      ctaLink: "#",
+    },
+    {
+      icon: Users,
+      title: "Manage Your Students",
+      description: "Monitor student progress, answer questions, and identify students who need extra support.",
+      ctaText: "View Students",
+      ctaLink: "#",
+      variant: "secondary" as const,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Breadcrumb */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-primary transition-colors" data-testid="link-home">
-              Home
-            </Link>
-            <ChevronRight className="h-4 w-4" />
-            <span className="text-foreground font-medium">Dashboard</span>
-          </div>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 py-16">
+        {/* Breadcrumb Navigation */}
+        <PageBreadcrumb className="mb-8" />
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
@@ -256,6 +282,13 @@ export const EducatorDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Suggested Next Actions */}
+        <SuggestedActions 
+          actions={suggestedActions}
+          title="Grow Your Teaching Business"
+          description="Take these actions to engage students and maximize your impact"
+        />
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
