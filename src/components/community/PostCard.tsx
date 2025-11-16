@@ -110,7 +110,7 @@ export const PostCard = ({ post, currentUserId, isModerator, onPostDeleted, onPo
   };
 
   return (
-    <Card>
+    <Card className="card-interactive">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">

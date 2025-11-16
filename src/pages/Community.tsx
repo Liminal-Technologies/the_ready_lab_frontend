@@ -409,7 +409,7 @@ const Community = () => {
                 {filteredCommunities.map((community) => (
                   <div
                     key={community.id}
-                    className="bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-neutral-200 dark:border-neutral-700 hover:border-[#9333EA]"
+                    className="card-interactive bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700 hover:border-[#9333EA]"
                     data-testid={`community-card-${community.id}`}
                   >
                     {/* Community Image */}

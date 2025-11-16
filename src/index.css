@@ -134,6 +134,25 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  
+  /* Interactive card hover effects for polished demo feel */
+  .card-interactive {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  
+  .card-interactive:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.1), 
+                0 8px 16px -4px rgba(0, 0, 0, 0.06),
+                0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+  
+  .dark .card-interactive:hover {
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.3), 
+                0 8px 16px -4px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
 }
 
 /* Smooth transitions for theme changes */

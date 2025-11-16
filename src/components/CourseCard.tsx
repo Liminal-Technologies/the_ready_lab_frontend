@@ -51,7 +51,7 @@ const CourseCard = ({
   };
 
   return (
-    <Card className={`group hover:shadow-medium transition-all duration-300 hover:-translate-y-1 border-border ${featured ? 'ring-2 ring-primary/20' : ''}`}>
+    <Card className={`group card-interactive border-border ${featured ? 'ring-2 ring-primary/20' : ''}`}>
       <CardHeader>
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2 flex-wrap">
