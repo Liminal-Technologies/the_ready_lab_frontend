@@ -82,13 +82,13 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 shadow-sm transition-colors duration-200">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="cursor-pointer transition-opacity hover:opacity-70" onClick={navigateToHome}>
             <img 
               src={logoImage} 
               alt="The Ready Lab" 
-              className="h-20 w-auto" 
+              className="h-16 w-auto" 
               data-testid="header-logo"
             />
           </div>
