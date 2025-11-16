@@ -79,7 +79,7 @@ const Footer = () => {
             <img 
               src={logoImage} 
               alt="The Ready Lab - Empowering learners and educators with accessible, quality education" 
-              className="h-64 w-auto max-w-md" 
+              className="h-32 w-auto" 
               data-testid="footer-logo"
             />
           </div>
