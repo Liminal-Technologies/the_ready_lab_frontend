@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import logoImage from "@assets/ready-lab-logo.png";
+import logoImage from "@assets/ready-lab-logo-tagline.png";
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -78,13 +78,10 @@ const Footer = () => {
           <div className="space-y-4">
             <img 
               src={logoImage} 
-              alt="The Ready Lab" 
-              className="h-12 w-auto" 
+              alt="The Ready Lab - Empowering learners and educators with accessible, quality education" 
+              className="h-16 w-auto" 
               data-testid="footer-logo"
             />
-            <p className="text-white/70">
-              Empowering learners and educators with accessible, quality education.
-            </p>
           </div>
           
           <div>
