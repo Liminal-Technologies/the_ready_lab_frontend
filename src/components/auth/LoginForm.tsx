@@ -29,6 +29,7 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
   const [showUnconfirmedEmail, setShowUnconfirmedEmail] = useState(false);
   const [unconfirmedEmail, setUnconfirmedEmail] = useState('');
   const [isResending, setIsResending] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { signIn, auth } = useAuth();
   
   const { register, handleSubmit, formState: { errors }, getValues } = useForm<LoginFormData>({
@@ -59,7 +60,10 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
   };
 
   const onSubmit = async (data: LoginFormData) => {
+    if (isSubmitting) return; // Prevent double submission
+    
     try {
+      setIsSubmitting(true);
       setShowUnconfirmedEmail(false);
       await signIn(data.email, data.password);
       toast.success("Welcome back! 🎉", {
@@ -77,6 +81,8 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
           description: error.message || "Please check your credentials and try again",
         });
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -153,10 +159,11 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
           <Button 
             type="submit" 
             className="w-full" 
-            disabled={auth.loading}
+            disabled={isSubmitting || auth.loading}
             variant="hero"
+            data-testid="button-login"
           >
-            {auth.loading ? 'Signing in...' : 'Sign In'}
+            {(isSubmitting || auth.loading) ? 'Signing in...' : 'Sign In'}
           </Button>
         </form>
 
