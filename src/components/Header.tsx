@@ -88,7 +88,7 @@ const Header = () => {
             <img 
               src={logoImage} 
               alt="The Ready Lab" 
-              className="h-14 w-auto" 
+              className="h-20 w-auto" 
               data-testid="header-logo"
             />
           </div>
