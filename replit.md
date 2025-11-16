@@ -11,9 +11,9 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 ## Recent Bug Fixes (November 16, 2025)
 - **Toast System**: Fixed duplicate toast notifications by consolidating to a single Sonner toaster component in App.tsx (removed duplicate instances from main.tsx)
 - **Navigation**: Fixed Profile button navigation in Header to correctly route admin users to /admin and other authenticated users to /dashboard (which uses DashboardRouter for role-specific routing)
-- **AI Chat Widget Button**: Made button perfectly circular by removing `size="icon"` prop and adding `aspect-square` utility class to ensure 90×90px circular shape regardless of rendering context
-- **AI Chat Window**: Fixed desktop layout by properly managing overflow behavior and ScrollArea configuration - moved overflow-hidden to conditional className and changed ScrollArea from min-h-0 to overflow-y-auto for better scroll behavior across viewports
-- **AI Chat Popup**: Fixed mobile layout overflow by restructuring with flexbox - reduced mobile height to 450px while maintaining 600px on desktop, ensuring all sections (header, messages, suggestions, input) remain accessible
+- **AI Chat Widget Button**: Enforced perfect circular shape with explicit min-width/min-height constraints (90×90px), aspect-square ratio, and shrink-0 to prevent flexbox squashing
+- **AI Chat Window Desktop**: Fixed desktop height overflow by adding responsive max-height constraint `lg:max-h-[calc(100vh-100px)]` while maintaining 500px height for better viewport fit
+- **AI Chat Popup Mobile**: Fixed mobile layout overflow by restructuring with flexbox - reduced mobile height to 450px while maintaining 500px on desktop, ensuring all sections (header, messages, suggestions, input) remain accessible
 - **Mobile Navigation**: Fixed Profile button in mobile bottom nav to use role-based routing matching Header logic (admins → /admin, others → /dashboard)
 
 ## System Architecture
