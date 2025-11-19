@@ -240,6 +240,8 @@ const AppContent = () => {
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id/download" element={<ProductDownload />} />
         <Route path="/educator-demo" element={<EducatorProfileDemo />} />
+        <Route path="/educator/students" element={<StudentAnalytics />} />
+        <Route path="/educator/revenue" element={<RevenueDashboard />} />
         <Route path="/live/:eventId" element={<LiveStream />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="*" element={<NotFound />} />
