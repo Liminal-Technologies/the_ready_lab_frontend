@@ -125,6 +125,29 @@ export class PostgresStorage implements IStorage {
     }
   }
 
+  async getTrackProgress(userId: string, trackId: string): Promise<any[]> {
+    const modules = await this.getModulesByTrackId(trackId);
+    const moduleIds = modules.map(m => m.id);
+    
+    if (moduleIds.length === 0) {
+      return [];
+    }
+    
+    const lessons = await db.select().from(schema.lessons)
+      .where(sql`${schema.lessons.moduleId} = ANY(${moduleIds})`);
+    const lessonIds = lessons.map(l => l.id);
+    
+    if (lessonIds.length === 0) {
+      return [];
+    }
+    
+    return await db.select().from(schema.lessonProgress)
+      .where(and(
+        eq(schema.lessonProgress.userId, userId),
+        sql`${schema.lessonProgress.lessonId} = ANY(${lessonIds})`
+      ));
+  }
+
   async getCertification(id: string): Promise<schema.Certification | undefined> {
     const [certification] = await db.select().from(schema.certifications).where(eq(schema.certifications.id, id));
     return certification;

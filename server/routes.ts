@@ -234,6 +234,37 @@ router.get("/api/notifications/user/:userId", async (req: Request, res: Response
   }
 });
 
+router.get("/api/lesson-progress/:userId/:lessonId", async (req: Request, res: Response) => {
+  try {
+    const progress = await storage.getLessonProgress(req.params.userId, req.params.lessonId);
+    res.json(progress || null);
+  } catch (error) {
+    console.error("Error fetching lesson progress:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/api/lesson-progress/track/:userId/:trackId", async (req: Request, res: Response) => {
+  try {
+    const progress = await storage.getTrackProgress(req.params.userId, req.params.trackId);
+    res.json(progress);
+  } catch (error) {
+    console.error("Error fetching track progress:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/api/lesson-progress/:userId/:lessonId", async (req: Request, res: Response) => {
+  try {
+    const { userId, lessonId } = req.params;
+    const progress = await storage.updateLessonProgress(userId, lessonId, req.body);
+    res.json(progress);
+  } catch (error) {
+    console.error("Error updating lesson progress:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/api/health", (req: Request, res: Response) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
