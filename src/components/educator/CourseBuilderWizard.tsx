@@ -26,6 +26,7 @@ import {
   Plus,
   Clock
 } from "lucide-react";
+import { saveEducatorCourse, type EducatorCourse, type CourseModule, type CourseLesson } from "@/utils/educatorCoursesStorage";
 
 interface CourseBuilderWizardProps {
   open: boolean;
@@ -204,60 +205,93 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
     );
   };
 
-  const handleSaveDraft = () => {
-    const draft = {
-      courseType,
+  const buildCourseData = (published: boolean): EducatorCourse => {
+    // Get educator profile from localStorage
+    const educatorProfile = JSON.parse(localStorage.getItem("educatorProfile") || "{}");
+    const educatorName = educatorProfile.name || "Dr. Sarah Chen";
+    
+    // Convert modules to proper structure
+    const courseModules: CourseModule[] = modules.map((module, index) => ({
+      id: `module-${Date.now()}-${index}`,
+      title: module.name,
+      description: "",
+      lessons: module.lessons.map((lesson: any, lessonIndex: number) => ({
+        id: `lesson-${Date.now()}-${index}-${lessonIndex}`,
+        title: lesson.name,
+        type: "video" as const,
+        duration: lesson.duration || 10,
+        videoUrl: "https://example.com/video.mp4",
+        order: lessonIndex,
+      })),
+      order: index,
+    }));
+
+    // Calculate totals
+    const totalLessons = courseModules.reduce((sum, m) => sum + m.lessons.length, 0);
+    const totalDuration = courseModules.reduce(
+      (sum, m) => sum + m.lessons.reduce((lSum, l) => lSum + l.duration, 0),
+      0
+    );
+
+    return {
+      id: `course-${Date.now()}`,
       title,
-      category,
-      level,
-      learningStyles,
-      courseLanguage,
-      microlearningDuration: courseType === "microlearning" ? microlearningDuration : undefined,
       description,
-      objectives: objectives.filter(o => o.trim()),
-      pricing: { isPaid, price: isPaid ? priceNumber : 0 },
-      modules,
-      status: "draft",
+      category,
+      level: level as "beginner" | "intermediate" | "advanced",
+      modules: courseModules,
+      totalLessons,
+      totalDuration,
+      pricing: {
+        type: isPaid ? "paid" : "free",
+        amount: isPaid ? priceNumber : undefined,
+      },
+      published,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      educatorId: "mock-educator",
+      educatorName,
+      enrollmentCount: 0,
+      revenue: 0,
     };
-    
-    const existing = JSON.parse(localStorage.getItem('createdCourses') || '[]');
-    existing.push(draft);
-    localStorage.setItem('createdCourses', JSON.stringify(existing));
-    
-    toast({
-      title: "Draft saved! 💾",
-      description: "Your course has been saved as a draft.",
-    });
-    
-    onCourseCreated?.();
-    onOpenChange(false);
-    resetForm();
+  };
+
+  const handleSaveDraft = () => {
+    try {
+      const course = buildCourseData(false);
+      saveEducatorCourse(course);
+      
+      toast({
+        title: "Draft saved! 💾",
+        description: "Your course has been saved as a draft.",
+      });
+      
+      onCourseCreated?.();
+      onOpenChange(false);
+      resetForm();
+    } catch (error) {
+      toast({
+        title: "Error saving draft",
+        description: "There was a problem saving your course. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmitForReview = () => {
-    const course = {
-      courseType,
-      title,
-      category,
-      level,
-      learningStyles,
-      courseLanguage,
-      microlearningDuration: courseType === "microlearning" ? microlearningDuration : undefined,
-      description,
-      objectives: objectives.filter(o => o.trim()),
-      pricing: { isPaid, price: isPaid ? priceNumber : 0 },
-      modules,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    };
-    
-    const existing = JSON.parse(localStorage.getItem('createdCourses') || '[]');
-    existing.push(course);
-    localStorage.setItem('createdCourses', JSON.stringify(existing));
-    
-    // Show success screen
-    setCurrentStep(6); // Success screen
+    try {
+      const course = buildCourseData(true);
+      saveEducatorCourse(course);
+      
+      // Show success screen
+      setCurrentStep(6);
+    } catch (error) {
+      toast({
+        title: "Error submitting course",
+        description: "There was a problem submitting your course. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const resetForm = () => {
