@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { QuizPlayer } from "@/components/quiz/QuizPlayer";
 import { CertificateModal } from "@/components/certificates/CertificateModal";
 import { useAuth } from "@/hooks/useAuth";
+import { getEducatorCourseById, type EducatorCourse } from "@/utils/educatorCoursesStorage";
 import { 
   Play, 
   Pause, 
@@ -41,7 +42,7 @@ import {
 } from "lucide-react";
 
 interface Lesson {
-  id: number;
+  id: string | number;
   title: string;
   duration: string;
   completed: boolean;
@@ -52,7 +53,7 @@ interface Lesson {
 }
 
 interface Module {
-  id: number;
+  id: string | number;
   title: string;
   lessons: Lesson[];
 }
@@ -167,11 +168,15 @@ export default function CourseLessonPlayer() {
   const [captions, setCaptions] = useState<string>("english");
   const [played, setPlayed] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [openModules, setOpenModules] = useState<number[]>([1, 2]);
+  const [openModules, setOpenModules] = useState<(string | number)[]>([1, 2]);
   const [notes, setNotes] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("overview");
+  
+  // State for modules - load from educator courses or use mock data
+  const [modules, setModules] = useState<Module[]>(mockModules);
+  const [courseTitle, setCourseTitle] = useState<string>("");
   
   // Discussion state
   const [discussionPosts, setDiscussionPosts] = useState<DiscussionPost[]>(initialDiscussionPosts);
@@ -180,28 +185,112 @@ export default function CourseLessonPlayer() {
   const [newQuestionContent, setNewQuestionContent] = useState("");
   const [expandedPosts, setExpandedPosts] = useState<number[]>([]);
   
-  // Progress tracking state - load from localStorage
-  const [completedLessons, setCompletedLessons] = useState<number[]>(() => {
-    const storageKey = `course-${courseId}-completed-lessons`;
-    const saved = localStorage.getItem(storageKey);
-    return saved ? JSON.parse(saved) : [1]; // Lesson 1 is complete by default
+  // Progress tracking state - load from localStorage with defensive parsing
+  const [completedLessons, setCompletedLessons] = useState<(string | number)[]>(() => {
+    try {
+      const storageKey = `course-${courseId}-completed-lessons`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+    } catch (error) {
+      console.error('Error loading completed lessons:', error);
+    }
+    return [];
   });
   const [currentLessonComplete, setCurrentLessonComplete] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [shownMilestones, setShownMilestones] = useState<number[]>(() => {
-    const storageKey = `course-${courseId}-shown-milestones`;
-    const saved = localStorage.getItem(storageKey);
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const storageKey = `course-${courseId}-shown-milestones`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+    } catch (error) {
+      console.error('Error loading shown milestones:', error);
+    }
+    return [];
   });
   
-  const totalLessons = mockModules.reduce((acc, module) => acc + module.lessons.length, 0);
+  const totalLessons = modules.reduce((acc, module) => acc + module.lessons.length, 0);
   const completedCount = completedLessons.length;
   const progressPercentage = Math.round((completedCount / totalLessons) * 100);
   
-  const allLessons = mockModules.flatMap(m => m.lessons);
-  const currentLessonId = lessonId ? parseInt(lessonId) : 2;
-  const currentLesson = allLessons.find(l => l.id === currentLessonId) || allLessons[1];
+  const allLessons = modules.flatMap(m => m.lessons);
+  // Normalize lessonId - keep as string if it's a UUID, parse to number if it's numeric
+  const currentLessonId: string | number = lessonId 
+    ? (isNaN(Number(lessonId)) ? lessonId : parseInt(lessonId))
+    : (allLessons[0]?.id || 1);
+  const currentLesson = allLessons.find(l => String(l.id) === String(currentLessonId)) || allLessons[0];
+
+  // Load educator course data when courseId changes
+  useEffect(() => {
+    if (courseId && typeof window !== 'undefined') {
+      const educatorCourse = getEducatorCourseById(courseId);
+      if (educatorCourse) {
+        // Load completed lessons for this course with defensive parsing
+        const completedKey = `course-${courseId}-completed-lessons`;
+        const completedSaved = localStorage.getItem(completedKey);
+        let completed: (string | number)[] = [];
+        if (completedSaved) {
+          try {
+            const parsed = JSON.parse(completedSaved);
+            completed = Array.isArray(parsed) ? parsed : [];
+          } catch (error) {
+            console.error('Error parsing completed lessons:', error);
+            completed = [];
+          }
+        }
+        
+        // Get current lesson ID from URL
+        const urlLessonId = lessonId ? (isNaN(Number(lessonId)) ? lessonId : parseInt(lessonId)) : null;
+        
+        // Transform educator course modules to match expected format
+        let previousLessonId: string | number | null = null;
+        const transformedModules: Module[] = educatorCourse.modules.map((module, moduleIdx) => {
+          const moduleLessons = module.lessons.map((lesson, lessonIdx) => {
+            // Calculate if locked: First lesson in course is unlocked, others require previous lesson completion
+            const isLocked = previousLessonId !== null && !completed.some(id => String(id) === String(previousLessonId));
+            
+            const lessonData = {
+              id: lesson.id,
+              title: lesson.title,
+              duration: `${lesson.duration} mins`,
+              completed: completed.some(id => String(id) === String(lesson.id)),
+              locked: isLocked,
+              current: urlLessonId ? String(lesson.id) === String(urlLessonId) : false,
+              isQuiz: lesson.type === 'quiz',
+              quizId: lesson.type === 'quiz' ? lesson.id : undefined
+            };
+            
+            // Track this lesson as previous for next iteration
+            previousLessonId = lesson.id;
+            return lessonData;
+          });
+          
+          return {
+            id: module.id,
+            title: module.title,
+            lessons: moduleLessons
+          };
+        });
+        
+        setModules(transformedModules);
+        setCourseTitle(educatorCourse.title);
+        
+        // Open all modules by default for educator courses
+        setOpenModules(transformedModules.map(m => m.id));
+      } else {
+        // Fall back to mock data
+        setModules(mockModules);
+        setCourseTitle("");
+      }
+    }
+  }, [courseId, lessonId]);
 
   // Reload progress from localStorage when courseId changes
   useEffect(() => {
@@ -211,11 +300,35 @@ export default function CourseLessonPlayer() {
       const milestonesKey = `course-${courseId}-shown-milestones`;
       const milestonesSaved = localStorage.getItem(milestonesKey);
       
-      setCompletedLessons(completedSaved ? JSON.parse(completedSaved) : [1]);
-      setShownMilestones(milestonesSaved ? JSON.parse(milestonesSaved) : []);
+      // Parse and normalize completed lessons (handle legacy numeric arrays and new string/number arrays)
+      let completed: (string | number)[] = [];
+      if (completedSaved) {
+        try {
+          const parsed = JSON.parse(completedSaved);
+          completed = Array.isArray(parsed) ? parsed : [];
+        } catch (parseError) {
+          console.error('Error parsing completed lessons:', parseError);
+          completed = [];
+        }
+      }
+      
+      // Parse milestones with defensive error handling
+      let milestones: number[] = [];
+      if (milestonesSaved) {
+        try {
+          const parsed = JSON.parse(milestonesSaved);
+          milestones = Array.isArray(parsed) ? parsed : [];
+        } catch (parseError) {
+          console.error('Error parsing milestones:', parseError);
+          milestones = [];
+        }
+      }
+      
+      setCompletedLessons(completed);
+      setShownMilestones(milestones);
     } catch (error) {
       console.error('Error loading lesson progress from localStorage:', error);
-      setCompletedLessons([1]);
+      setCompletedLessons([]);
       setShownMilestones([]);
     }
   }, [courseId]);
@@ -234,7 +347,7 @@ export default function CourseLessonPlayer() {
 
   // Check if current lesson is already completed (for page refreshes)
   useEffect(() => {
-    setCurrentLessonComplete(completedLessons.includes(currentLessonId));
+    setCurrentLessonComplete(completedLessons.some(id => String(id) === String(currentLessonId)));
   }, [lessonId, completedLessons, currentLessonId]);
 
   const formatTime = (seconds: number) => {
@@ -243,7 +356,7 @@ export default function CourseLessonPlayer() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleLessonClick = (clickedLessonId: number, locked: boolean) => {
+  const handleLessonClick = (clickedLessonId: string | number, locked: boolean) => {
     if (locked) {
       toast.error("Lesson Locked", {
         description: "Complete previous lessons to unlock this one",
@@ -254,10 +367,10 @@ export default function CourseLessonPlayer() {
     }
   };
 
-  const toggleModule = (moduleId: number) => {
+  const toggleModule = (moduleId: string | number) => {
     setOpenModules(prev => 
-      prev.includes(moduleId) 
-        ? prev.filter(id => id !== moduleId)
+      prev.some(id => String(id) === String(moduleId))
+        ? prev.filter(id => String(id) !== String(moduleId))
         : [...prev, moduleId]
     );
   };
@@ -352,7 +465,8 @@ export default function CourseLessonPlayer() {
   };
 
   const handleMarkComplete = () => {
-    if (!completedLessons.includes(currentLessonId)) {
+    const isAlreadyCompleted = completedLessons.some(id => String(id) === String(currentLessonId));
+    if (!isAlreadyCompleted) {
       const newCompletedLessons = [...completedLessons, currentLessonId];
       const newCompletedCount = newCompletedLessons.length;
       const newProgressPercentage = Math.round((newCompletedCount / totalLessons) * 100);
@@ -400,7 +514,7 @@ export default function CourseLessonPlayer() {
   };
 
   const handleNextLesson = () => {
-    const currentIndex = allLessons.findIndex(l => l.id === currentLessonId);
+    const currentIndex = allLessons.findIndex(l => String(l.id) === String(currentLessonId));
     const nextLessonToNav = allLessons[currentIndex + 1];
     
     if (nextLessonToNav) {
@@ -418,13 +532,14 @@ export default function CourseLessonPlayer() {
   const handleProgress = (state: any) => {
     setPlayed(state.played);
     
-    if (state.played >= 0.95 && !currentLessonComplete && !completedLessons.includes(currentLessonId)) {
+    const isAlreadyCompleted = completedLessons.some(id => String(id) === String(currentLessonId));
+    if (state.played >= 0.95 && !currentLessonComplete && !isAlreadyCompleted) {
       handleMarkComplete();
     }
   };
 
   // Get next lesson for navigation
-  const currentIndex = allLessons.findIndex(l => l.id === currentLessonId);
+  const currentIndex = allLessons.findIndex(l => String(l.id) === String(currentLessonId));
   const nextLesson = allLessons[currentIndex + 1];
 
   return (
@@ -456,28 +571,30 @@ export default function CourseLessonPlayer() {
                   <SheetTitle>Course Content</SheetTitle>
                 </SheetHeader>
                 <div className="mt-6 space-y-2">
-                  {mockModules.map((module) => (
+                  {modules.map((module) => (
                     <Collapsible
                       key={module.id}
-                      open={openModules.includes(module.id)}
+                      open={openModules.some(id => String(id) === String(module.id))}
                       onOpenChange={() => toggleModule(module.id)}
                     >
                       <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-accent transition-colors">
                         <div className="flex items-center gap-2">
-                          {openModules.includes(module.id) ? (
+                          {openModules.some(id => String(id) === String(module.id)) ? (
                             <ChevronDown className="h-4 w-4" />
                           ) : (
                             <ChevronRight className="h-4 w-4" />
                           )}
                           <span className="font-semibold text-sm">
-                            Module {module.id}: {module.title}
+                            {module.title}
                           </span>
                         </div>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="space-y-1 mt-1">
-                        {module.lessons.map((lesson) => {
-                          const isLocked = lesson.locked && !completedLessons.includes(lesson.id - 1);
-                          const isCurrent = lesson.id === currentLessonId;
+                        {module.lessons.map((lesson, lessonIdx) => {
+                          // Use precomputed locked flag from transformation (handles cross-module sequential locking)
+                          const isLocked = lesson.locked;
+                          const isCurrent = String(lesson.id) === String(currentLessonId);
+                          const isCompleted = completedLessons.some(id => String(id) === String(lesson.id));
                           return (
                             <button
                               key={lesson.id}
@@ -493,12 +610,12 @@ export default function CourseLessonPlayer() {
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 flex-1">
                                   <span className="text-xs font-medium">
-                                    L{lesson.id}:
+                                    {lessonIdx + 1}.
                                   </span>
                                   <span className="text-sm">{lesson.title}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  {(lesson.completed || completedLessons.includes(lesson.id)) && (
+                                  {isCompleted && (
                                     <Check className="h-4 w-4 text-green-500" />
                                   )}
                                   {isLocked && (
@@ -659,13 +776,13 @@ export default function CourseLessonPlayer() {
 
               {/* Completion and Next Lesson Buttons */}
               <div className="mt-4 flex gap-3">
-                {!currentLessonComplete && !completedLessons.includes(currentLessonId) && (
+                {!currentLessonComplete && !completedLessons.some(id => String(id) === String(currentLessonId)) && (
                   <Button onClick={handleMarkComplete} variant="outline" className="flex-1">
                     <CheckCircle2 className="mr-2 h-4 w-4" />
                     Mark Complete
                   </Button>
                 )}
-                {(currentLessonComplete || completedLessons.includes(currentLessonId)) && (
+                {(currentLessonComplete || completedLessons.some(id => String(id) === String(currentLessonId))) && (
                   <>
                     <div className="flex items-center gap-2 text-green-600 font-medium">
                       <CheckCircle2 className="h-5 w-5" />
@@ -915,21 +1032,21 @@ export default function CourseLessonPlayer() {
             <Card className="p-6 sticky top-6">
               <h2 className="text-xl font-bold mb-4">Course Content</h2>
               <div className="space-y-2">
-                {mockModules.map((module) => (
+                {modules.map((module) => (
                   <Collapsible
                     key={module.id}
-                    open={openModules.includes(module.id)}
+                    open={openModules.some(id => String(id) === String(module.id))}
                     onOpenChange={() => toggleModule(module.id)}
                   >
                     <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg hover:bg-accent transition-colors">
                       <div className="flex items-center gap-2">
-                        {openModules.includes(module.id) ? (
+                        {openModules.some(id => String(id) === String(module.id)) ? (
                           <ChevronDown className="h-4 w-4" />
                         ) : (
                           <ChevronRight className="h-4 w-4" />
                         )}
                         <span className="font-semibold">
-                          Module {module.id}: {module.title}
+                          {module.title}
                         </span>
                       </div>
                       <span className="text-sm text-muted-foreground">
@@ -937,9 +1054,11 @@ export default function CourseLessonPlayer() {
                       </span>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="space-y-1 mt-1">
-                      {module.lessons.map((lesson) => {
-                        const isLocked = lesson.locked && !completedLessons.includes(lesson.id - 1);
-                        const isCurrent = lesson.id === currentLessonId;
+                      {module.lessons.map((lesson, lessonIdx) => {
+                        // Use precomputed locked flag from transformation (handles cross-module sequential locking)
+                        const isLocked = lesson.locked;
+                        const isCurrent = String(lesson.id) === String(currentLessonId);
+                        const isCompleted = completedLessons.some(id => String(id) === String(lesson.id));
                         return (
                           <button
                             key={lesson.id}
@@ -955,12 +1074,12 @@ export default function CourseLessonPlayer() {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 flex-1">
                                 <span className="text-sm font-medium">
-                                  Lesson {lesson.id}:
+                                  {lessonIdx + 1}.
                                 </span>
                                 <span className="text-sm">{lesson.title}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                {(lesson.completed || completedLessons.includes(lesson.id)) && (
+                                {isCompleted && (
                                   <Check className="h-4 w-4 text-green-500" />
                                 )}
                                 {isLocked && (
@@ -984,7 +1103,7 @@ export default function CourseLessonPlayer() {
       </div>
 
       {/* Floating Next Lesson Button (Mobile) */}
-      {nextLesson && (currentLessonComplete || completedLessons.includes(currentLessonId)) && (
+      {nextLesson && (currentLessonComplete || completedLessons.some(id => String(id) === String(currentLessonId))) && (
         <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-background border-t z-20">
           <Button onClick={handleNextLesson} className="w-full" size="lg">
             Next: {nextLesson.title}
