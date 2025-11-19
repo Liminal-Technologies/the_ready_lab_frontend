@@ -254,18 +254,15 @@ export default function CourseDetail() {
   }, [courseId]);
 
   const handleEnrollClick = () => {
-    if (mockCourse.isFree) {
-      handleFreeEnrollment();
-    } else {
-      setShowCheckoutModal(true);
-    }
+    // Demo mode: All courses get instant enrollment (free and paid)
+    handleFreeEnrollment();
   };
 
   const handleFreeEnrollment = async () => {
     setIsProcessing(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Brief delay for UX feedback
+    await new Promise(resolve => setTimeout(resolve, 800));
     
     // Update localStorage
     const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
@@ -276,7 +273,9 @@ export default function CourseDetail() {
     setIsProcessing(false);
     
     toast.success("Enrolled successfully! 🎉", {
-      description: "You can now access all course materials",
+      description: mockCourse.isFree 
+        ? "You can now access all course materials" 
+        : "Demo mode: Instant access granted (no payment required)",
     });
     
     // Redirect to first lesson
