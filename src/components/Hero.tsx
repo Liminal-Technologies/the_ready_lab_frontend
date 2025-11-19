@@ -16,11 +16,7 @@ const Hero = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const handleStartJourney = () => {
-    if (auth.user) {
-      navigate('/dashboard');
-    } else {
-      setIsAuthModalOpen(true);
-    }
+    navigate('/pricing');
   };
 
   const handleWatchDemo = () => {
