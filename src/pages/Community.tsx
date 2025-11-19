@@ -35,6 +35,18 @@ const COMMUNITY_TOPICS = [
 
 const communities = [
   {
+    id: "1",
+    name: "Funding & Grants",
+    topic: "Funding",
+    members: 2247,
+    description: "Master the art of raising capital and securing grants. Share pitch decks, celebrate funding wins, and navigate investor relationships together.",
+    postsToday: 18,
+    isPrivate: false,
+    isJoined: false,
+    icon: "💰",
+    image: "/attached_assets/stock_images/partnership_handshak_d5c0b270.jpg"
+  },
+  {
     id: "c1",
     name: "Startups Under 2 Years",
     topic: "Funding",
