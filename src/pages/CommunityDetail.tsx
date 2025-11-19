@@ -19,6 +19,9 @@ interface Community {
   category: string;
   member_count: number;
   cover_photo?: string;
+  visibility?: string;
+  rules?: string[];
+  created_at?: string;
 }
 
 interface Member {
@@ -26,6 +29,9 @@ interface Member {
   name: string;
   role: string;
   joined_at: string;
+  profiles?: {
+    full_name?: string;
+  };
 }
 
 interface LiveEvent {
@@ -38,12 +44,12 @@ interface LiveEvent {
 
 // Mock data for communities
 const MOCK_COMMUNITIES: Record<string, Community> = {
-  '1': { id: '1', name: 'Funding & Grants', description: 'Connect with experts in fundraising, grant writing, and securing capital for your ventures.', category: 'Funding', member_count: 2847, cover_photo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=200&fit=crop' },
-  '2': { id: '2', name: 'Legal & Compliance', description: 'Navigate legal challenges, contracts, and regulatory requirements with fellow entrepreneurs.', category: 'Legal', member_count: 1923, cover_photo: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=200&fit=crop' },
-  '3': { id: '3', name: 'Marketing & Branding', description: 'Share strategies, campaigns, and creative ideas to grow your brand and reach your audience.', category: 'Branding', member_count: 3521, cover_photo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop' },
-  '4': { id: '4', name: 'Tech Infrastructure', description: 'Discuss technical architecture, cloud solutions, and infrastructure best practices.', category: 'Infrastructure', member_count: 2156, cover_photo: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=200&fit=crop' },
-  '5': { id: '5', name: 'Financial Planning', description: 'Master budgeting, forecasting, and financial management for sustainable growth.', category: 'Finance', member_count: 2034, cover_photo: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=200&fit=crop' },
-  '6': { id: '6', name: 'AI & Innovation', description: 'Explore artificial intelligence, machine learning, and cutting-edge technologies.', category: 'AI', member_count: 4102, cover_photo: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop' },
+  '1': { id: '1', name: 'Funding & Grants', description: 'Connect with experts in fundraising, grant writing, and securing capital for your ventures.', category: 'Funding', member_count: 2847, cover_photo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-01-15', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
+  '2': { id: '2', name: 'Legal & Compliance', description: 'Navigate legal challenges, contracts, and regulatory requirements with fellow entrepreneurs.', category: 'Legal', member_count: 1923, cover_photo: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-02-20', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
+  '3': { id: '3', name: 'Marketing & Branding', description: 'Share strategies, campaigns, and creative ideas to grow your brand and reach your audience.', category: 'Branding', member_count: 3521, cover_photo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-03-10', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
+  '4': { id: '4', name: 'Tech Infrastructure', description: 'Discuss technical architecture, cloud solutions, and infrastructure best practices.', category: 'Infrastructure', member_count: 2156, cover_photo: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-04-05', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
+  '5': { id: '5', name: 'Financial Planning', description: 'Master budgeting, forecasting, and financial management for sustainable growth.', category: 'Finance', member_count: 2034, cover_photo: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-05-12', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
+  '6': { id: '6', name: 'AI & Innovation', description: 'Explore artificial intelligence, machine learning, and cutting-edge technologies.', category: 'AI', member_count: 4102, cover_photo: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-06-01', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
 };
 
 const MOCK_MEMBERS: Member[] = [
@@ -68,6 +74,7 @@ const CommunityDetail = () => {
   const [members] = useState<Member[]>(MOCK_MEMBERS);
   const [loading, setLoading] = useState(true);
   const [isMember, setIsMember] = useState(false);
+  const [isModerator] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
   const [postRefreshKey, setPostRefreshKey] = useState(0);
 
