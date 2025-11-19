@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { UserProfile } from '@/types/auth';
+import { clearDemoStudentData } from '@/utils/clearDemoData';
 
 export type MockUserRole = 'super_admin' | 'admin' | 'educator' | 'student';
 
@@ -82,6 +83,10 @@ export const useMockAuth = create<MockAuthStore>()(
       user: null,
       isDemo: false,
       login: (role: MockUserRole) => {
+        // Clear all student-specific data on student login for fresh demo experience
+        if (role === 'student') {
+          clearDemoStudentData();
+        }
         set({ user: mockUsers[role], isDemo: true });
       },
       logout: () => {
