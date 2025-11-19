@@ -353,12 +353,12 @@ const CommunityDetail = () => {
                           <div className="flex items-center gap-3">
                             <Avatar>
                               <AvatarFallback>
-                                {(member.profiles?.full_name || member.profiles?.email || 'U').charAt(0).toUpperCase()}
+                                {member.name.charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div>
                               <p className="font-medium">
-                                {member.profiles?.full_name || member.profiles?.email || 'Unknown User'}
+                                {member.name}
                               </p>
                               <p className="text-sm text-muted-foreground">
                                 Joined {new Date(member.joined_at).toLocaleDateString()}
@@ -387,19 +387,25 @@ const CommunityDetail = () => {
                         {community.description || 'No description available'}
                       </p>
                     </div>
-                    {community.rules && (
+                    {community.rules && community.rules.length > 0 && (
                       <div>
                         <h4 className="font-semibold mb-2">Community Rules</h4>
-                        <p className="text-muted-foreground whitespace-pre-wrap">
-                          {community.rules}
-                        </p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {community.rules.map((rule, index) => (
+                            <li key={index} className="text-muted-foreground">{rule}</li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                     <div>
                       <h4 className="font-semibold mb-2">Created</h4>
                       <p className="text-muted-foreground">
-                        {new Date(community.created_at).toLocaleDateString()}
+                        {community.created_at ? new Date(community.created_at).toLocaleDateString() : 'N/A'}
                       </p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Category</h4>
+                      <Badge variant="secondary">{community.category}</Badge>
                     </div>
                   </CardContent>
                 </Card>
