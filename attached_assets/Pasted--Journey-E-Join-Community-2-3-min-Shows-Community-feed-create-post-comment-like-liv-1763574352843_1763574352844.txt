@@ -1,0 +1,60 @@
+## Journey E: Join Community (2-3 min)
+
+**Shows:** Community feed, create post, comment, like, live Q&A
+
+### Quick Demo Script
+> "Beyond courses, students connect with peers and experts in our community for ongoing support..."
+
+### Steps
+
+**1. Navigate to Community (15 sec)**
+- Click **"Community"** in main navigation
+- Redirects to `/community`
+- **Community feed** loads with posts
+
+**2. Browse Posts (30 sec)**
+- Feed shows posts from students and educators:
+  - **Discussion post:** "How do I find co-founders?"
+  - **Success story:** "Just got funded $50K! 🎉"
+  - **Question:** "Best tools for MVP development?"
+- Each post shows:
+  - Author avatar + name
+  - Post content
+  - 👍 Likes count
+  - 💬 Comments count
+  - 🕐 Timestamp ("2 hours ago")
+
+**3. Create New Post (45 sec)**
+- Click **"Create Post"** button (top-right)
+- **Post composer modal** opens
+- Type post:
+  - Title: "Looking for feedback on my pitch deck"
+  - Body: "I'm applying to accelerators and would love community feedback..."
+  - (Optional) Upload image/file
+- Click **"Post"**
+- ✅ Post appears at top of feed
+- ✅ Toast: "Post published!"
+
+**4. Engage with Community (45 sec)**
+- Scroll to another post
+- Click **"Like"** button (👍)
+  - ✅ Like count increments
+  - ✅ Button turns yellow
+- Click **"Comment"** button
+- **Comment box** opens below post
+- Type comment: "Great question! I recommend using Figma for mockups..."
+- Click **"Submit"**
+- ✅ Comment appears below post
+- ✅ Author gets notification (not shown in demo)
+
+**5. Join Live Q&A (Optional - 30 sec)**
+- **Banner at top:** "🔴 LIVE: Grant Writing Workshop starts in 5 minutes"
+- Click **"Join Now"** button
+- Redirects to `/live/:eventId`
+- **Live event page** shows:
+  - Video stream (instructor presenting)
+  - Live chat sidebar
+  - Q&A section (can upvote questions)
+  - Participant count: "45 live viewers"
+- Type question in Q&A: "What's the #1 mistake in grant proposals?"
+- ✅ Question posted, can be upvoted by others
