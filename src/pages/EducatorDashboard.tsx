@@ -30,12 +30,42 @@ import {
   Eye,
   Edit,
   CreditCard,
-  ShoppingCart
+  ShoppingCart,
+  MoreVertical,
+  Trash2,
+  Copy,
+  Power,
+  PowerOff
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 import { CourseBuilderWizard } from '@/components/educator/CourseBuilderWizard';
 import { ScheduleLiveEventModal } from '@/components/educator/ScheduleLiveEventModal';
-import { getAllEducatorCourses, getEducatorStats, type EducatorCourse } from '@/utils/educatorCoursesStorage';
+import { 
+  getAllEducatorCourses, 
+  getEducatorStats, 
+  deleteEducatorCourse,
+  duplicateEducatorCourse,
+  toggleCoursePublished,
+  type EducatorCourse 
+} from '@/utils/educatorCoursesStorage';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock student data
 const MOCK_STUDENTS = [
@@ -89,12 +119,16 @@ const RECENT_TRANSACTIONS = [
 
 export const EducatorDashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [showCourseWizard, setShowCourseWizard] = useState(false);
   const [showScheduleEvent, setShowScheduleEvent] = useState(false);
   const [educatorProfile, setEducatorProfile] = useState<any>(null);
   const [createdCourses, setCreatedCourses] = useState<EducatorCourse[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string>('free');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<EducatorCourse | null>(null);
+  const [editingCourse, setEditingCourse] = useState<EducatorCourse | null>(null);
   const [stats, setStats] = useState({
     totalCourses: 0,
     publishedCourses: 0,
@@ -147,6 +181,76 @@ export const EducatorDashboard = () => {
   const handleCourseCreated = () => {
     // Reload courses using new storage system
     loadCourses();
+  };
+
+  const handleDeleteCourse = (course: EducatorCourse) => {
+    setCourseToDelete(course);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeleteCourse = () => {
+    if (!courseToDelete) return;
+    
+    try {
+      deleteEducatorCourse(courseToDelete.id);
+      loadCourses();
+      toast({
+        title: "Course deleted",
+        description: `${courseToDelete.title} has been removed.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error deleting course",
+        description: "There was a problem deleting your course. Please try again.",
+        variant: "destructive",
+      });
+    }
+    
+    setShowDeleteDialog(false);
+    setCourseToDelete(null);
+  };
+
+  const handleDuplicateCourse = (course: EducatorCourse) => {
+    const duplicated = duplicateEducatorCourse(course.id);
+    
+    if (duplicated) {
+      loadCourses();
+      toast({
+        title: "Course duplicated! 📋",
+        description: `Created a copy of "${course.title}"`,
+      });
+    } else {
+      toast({
+        title: "Error duplicating course",
+        description: "There was a problem duplicating your course. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTogglePublish = (course: EducatorCourse) => {
+    try {
+      const newStatus = toggleCoursePublished(course.id);
+      loadCourses();
+      
+      toast({
+        title: newStatus ? "Course published! 🎉" : "Course unpublished",
+        description: newStatus 
+          ? `${course.title} is now visible to students.`
+          : `${course.title} has been unpublished.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error toggling publish status",
+        description: error?.message || "There was a problem updating your course. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditCourse = (course: EducatorCourse) => {
+    setEditingCourse(course);
+    setShowCourseWizard(true);
   };
 
   // Calculate onboarding checklist
@@ -469,9 +573,39 @@ export const EducatorDashboard = () => {
                         <Badge variant={course.published ? 'default' : 'secondary'}>
                           {course.published ? 'Published' : 'Draft'}
                         </Badge>
-                        <Button variant="ghost" size="icon">
-                          <Settings className="h-4 w-4" />
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" data-testid={`course-actions-${index}`}>
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEditCourse(course)} data-testid={`course-edit-${index}`}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Course
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleTogglePublish(course)} data-testid={`course-toggle-publish-${index}`}>
+                              {course.published ? (
+                                <><PowerOff className="mr-2 h-4 w-4" />Unpublish</>
+                              ) : (
+                                <><Power className="mr-2 h-4 w-4" />Publish</>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDuplicateCourse(course)} data-testid={`course-duplicate-${index}`}>
+                              <Copy className="mr-2 h-4 w-4" />
+                              Duplicate
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteCourse(course)} 
+                              className="text-destructive focus:text-destructive"
+                              data-testid={`course-delete-${index}`}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                       <CardTitle className="text-lg">{course.title}</CardTitle>
                       <CardDescription className="line-clamp-2">
@@ -493,7 +627,7 @@ export const EducatorDashboard = () => {
                           <span className="font-medium">${course.revenue.toFixed(0)}</span>
                         </div>
                       </div>
-                      <Button className="w-full mt-4" variant="outline">
+                      <Button className="w-full mt-4" variant="outline" onClick={() => navigate(`/courses/${course.id}`)}>
                         <Eye className="mr-2 h-4 w-4" />
                         View Course
                       </Button>
@@ -870,13 +1004,42 @@ export const EducatorDashboard = () => {
       />
       <CourseBuilderWizard
         open={showCourseWizard}
-        onOpenChange={setShowCourseWizard}
+        onOpenChange={(open) => {
+          setShowCourseWizard(open);
+          if (!open) {
+            setEditingCourse(null);
+          }
+        }}
         onCourseCreated={handleCourseCreated}
+        editingCourse={editingCourse}
       />
       <ScheduleLiveEventModal
         open={showScheduleEvent}
         onOpenChange={setShowScheduleEvent}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Course?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{courseToDelete?.title}"? This action cannot be undone.
+              All associated enrollments and revenue data will also be removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="delete-dialog-cancel">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteCourse} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="delete-dialog-confirm"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

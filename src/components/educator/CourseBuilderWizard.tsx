@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ interface CourseBuilderWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCourseCreated?: () => void;
+  editingCourse?: EducatorCourse | null;
 }
 
 const CATEGORIES = [
@@ -89,7 +90,7 @@ const LANGUAGES = [
   { code: "it", name: "Italian" },
 ];
 
-export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: CourseBuilderWizardProps) {
+export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editingCourse }: CourseBuilderWizardProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -115,6 +116,39 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
   const [thumbnailGenerated, setThumbnailGenerated] = useState(false);
   const [captionsGenerated, setCaptionsGenerated] = useState(false);
   const [modules, setModules] = useState<any[]>([{ name: "Module 1", lessons: [] }]);
+
+  // Pre-populate form when editing or reset when creating new
+  useEffect(() => {
+    if (open) {
+      if (editingCourse) {
+        // Editing mode - populate all fields and preserve lesson metadata
+        setTitle(editingCourse.title);
+        setCategory(editingCourse.category);
+        setLevel(editingCourse.level);
+        setDescription(editingCourse.description);
+        setIsPaid(editingCourse.pricing.type === "paid");
+        setPrice(editingCourse.pricing.amount?.toString() || "99");
+        setModules(editingCourse.modules.map((m) => ({
+          id: m.id,
+          name: m.title,
+          description: m.description,
+          lessons: m.lessons.map((lesson) => ({
+            ...lesson,
+            name: lesson.title,
+          })) || []
+        })));
+        // Reset other fields that might not be in EducatorCourse
+        setLearningStyles([]);
+        setCourseLanguage("en");
+        setMicrolearningDuration(5);
+        setObjectives(["", "", ""]);
+        setCourseType("microlearning");
+      } else {
+        // Create mode - reset everything
+        resetForm();
+      }
+    }
+  }, [editingCourse, open]);
 
   const totalSteps = 5;
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -211,18 +245,21 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
     const educatorName = educatorProfile.name || "Dr. Sarah Chen";
     
     // Convert modules to proper structure, filtering out empty ones
+    // Preserve existing IDs when editing, generate new IDs only for new content
     const courseModules: CourseModule[] = modules
       .filter((module) => module.lessons && module.lessons.length > 0)
       .map((module, index) => ({
-        id: `module-${Date.now()}-${index}`,
+        id: module.id || `module-${Date.now()}-${index}`,
         title: module.name,
-        description: "",
+        description: module.description || "",
         lessons: module.lessons.map((lesson: any, lessonIndex: number) => ({
-          id: `lesson-${Date.now()}-${index}-${lessonIndex}`,
-          title: lesson.name,
-          type: "video" as const,
+          id: lesson.id || `lesson-${Date.now()}-${index}-${lessonIndex}`,
+          title: lesson.name || lesson.title,
+          type: (lesson.type as "video" | "quiz" | "reading") || "video",
           duration: lesson.duration || 10,
-          videoUrl: "https://example.com/video.mp4",
+          videoUrl: lesson.videoUrl || "https://example.com/video.mp4",
+          content: lesson.content,
+          quiz: lesson.quiz,
           order: lessonIndex,
         })),
         order: index,
@@ -241,7 +278,7 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
     }
 
     return {
-      id: `course-${Date.now()}`,
+      id: editingCourse?.id || `course-${Date.now()}`,
       title,
       description,
       category,
@@ -254,12 +291,12 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
         amount: isPaid ? priceNumber : undefined,
       },
       published,
-      createdAt: new Date().toISOString(),
+      createdAt: editingCourse?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      educatorId: "mock-educator",
+      educatorId: editingCourse?.educatorId || "mock-educator",
       educatorName,
-      enrollmentCount: 0,
-      revenue: 0,
+      enrollmentCount: editingCourse?.enrollmentCount || 0,
+      revenue: editingCourse?.revenue || 0,
     };
   };
 

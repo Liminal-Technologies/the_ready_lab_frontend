@@ -153,13 +153,26 @@ export function duplicateEducatorCourse(courseId: string): EducatorCourse | null
     const course = getEducatorCourseById(courseId);
     if (!course) return null;
     
+    const timestamp = Date.now();
+    
+    // Deep clone modules with new IDs for lessons to avoid collisions
+    const newModules: CourseModule[] = course.modules.map((module, modIdx) => ({
+      ...module,
+      id: `module-${timestamp}-${modIdx}`,
+      lessons: module.lessons.map((lesson, lessonIdx) => ({
+        ...lesson,
+        id: `lesson-${timestamp}-${modIdx}-${lessonIdx}`,
+      })),
+    }));
+    
     const newCourse: EducatorCourse = {
       ...course,
-      id: `course-${Date.now()}`,
+      id: `course-${timestamp}`,
       title: `${course.title} (Copy)`,
       published: false,
       enrollmentCount: 0,
       revenue: 0,
+      modules: newModules,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -173,18 +186,15 @@ export function duplicateEducatorCourse(courseId: string): EducatorCourse | null
 }
 
 export function toggleCoursePublished(courseId: string): boolean {
-  try {
-    const course = getEducatorCourseById(courseId);
-    if (!course) return false;
-    
-    course.published = !course.published;
-    course.updatedAt = new Date().toISOString();
-    saveEducatorCourse(course);
-    return course.published;
-  } catch (error) {
-    console.error("Error toggling course published:", error);
-    return false;
+  const course = getEducatorCourseById(courseId);
+  if (!course) {
+    throw new Error(`Course not found: ${courseId}`);
   }
+  
+  course.published = !course.published;
+  course.updatedAt = new Date().toISOString();
+  saveEducatorCourse(course);
+  return course.published;
 }
 
 // ============= Enrollment Operations =============
