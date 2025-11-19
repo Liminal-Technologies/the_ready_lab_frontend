@@ -222,7 +222,7 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
         setCurrentStep(5);
       } else if (step === 'PUBLISHING') {
         // Auto-submit the course
-        setTimeout(() => {
+        setTimeout(async () => {
           try {
             const course = buildCourseData(true);
             saveEducatorCourse(course);
