@@ -15,6 +15,8 @@ import { Progress } from "@/components/ui/progress";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { QuizPlayer } from "@/components/quiz/QuizPlayer";
+import { CertificateModal } from "@/components/certificates/CertificateModal";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Play, 
   Pause, 
@@ -156,6 +158,7 @@ export default function CourseLessonPlayer() {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
   const playerRef = useRef<any>(null);
+  const { auth } = useAuth();
   
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
@@ -185,6 +188,7 @@ export default function CourseLessonPlayer() {
   });
   const [currentLessonComplete, setCurrentLessonComplete] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [shownMilestones, setShownMilestones] = useState<number[]>(() => {
     const storageKey = `course-${courseId}-shown-milestones`;
     const saved = localStorage.getItem(storageKey);
@@ -406,12 +410,8 @@ export default function CourseLessonPlayer() {
   };
 
   const handleViewCertificate = () => {
-    toast.success("📧 Certificate Email Sent!", {
-      description: "We've emailed your certificate to your registered email address. You can also download it from your dashboard.",
-    });
-    setTimeout(() => {
-      navigate("/certificates");
-    }, 1500);
+    setShowCelebration(false);
+    setShowCertificateModal(true);
   };
 
   // Auto-complete when video reaches 95%
@@ -1023,6 +1023,21 @@ export default function CourseLessonPlayer() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Certificate Modal */}
+      <CertificateModal
+        open={showCertificateModal}
+        onOpenChange={setShowCertificateModal}
+        certificateId={`cert-${courseId}-${Date.now()}`}
+        trackTitle={`Course ${courseId} - Business Fundamentals`}
+        userName={auth.user?.full_name || "Student"}
+        issuedAt={new Date().toISOString()}
+        serial={`TRL-${courseId}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`}
+        pdfUrl="/certificates/download/demo.pdf"
+        shareUrl={`https://thereadylab.com/verify/${courseId}`}
+        certType="completion"
+        disclaimerText="This is a demo certificate for demonstration purposes."
+      />
     </div>
   );
 }
