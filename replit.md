@@ -10,6 +10,15 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 
 ## Recent Changes
 
+### Demo Student Reset Feature (November 19, 2025 - Late Evening)
+Implemented automatic localStorage cleanup for demo student accounts:
+- **Auto-Reset on Login**: Student demo accounts now start fresh on every login, clearing all previous progress
+- **Utility Function**: Created `clearDemoStudentData()` utility that removes student-specific localStorage keys (course progress, enrollments, onboarding, communities)
+- **Selective Cleanup**: Only triggers for student role logins - educator/admin demo data remains intact
+- **Demo Flow**: Enables repeatable demonstrations of the full student journey (discovery → enrollment → learning → completion → certification)
+- **"Start Your Journey" Button**: Now navigates directly to pricing page instead of opening signup modal
+- **Files Modified**: `src/utils/clearDemoData.ts` (new), `src/hooks/useMockAuth.ts`, `src/components/Hero.tsx`
+
 ### Lesson Progress Persistence (November 19, 2025 - Late Evening)
 Implemented localStorage-based lesson progress persistence for complete quiz-to-unlock flow:
 - **Backend API Routes**: Added GET/PUT endpoints for lesson progress tracking (future database integration ready)
