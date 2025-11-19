@@ -8,7 +8,16 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Stripe integration to be improved later
 - Prefers minimal API keys for initial development
 
-## Recent Bug Fixes (November 16, 2025)
+## Recent Changes
+
+### Demo Mode Implementation (November 19, 2025)
+Implemented complete password-free and payment-free demo mode for tech demos and investor presentations:
+- **Simplified Signup**: Removed password, confirmPassword, and payment card fields from SignupForm - users only need name and role selection
+- **Simplified Login**: Removed password field from LoginForm - accepts any email/input for instant demo login with informative banner
+- **Payment-Free Enrollment**: All courses (both free and paid) now use instant enrollment without showing Stripe checkout modal
+- **Demo Indicators**: Added subtle blue info banners in signup and login forms to indicate demo environment
+
+### Bug Fixes (November 16, 2025)
 - **Toast System**: Fixed duplicate toast notifications by consolidating to a single Sonner toaster component in App.tsx (removed duplicate instances from main.tsx)
 - **Navigation**: Fixed Profile button navigation in Header to correctly route admin users to /admin and other authenticated users to /dashboard (which uses DashboardRouter for role-specific routing)
 - **AI Chat Widget Button**: Achieved perfect circular shape by replacing shadcn Button component with native HTML button element to eliminate default padding, using explicit 60×60px dimensions with min constraints and rounded-full
