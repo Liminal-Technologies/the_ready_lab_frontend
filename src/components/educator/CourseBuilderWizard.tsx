@@ -27,12 +27,16 @@ import {
   Clock
 } from "lucide-react";
 import { saveEducatorCourse, type EducatorCourse, type CourseModule, type CourseLesson } from "@/utils/educatorCoursesStorage";
+import { generateDemoCourse } from "@/utils/demoCourseTemplate";
+import { getAutoDemoOrchestrator } from "@/utils/autoDemoOrchestrator";
+import { autoEnrollStudent } from "@/utils/autoDemoManager";
 
 interface CourseBuilderWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCourseCreated?: () => void;
   editingCourse?: EducatorCourse | null;
+  autoDemo?: boolean; // Auto-demo mode flag
 }
 
 const CATEGORIES = [
@@ -149,6 +153,110 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
       }
     }
   }, [editingCourse, open]);
+
+  // Auto-demo mode: Listen for orchestrator events and auto-fill/advance
+  // Cache demo data to maintain consistent IDs across steps
+  const [cachedDemoData, setCachedDemoData] = useState<any>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleAutoDemoStep = (event: CustomEvent) => {
+      const { step } = event.detail;
+      
+      // Generate demo data once and cache it
+      if (step === 'COURSE_STEP_1' && !cachedDemoData) {
+        const demoData = generateDemoCourse();
+        setCachedDemoData(demoData);
+      }
+
+      const demoData = cachedDemoData || generateDemoCourse();
+      
+      // Auto-fill form data when entering course builder steps
+      if (step === 'COURSE_STEP_1') {
+        setTitle(demoData.title);
+        setCategory(demoData.category);
+        setLevel(demoData.difficulty.toLowerCase());
+        setDescription(demoData.description);
+        setObjectives(demoData.learningObjectives);
+        setCourseLanguage(demoData.language.toLowerCase());
+        setCurrentStep(1);
+        
+        // Auto-advance after delay
+        setTimeout(() => setCurrentStep(2), 1500);
+      } else if (step === 'COURSE_STEP_2') {
+        // Load curriculum from cached demo data
+        const formattedModules = demoData.modules.map((module: any) => ({
+          id: module.id,
+          name: module.title,
+          description: module.description,
+          lessons: module.lessons.map((lesson: any) => ({
+            id: lesson.id,
+            name: lesson.title,
+            type: lesson.type,
+            duration: lesson.duration,
+            description: lesson.description,
+            videoUrl: lesson.videoUrl,
+            resources: lesson.resources,
+            quizQuestions: lesson.quizQuestions,
+          })),
+        }));
+        setModules(formattedModules);
+        setCurrentStep(2);
+        
+        // Auto-advance after delay
+        setTimeout(() => setCurrentStep(3), 2000);
+      } else if (step === 'COURSE_STEP_3') {
+        setIsPaid(true);
+        setPrice(demoData.pricing.amount.toString());
+        setCurrentStep(3);
+        
+        // Auto-advance after delay
+        setTimeout(() => setCurrentStep(4), 1500);
+      } else if (step === 'COURSE_STEP_4') {
+        setCurrentStep(4);
+        
+        // Auto-advance after delay
+        setTimeout(() => setCurrentStep(5), 1500);
+      } else if (step === 'COURSE_STEP_5') {
+        setCurrentStep(5);
+      } else if (step === 'PUBLISHING') {
+        // Auto-submit the course
+        setTimeout(() => {
+          try {
+            const course = buildCourseData(true);
+            saveEducatorCourse(course);
+            
+            // Notify orchestrator of course ID
+            const orchestrator = getAutoDemoOrchestrator();
+            orchestrator.setCourseId(course.id);
+            
+            // Auto-enroll demo student
+            await autoEnrollStudent(course.id);
+            
+            // Show success screen
+            setCurrentStep(6);
+            
+            // Close wizard and clean up after demo completes
+            setTimeout(() => {
+              onOpenChange(false);
+              onCourseCreated?.();
+              setCachedDemoData(null);
+            }, 3000);
+          } catch (error) {
+            console.error('Auto-demo course creation failed:', error);
+          }
+        }, 1000);
+      }
+    };
+
+    // Listen for auto-demo events
+    window.addEventListener('autoDemo:step', handleAutoDemoStep as EventListener);
+    
+    return () => {
+      window.removeEventListener('autoDemo:step', handleAutoDemoStep as EventListener);
+    };
+  }, [open, onOpenChange, onCourseCreated, cachedDemoData]);
 
   const totalSteps = 5;
   const progressPercentage = (currentStep / totalSteps) * 100;

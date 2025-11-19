@@ -35,7 +35,8 @@ import {
   Trash2,
   Copy,
   Power,
-  PowerOff
+  PowerOff,
+  Play
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -57,6 +58,7 @@ import {
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 import { CourseBuilderWizard } from '@/components/educator/CourseBuilderWizard';
 import { ScheduleLiveEventModal } from '@/components/educator/ScheduleLiveEventModal';
+import { AutoDemoProgress } from '@/components/AutoDemoProgress';
 import { 
   getAllEducatorCourses, 
   getEducatorStats, 
@@ -65,6 +67,7 @@ import {
   toggleCoursePublished,
   type EducatorCourse 
 } from '@/utils/educatorCoursesStorage';
+import { getAutoDemoOrchestrator } from '@/utils/autoDemoOrchestrator';
 import { useToast } from '@/hooks/use-toast';
 
 // Mock student data
@@ -123,6 +126,7 @@ export const EducatorDashboard = () => {
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [showCourseWizard, setShowCourseWizard] = useState(false);
   const [showScheduleEvent, setShowScheduleEvent] = useState(false);
+  const [showAutoDemo, setShowAutoDemo] = useState(false);
   const [educatorProfile, setEducatorProfile] = useState<any>(null);
   const [createdCourses, setCreatedCourses] = useState<EducatorCourse[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string>('free');
@@ -186,6 +190,15 @@ export const EducatorDashboard = () => {
   const handleDeleteCourse = (course: EducatorCourse) => {
     setCourseToDelete(course);
     setShowDeleteDialog(true);
+  };
+
+  const handleStartAutoDemo = async () => {
+    setShowAutoDemo(true);
+    setShowCourseWizard(true);
+    
+    // Start the orchestrator
+    const orchestrator = getAutoDemoOrchestrator();
+    await orchestrator.start();
   };
 
   const confirmDeleteCourse = () => {
@@ -327,6 +340,15 @@ export const EducatorDashboard = () => {
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
+            <Button
+              variant="secondary"
+              onClick={handleStartAutoDemo}
+              data-testid="button-watch-auto-demo"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
+            >
+              <Play className="mr-2 h-4 w-4" />
+              🎬 Watch Auto Demo
+            </Button>
             <Button
               variant="outline"
               onClick={() => setShowScheduleEvent(true)}
@@ -1040,6 +1062,13 @@ export const EducatorDashboard = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Auto Demo Progress Overlay */}
+      {showAutoDemo && (
+        <AutoDemoProgress
+          onClose={() => setShowAutoDemo(false)}
+        />
+      )}
     </div>
   );
 };
