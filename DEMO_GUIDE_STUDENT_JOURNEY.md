@@ -105,23 +105,24 @@ The Ready Lab is a digital prep school for growth-ready entrepreneurs. This guid
   - 60 days: $67
   - Total: $201 (includes $2 processing fee)
 - Click **"Continue to Payment"**
-- **Stripe Checkout** opens (in demo mode, use test card)
-- Card number: `4242 4242 4242 4242`
-- Expiry: Any future date (e.g., `12/26`)
-- CVC: Any 3 digits (e.g., `123`)
+- **Demo Checkout Modal** opens showing Stripe UI
+- Fill any card details (demo accepts anything):
+  - Card number: `4242 4242 4242 4242` (or any numbers)
+  - Expiry: Any future date (e.g., `12/26`)
+  - CVC: Any 3 digits (e.g., `123`)
 - Click **"Pay $67"**
+- ✅ **Instant processing** (~1 second) - No real payment
 
 **4. Access Granted (30 sec)**
-- ✅ Success page: "Payment Successful! 🎉"
+- ✅ Toast: "Payment successful! 🎉"
 - ✅ Course unlocked immediately
-- Click **"Start Learning"**
-- ✅ Redirects to first lesson
+- Automatically redirected to first lesson
 
 ### Key Features
-- 💳 Stripe integration (real payment processing)
-- 📅 Buy Now Pay Later (3-month installments)
-- ⚡ Instant course access after payment
-- 🧾 Email receipt sent (in production)
+- 💳 Payment UI demonstration (instant processing for demos)
+- 📅 Buy Now Pay Later options visualization
+- ⚡ Instant course access after checkout
+- 🎯 Perfect for investor presentations
 
 ---
 

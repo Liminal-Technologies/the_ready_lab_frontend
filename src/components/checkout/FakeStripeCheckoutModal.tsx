@@ -44,8 +44,8 @@ export function FakeStripeCheckoutModal({
     //   body: JSON.stringify({ courseId, paymentMethod: method })
     // });
     
-    // Simulate payment processing (2 second delay)
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Demo mode: Instant payment processing with brief UX feedback (800ms)
+    await new Promise(resolve => setTimeout(resolve, 800));
     
     setIsProcessing(false);
     onOpenChange(false);

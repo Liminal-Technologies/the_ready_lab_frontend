@@ -10,11 +10,18 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 
 ## Recent Changes
 
-### Demo Mode Implementation (November 19, 2025)
+### Student Journey Features (November 19, 2025 - Evening)
+Enhanced demo experience with payment UI and verified Journey C & D features:
+- **Payment Modal Re-enabled**: Paid courses now show FakeStripeCheckoutModal UI for visual demonstration while maintaining instant processing (800ms)
+- **Journey B (Payment Flow)**: Shows payment options (Pay in Full, BNPL) with instant demo processing for investor presentations
+- **Journey C (Learn & Complete)**: Verified full functionality - video player, notes, interactive quizzes with confetti, AI chat widget with contextual mock responses
+- **Journey D (Earn Certificate)**: Verified auto-generation at 100% completion, LinkedIn sharing, QR verification, PDF download
+- **Demo Guide Updated**: DEMO_GUIDE_STUDENT_JOURNEY.md now accurately reflects instant payment processing
+
+### Demo Mode Implementation (November 19, 2025 - Morning)
 Implemented complete password-free and payment-free demo mode for tech demos and investor presentations:
 - **Simplified Signup**: Removed password, confirmPassword, and payment card fields from SignupForm - users only need name and role selection
 - **Simplified Login**: Removed password field from LoginForm - accepts any email/input for instant demo login with informative banner
-- **Payment-Free Enrollment**: All courses (both free and paid) now use instant enrollment without showing Stripe checkout modal
 - **Demo Indicators**: Added subtle blue info banners in signup and login forms to indicate demo environment
 
 ### Bug Fixes (November 16, 2025)
