@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -14,6 +14,7 @@ import {
   AlertTriangle, CheckCircle2, BarChart3 
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getAllEnrollments } from '@/utils/educatorCoursesStorage';
 
 interface Student {
   id: string;
@@ -25,16 +26,23 @@ interface Student {
   status: 'active' | 'at-risk' | 'completed';
 }
 
-const MOCK_STUDENTS: Student[] = [
-  { id: '1', name: 'Sarah Johnson', email: 'sarah.j@example.com', enrolledDate: '2025-09-15', progress: 82, lastActive: '2 hours ago', status: 'active' },
-  { id: '2', name: 'Michael Chen', email: 'michael.c@example.com', enrolledDate: '2025-10-01', progress: 35, lastActive: '8 days ago', status: 'at-risk' },
-  { id: '3', name: 'Emma Davis', email: 'emma.d@example.com', enrolledDate: '2025-08-20', progress: 100, lastActive: 'Completed Nov 10', status: 'completed' },
-  { id: '4', name: 'James Wilson', email: 'james.w@example.com', enrolledDate: '2025-10-10', progress: 28, lastActive: '12 days ago', status: 'at-risk' },
-  { id: '5', name: 'Olivia Martinez', email: 'olivia.m@example.com', enrolledDate: '2025-09-25', progress: 67, lastActive: '1 day ago', status: 'active' },
-  { id: '6', name: 'Liam Brown', email: 'liam.b@example.com', enrolledDate: '2025-10-05', progress: 15, lastActive: '15 days ago', status: 'at-risk' },
-  { id: '7', name: 'Sophia Garcia', email: 'sophia.g@example.com', enrolledDate: '2025-09-01', progress: 100, lastActive: 'Completed Oct 28', status: 'completed' },
-  { id: '8', name: 'Noah Anderson', email: 'noah.a@example.com', enrolledDate: '2025-10-12', progress: 91, lastActive: '3 hours ago', status: 'active' },
-];
+// Helper function to format relative time
+function getRelativeTime(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+  if (diffMinutes < 60) {
+    return diffMinutes <= 1 ? 'Just now' : `${diffMinutes} minutes ago`;
+  } else if (diffHours < 24) {
+    return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+  } else {
+    return diffDays === 1 ? '1 day ago' : `${diffDays} days ago`;
+  }
+}
 
 const StudentAnalytics = () => {
   const navigate = useNavigate();
@@ -42,9 +50,31 @@ const StudentAnalytics = () => {
   const [filter, setFilter] = useState<'all' | 'active' | 'at-risk' | 'completed'>('all');
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
 
+  // Load real enrollments from localStorage
+  const allEnrollments = useMemo(() => getAllEnrollments(), []);
+  
+  // Transform enrollments to Student format
+  const allStudents: Student[] = useMemo(() => {
+    return allEnrollments.map(enrollment => {
+      const lastActive = enrollment.status === 'completed'
+        ? `Completed ${new Date(enrollment.lastActiveAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+        : getRelativeTime(enrollment.lastActiveAt);
+
+      return {
+        id: enrollment.id,
+        name: enrollment.studentName,
+        email: enrollment.studentEmail,
+        enrolledDate: new Date(enrollment.enrolledAt).toISOString().split('T')[0],
+        progress: enrollment.progress,
+        lastActive,
+        status: enrollment.status,
+      };
+    });
+  }, [allEnrollments]);
+
   const filteredStudents = filter === 'all' 
-    ? MOCK_STUDENTS 
-    : MOCK_STUDENTS.filter(s => s.status === filter);
+    ? allStudents 
+    : allStudents.filter(s => s.status === filter);
 
   const handleSelectAll = () => {
     if (selectedStudents.length === filteredStudents.length) {
@@ -127,7 +157,7 @@ const StudentAnalytics = () => {
                     <CardTitle className="text-sm font-medium">Total Students</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{MOCK_STUDENTS.length}</div>
+                    <div className="text-2xl font-bold">{allStudents.length}</div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -136,7 +166,7 @@ const StudentAnalytics = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-blue-500">
-                      {MOCK_STUDENTS.filter(s => s.status === 'active').length}
+                      {allStudents.filter(s => s.status === 'active').length}
                     </div>
                   </CardContent>
                 </Card>
@@ -146,7 +176,7 @@ const StudentAnalytics = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-red-500">
-                      {MOCK_STUDENTS.filter(s => s.status === 'at-risk').length}
+                      {allStudents.filter(s => s.status === 'at-risk').length}
                     </div>
                   </CardContent>
                 </Card>
@@ -156,7 +186,7 @@ const StudentAnalytics = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-green-500">
-                      {MOCK_STUDENTS.filter(s => s.status === 'completed').length}
+                      {allStudents.filter(s => s.status === 'completed').length}
                     </div>
                   </CardContent>
                 </Card>
@@ -226,58 +256,70 @@ const StudentAnalytics = () => {
                     </div>
                   )}
 
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-4 pb-3 border-b font-medium text-sm">
-                      <div className="w-8">
-                        <Checkbox
-                          checked={selectedStudents.length === filteredStudents.length}
-                          onCheckedChange={handleSelectAll}
-                          data-testid="checkbox-select-all"
-                        />
-                      </div>
-                      <div className="flex-1">Student</div>
-                      <div className="w-32">Progress</div>
-                      <div className="w-32">Last Active</div>
-                      <div className="w-24">Status</div>
-                    </div>
-
-                    {filteredStudents.map((student) => (
-                      <div 
-                        key={student.id} 
-                        className="flex items-center gap-4 py-3 border-b hover:bg-muted/50 rounded transition-colors"
-                        data-testid={`student-row-${student.id}`}
-                      >
+                  {filteredStudents.length > 0 ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4 pb-3 border-b font-medium text-sm">
                         <div className="w-8">
                           <Checkbox
-                            checked={selectedStudents.includes(student.id)}
-                            onCheckedChange={() => handleSelectStudent(student.id)}
-                            data-testid={`checkbox-student-${student.id}`}
+                            checked={selectedStudents.length === filteredStudents.length}
+                            onCheckedChange={handleSelectAll}
+                            data-testid="checkbox-select-all"
                           />
                         </div>
-                        <div className="flex-1 flex items-center gap-3">
-                          <Avatar>
-                            <AvatarFallback>{student.name[0]}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">{student.name}</div>
-                            <div className="text-sm text-muted-foreground">{student.email}</div>
-                          </div>
-                        </div>
-                        <div className="w-32">
-                          <div className="space-y-1">
-                            <Progress value={student.progress} className="h-2" />
-                            <div className="text-xs text-muted-foreground">{student.progress}%</div>
-                          </div>
-                        </div>
-                        <div className="w-32 text-sm text-muted-foreground">
-                          {student.lastActive}
-                        </div>
-                        <div className="w-24">
-                          {getStatusBadge(student.status)}
-                        </div>
+                        <div className="flex-1">Student</div>
+                        <div className="w-32">Progress</div>
+                        <div className="w-32">Last Active</div>
+                        <div className="w-24">Status</div>
                       </div>
-                    ))}
-                  </div>
+
+                      {filteredStudents.map((student) => (
+                        <div 
+                          key={student.id} 
+                          className="flex items-center gap-4 py-3 border-b hover:bg-muted/50 rounded transition-colors"
+                          data-testid={`student-row-${student.id}`}
+                        >
+                          <div className="w-8">
+                            <Checkbox
+                              checked={selectedStudents.includes(student.id)}
+                              onCheckedChange={() => handleSelectStudent(student.id)}
+                              data-testid={`checkbox-student-${student.id}`}
+                            />
+                          </div>
+                          <div className="flex-1 flex items-center gap-3">
+                            <Avatar>
+                              <AvatarFallback>{student.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium">{student.name}</div>
+                              <div className="text-sm text-muted-foreground">{student.email}</div>
+                            </div>
+                          </div>
+                          <div className="w-32">
+                            <div className="space-y-1">
+                              <Progress value={student.progress} className="h-2" />
+                              <div className="text-xs text-muted-foreground">{student.progress}%</div>
+                            </div>
+                          </div>
+                          <div className="w-32 text-sm text-muted-foreground">
+                            {student.lastActive}
+                          </div>
+                          <div className="w-24">
+                            {getStatusBadge(student.status)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center text-muted-foreground py-12">
+                      <Users className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                      <p className="text-lg font-medium mb-2">No students yet</p>
+                      <p className="text-sm">
+                        {filter === 'all' 
+                          ? 'Students will appear here when they enroll in your courses' 
+                          : `No ${filter} students`}
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

@@ -432,6 +432,101 @@ export function getCourseRevenueBreakdown() {
   }).sort((a, b) => b.revenue - a.revenue);
 }
 
+export function getRevenueMetrics() {
+  const transactions = getAllTransactions();
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  // Calculate this month's revenue
+  const thisMonthRevenue = transactions
+    .filter((t) => {
+      const txDate = new Date(t.date);
+      return txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear && t.status === "completed";
+    })
+    .reduce((sum, t) => sum + t.amount, 0);
+  
+  // Calculate last month's revenue
+  const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+  const lastMonthRevenue = transactions
+    .filter((t) => {
+      const txDate = new Date(t.date);
+      return txDate.getMonth() === lastMonth && txDate.getFullYear() === lastMonthYear && t.status === "completed";
+    })
+    .reduce((sum, t) => sum + t.amount, 0);
+  
+  // Calculate all-time revenue
+  const allTimeRevenue = transactions
+    .filter((t) => t.status === "completed")
+    .reduce((sum, t) => sum + t.amount, 0);
+  
+  // Calculate pending payout (last 7 days of completed transactions)
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const pendingPayout = transactions
+    .filter((t) => {
+      const txDate = new Date(t.date);
+      return txDate >= sevenDaysAgo && t.status === "completed";
+    })
+    .reduce((sum, t) => sum + t.amount, 0);
+  
+  // Calculate revenue by course for this month
+  const courseBreakdown = getCourseRevenueBreakdown();
+  const thisMonthCourseRevenue = courseBreakdown.map((course) => {
+    const thisMonthCourseTransactions = transactions.filter((t) => {
+      const txDate = new Date(t.date);
+      return t.courseId === course.courseId && 
+             txDate.getMonth() === currentMonth && 
+             txDate.getFullYear() === currentYear &&
+             t.status === "completed";
+    });
+    return {
+      ...course,
+      revenue: thisMonthCourseTransactions.reduce((sum, t) => sum + t.amount, 0),
+    };
+  }).filter((c) => c.revenue > 0).sort((a, b) => b.revenue - a.revenue);
+  
+  // Calculate monthly trend (last 6 months)
+  const monthlyTrend = [];
+  for (let i = 5; i >= 0; i--) {
+    const targetMonth = currentMonth - i;
+    const targetYear = currentYear;
+    let month = targetMonth;
+    let year = targetYear;
+    
+    if (targetMonth < 0) {
+      month = 12 + targetMonth;
+      year = targetYear - 1;
+    }
+    
+    const monthRevenue = transactions
+      .filter((t) => {
+        const txDate = new Date(t.date);
+        return txDate.getMonth() === month && txDate.getFullYear() === year && t.status === "completed";
+      })
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    monthlyTrend.push({
+      month: monthNames[month],
+      amount: monthRevenue,
+    });
+  }
+  
+  return {
+    thisMonthRevenue,
+    lastMonthRevenue,
+    allTimeRevenue,
+    pendingPayout,
+    thisMonthCourseRevenue,
+    monthlyTrend,
+    percentageChange: lastMonthRevenue > 0 
+      ? Math.round(((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100)
+      : 0,
+  };
+}
+
 // ============= Clear Demo Data =============
 
 export function clearAllEducatorData(): void {

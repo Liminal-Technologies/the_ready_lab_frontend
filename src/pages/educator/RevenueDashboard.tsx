@@ -11,36 +11,22 @@ import {
   Download, Calendar, CheckCircle2, Clock 
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-interface Transaction {
-  id: string;
-  date: string;
-  student: string;
-  course: string;
-  amount: number;
-  status: 'paid' | 'pending';
-}
-
-const MOCK_TRANSACTIONS: Transaction[] = [
-  { id: '1', date: '2025-11-18', student: 'Emma Davis', course: 'Grant Writing Mastery', amount: 199, status: 'paid' },
-  { id: '2', date: '2025-11-17', student: 'Michael Chen', course: 'Business Plan Fundamentals', amount: 149, status: 'paid' },
-  { id: '3', date: '2025-11-16', student: 'Sarah Johnson', course: 'Financial Planning', amount: 67, status: 'paid' },
-  { id: '4', date: '2025-11-15', student: 'James Wilson', course: 'Pitch Deck Workshop', amount: 199, status: 'paid' },
-  { id: '5', date: '2025-11-14', student: 'Olivia Martinez', course: 'Grant Writing Mastery', amount: 199, status: 'paid' },
-  { id: '6', date: '2025-11-13', student: 'Liam Brown', course: 'Business Plan Fundamentals', amount: 149, status: 'pending' },
-  { id: '7', date: '2025-11-12', student: 'Sophia Garcia', course: 'Financial Planning', amount: 67, status: 'paid' },
-  { id: '8', date: '2025-11-11', student: 'Noah Anderson', course: 'Pitch Deck Workshop', amount: 199, status: 'paid' },
-];
+import { getRevenueMetrics, getAllTransactions } from '@/utils/educatorCoursesStorage';
 
 const RevenueDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [stripeConnected, setStripeConnected] = useState(true); // Mock as connected
-
-  const thisMonthRevenue = 12450;
-  const lastMonthRevenue = 9870;
-  const allTimeRevenue = 67890;
-  const pendingPayout = 3200;
+  const [stripeConnected, setStripeConnected] = useState(true);
+  
+  // Load real revenue metrics from localStorage
+  const metrics = getRevenueMetrics();
+  const allTransactions = getAllTransactions();
+  
+  const thisMonthRevenue = metrics.thisMonthRevenue;
+  const lastMonthRevenue = metrics.lastMonthRevenue;
+  const allTimeRevenue = metrics.allTimeRevenue;
+  const pendingPayout = metrics.pendingPayout;
+  const percentageChange = metrics.percentageChange;
 
   const handleConnectStripe = () => {
     toast({
@@ -119,10 +105,12 @@ const RevenueDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold">${thisMonthRevenue.toLocaleString()}</div>
-                    <div className="text-xs text-green-500 mt-1 flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3" />
-                      +26% from last month
-                    </div>
+                    {percentageChange !== 0 && (
+                      <div className={`text-xs mt-1 flex items-center gap-1 ${percentageChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <TrendingUp className="h-3 w-3" />
+                        {percentageChange > 0 ? '+' : ''}{percentageChange}% from last month
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -181,25 +169,29 @@ const RevenueDashboard = () => {
                       <CardDescription>This month's breakdown</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      {[
-                        { course: 'Business Plan Fundamentals', revenue: 4200, color: 'bg-blue-500' },
-                        { course: 'Grant Writing Mastery', revenue: 3800, color: 'bg-purple-500' },
-                        { course: 'Financial Planning', revenue: 2450, color: 'bg-green-500' },
-                        { course: 'Pitch Deck Workshop', revenue: 2000, color: 'bg-orange-500' },
-                      ].map((item, i) => (
-                        <div key={i} className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium">{item.course}</span>
-                            <span className="font-bold">${item.revenue.toLocaleString()}</span>
-                          </div>
-                          <div className="h-3 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full ${item.color} transition-all`}
-                              style={{ width: `${(item.revenue / thisMonthRevenue) * 100}%` }}
-                            />
-                          </div>
+                      {metrics.thisMonthCourseRevenue.length > 0 ? (
+                        metrics.thisMonthCourseRevenue.slice(0, 4).map((item, i) => {
+                          const colors = ['bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-orange-500'];
+                          return (
+                            <div key={item.courseId} className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium">{item.courseName}</span>
+                                <span className="font-bold">${item.revenue.toLocaleString()}</span>
+                              </div>
+                              <div className="h-3 bg-muted rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full ${colors[i % colors.length]} transition-all`}
+                                  style={{ width: thisMonthRevenue > 0 ? `${(item.revenue / thisMonthRevenue) * 100}%` : '0%' }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="text-center text-muted-foreground py-8">
+                          No revenue data yet. Create and publish a course to get started!
                         </div>
-                      ))}
+                      )}
                     </CardContent>
                   </Card>
 
@@ -211,31 +203,27 @@ const RevenueDashboard = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="h-64 flex items-end justify-between gap-2">
-                        {[
-                          { month: 'Jun', amount: 6200 },
-                          { month: 'Jul', amount: 7400 },
-                          { month: 'Aug', amount: 8100 },
-                          { month: 'Sep', amount: 8900 },
-                          { month: 'Oct', amount: 9870 },
-                          { month: 'Nov', amount: 12450 },
-                        ].map((item, i) => (
-                          <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                            <div className="text-xs font-medium text-muted-foreground mb-1">
-                              ${(item.amount / 1000).toFixed(1)}k
-                            </div>
-                            <div 
-                              className="w-full bg-primary rounded-t transition-all hover:opacity-80 relative group"
-                              style={{ height: `${(item.amount / 12450) * 100}%` }}
-                            >
-                              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="bg-popover text-popover-foreground px-2 py-1 rounded text-xs whitespace-nowrap shadow-lg">
-                                  ${item.amount.toLocaleString()}
+                        {metrics.monthlyTrend.map((item, i) => {
+                          const maxAmount = Math.max(...metrics.monthlyTrend.map(m => m.amount), 1);
+                          return (
+                            <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                              <div className="text-xs font-medium text-muted-foreground mb-1">
+                                ${item.amount > 0 ? (item.amount / 1000).toFixed(1) : '0'}k
+                              </div>
+                              <div 
+                                className="w-full bg-primary rounded-t transition-all hover:opacity-80 relative group"
+                                style={{ height: item.amount > 0 ? `${(item.amount / maxAmount) * 100}%` : '4px' }}
+                              >
+                                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="bg-popover text-popover-foreground px-2 py-1 rounded text-xs whitespace-nowrap shadow-lg">
+                                    ${item.amount.toLocaleString()}
+                                  </div>
                                 </div>
                               </div>
+                              <span className="text-xs text-muted-foreground">{item.month}</span>
                             </div>
-                            <span className="text-xs text-muted-foreground">{item.month}</span>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </CardContent>
                   </Card>
@@ -247,7 +235,7 @@ const RevenueDashboard = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle>Transaction History</CardTitle>
-                          <CardDescription>{MOCK_TRANSACTIONS.length} transactions</CardDescription>
+                          <CardDescription>{allTransactions.length} transactions</CardDescription>
                         </div>
                         <Button variant="outline" size="sm" onClick={handleExportCSV} data-testid="button-export-csv">
                           <Download className="mr-2 h-4 w-4" />
@@ -256,41 +244,51 @@ const RevenueDashboard = () => {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-2">
-                        <div className="grid grid-cols-5 gap-4 pb-3 border-b font-medium text-sm">
-                          <div>Date</div>
-                          <div>Student</div>
-                          <div>Course</div>
-                          <div>Amount</div>
-                          <div>Status</div>
-                        </div>
-
-                        {MOCK_TRANSACTIONS.map((transaction) => (
-                          <div 
-                            key={transaction.id} 
-                            className="grid grid-cols-5 gap-4 py-3 border-b hover:bg-muted/50 rounded transition-colors"
-                            data-testid={`transaction-${transaction.id}`}
-                          >
-                            <div className="text-sm">{transaction.date}</div>
-                            <div className="text-sm font-medium">{transaction.student}</div>
-                            <div className="text-sm text-muted-foreground">{transaction.course}</div>
-                            <div className="text-sm font-bold">${transaction.amount}</div>
-                            <div>
-                              {transaction.status === 'paid' ? (
-                                <Badge variant="secondary" className="bg-green-500 text-white">
-                                  <CheckCircle2 className="mr-1 h-3 w-3" />
-                                  Paid
-                                </Badge>
-                              ) : (
-                                <Badge variant="secondary">
-                                  <Clock className="mr-1 h-3 w-3" />
-                                  Pending
-                                </Badge>
-                              )}
-                            </div>
+                      {allTransactions.length > 0 ? (
+                        <div className="space-y-2">
+                          <div className="grid grid-cols-5 gap-4 pb-3 border-b font-medium text-sm">
+                            <div>Date</div>
+                            <div>Student</div>
+                            <div>Course</div>
+                            <div>Amount</div>
+                            <div>Status</div>
                           </div>
-                        ))}
-                      </div>
+
+                          {allTransactions
+                            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                            .map((transaction) => (
+                              <div 
+                                key={transaction.id} 
+                                className="grid grid-cols-5 gap-4 py-3 border-b hover:bg-muted/50 rounded transition-colors"
+                                data-testid={`transaction-${transaction.id}`}
+                              >
+                                <div className="text-sm">{transaction.date}</div>
+                                <div className="text-sm font-medium">{transaction.studentName}</div>
+                                <div className="text-sm text-muted-foreground">{transaction.courseName}</div>
+                                <div className="text-sm font-bold">${transaction.amount}</div>
+                                <div>
+                                  {transaction.status === 'completed' ? (
+                                    <Badge variant="secondary" className="bg-green-500 text-white">
+                                      <CheckCircle2 className="mr-1 h-3 w-3" />
+                                      Paid
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="secondary">
+                                      <Clock className="mr-1 h-3 w-3" />
+                                      Pending
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      ) : (
+                        <div className="text-center text-muted-foreground py-12">
+                          <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                          <p className="text-lg font-medium mb-2">No transactions yet</p>
+                          <p className="text-sm">Transactions will appear here when students enroll in your courses</p>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </TabsContent>
