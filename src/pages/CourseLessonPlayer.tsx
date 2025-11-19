@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactPlayer from "react-player";
 import { Button } from "@/components/ui/button";
@@ -177,11 +177,19 @@ export default function CourseLessonPlayer() {
   const [newQuestionContent, setNewQuestionContent] = useState("");
   const [expandedPosts, setExpandedPosts] = useState<number[]>([]);
   
-  // Progress tracking state
-  const [completedLessons, setCompletedLessons] = useState<number[]>([1]); // Lesson 1 is already complete
+  // Progress tracking state - load from localStorage
+  const [completedLessons, setCompletedLessons] = useState<number[]>(() => {
+    const storageKey = `course-${courseId}-completed-lessons`;
+    const saved = localStorage.getItem(storageKey);
+    return saved ? JSON.parse(saved) : [1]; // Lesson 1 is complete by default
+  });
   const [currentLessonComplete, setCurrentLessonComplete] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [shownMilestones, setShownMilestones] = useState<number[]>([]); // Track shown milestone percentages
+  const [shownMilestones, setShownMilestones] = useState<number[]>(() => {
+    const storageKey = `course-${courseId}-shown-milestones`;
+    const saved = localStorage.getItem(storageKey);
+    return saved ? JSON.parse(saved) : [];
+  });
   
   const totalLessons = mockModules.reduce((acc, module) => acc + module.lessons.length, 0);
   const completedCount = completedLessons.length;
@@ -190,6 +198,40 @@ export default function CourseLessonPlayer() {
   const allLessons = mockModules.flatMap(m => m.lessons);
   const currentLessonId = lessonId ? parseInt(lessonId) : 2;
   const currentLesson = allLessons.find(l => l.id === currentLessonId) || allLessons[1];
+
+  // Reload progress from localStorage when courseId changes
+  useEffect(() => {
+    try {
+      const completedKey = `course-${courseId}-completed-lessons`;
+      const completedSaved = localStorage.getItem(completedKey);
+      const milestonesKey = `course-${courseId}-shown-milestones`;
+      const milestonesSaved = localStorage.getItem(milestonesKey);
+      
+      setCompletedLessons(completedSaved ? JSON.parse(completedSaved) : [1]);
+      setShownMilestones(milestonesSaved ? JSON.parse(milestonesSaved) : []);
+    } catch (error) {
+      console.error('Error loading lesson progress from localStorage:', error);
+      setCompletedLessons([1]);
+      setShownMilestones([]);
+    }
+  }, [courseId]);
+
+  // Save completed lessons to localStorage whenever it changes
+  useEffect(() => {
+    const storageKey = `course-${courseId}-completed-lessons`;
+    localStorage.setItem(storageKey, JSON.stringify(completedLessons));
+  }, [completedLessons, courseId]);
+
+  // Save shown milestones to localStorage whenever it changes
+  useEffect(() => {
+    const storageKey = `course-${courseId}-shown-milestones`;
+    localStorage.setItem(storageKey, JSON.stringify(shownMilestones));
+  }, [shownMilestones, courseId]);
+
+  // Check if current lesson is already completed (for page refreshes)
+  useEffect(() => {
+    setCurrentLessonComplete(completedLessons.includes(currentLessonId));
+  }, [lessonId, completedLessons, currentLessonId]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
