@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { FakeStripeCheckoutModal } from "@/components/checkout/FakeStripeCheckoutModal";
+import { getEducatorCourseById, type EducatorCourse, createEnrollment } from "@/utils/educatorCoursesStorage";
 import {
   Clock,
   Users,
@@ -224,15 +225,88 @@ const similarCourses = [
   }
 ];
 
+// Transform educator course to match CourseDetail format
+function transformEducatorCourseToDetail(educatorCourse: EducatorCourse) {
+  const durationWeeks = Math.ceil(educatorCourse.totalDuration / 60);
+  const capitalizedLevel = educatorCourse.level.charAt(0).toUpperCase() + educatorCourse.level.slice(1);
+  
+  return {
+    id: educatorCourse.id,
+    title: educatorCourse.title,
+    description: educatorCourse.description,
+    longDescription: educatorCourse.description,
+    duration: `${durationWeeks} week${durationWeeks !== 1 ? 's' : ''}`,
+    students: educatorCourse.enrollmentCount.toLocaleString(),
+    rating: (educatorCourse.rating || 4.5).toFixed(1),
+    level: capitalizedLevel,
+    price: educatorCourse.pricing.type === 'paid' ? educatorCourse.pricing.amount || 0 : 0,
+    isFree: educatorCourse.pricing.type === 'free',
+    category: educatorCourse.category,
+    certification: true,
+    language: "English",
+    image: fundingImage,
+    lastUpdated: new Date(educatorCourse.updatedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+    instructor: {
+      name: educatorCourse.educatorName,
+      title: "Educator",
+      bio: `Expert in ${educatorCourse.category}`,
+      avatar: instructorImage,
+      students: educatorCourse.enrollmentCount > 100 ? `${Math.floor(educatorCourse.enrollmentCount / 100) * 100}+` : `${educatorCourse.enrollmentCount}`,
+      courses: 1,
+      rating: (educatorCourse.rating || 4.5).toFixed(1)
+    },
+    modules: educatorCourse.modules.map((module, moduleIdx) => ({
+      id: module.id,
+      title: module.title,
+      duration: `${module.lessons.reduce((sum, l) => sum + (l.duration || 0), 0)} mins`,
+      lessons: module.lessons.map((lesson, lessonIdx) => ({
+        id: lesson.id, // Use real lesson ID from educator course
+        title: lesson.title,
+        duration: `${lesson.duration} mins`,
+        preview: moduleIdx === 0 && lessonIdx < 2, // First 2 lessons of first module are preview
+        completed: false
+      }))
+    })),
+    whatYouLearn: [
+      `Master ${educatorCourse.title} concepts`,
+      "Gain practical skills through hands-on exercises",
+      "Learn from an experienced educator",
+      "Earn a certificate upon completion"
+    ],
+    requirements: [
+      "Basic understanding of the subject matter",
+      "Access to internet and computer",
+      "Willingness to learn and practice"
+    ],
+    reviews: []
+  };
+}
+
 export default function CourseDetail() {
   const { courseId } = useParams();
   const navigate = useNavigate();
   
+  const [course, setCourse] = useState<any>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastWatchedLesson, setLastWatchedLesson] = useState<number>(1);
   const [activeTab, setActiveTab] = useState("overview");
+
+  // Load course data - check educator courses first, then fall back to mock
+  useEffect(() => {
+    if (courseId && typeof window !== 'undefined') {
+      const educatorCourse = getEducatorCourseById(courseId);
+      if (educatorCourse) {
+        setCourse(transformEducatorCourseToDetail(educatorCourse));
+      } else {
+        // Fall back to mock course for demo
+        setCourse(mockCourse);
+      }
+    } else {
+      setCourse(mockCourse);
+    }
+  }, [courseId]);
 
   // Scroll to top when the page loads
   useEffect(() => {
@@ -253,9 +327,18 @@ export default function CourseDetail() {
     }
   }, [courseId]);
 
+  // Show loading state while course data is being loaded
+  if (!course) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   const handleEnrollClick = () => {
     // Demo mode: Free courses get instant enrollment, paid courses show checkout UI
-    if (mockCourse.isFree) {
+    if (course.isFree) {
       handleFreeEnrollment();
     } else {
       setShowCheckoutModal(true);
@@ -268,10 +351,35 @@ export default function CourseDetail() {
     // Brief delay for UX feedback
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    // Update localStorage
+    // Update legacy localStorage for compatibility
     const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
-    enrolledCourses.push(courseId);
-    localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+    if (!enrolledCourses.includes(courseId)) {
+      enrolledCourses.push(courseId);
+      localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+    }
+    
+    // If this is an educator course, create enrollment record
+    if (courseId && typeof window !== 'undefined') {
+      const educatorCourse = getEducatorCourseById(courseId);
+      if (educatorCourse) {
+        try {
+          const user = JSON.parse(localStorage.getItem("demoUser") || "{}");
+          createEnrollment({
+            courseId,
+            studentId: user.email || "demo-student",
+            studentName: user.name || "Demo Student",
+            studentEmail: user.email || "demo@student.com",
+            progress: 0,
+            completedLessons: [],
+            lastActiveAt: new Date().toISOString(),
+            status: "active",
+            paidAmount: 0
+          });
+        } catch (error) {
+          console.error("Error creating enrollment:", error);
+        }
+      }
+    }
     
     setIsEnrolled(true);
     setIsProcessing(false);
@@ -280,9 +388,12 @@ export default function CourseDetail() {
       description: "You can now access all course materials",
     });
     
+    // Get first lesson ID from course
+    const firstLessonId = course.modules[0]?.lessons[0]?.id || "1";
+    
     // Redirect to first lesson
     setTimeout(() => {
-      navigate(`/courses/${courseId}/lessons/1`);
+      navigate(`/courses/${courseId}/lessons/${firstLessonId}`);
     }, 1000);
   };
 
@@ -293,10 +404,35 @@ export default function CourseDetail() {
     // Demo mode: Instant payment processing with brief UX feedback
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    // Update localStorage
+    // Update legacy localStorage for compatibility
     const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
-    enrolledCourses.push(courseId);
-    localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+    if (!enrolledCourses.includes(courseId)) {
+      enrolledCourses.push(courseId);
+      localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+    }
+    
+    // If this is an educator course, create enrollment record with payment
+    if (courseId && typeof window !== 'undefined') {
+      const educatorCourse = getEducatorCourseById(courseId);
+      if (educatorCourse) {
+        try {
+          const user = JSON.parse(localStorage.getItem("demoUser") || "{}");
+          createEnrollment({
+            courseId,
+            studentId: user.email || "demo-student",
+            studentName: user.name || "Demo Student",
+            studentEmail: user.email || "demo@student.com",
+            progress: 0,
+            completedLessons: [],
+            lastActiveAt: new Date().toISOString(),
+            status: "active",
+            paidAmount: course.price
+          });
+        } catch (error) {
+          console.error("Error creating enrollment:", error);
+        }
+      }
+    }
     
     setIsEnrolled(true);
     setIsProcessing(false);
@@ -305,9 +441,12 @@ export default function CourseDetail() {
       description: `Demo: Enrolled using ${method}. Welcome to the course!`,
     });
     
+    // Get first lesson ID from course
+    const firstLessonId = course.modules[0]?.lessons[0]?.id || "1";
+    
     // Redirect to first lesson
     setTimeout(() => {
-      navigate(`/courses/${courseId}/lessons/1`);
+      navigate(`/courses/${courseId}/lessons/${firstLessonId}`);
     }, 1000);
   };
 
@@ -315,8 +454,8 @@ export default function CourseDetail() {
     navigate(`/courses/${courseId}/lessons/${lastWatchedLesson}`);
   };
 
-  const totalLessons = mockCourse.modules.reduce((acc, module) => acc + module.lessons.length, 0);
-  const completedLessons = mockCourse.modules.reduce((acc, module) => 
+  const totalLessons = course.modules.reduce((acc, module) => acc + module.lessons.length, 0);
+  const completedLessons = course.modules.reduce((acc, module) => 
     acc + module.lessons.filter(l => l.completed).length, 0
   );
   const progressPercentage = isEnrolled ? Math.round((completedLessons / totalLessons) * 100) : 0;
@@ -334,9 +473,9 @@ export default function CourseDetail() {
               <ChevronRight className="h-4 w-4" />
               <Link to="/courses" className="hover:text-foreground transition-colors" data-testid="link-browse">Courses</Link>
               <ChevronRight className="h-4 w-4" />
-              <span className="text-foreground font-medium">{mockCourse.category}</span>
+              <span className="text-foreground font-medium">{course.category}</span>
               <ChevronRight className="h-4 w-4" />
-              <span className="text-foreground">{mockCourse.title}</span>
+              <span className="text-foreground">{course.title}</span>
             </div>
           </div>
 
@@ -347,55 +486,55 @@ export default function CourseDetail() {
                 {/* Left Column - Course Info */}
                 <div className="lg:col-span-2 space-y-4">
                   <Badge className="bg-primary hover:bg-primary/90 text-white border-0" data-testid="badge-category">
-                    {mockCourse.category}
+                    {course.category}
                   </Badge>
-                  <h1 className="text-4xl md:text-5xl font-bold">{mockCourse.title}</h1>
+                  <h1 className="text-4xl md:text-5xl font-bold">{course.title}</h1>
                   <p className="text-lg md:text-xl text-muted-foreground">
-                    {mockCourse.description}
+                    {course.description}
                   </p>
                   
                   <div className="flex flex-wrap items-center gap-4 text-sm pt-2">
                     <div className="flex items-center gap-2">
                       <Star className="h-5 w-5 text-primary fill-current" />
-                      <span className="font-bold">{mockCourse.rating}</span>
-                      <span className="text-muted-foreground">({mockCourse.reviews.length} reviews)</span>
+                      <span className="font-bold">{course.rating}</span>
+                      <span className="text-muted-foreground">({course.reviews.length} reviews)</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-5 w-5 text-muted-foreground" />
-                      <span>{mockCourse.students} students</span>
+                      <span>{course.students} students</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-5 w-5 text-muted-foreground" />
-                      <span>{mockCourse.duration}</span>
+                      <span>{course.duration}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Globe className="h-5 w-5 text-muted-foreground" />
-                      <span>{mockCourse.language}</span>
+                      <span>{course.language}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <BarChart className="h-5 w-5 text-muted-foreground" />
-                      <span>{mockCourse.level}</span>
+                      <span>{course.level}</span>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
-                    {mockCourse.certification && (
+                    {course.certification && (
                       <Badge variant="outline" className="border-primary text-primary">
                         <Award className="h-3 w-3 mr-1" />
                         Certificate included
                       </Badge>
                     )}
                     <Badge variant="outline" className="text-muted-foreground">
-                      Updated {mockCourse.lastUpdated}
+                      Updated {course.lastUpdated}
                     </Badge>
                   </div>
 
                   {/* Instructor Info Preview */}
                   <div className="flex items-center gap-3 pt-4">
-                    {mockCourse.instructor.avatar ? (
+                    {course.instructor.avatar ? (
                       <img 
-                        src={mockCourse.instructor.avatar}
-                        alt={mockCourse.instructor.name}
+                        src={course.instructor.avatar}
+                        alt={course.instructor.name}
                         className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-primary/20"
                       />
                     ) : (
@@ -405,7 +544,7 @@ export default function CourseDetail() {
                     )}
                     <div>
                       <p className="text-sm text-muted-foreground">Created by</p>
-                      <p className="font-semibold">{mockCourse.instructor.name}</p>
+                      <p className="font-semibold">{course.instructor.name}</p>
                     </div>
                   </div>
                 </div>
@@ -415,8 +554,8 @@ export default function CourseDetail() {
                   <Card className="overflow-hidden shadow-xl">
                     <div className="aspect-video relative bg-neutral-900 flex items-center justify-center overflow-hidden">
                       <img 
-                        src={mockCourse.image} 
-                        alt={mockCourse.title}
+                        src={course.image} 
+                        alt={course.title}
                         className="w-full h-full object-cover opacity-80"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -453,7 +592,7 @@ export default function CourseDetail() {
                         What You'll Learn
                       </h2>
                       <div className="grid md:grid-cols-2 gap-x-6 gap-y-3">
-                        {mockCourse.whatYouLearn.map((item, index) => (
+                        {course.whatYouLearn.map((item, index) => (
                           <div key={index} className="flex items-start gap-3">
                             <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                             <span className="text-sm">{item}</span>
@@ -465,13 +604,13 @@ export default function CourseDetail() {
                     <Card className="p-6">
                       <h2 className="text-2xl font-bold mb-4">Course Description</h2>
                       <p className="text-muted-foreground leading-relaxed mb-4">
-                        {mockCourse.longDescription}
+                        {course.longDescription}
                       </p>
                       <Separator className="my-4" />
                       <div>
                         <h3 className="font-semibold mb-3">Requirements</h3>
                         <ul className="space-y-2">
-                          {mockCourse.requirements.map((req, index) => (
+                          {course.requirements.map((req, index) => (
                             <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
                               <span className="text-primary">•</span>
                               <span>{req}</span>
@@ -488,7 +627,7 @@ export default function CourseDetail() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div className="text-center p-4 rounded-lg bg-muted/50">
                           <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
-                          <p className="text-2xl font-bold">{mockCourse.students}</p>
+                          <p className="text-2xl font-bold">{course.students}</p>
                           <p className="text-sm text-muted-foreground">Students</p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-muted/50">
@@ -498,7 +637,7 @@ export default function CourseDetail() {
                         </div>
                         <div className="text-center p-4 rounded-lg bg-muted/50">
                           <Clock className="h-8 w-8 mx-auto mb-2 text-primary" />
-                          <p className="text-2xl font-bold">{mockCourse.duration}</p>
+                          <p className="text-2xl font-bold">{course.duration}</p>
                           <p className="text-sm text-muted-foreground">Duration</p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-muted/50">
@@ -519,12 +658,12 @@ export default function CourseDetail() {
                           Course Curriculum
                         </h2>
                         <Badge variant="outline" className="text-sm">
-                          {mockCourse.modules.length} modules • {totalLessons} lessons
+                          {course.modules.length} modules • {totalLessons} lessons
                         </Badge>
                       </div>
                       
                       <Accordion type="single" collapsible className="w-full" defaultValue="module-1">
-                        {mockCourse.modules.map((module, moduleIndex) => (
+                        {course.modules.map((module, moduleIndex) => (
                           <AccordionItem 
                             key={module.id} 
                             value={`module-${module.id}`}
@@ -600,10 +739,10 @@ export default function CourseDetail() {
                       <h2 className="text-2xl font-bold mb-6">Your Instructor</h2>
                       <div className="flex flex-col md:flex-row gap-6">
                         <div className="flex-shrink-0">
-                          {mockCourse.instructor.avatar ? (
+                          {course.instructor.avatar ? (
                             <img 
-                              src={mockCourse.instructor.avatar}
-                              alt={mockCourse.instructor.name}
+                              src={course.instructor.avatar}
+                              alt={course.instructor.name}
                               className="w-32 h-32 rounded-full object-cover shadow-lg border-4 border-primary/20"
                             />
                           ) : (
@@ -614,24 +753,24 @@ export default function CourseDetail() {
                         </div>
                         <div className="flex-1 space-y-4">
                           <div>
-                            <h3 className="font-bold text-2xl mb-1">{mockCourse.instructor.name}</h3>
-                            <p className="text-muted-foreground text-lg mb-3">{mockCourse.instructor.title}</p>
+                            <h3 className="font-bold text-2xl mb-1">{course.instructor.name}</h3>
+                            <p className="text-muted-foreground text-lg mb-3">{course.instructor.title}</p>
                           </div>
                           
                           <div className="flex flex-wrap gap-6 text-sm">
                             <div className="flex items-center gap-2">
                               <Star className="h-5 w-5 text-primary fill-current" />
-                              <span className="font-semibold">{mockCourse.instructor.rating}</span>
+                              <span className="font-semibold">{course.instructor.rating}</span>
                               <span className="text-muted-foreground">Instructor Rating</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-5 w-5 text-muted-foreground" />
-                              <span className="font-semibold">{mockCourse.instructor.students}</span>
+                              <span className="font-semibold">{course.instructor.students}</span>
                               <span className="text-muted-foreground">Students</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <PlayCircle className="h-5 w-5 text-muted-foreground" />
-                              <span className="font-semibold">{mockCourse.instructor.courses}</span>
+                              <span className="font-semibold">{course.instructor.courses}</span>
                               <span className="text-muted-foreground">Courses</span>
                             </div>
                           </div>
@@ -639,7 +778,7 @@ export default function CourseDetail() {
                           <Separator />
 
                           <p className="text-muted-foreground leading-relaxed">
-                            {mockCourse.instructor.bio}
+                            {course.instructor.bio}
                           </p>
                         </div>
                       </div>
@@ -653,13 +792,13 @@ export default function CourseDetail() {
                         <h2 className="text-2xl font-bold">Student Reviews</h2>
                         <div className="flex items-center gap-2">
                           <Star className="h-6 w-6 text-yellow-500 fill-current" />
-                          <span className="text-2xl font-bold">{mockCourse.rating}</span>
-                          <span className="text-muted-foreground">({mockCourse.reviews.length} reviews)</span>
+                          <span className="text-2xl font-bold">{course.rating}</span>
+                          <span className="text-muted-foreground">({course.reviews.length} reviews)</span>
                         </div>
                       </div>
 
                       <div className="space-y-4">
-                        {mockCourse.reviews.map((review) => (
+                        {course.reviews.map((review) => (
                           <div key={review.id} className="border rounded-lg p-4">
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center gap-3">
@@ -703,8 +842,8 @@ export default function CourseDetail() {
                 <Card className="p-6 sticky top-24 shadow-lg border-2">
                   <div className="aspect-video bg-neutral-900 rounded-lg mb-4 relative flex items-center justify-center overflow-hidden lg:hidden">
                     <img 
-                      src={mockCourse.image} 
-                      alt={mockCourse.title}
+                      src={course.image} 
+                      alt={course.title}
                       className="w-full h-full object-cover opacity-80"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -718,14 +857,14 @@ export default function CourseDetail() {
                     <>
                       <div className="text-center mb-6">
                         <div className="text-4xl font-bold mb-2">
-                          {mockCourse.isFree ? "Free" : `$${mockCourse.price}`}
+                          {course.isFree ? "Free" : `$${course.price}`}
                         </div>
                         <p className="text-sm text-muted-foreground mb-3">
                           One-time payment • Lifetime access
                         </p>
                         
                         {/* BNPL Payment Options */}
-                        {!mockCourse.isFree && (
+                        {!course.isFree && (
                           <div className="flex flex-col gap-2 pt-3 border-t">
                             <p className="text-xs text-muted-foreground font-medium">Or pay in installments with:</p>
                             <div className="flex items-center justify-center gap-3 flex-wrap">
@@ -740,7 +879,7 @@ export default function CourseDetail() {
                               </div>
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">
-                              4 interest-free payments of ${(mockCourse.price / 4).toFixed(2)}
+                              4 interest-free payments of ${(course.price / 4).toFixed(2)}
                             </p>
                           </div>
                         )}
@@ -945,8 +1084,8 @@ export default function CourseDetail() {
       <FakeStripeCheckoutModal
         open={showCheckoutModal}
         onOpenChange={setShowCheckoutModal}
-        courseTitle={mockCourse.title}
-        price={mockCourse.price}
+        courseTitle={course.title}
+        price={course.price}
         onPaymentSuccess={handlePaymentMethod}
       />
     </div>
