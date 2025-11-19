@@ -210,21 +210,23 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
     const educatorProfile = JSON.parse(localStorage.getItem("educatorProfile") || "{}");
     const educatorName = educatorProfile.name || "Dr. Sarah Chen";
     
-    // Convert modules to proper structure
-    const courseModules: CourseModule[] = modules.map((module, index) => ({
-      id: `module-${Date.now()}-${index}`,
-      title: module.name,
-      description: "",
-      lessons: module.lessons.map((lesson: any, lessonIndex: number) => ({
-        id: `lesson-${Date.now()}-${index}-${lessonIndex}`,
-        title: lesson.name,
-        type: "video" as const,
-        duration: lesson.duration || 10,
-        videoUrl: "https://example.com/video.mp4",
-        order: lessonIndex,
-      })),
-      order: index,
-    }));
+    // Convert modules to proper structure, filtering out empty ones
+    const courseModules: CourseModule[] = modules
+      .filter((module) => module.lessons && module.lessons.length > 0)
+      .map((module, index) => ({
+        id: `module-${Date.now()}-${index}`,
+        title: module.name,
+        description: "",
+        lessons: module.lessons.map((lesson: any, lessonIndex: number) => ({
+          id: `lesson-${Date.now()}-${index}-${lessonIndex}`,
+          title: lesson.name,
+          type: "video" as const,
+          duration: lesson.duration || 10,
+          videoUrl: "https://example.com/video.mp4",
+          order: lessonIndex,
+        })),
+        order: index,
+      }));
 
     // Calculate totals
     const totalLessons = courseModules.reduce((sum, m) => sum + m.lessons.length, 0);
@@ -232,6 +234,11 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated }: Cou
       (sum, m) => sum + m.lessons.reduce((lSum, l) => lSum + l.duration, 0),
       0
     );
+
+    // Validation: ensure at least one module with lessons for published courses
+    if (published && totalLessons === 0) {
+      throw new Error("Cannot publish a course without any lessons. Please add lessons to your modules.");
+    }
 
     return {
       id: `course-${Date.now()}`,

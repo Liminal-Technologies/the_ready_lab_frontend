@@ -206,6 +206,12 @@ export function getEnrollmentsByCourseId(courseId: string): CourseEnrollment[] {
 
 export function createEnrollment(enrollment: Omit<CourseEnrollment, "id" | "enrolledAt">): CourseEnrollment {
   try {
+    // Validate courseId exists
+    const course = getEducatorCourseById(enrollment.courseId);
+    if (!course) {
+      throw new Error(`Course not found: ${enrollment.courseId}`);
+    }
+
     const newEnrollment: CourseEnrollment = {
       ...enrollment,
       id: `enrollment-${Date.now()}`,
@@ -223,7 +229,7 @@ export function createEnrollment(enrollment: Omit<CourseEnrollment, "id" | "enro
     if (enrollment.paidAmount > 0) {
       createTransaction({
         courseId: enrollment.courseId,
-        courseName: enrollment.courseId, // Will be updated with actual course name
+        courseName: course.title, // Use actual course name
         studentId: enrollment.studentId,
         studentName: enrollment.studentName,
         amount: enrollment.paidAmount,

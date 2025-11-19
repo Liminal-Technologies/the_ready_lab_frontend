@@ -35,6 +35,7 @@ import {
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 import { CourseBuilderWizard } from '@/components/educator/CourseBuilderWizard';
 import { ScheduleLiveEventModal } from '@/components/educator/ScheduleLiveEventModal';
+import { getAllEducatorCourses, getEducatorStats, type EducatorCourse } from '@/utils/educatorCoursesStorage';
 
 // Mock student data
 const MOCK_STUDENTS = [
@@ -92,14 +93,30 @@ export const EducatorDashboard = () => {
   const [showCourseWizard, setShowCourseWizard] = useState(false);
   const [showScheduleEvent, setShowScheduleEvent] = useState(false);
   const [educatorProfile, setEducatorProfile] = useState<any>(null);
-  const [createdCourses, setCreatedCourses] = useState<any[]>([]);
+  const [createdCourses, setCreatedCourses] = useState<EducatorCourse[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string>('free');
+  const [stats, setStats] = useState({
+    totalCourses: 0,
+    publishedCourses: 0,
+    totalStudents: 0,
+    totalRevenue: 0,
+    totalEnrollments: 0,
+    activeStudents: 0,
+    atRiskStudents: 0,
+    completedStudents: 0,
+  });
+
+  const loadCourses = () => {
+    const courses = getAllEducatorCourses();
+    const educatorStats = getEducatorStats();
+    setCreatedCourses(courses);
+    setStats(educatorStats);
+  };
 
   useEffect(() => {
     // Load educator profile and plan from localStorage
     const profile = localStorage.getItem('educatorProfile');
     const plan = localStorage.getItem('selectedPlan');
-    const courses = localStorage.getItem('createdCourses');
     
     if (profile) {
       setEducatorProfile(JSON.parse(profile));
@@ -107,9 +124,9 @@ export const EducatorDashboard = () => {
     if (plan) {
       setSelectedPlan(plan);
     }
-    if (courses) {
-      setCreatedCourses(JSON.parse(courses));
-    }
+
+    // Load courses using new storage system
+    loadCourses();
 
     // Check if user needs to select a plan (first time)
     if (!plan && !showPlanModal) {
@@ -128,18 +145,17 @@ export const EducatorDashboard = () => {
   };
 
   const handleCourseCreated = () => {
-    // Refresh created courses from localStorage
-    const courses = localStorage.getItem('createdCourses');
-    if (courses) {
-      setCreatedCourses(JSON.parse(courses));
-    }
+    // Reload courses using new storage system
+    loadCourses();
   };
 
   // Calculate onboarding checklist
   const hasProfile = !!educatorProfile;
   const hasFirstCourse = createdCourses.length > 0;
-  const hasUploadedLesson = createdCourses.some((c: any) => c.lessons && c.lessons.length > 0);
-  const hasSubmittedCourse = createdCourses.some((c: any) => c.status === 'pending' || c.status === 'approved');
+  const hasUploadedLesson = createdCourses.some((c) => 
+    c.modules && Array.isArray(c.modules) && c.modules.some(m => m?.lessons && Array.isArray(m.lessons) && m.lessons.length > 0)
+  );
+  const hasSubmittedCourse = createdCourses.some((c) => c.published);
 
   const checklistItems = [
     { label: "Create profile", completed: hasProfile },
@@ -233,11 +249,11 @@ export const EducatorDashboard = () => {
                 <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
                   <Users className="h-6 w-6 text-blue-500" />
                 </div>
-                <TrendingUp className="h-4 w-4 text-green-600" />
+                {stats.totalStudents > 0 && <TrendingUp className="h-4 w-4 text-green-600" />}
               </div>
-              <div className="text-2xl font-bold mb-1">156</div>
+              <div className="text-2xl font-bold mb-1">{stats.totalStudents}</div>
               <p className="text-sm text-muted-foreground">Total Students</p>
-              <p className="text-xs text-green-600 mt-1">+12% this month</p>
+              <p className="text-xs text-muted-foreground mt-1">{stats.totalEnrollments} enrollments</p>
             </CardContent>
           </Card>
 
@@ -247,11 +263,11 @@ export const EducatorDashboard = () => {
                 <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
                   <BookOpen className="h-6 w-6 text-purple-500" />
                 </div>
-                <TrendingUp className="h-4 w-4 text-green-600" />
+                {stats.publishedCourses > 0 && <TrendingUp className="h-4 w-4 text-green-600" />}
               </div>
-              <div className="text-2xl font-bold mb-1">{createdCourses.length}</div>
-              <p className="text-sm text-muted-foreground">Active Courses</p>
-              <p className="text-xs text-muted-foreground mt-1">2,341 completions</p>
+              <div className="text-2xl font-bold mb-1">{stats.totalCourses}</div>
+              <p className="text-sm text-muted-foreground">Total Courses</p>
+              <p className="text-xs text-muted-foreground mt-1">{stats.publishedCourses} published</p>
             </CardContent>
           </Card>
 
@@ -262,9 +278,9 @@ export const EducatorDashboard = () => {
                   <Star className="h-6 w-6 text-yellow-500" />
                 </div>
               </div>
-              <div className="text-2xl font-bold mb-1">4.8</div>
-              <p className="text-sm text-muted-foreground">Average Rating</p>
-              <p className="text-xs text-muted-foreground mt-1">⭐⭐⭐⭐⭐ (89 reviews)</p>
+              <div className="text-2xl font-bold mb-1">{stats.completedStudents}</div>
+              <p className="text-sm text-muted-foreground">Completed Students</p>
+              <p className="text-xs text-muted-foreground mt-1">{stats.activeStudents} active</p>
             </CardContent>
           </Card>
 
@@ -274,11 +290,11 @@ export const EducatorDashboard = () => {
                 <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
                   <DollarSign className="h-6 w-6 text-green-500" />
                 </div>
-                <TrendingUp className="h-4 w-4 text-green-600" />
+                {stats.totalRevenue > 0 && <TrendingUp className="h-4 w-4 text-green-600" />}
               </div>
-              <div className="text-2xl font-bold mb-1">$3,847</div>
-              <p className="text-sm text-muted-foreground">This Month</p>
-              <p className="text-xs text-green-600 mt-1">+24% from last month</p>
+              <div className="text-2xl font-bold mb-1">${stats.totalRevenue.toFixed(2)}</div>
+              <p className="text-sm text-muted-foreground">Total Revenue</p>
+              <p className="text-xs text-muted-foreground mt-1">{revenueShare} revenue share</p>
             </CardContent>
           </Card>
         </div>
@@ -450,8 +466,8 @@ export const EducatorDashboard = () => {
                   <Card key={index} data-testid={`course-card-${index}`}>
                     <CardHeader>
                       <div className="flex items-start justify-between mb-2">
-                        <Badge variant={course.status === 'approved' ? 'default' : 'secondary'}>
-                          {course.status || 'Draft'}
+                        <Badge variant={course.published ? 'default' : 'secondary'}>
+                          {course.published ? 'Published' : 'Draft'}
                         </Badge>
                         <Button variant="ghost" size="icon">
                           <Settings className="h-4 w-4" />
@@ -466,17 +482,15 @@ export const EducatorDashboard = () => {
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Students</span>
-                          <span className="font-medium">
-                            {Math.floor(Math.random() * 50) + 10}
-                          </span>
+                          <span className="font-medium">{course.enrollmentCount}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-muted-foreground">Lessons</span>
-                          <span className="font-medium">{course.lessons?.length || 0}</span>
+                          <span className="font-medium">{course.totalLessons}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground">Rating</span>
-                          <span className="font-medium">⭐ 4.{Math.floor(Math.random() * 3) + 7}</span>
+                          <span className="text-muted-foreground">Revenue</span>
+                          <span className="font-medium">${course.revenue.toFixed(0)}</span>
                         </div>
                       </div>
                       <Button className="w-full mt-4" variant="outline">
