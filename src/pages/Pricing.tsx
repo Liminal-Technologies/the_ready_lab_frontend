@@ -51,6 +51,13 @@ const Pricing = () => {
   }, []);
 
   const handlePlanClick = (plan: { name: string; price: { monthly: number; annual: number }; role: 'student' | 'educator' }) => {
+    // For educator plans, always go to onboarding flow (demo mode)
+    if (plan.role === 'educator') {
+      navigate('/educator/onboarding');
+      return;
+    }
+    
+    // For student plans
     if (!auth.user) {
       setSelectedPlan({
         ...plan,
@@ -59,12 +66,7 @@ const Pricing = () => {
       setAuthDefaultMode('signup');
       setIsAuthModalOpen(true);
     } else {
-      // Navigate to appropriate page based on plan role
-      if (plan.role === 'educator') {
-        navigate('/educator/dashboard');
-      } else {
-        navigate('/courses');
-      }
+      navigate('/courses');
     }
   };
 
