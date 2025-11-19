@@ -73,6 +73,10 @@ const CommunityDetail = () => {
   const [community, setCommunity] = useState<Community | null>(null);
   const [members] = useState<Member[]>(MOCK_MEMBERS);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [communityId]);
   const [isMember, setIsMember] = useState(false);
   const [isModerator] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
