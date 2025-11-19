@@ -28,8 +28,148 @@ interface PostTimelineProps {
   isMember: boolean;
 }
 
-// Mock posts for demo
-const INITIAL_POSTS: Post[] = [
+// Community-specific posts
+const FUNDING_GRANTS_POSTS: Post[] = [
+  {
+    id: 'funding_post_1',
+    content: '📌 PINNED: Funding Resources Megathread\n\n🎯 Grant Databases:\n• grants.gov - Federal grants\n• Foundation Directory Online - Private foundations\n• SBIR.gov - Small Business Innovation Research\n\n💰 Pitch Deck Templates:\n• Y Combinator standard deck\n• Sequoia Capital pitch template\n\n📚 Recommended Reading:\n• "Venture Deals" by Brad Feld\n• "The Art of Startup Fundraising" by Alejandro Cremades\n\nFeel free to add your favorite resources in the comments!',
+    author: 'Sarah Johnson (Moderator)',
+    created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    likes: 156,
+    likedBy: [],
+    comments: [
+      {
+        id: 'funding_comment_1',
+        content: 'Adding: pitch.com has great free templates and pitch-deck.com for inspiration!',
+        author: 'Michael Chen',
+        created_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'funding_comment_2',
+        content: 'Don\'t forget about AngelList and Crunchbase for researching VCs and their portfolios!',
+        author: 'Emma Davis',
+        created_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'funding_post_2',
+    content: 'Just closed $500K seed round! 🎉\n\nQuick stats:\n• 37 investor conversations\n• 14 pitch decks sent\n• 8 term sheets received\n• 3 months from first pitch to close\n\nBiggest lesson: Investors invest in people first, ideas second. Our traction helped, but the rapport we built during coffee chats sealed the deals.\n\nHappy to answer questions!',
+    author: 'Alex Rodriguez',
+    created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    likes: 89,
+    likedBy: [],
+    comments: [
+      {
+        id: 'funding_comment_3',
+        content: 'Congrats! What was your valuation if you don\'t mind sharing? Trying to gauge what\'s reasonable for pre-revenue SaaS.',
+        author: 'James Wilson',
+        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'funding_comment_4',
+        content: 'Amazing achievement! Did you use a lead investor or syndicate? How did you structure it?',
+        author: 'Priya Patel',
+        created_at: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'funding_post_3',
+    content: 'NSF SBIR Phase I - Application Tips 🚀\n\nJust submitted ours (fingers crossed). Here\'s what worked:\n\n1. Start with the "Broader Impacts" section - reviewers care about societal benefit\n2. Get a technical advisor with NSF grant experience\n3. Budget EVERYTHING down to the penny\n4. Letters of support from potential customers = gold\n5. Don\'t underestimate the commercialization plan\n\nDeadlines are quarterly, so plan ahead. The $275K non-dilutive funding is worth the effort!',
+    author: 'Dr. Lisa Chang',
+    created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+    likes: 67,
+    likedBy: [],
+    comments: [
+      {
+        id: 'funding_comment_5',
+        content: 'This is super helpful! Did you hire a grant writer or do it yourself? We\'re debating...',
+        author: 'Marcus Thompson',
+        created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'funding_post_4',
+    content: 'Red flags from my investor meetings - learn from my mistakes:\n\n🚩 VC asked for 40% equity at seed stage (RUN)\n🚩 "We don\'t do term sheets, just send us your docs" (sketchy)\n🚩 Investor ghosted for 3 weeks then came back demanding answer in 48hrs\n🚩 No clear fund thesis - investing in "everything"\n🚩 Wanted board control before even checking references\n\nTrust your gut. Good investors respect your time and bring more than just money.',
+    author: 'Kenji Tanaka',
+    created_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    likes: 142,
+    likedBy: [],
+    comments: [
+      {
+        id: 'funding_comment_6',
+        content: '40% at seed is WILD. Standard is 10-20%. Thanks for the heads up!',
+        author: 'Sarah Johnson',
+        created_at: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'funding_comment_7',
+        content: 'Adding: if they ask for NDA before seeing your deck, also a red flag. Ideas aren\'t worth protecting that early.',
+        author: 'Emma Davis',
+        created_at: new Date(Date.now() - 9 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'funding_post_5',
+    content: 'Question: Bootstrapping vs. raising capital?\n\nWe\'ve been profitable for 6 months ($15K MRR) but growing slowly. VCs are interested but I\'m worried about:\n• Losing control\n• Pressure to scale too fast\n• Misaligned incentives\n\nOn the other hand, our competitors just raised $2M and are hiring aggressively. Feeling FOMO.\n\nAnyone been in this position? What helped you decide?',
+    author: 'Maria Gonzalez',
+    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    likes: 54,
+    likedBy: [],
+    comments: [
+      {
+        id: 'funding_comment_8',
+        content: 'I was in the exact same spot. We took the money and grew 10x in 18 months. Best decision ever, but it\'s not for everyone.',
+        author: 'Alex Rodriguez',
+        created_at: new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString(),
+      },
+      {
+        id: 'funding_comment_9',
+        content: 'Unpopular opinion: if you\'re profitable and growing, keep bootstrapping until you NEED the cash for something specific (hiring, inventory, etc). Don\'t raise just because you can.',
+        author: 'James Wilson',
+        created_at: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'funding_post_6',
+    content: 'Foundation grants for social enterprises - my experience 💚\n\nJust received $50K from a family foundation! Here\'s what worked:\n\n✅ Clear social impact metrics (we track lives improved, not just revenue)\n✅ Video testimonials from beneficiaries\n✅ Partnership with established nonprofit\n✅ Transparent budget breakdown\n✅ Sustainability plan (how we\'ll continue after grant ends)\n\nFamily foundations are more relationship-driven than federal grants. Get warm intros if possible!',
+    author: 'Aisha Mohammed',
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    likes: 78,
+    likedBy: [],
+    comments: [
+      {
+        id: 'funding_comment_10',
+        content: 'Congrats! How long was the application process? We\'re considering applying to several.',
+        author: 'Olivia Martinez',
+        created_at: new Date(Date.now() - 1.5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'funding_post_7',
+    content: 'Pitch deck feedback request 🙏\n\nHeading into investor meetings next week. Would love eyes on my deck:\n• 12 slides total\n• Pre-revenue but have 500 beta signups\n• Asking for $750K seed\n\nSpecific questions:\n1. Is my market size slide credible? (TAM $5B)\n2. Should I include competitor comparison or focus on differentiation?\n3. Financial projections - conservative or ambitious?\n\nDM if you\'re willing to review. Happy to return the favor!',
+    author: 'David Kim',
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    likes: 31,
+    likedBy: [],
+    comments: [
+      {
+        id: 'funding_comment_11',
+        content: 'DM\'d you! I review decks for our accelerator cohort, happy to help.',
+        author: 'Michael Chen',
+        created_at: new Date(Date.now() - 2.5 * 24 * 60 * 60 * 1000).toISOString(),
+      },
+    ],
+  },
+];
+
+// Default posts for other communities
+const DEFAULT_POSTS: Post[] = [
   {
     id: 'post_1',
     content: 'Just completed my first funding round! 🎉 Looking for advice on scaling our operations. Anyone have experience with Series A?',
@@ -79,6 +219,16 @@ const INITIAL_POSTS: Post[] = [
   },
 ];
 
+// Select posts based on community
+const getCommunityPosts = (communityId: string): Post[] => {
+  if (communityId === '1') {
+    return FUNDING_GRANTS_POSTS;
+  }
+  return DEFAULT_POSTS;
+};
+
+const INITIAL_POSTS: Post[] = [];
+
 export const PostTimeline = ({ communityId, isMember }: PostTimelineProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,12 +244,13 @@ export const PostTimeline = ({ communityId, isMember }: PostTimelineProps) => {
     setTimeout(() => {
       const postsKey = `communityPosts_${communityId}`;
       const storedPosts = localStorage.getItem(postsKey);
+      const communityPosts = getCommunityPosts(communityId);
       
       if (storedPosts) {
         const parsed = JSON.parse(storedPosts);
-        setPosts([...parsed, ...INITIAL_POSTS]);
+        setPosts([...parsed, ...communityPosts]);
       } else {
-        setPosts(INITIAL_POSTS);
+        setPosts(communityPosts);
       }
       setLoading(false);
     }, 300);
