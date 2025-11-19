@@ -10,6 +10,15 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 
 ## Recent Changes
 
+### Lesson Progress Persistence (November 19, 2025 - Late Evening)
+Implemented localStorage-based lesson progress persistence for complete quiz-to-unlock flow:
+- **Backend API Routes**: Added GET/PUT endpoints for lesson progress tracking (future database integration ready)
+- **localStorage Implementation**: Progress persists across page refreshes using course-specific keys (course-{id}-completed-lessons, course-{id}-shown-milestones)
+- **Cross-Course Isolation**: Fixed state leakage bug - each course maintains separate progress when navigating between courses
+- **Quiz Unlocking**: Completing quizzes correctly unlocks next lessons with progress persistence
+- **Error Handling**: Added try/catch for malformed localStorage entries with graceful fallback
+- **Demo Ready**: Works immediately without authentication or database setup for tech demos
+
 ### Student Journey Features (November 19, 2025 - Evening)
 Enhanced demo experience with payment UI and verified Journey C & D features:
 - **Payment Modal Re-enabled**: Paid courses now show FakeStripeCheckoutModal UI for visual demonstration while maintaining instant processing (800ms)
