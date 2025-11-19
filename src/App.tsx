@@ -42,6 +42,7 @@ import Privacy from "./pages/Privacy";
 import EducatorAgreement from "./pages/EducatorAgreement";
 import Explore from "./pages/Explore";
 import Community from "./pages/Community";
+import CommunityFeed from "./pages/CommunityFeed";
 import CommunityCreate from "./pages/CommunityCreate";
 import CommunityDetail from "./pages/CommunityDetail";
 import { LearningFeed } from "./pages/LearningFeed";
@@ -103,7 +104,8 @@ const AppContent = () => {
           <Route path="/educator-agreement" element={<EducatorAgreement />} />
           <Route path="/verify/:serial" element={<VerifyCertificate />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/community" element={<Community />} />
+          <Route path="/community" element={<CommunityFeed />} />
+          <Route path="/community/browse" element={<Community />} />
           <Route path="/events/:eventId" element={<EventDetail />} />
           <Route path="/community/create" element={<CommunityCreate />} />
           <Route path="/community/:communityId" element={<CommunityDetail />} />
@@ -222,8 +224,9 @@ const AppContent = () => {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/educator-agreement" element={<EducatorAgreement />} />
         <Route path="/explore" element={<Explore />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/feed" element={<Community />} />
+        <Route path="/community" element={<CommunityFeed />} />
+        <Route path="/community/browse" element={<Community />} />
+        <Route path="/feed" element={<CommunityFeed />} />
         <Route path="/events/:eventId" element={<EventDetail />} />
         <Route path="/community/create" element={<CommunityCreate />} />
         <Route path="/community/:communityId" element={<CommunityDetail />} />
