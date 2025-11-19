@@ -1,21 +1,19 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useAuth } from '@/hooks/useAuth';
+import { useMockAuth } from '@/hooks/useMockAuth';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Mail, Lock, AlertCircle } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { User, Lock } from 'lucide-react';
 
+// Simplified schema for demo mode - just email/name
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  email: z.string().min(1, 'Please enter your name or email')
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -25,62 +23,40 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showUnconfirmedEmail, setShowUnconfirmedEmail] = useState(false);
-  const [unconfirmedEmail, setUnconfirmedEmail] = useState('');
-  const [isResending, setIsResending] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signIn, auth } = useAuth();
+  const navigate = useNavigate();
+  const mockAuth = useMockAuth();
   
-  const { register, handleSubmit, formState: { errors }, getValues } = useForm<LoginFormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema)
   });
 
-  const handleResendConfirmation = async () => {
-    setIsResending(true);
-    try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: unconfirmedEmail,
-      });
-
-      if (error) throw error;
-
-      toast.success("Confirmation email sent!", {
-        description: "Please check your inbox and click the confirmation link.",
-      });
-      setShowUnconfirmedEmail(false);
-    } catch (error: any) {
-      toast.error("Failed to resend email", {
-        description: error.message,
-      });
-    } finally {
-      setIsResending(false);
-    }
-  };
-
   const onSubmit = async (data: LoginFormData) => {
-    if (isSubmitting) return; // Prevent double submission
-    
     try {
-      setIsSubmitting(true);
-      setShowUnconfirmedEmail(false);
-      await signIn(data.email, data.password);
-      // Success feedback is provided by modal closing and dashboard redirect
+      console.log('Demo mode login:', data.email);
+      
+      // Store demo user info
+      localStorage.setItem('demoUserName', data.email);
+      
+      // Check if user previously chose a role, default to student
+      const savedRole = localStorage.getItem('demoUserRole') || 'student';
+      
+      // Use mock authentication for instant login
+      mockAuth.login(savedRole as 'student' | 'educator');
+      
+      // Show success toast
+      toast.success('Welcome back! 🎉', {
+        description: 'Logging you in...'
+      });
+      
+      // Redirect to appropriate dashboard
+      const dashboardPath = savedRole === 'educator' ? '/educator/dashboard' : '/dashboard';
+      navigate(dashboardPath);
+      
     } catch (error: any) {
-      // Check if it's an email confirmation error
-      if (error.message?.includes('Email not confirmed') || 
-          error.message?.includes('email_not_confirmed') ||
-          error.message?.includes('not confirmed')) {
-        setUnconfirmedEmail(data.email);
-        setShowUnconfirmedEmail(true);
-      } else {
-        toast.error("Sign in failed", {
-          description: error.message || "Please check your credentials and try again",
-        });
-      }
-    } finally {
-      setIsSubmitting(false);
+      console.error('Login error:', error);
+      toast.error('Login failed', {
+        description: 'Please try again'
+      });
     }
   };
 
@@ -94,34 +70,16 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {showUnconfirmedEmail && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription className="flex flex-col gap-2">
-                <p>Please confirm your email address before signing in.</p>
-                <Button
-                  type="button"
-                  onClick={handleResendConfirmation}
-                  disabled={isResending}
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                >
-                  {isResending ? "Sending..." : "Resend confirmation email"}
-                </Button>
-              </AlertDescription>
-            </Alert>
-          )}
-          
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Name or Email</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 id="email"
-                type="email"
-                placeholder="Enter your email"
+                type="text"
+                placeholder="Enter your name or email"
                 className="pl-10"
+                data-testid="input-email"
                 {...register('email')}
               />
             </div>
@@ -130,50 +88,33 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
-                className="pl-10 pr-10"
-                {...register('password')}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
+          <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800">
+            <AlertDescription className="text-sm">
+              <Lock className="h-3 w-3 inline mr-1" />
+              Demo Mode: No password required. Enter any name to continue!
+            </AlertDescription>
+          </Alert>
 
           <Button 
             type="submit" 
             className="w-full" 
-            disabled={isSubmitting || auth.loading}
             variant="hero"
             data-testid="button-login"
           >
-            {(isSubmitting || auth.loading) ? 'Signing in...' : 'Sign In'}
+            Continue →
           </Button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
-            <Link 
-              to="/pricing" 
+            <button
+              onClick={onSwitchToSignup}
               className="text-primary hover:underline font-medium"
+              data-testid="button-switch-to-signup"
             >
               Sign up here
-            </Link>
+            </button>
           </p>
         </div>
       </CardContent>
