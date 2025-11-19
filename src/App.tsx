@@ -20,6 +20,8 @@ import { AdminSettings } from "@/pages/admin/AdminSettings";
 import { AdminAuditLogs } from "@/pages/admin/AdminAuditLogs";
 import CreateLiveEvent from "./pages/educator/CreateLiveEvent";
 import CreateProduct from "./pages/educator/CreateProduct";
+import StudentAnalytics from "./pages/educator/StudentAnalytics";
+import RevenueDashboard from "./pages/educator/RevenueDashboard";
 import EventDetail from "./pages/EventDetail";
 import { Settings } from "@/components/settings/Settings";
 import Index from "./pages/Index";
@@ -129,6 +131,8 @@ const AppContent = () => {
           <Route path="/educator/events/:eventId/broadcast" element={<LiveEventBroadcaster />} />
           <Route path="/educator/events/create" element={<CreateLiveEvent />} />
           <Route path="/educator/products/create" element={<CreateProduct />} />
+          <Route path="/educator/students" element={<StudentAnalytics />} />
+          <Route path="/educator/revenue" element={<RevenueDashboard />} />
           <Route path="/certificates" element={<MyCertificates />} />
           <Route path="/certificates/:certificateId" element={<CertificateView />} />
           <Route path="/my-purchases" element={<MyPurchases />} />
