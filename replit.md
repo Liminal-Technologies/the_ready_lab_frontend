@@ -10,6 +10,13 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 
 ## Recent Changes
 
+### UX Improvements for Course Completion (November 19, 2025 - Late Evening)
+Fixed UI/UX issues with toast notifications and certificate display:
+- **Toast Positioning**: Changed toast notifications from top-right to bottom-right with 4-second auto-dismiss to prevent cutoff
+- **Certificate Modal**: Created `CertificateModal` component wrapping `CertificateDisplay` with Dialog, ScrollArea, and max-height constraints (90vh) to ensure certificate stays within viewport
+- **View Certificate Flow**: Updated "View Certificate" button to open certificate in modal instead of navigating away, providing seamless completion experience
+- **Files Modified**: `src/components/ui/sonner.tsx`, `src/components/certificates/CertificateModal.tsx` (new), `src/pages/CourseLessonPlayer.tsx`
+
 ### Demo Student Reset Feature (November 19, 2025 - Late Evening)
 Implemented automatic localStorage cleanup for demo student accounts:
 - **Auto-Reset on Login**: Student demo accounts now start fresh on every login, clearing all previous progress
