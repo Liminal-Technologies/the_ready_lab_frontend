@@ -101,6 +101,10 @@ export function getAllEducatorCourses(): EducatorCourse[] {
   }
 }
 
+export function getAllPublishedCourses(): EducatorCourse[] {
+  return getAllEducatorCourses().filter(course => course.published);
+}
+
 export function getEducatorCourseById(courseId: string): EducatorCourse | null {
   const courses = getAllEducatorCourses();
   return courses.find((course) => course.id === courseId) || null;
@@ -127,6 +131,11 @@ export function saveEducatorCourse(course: EducatorCourse): void {
     }
     
     localStorage.setItem(STORAGE_KEYS.COURSES, JSON.stringify(courses));
+    
+    // Dispatch custom event to notify components
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('educatorCoursesUpdated'));
+    }
   } catch (error) {
     console.error("Error saving educator course:", error);
     throw error;
@@ -142,6 +151,11 @@ export function deleteEducatorCourse(courseId: string): void {
     // Also delete associated enrollments and transactions
     deleteEnrollmentsByCourseId(courseId);
     deleteTransactionsByCourseId(courseId);
+    
+    // Dispatch custom event to notify components
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('educatorCoursesUpdated'));
+    }
   } catch (error) {
     console.error("Error deleting educator course:", error);
     throw error;

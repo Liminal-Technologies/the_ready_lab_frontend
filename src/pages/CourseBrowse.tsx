@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -49,6 +49,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/hooks/useAuth";
+import { getAllPublishedCourses, type EducatorCourse } from "@/utils/educatorCoursesStorage";
 
 const allCourses = [
   {
@@ -243,6 +244,33 @@ const learningStyles = [
   }
 ];
 
+// Transform educator course to match browse format
+function transformEducatorCourse(course: EducatorCourse) {
+  // Calculate duration in weeks (assuming 60 min/week study time)
+  const durationWeeks = Math.ceil(course.totalDuration / 60);
+  
+  // Capitalize level
+  const capitalizedLevel = course.level.charAt(0).toUpperCase() + course.level.slice(1);
+  
+  return {
+    id: course.id,
+    title: course.title,
+    description: course.description,
+    duration: `${durationWeeks} week${durationWeeks !== 1 ? 's' : ''}`,
+    students: course.enrollmentCount.toLocaleString(),
+    rating: (course.rating || 4.5).toFixed(1),
+    level: capitalizedLevel,
+    price: course.pricing.type === 'paid' ? course.pricing.amount || 0 : 0,
+    category: course.category || "Operations", // Default category if not specified
+    certification: true, // All courses offer certification
+    featured: false, // Educator courses not featured by default
+    image: fundingImage, // Use a default image
+    instructorName: course.educatorName,
+    format: "Video", // Default format
+    learningStyle: "visual" // Default learning style
+  };
+}
+
 const CourseBrowse = () => {
   const navigate = useNavigate();
   const { auth } = useAuth();
@@ -257,7 +285,44 @@ const CourseBrowse = () => {
   const [activeChip, setActiveChip] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [combinedCourses, setCombinedCourses] = useState<any[]>([]);
   const coursesPerPage = 6;
+  
+  // Load and merge educator courses with mock courses
+  const loadCourses = () => {
+    if (typeof window !== 'undefined') {
+      const educatorCourses = getAllPublishedCourses();
+      const transformedEducatorCourses = educatorCourses.map(transformEducatorCourse);
+      setCombinedCourses([...transformedEducatorCourses, ...allCourses]);
+    } else {
+      setCombinedCourses([...allCourses]);
+    }
+  };
+  
+  // Load courses on mount and when localStorage changes
+  useEffect(() => {
+    loadCourses();
+    
+    // Listen for storage events (changes from other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'educator_courses') {
+        loadCourses();
+      }
+    };
+    
+    // Listen for custom event (changes from same tab)
+    const handleCoursesUpdated = () => {
+      loadCourses();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('educatorCoursesUpdated', handleCoursesUpdated);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('educatorCoursesUpdated', handleCoursesUpdated);
+    };
+  }, []);
 
   // Scroll to top when the page loads
   useEffect(() => {
@@ -273,7 +338,7 @@ const CourseBrowse = () => {
   };
 
   // Filter courses
-  const filteredCourses = allCourses.filter(course => {
+  const filteredCourses = combinedCourses.filter(course => {
     const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(course.category);
     const levelMatch = selectedLevels.length === 0 || selectedLevels.includes(course.level);
     const formatMatch = selectedFormats.length === 0 || selectedFormats.includes(course.format);
