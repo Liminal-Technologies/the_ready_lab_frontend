@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, BarChart3, Shield, BookOpen, Award, TrendingUp, Globe } from "lucide-react";
+import { Building2, Users, BarChart3, Shield, BookOpen, Award, TrendingUp, Globe, Sparkles } from "lucide-react";
 import { RequestDemoModal } from "@/components/institution/RequestDemoModal";
 import { ContactSalesModal } from "@/components/institution/ContactSalesModal";
 
 const ForInstitutions = () => {
+  const navigate = useNavigate();
   const [showRequestDemo, setShowRequestDemo] = useState(false);
   const [showContactSales, setShowContactSales] = useState(false);
 
@@ -76,6 +78,16 @@ const ForInstitutions = () => {
             <div className="flex gap-4 justify-center flex-wrap">
               <Button 
                 size="lg" 
+                className="text-lg px-8 py-6 h-auto gap-2"
+                onClick={() => navigate('/institution-demo')}
+                data-testid="button-access-demo"
+              >
+                <Sparkles className="h-5 w-5" />
+                Access Demo Now
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
                 className="text-lg px-8 py-6 h-auto"
                 onClick={() => setShowRequestDemo(true)}
                 data-testid="button-request-demo"
@@ -85,7 +97,7 @@ const ForInstitutions = () => {
               </Button>
               <Button 
                 size="lg" 
-                variant="outline"
+                variant="secondary"
                 className="text-lg px-8 py-6 h-auto"
                 onClick={() => setShowContactSales(true)}
                 data-testid="button-contact-sales"
@@ -95,7 +107,10 @@ const ForInstitutions = () => {
             </div>
             
             <p className="text-sm text-muted-foreground mt-6">
-              Custom pricing for organizations • Free trial available
+              <span className="inline-flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <strong>Try the demo instantly</strong>
+              </span> or schedule a personalized walkthrough
             </p>
           </div>
         </div>

@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import {
   Upload,
@@ -29,62 +30,187 @@ import {
   TrendingUp,
   Settings,
   Eye,
+  AlertCircle,
 } from "lucide-react";
 
-// Mock cohorts data
+// Mock cohorts data - 12 cohorts, 1,247 total students, 72% avg completion
 const MOCK_COHORTS = [
   {
     id: 1,
-    name: "Fall 2024 Leadership Cohort",
-    startDate: "2024-09-01",
-    endDate: "2024-12-15",
-    totalStudents: 45,
-    activeLearners: 42,
-    avgProgress: 67,
+    name: "Fall 2025 Entrepreneurs",
+    startDate: "2025-09-01",
+    endDate: "2025-12-15",
+    totalStudents: 127,
+    activeLearners: 125,
+    avgProgress: 68,
     coursesAssigned: ["Funding Essentials", "Legal Framework", "Marketing Basics"],
   },
   {
     id: 2,
-    name: "Nonprofit Fundamentals - Spring 2025",
-    startDate: "2025-01-15",
-    endDate: "2025-05-30",
-    totalStudents: 120,
-    activeLearners: 118,
-    avgProgress: 34,
-    coursesAssigned: ["Nonprofit Operations", "Fundraising 101"],
+    name: "Corporate Training Q4",
+    startDate: "2024-10-01",
+    endDate: "2025-03-31",
+    totalStudents: 180,
+    activeLearners: 176,
+    avgProgress: 48,
+    coursesAssigned: ["Leadership Skills", "Project Management", "Communication"],
   },
   {
     id: 3,
-    name: "Executive Training Program",
-    startDate: "2024-10-01",
-    endDate: "2025-03-31",
-    totalStudents: 28,
-    activeLearners: 26,
-    avgProgress: 89,
-    coursesAssigned: ["Strategic Planning", "Financial Management", "Team Leadership"],
+    name: "Grant Writing Cohort",
+    startDate: "2024-11-01",
+    endDate: "2025-02-28",
+    totalStudents: 65,
+    activeLearners: 63,
+    avgProgress: 80,
+    coursesAssigned: ["Grant Writing 101", "Nonprofit Fundraising"],
   },
+  {
+    id: 4,
+    name: "Spring 2025 Leadership Program",
+    startDate: "2025-01-15",
+    endDate: "2025-05-30",
+    totalStudents: 142,
+    activeLearners: 138,
+    avgProgress: 85,
+    coursesAssigned: ["Strategic Planning", "Team Building", "Executive Communication"],
+  },
+  {
+    id: 5,
+    name: "Tech Skills Bootcamp",
+    startDate: "2024-09-01",
+    endDate: "2025-01-31",
+    totalStudents: 145,
+    activeLearners: 141,
+    avgProgress: 92,
+    coursesAssigned: ["Web Development", "Data Analytics", "Cloud Computing"],
+  },
+  {
+    id: 6,
+    name: "Healthcare Admin Certification",
+    startDate: "2024-08-15",
+    endDate: "2025-04-30",
+    totalStudents: 87,
+    activeLearners: 84,
+    avgProgress: 75,
+    coursesAssigned: ["Healthcare Management", "Compliance", "Patient Care"],
+  },
+  {
+    id: 7,
+    name: "Diversity & Inclusion Training",
+    startDate: "2024-10-01",
+    endDate: "2024-12-31",
+    totalStudents: 69,
+    activeLearners: 67,
+    avgProgress: 89,
+    coursesAssigned: ["Workplace Diversity", "Inclusive Leadership"],
+  },
+  {
+    id: 8,
+    name: "Financial Literacy Workshop",
+    startDate: "2025-01-01",
+    endDate: "2025-03-15",
+    totalStudents: 94,
+    activeLearners: 90,
+    avgProgress: 60,
+    coursesAssigned: ["Personal Finance", "Investment Basics", "Retirement Planning"],
+  },
+  {
+    id: 9,
+    name: "Marketing Mastery 2025",
+    startDate: "2024-11-15",
+    endDate: "2025-05-15",
+    totalStudents: 115,
+    activeLearners: 111,
+    avgProgress: 67,
+    coursesAssigned: ["Digital Marketing", "Social Media Strategy", "Content Creation"],
+  },
+  {
+    id: 10,
+    name: "Cybersecurity Fundamentals",
+    startDate: "2024-09-01",
+    endDate: "2024-12-20",
+    totalStudents: 75,
+    activeLearners: 72,
+    avgProgress: 94,
+    coursesAssigned: ["Network Security", "Threat Detection", "Incident Response"],
+  },
+  {
+    id: 11,
+    name: "Sustainability Certificate",
+    startDate: "2025-02-01",
+    endDate: "2025-06-30",
+    totalStudents: 51,
+    activeLearners: 49,
+    avgProgress: 35,
+    coursesAssigned: ["Environmental Policy", "Sustainable Business", "Green Technology"],
+  },
+  {
+    id: 12,
+    name: "Executive MBA Prep",
+    startDate: "2024-08-01",
+    endDate: "2025-07-31",
+    totalStudents: 97,
+    activeLearners: 94,
+    avgProgress: 71,
+    coursesAssigned: ["Business Strategy", "Financial Management", "Operations"],
+  },
+];
+
+// Mock student progress data for analytics
+const MOCK_STUDENT_PROGRESS = [
+  { id: 1, name: "Sarah Johnson", email: "sarah.j@example.com", cohort: "Fall 2025 Entrepreneurs", progress: 82, lastActive: "2 hours ago", status: "On Track" },
+  { id: 2, name: "Michael Chen", email: "m.chen@example.com", cohort: "Corporate Training Q4", progress: 28, lastActive: "8 days ago", status: "At Risk" },
+  { id: 3, name: "Emma Davis", email: "emma.d@example.com", cohort: "Tech Skills Bootcamp", progress: 100, lastActive: "1 hour ago", status: "Completed" },
+  { id: 4, name: "James Wilson", email: "j.wilson@example.com", cohort: "Spring 2025 Leadership Program", progress: 75, lastActive: "5 hours ago", status: "On Track" },
+  { id: 5, name: "Olivia Martinez", email: "o.martinez@example.com", cohort: "Grant Writing Cohort", progress: 15, lastActive: "12 days ago", status: "At Risk" },
+  { id: 6, name: "David Brown", email: "d.brown@example.com", cohort: "Healthcare Admin Certification", progress: 91, lastActive: "3 hours ago", status: "On Track" },
+  { id: 7, name: "Sophia Garcia", email: "sophia.g@example.com", cohort: "Diversity & Inclusion Training", progress: 88, lastActive: "1 day ago", status: "On Track" },
+  { id: 8, name: "Robert Taylor", email: "r.taylor@example.com", cohort: "Financial Literacy Workshop", progress: 22, lastActive: "6 days ago", status: "At Risk" },
+  { id: 9, name: "Ava Anderson", email: "ava.a@example.com", cohort: "Marketing Mastery 2025", progress: 64, lastActive: "4 hours ago", status: "On Track" },
+  { id: 10, name: "William Thomas", email: "w.thomas@example.com", cohort: "Cybersecurity Fundamentals", progress: 95, lastActive: "2 hours ago", status: "On Track" },
+  { id: 11, name: "Isabella Moore", email: "i.moore@example.com", cohort: "Sustainability Certificate", progress: 34, lastActive: "3 days ago", status: "On Track" },
+  { id: 12, name: "Ethan Jackson", email: "e.jackson@example.com", cohort: "Executive MBA Prep", progress: 70, lastActive: "6 hours ago", status: "On Track" },
 ];
 
 export default function InstitutionDashboard() {
   const [showCohortModal, setShowCohortModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showUploadSuccessModal, setShowUploadSuccessModal] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [uploadedCount, setUploadedCount] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedCohort, setSelectedCohort] = useState<any>(null);
   const [cohorts, setCohorts] = useState(MOCK_COHORTS);
 
-  const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCSVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Fake CSV processing
       setUploadedFileName(file.name);
-      const fakeCount = Math.floor(Math.random() * 50) + 10;
-      setUploadedCount(fakeCount);
+      setUploading(true);
+      setUploadProgress(0);
       
-      toast({
-        title: "CSV uploaded successfully! 📄",
-        description: `Imported ${fakeCount} students from ${file.name}`,
-      });
+      // Simulate realistic upload progress for 127 students
+      const totalStudents = 127;
+      const interval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= totalStudents) {
+            clearInterval(interval);
+            return totalStudents;
+          }
+          return prev + Math.floor(Math.random() * 8) + 5;
+        });
+      }, 80);
+      
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      clearInterval(interval);
+      
+      setUploadProgress(totalStudents);
+      setUploadedCount(totalStudents);
+      setUploading(false);
+      setShowUploadSuccessModal(true);
     }
   };
 
@@ -142,7 +268,7 @@ export default function InstitutionDashboard() {
       title: "Import Student Data",
       description: "Upload CSV files with student information to quickly enroll learners into your cohorts.",
       ctaText: "Upload CSV",
-      ctaLink: "#",
+      onClick: () => document.querySelector('[data-testid="tab-students"]')?.dispatchEvent(new Event('click', { bubbles: true })),
       variant: "default" as const,
       badge: uploadedCount === 0 ? "Start Here" : undefined,
     },
@@ -151,21 +277,21 @@ export default function InstitutionDashboard() {
       title: "Download Progress Reports",
       description: "Generate comprehensive reports on student progress, completion rates, and engagement metrics.",
       ctaText: "View Reports",
-      ctaLink: "#",
+      onClick: () => document.querySelector('[data-testid="tab-reports"]')?.dispatchEvent(new Event('click', { bubbles: true })),
     },
     {
       icon: Users,
       title: "Manage Cohorts",
       description: "Create new cohorts, assign courses, and organize your students into learning groups.",
       ctaText: "Manage Cohorts",
-      ctaLink: "#",
+      onClick: () => document.querySelector('[data-testid="tab-cohorts"]')?.dispatchEvent(new Event('click', { bubbles: true })),
     },
     {
       icon: BarChart3,
       title: "Track Performance",
       description: "Monitor overall institution metrics, student completion rates, and identify areas for improvement.",
       ctaText: "View Analytics",
-      ctaLink: "#",
+      onClick: () => document.querySelector('[data-testid="tab-analytics"]')?.dispatchEvent(new Event('click', { bubbles: true })),
       variant: "secondary" as const,
     },
   ];
@@ -241,9 +367,9 @@ export default function InstitutionDashboard() {
                   <CheckCircle2 className="h-6 w-6 text-green-500" />
                 </div>
               </div>
-              <div className="text-2xl font-bold mb-1">127</div>
+              <div className="text-2xl font-bold mb-1">873</div>
               <p className="text-sm text-muted-foreground">Certificates Issued</p>
-              <p className="text-xs text-muted-foreground mt-1">This semester</p>
+              <p className="text-xs text-muted-foreground mt-1">Across all programs</p>
             </CardContent>
           </Card>
         </div>
@@ -258,6 +384,10 @@ export default function InstitutionDashboard() {
             <TabsTrigger value="cohorts" className="flex items-center gap-2" data-testid="tab-cohorts">
               <Users className="h-4 w-4" />
               Cohorts
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2" data-testid="tab-analytics">
+              <TrendingUp className="h-4 w-4" />
+              Analytics
             </TabsTrigger>
             <TabsTrigger value="students" className="flex items-center gap-2" data-testid="tab-students">
               <Upload className="h-4 w-4" />
@@ -398,6 +528,107 @@ export default function InstitutionDashboard() {
             </div>
           </TabsContent>
 
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Student Progress Tracking
+                </CardTitle>
+                <CardDescription>
+                  Monitor student engagement and identify at-risk learners across all cohorts
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">8</div>
+                      <p className="text-sm text-muted-foreground">On Track</p>
+                    </div>
+                    <div className="text-center p-4 bg-amber-50 dark:bg-amber-950 rounded-lg border border-amber-200 dark:border-amber-800">
+                      <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">3</div>
+                      <p className="text-sm text-muted-foreground">At Risk</p>
+                    </div>
+                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">1</div>
+                      <p className="text-sm text-muted-foreground">Completed</p>
+                    </div>
+                  </div>
+
+                  {/* Student Table */}
+                  <div className="rounded-lg border overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Student</TableHead>
+                          <TableHead>Cohort</TableHead>
+                          <TableHead>Progress</TableHead>
+                          <TableHead>Last Active</TableHead>
+                          <TableHead>Status</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {MOCK_STUDENT_PROGRESS.map((student) => (
+                          <TableRow key={student.id} data-testid={`student-row-${student.id}`}>
+                            <TableCell>
+                              <div>
+                                <div className="font-medium">{student.name}</div>
+                                <div className="text-xs text-muted-foreground">{student.email}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm">{student.cohort}</TableCell>
+                            <TableCell>
+                              <div className="space-y-1 min-w-[120px]">
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="font-medium">{student.progress}%</span>
+                                </div>
+                                <Progress value={student.progress} className="h-2" />
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{student.lastActive}</TableCell>
+                            <TableCell>
+                              {student.status === "At Risk" ? (
+                                <Badge variant="destructive" className="gap-1">
+                                  <AlertCircle className="h-3 w-3" />
+                                  At Risk
+                                </Badge>
+                              ) : student.status === "Completed" ? (
+                                <Badge variant="default" className="gap-1 bg-green-600">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  Completed
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary" className="gap-1">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  On Track
+                                </Badge>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    <Button variant="outline" onClick={() => toast({ title: "Reminder sent! 📧", description: "Sent engagement reminders to 3 at-risk students" })}>
+                      <Send className="mr-2 h-4 w-4" />
+                      Send Reminders to At-Risk Students
+                    </Button>
+                    <Button variant="outline" onClick={() => handleDownloadReport("Student Progress")}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Export Report
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Import Students Tab */}
           <TabsContent value="students" className="space-y-6">
             <Card>
@@ -420,12 +651,13 @@ export default function InstitutionDashboard() {
                       accept=".csv"
                       className="hidden"
                       onChange={handleCSVUpload}
+                      disabled={uploading}
                     />
                     <label htmlFor="csv-upload">
-                      <Button variant="default" asChild data-testid="button-upload-csv">
+                      <Button variant="default" asChild data-testid="button-upload-csv" disabled={uploading}>
                         <span className="cursor-pointer">
                           <FileSpreadsheet className="mr-2 h-4 w-4" />
-                          Upload CSV File
+                          {uploading ? "Processing..." : "Upload CSV File"}
                         </span>
                       </Button>
                     </label>
@@ -437,7 +669,24 @@ export default function InstitutionDashboard() {
                     </p>
                   </div>
 
-                  {uploadedFileName && (
+                  {uploading && (
+                    <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium text-blue-900 dark:text-blue-100">
+                          Processing {uploadedFileName}
+                        </span>
+                        <span className="text-blue-700 dark:text-blue-300">
+                          {uploadProgress} / 127 students
+                        </span>
+                      </div>
+                      <Progress value={(uploadProgress / 127) * 100} className="h-2" />
+                      <p className="text-xs text-blue-600 dark:text-blue-400">
+                        Adding students to Fall 2025 Entrepreneurs cohort...
+                      </p>
+                    </div>
+                  )}
+
+                  {!uploading && uploadedFileName && uploadedCount > 0 && (
                     <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
                       <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
                       <div className="flex-1">
@@ -649,6 +898,86 @@ Jane Smith,jane@example.com,Spring 2025`}
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Success Modal */}
+      <Dialog open={showUploadSuccessModal} onOpenChange={setShowUploadSuccessModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <DialogTitle>Import Successful!</DialogTitle>
+                <DialogDescription>
+                  Students have been added to your institution
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-3xl font-bold text-primary mb-1">127</div>
+                  <p className="text-sm text-muted-foreground">Students Imported</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-3xl font-bold text-green-600 mb-1">127</div>
+                  <p className="text-sm text-muted-foreground">Emails Sent</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="bg-muted/50 rounded-lg p-4 border">
+              <div className="flex items-start gap-3">
+                <Users className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="font-medium mb-1">Fall 2025 Entrepreneurs</div>
+                  <div className="text-sm text-muted-foreground mb-3">
+                    All 127 students have been added to this cohort and can access their courses immediately.
+                  </div>
+                  <div className="flex gap-2 text-xs">
+                    <Badge variant="secondary">
+                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                      Cohort created
+                    </Badge>
+                    <Badge variant="secondary">
+                      <Mail className="h-3 w-3 mr-1" />
+                      Welcome emails sent
+                    </Badge>
+                    <Badge variant="secondary">
+                      <BookOpen className="h-3 w-3 mr-1" />
+                      Courses assigned
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t">
+              <Button
+                variant="outline"
+                onClick={() => setShowUploadSuccessModal(false)}
+                data-testid="button-close-success"
+              >
+                Close
+              </Button>
+              <Button onClick={() => {
+                setShowUploadSuccessModal(false);
+                // Switch to cohorts tab to see the new cohort
+                document.querySelector('[data-testid="tab-cohorts"]')?.dispatchEvent(new Event('click', { bubbles: true }));
+              }} data-testid="button-view-cohort">
+                <Eye className="mr-2 h-4 w-4" />
+                View Cohort
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
