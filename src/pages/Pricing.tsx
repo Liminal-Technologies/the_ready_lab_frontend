@@ -261,31 +261,6 @@ const Pricing = () => {
                 </Badge>
               </button>
             </div>
-
-            {/* Educator Demo CTA */}
-            <div className="mt-8">
-              <Card className="max-w-2xl mx-auto bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-                <CardContent className="pt-6 pb-6 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-3">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    <h3 className="text-xl font-bold">Try Our Educator Experience</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Experience the full educator journey with pre-filled examples. Perfect for demos and exploring features.
-                  </p>
-                  <Button 
-                    onClick={handleStartEducatorDemo}
-                    size="lg"
-                    className="gap-2"
-                    data-testid="button-start-educator-demo"
-                  >
-                    <Users className="h-4 w-4" />
-                    Start Educator Demo
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
       </section>
