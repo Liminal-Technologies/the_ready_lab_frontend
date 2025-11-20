@@ -8,6 +8,11 @@ The Ready Lab is a comprehensive Learning Management System (LMS) designed to of
 - Stripe integration to be improved later
 - Prefers minimal API keys for initial development
 
+## Recent Updates (November 20, 2025)
+- **Demo Mode Journey**: Updated flow from Homepage → Pricing Page → "Start Educator Demo" button for clearer UX
+- **Course Builder Success Screen**: Fixed blank modal issue by updating totalSteps to 6 and removing auto-close for demo presentations
+- **Educator Dashboard Actions**: Wired up all four action buttons (Launch Course Builder, Schedule Event, See Analytics, View Students) to their proper destinations
+
 ## System Architecture
 The project is built as a full-stack monorepo with a frontend utilizing React, TypeScript, Vite, TailwindCSS, and shadcn/ui. The backend is powered by Express.js and TypeScript, providing RESTful API services. Data persistence is handled by Neon PostgreSQL, accessed via Drizzle ORM. Stripe is integrated for payment processing.
 
