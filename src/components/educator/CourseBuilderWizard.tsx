@@ -282,15 +282,16 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
             // Auto-enroll demo student
             await autoEnrollStudent(course.id);
             
-            // Show success screen
+            // Show success screen (stays visible for presenter to showcase)
             setCurrentStep(6);
             
-            // Close wizard and clean up after demo completes
-            setTimeout(() => {
-              onOpenChange(false);
-              onCourseCreated?.();
-              setCachedDemoData(null);
-            }, 3000);
+            // Don't auto-close in demo mode - let presenter manually close
+            // This allows them to showcase the success screen and analytics
+            // setTimeout(() => {
+            //   onOpenChange(false);
+            //   onCourseCreated?.();
+            //   setCachedDemoData(null);
+            // }, 3000);
           } catch (error) {
             console.error('Auto-demo course creation failed:', error);
           }
@@ -306,7 +307,7 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
     };
   }, [open, onOpenChange, onCourseCreated, cachedDemoData]);
 
-  const totalSteps = 5;
+  const totalSteps = 6; // Including the success screen
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   // Get selected plan for fee calculation

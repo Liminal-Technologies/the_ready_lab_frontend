@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
+import { useMockAuth } from "@/hooks/useMockAuth";
 
 interface SelectedPlan {
   name: string;
@@ -44,16 +45,24 @@ const Pricing = () => {
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
   const navigate = useNavigate();
   const { auth } = useAuth();
+  const login = useMockAuth((state) => state.login);
 
   // Scroll to top when the page loads
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  const handleStartEducatorDemo = () => {
+    // Activate demo mode with Dr. Sarah Chen as educator
+    login('educator');
+    // Navigate to educator onboarding (forms will be pre-filled due to demo mode)
+    navigate('/educator/onboarding');
+  };
+
   const handlePlanClick = (plan: { name: string; price: { monthly: number; annual: number }; role: 'student' | 'educator' }) => {
-    // For educator plans, always go to onboarding flow (demo mode)
+    // For educator plans, activate demo mode and go to onboarding flow
     if (plan.role === 'educator') {
-      navigate('/educator/onboarding');
+      handleStartEducatorDemo();
       return;
     }
     
@@ -251,6 +260,31 @@ const Pricing = () => {
                   Save 17%
                 </Badge>
               </button>
+            </div>
+
+            {/* Educator Demo CTA */}
+            <div className="mt-8">
+              <Card className="max-w-2xl mx-auto bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+                <CardContent className="pt-6 pb-6 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    <h3 className="text-xl font-bold">Try Our Educator Experience</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Experience the full educator journey with pre-filled examples. Perfect for demos and exploring features.
+                  </p>
+                  <Button 
+                    onClick={handleStartEducatorDemo}
+                    size="lg"
+                    className="gap-2"
+                    data-testid="button-start-educator-demo"
+                  >
+                    <Users className="h-4 w-4" />
+                    Start Educator Demo
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

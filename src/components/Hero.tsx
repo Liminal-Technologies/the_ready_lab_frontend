@@ -18,12 +18,9 @@ const Hero = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const handleStartJourney = () => {
-    // Trigger demo mode and auto-login as educator (Dr. Sarah Chen)
-    // This sets isDemo=true in the Zustand store, which all forms subscribe to
-    mockAuth.login('educator');
-    
-    // Navigate to educator dashboard to start Journey B
-    navigate('/educator/dashboard');
+    // Navigate to pricing page where user can select "Sign Up for Educator"
+    // This will trigger demo mode and auto-login as Dr. Sarah Chen
+    navigate('/pricing');
   };
 
   const handleWatchDemo = () => {
