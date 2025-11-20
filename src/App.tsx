@@ -6,6 +6,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { DemoExperienceProvider } from "@/contexts/DemoExperienceContext";
+import { DemoExperienceOverlay } from "@/components/DemoExperienceOverlay";
 import { DashboardRouter } from "@/components/DashboardRouter";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AdminOverview } from "@/pages/admin/AdminOverview";
@@ -249,6 +250,7 @@ const AppContent = () => {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <DemoExperienceOverlay />
       <AIChatWidget />
       <MobileBottomNav />
     </>

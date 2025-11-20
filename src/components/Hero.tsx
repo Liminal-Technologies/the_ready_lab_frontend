@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, GraduationCap } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { DemoVideoModal } from "@/components/DemoVideoModal";
+import { useDemoExperience } from "@/contexts/DemoExperienceContext";
 import heroImage from "@/assets/hero-entrepreneurs.jpg";
 
 const Hero = () => {
   const { t } = useLanguage();
   const { auth } = useAuth();
   const navigate = useNavigate();
+  const { startDemo } = useDemoExperience();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
@@ -23,8 +25,12 @@ const Hero = () => {
     setIsVideoModalOpen(true);
   };
 
+  const handleStartAutoDemo = () => {
+    startDemo();
+  };
+
   return (
-    <section className="min-h-screen relative overflow-hidden">
+    <section className="min-h-screen relative overflow-hidden" data-demo-anchor="hero-section">
       {/* Background Image with Overlay - Full Screen */}
       <div className="absolute inset-0">
         <img 
@@ -33,6 +39,31 @@ const Hero = () => {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/40" />
+      </div>
+
+      {/* Auto Demo Button - Top Right */}
+      <div className="absolute top-24 right-8 z-30 hidden lg:block">
+        <Button
+          onClick={handleStartAutoDemo}
+          className="flex items-center gap-2 px-6 py-6 text-lg font-semibold border-4 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+          style={{
+            backgroundColor: 'transparent',
+            borderColor: '#FDB022',
+            color: '#FDB022',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#FDB022';
+            e.currentTarget.style.color = '#000';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '#FDB022';
+          }}
+          data-testid="button-auto-demo"
+        >
+          <GraduationCap className="h-6 w-6" />
+          <span className="tracking-wide">DEMO</span>
+        </Button>
       </div>
 
       {/* Massive Headline - Bottom Left (Desktop) / Top Center (Mobile) */}
@@ -49,7 +80,7 @@ const Hero = () => {
       </div>
 
       {/* Right Floating Content Box - Centered Vertically, Right Aligned */}
-      <div className="absolute top-1/2 -translate-y-1/2 mt-16 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block">
+      <div className="absolute top-1/2 -translate-y-1/2 mt-16 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block" data-demo-anchor="educator-cta">
         <div className="rounded-2xl p-5 text-center">
           <p className="text-white mb-5 leading-relaxed font-normal" style={{ fontSize: '0.9375rem', textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.

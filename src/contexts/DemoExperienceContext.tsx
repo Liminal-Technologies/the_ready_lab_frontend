@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // Journey and step definitions
 export type DemoJourney = 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
@@ -261,9 +260,8 @@ const INITIAL_STATE: DemoState = {
   startTime: null,
 };
 
-export function DemoExperienceProvider({ children }: { children: React.ReactNode }) {
+export function DemoExperienceProvider({ children }: { children: React.ReactNode}) {
   const [state, setState] = useState<DemoState>(INITIAL_STATE);
-  const navigate = useNavigate();
   const pageReadinessRef = useRef<Map<string, PageReadiness>>(new Map());
   const currentTimeoutRef = useRef<number | null>(null);
   const isExecutingRef = useRef(false);
@@ -319,7 +317,10 @@ export function DemoExperienceProvider({ children }: { children: React.ReactNode
       if (!step.skipNavigation && step.route) {
         const currentPath = window.location.pathname;
         if (currentPath !== step.route) {
-          navigate(step.route);
+          // Use history.pushState for programmatic navigation
+          window.history.pushState({}, '', step.route);
+          // Dispatch popstate event so React Router picks up the change
+          window.dispatchEvent(new PopStateEvent('popstate'));
           
           // Wait for page to be ready
           const readiness = pageReadinessRef.current.get(step.route);
@@ -365,7 +366,7 @@ export function DemoExperienceProvider({ children }: { children: React.ReactNode
       console.error('Demo step error:', error);
       isExecutingRef.current = false;
     }
-  }, [navigate, state.speed, state.status]);
+  }, [state.speed, state.status]);
 
   const startDemo = useCallback(() => {
     setState({
