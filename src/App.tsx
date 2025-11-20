@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { DemoExperienceProvider } from "@/contexts/DemoExperienceContext";
 import { DashboardRouter } from "@/components/DashboardRouter";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AdminOverview } from "@/pages/admin/AdminOverview";
@@ -259,7 +260,9 @@ const App = () => (
     <TooltipProvider>
       <Sonner position="top-right" richColors />
       <AuthProvider>
-        <AppContent />
+        <DemoExperienceProvider>
+          <AppContent />
+        </DemoExperienceProvider>
       </AuthProvider>
     </TooltipProvider>
   </ThemeProvider>
