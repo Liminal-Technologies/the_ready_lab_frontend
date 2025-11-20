@@ -8,7 +8,8 @@ export interface SuggestedAction {
   title: string;
   description: string;
   ctaText: string;
-  ctaLink: string;
+  ctaLink?: string;
+  onClick?: () => void;
   variant?: "default" | "outline" | "secondary";
   badge?: string;
 }
@@ -66,7 +67,7 @@ export function SuggestedActions({
                         variant={action.variant || "outline"}
                         size="sm"
                         className="mt-2 md:mt-1.5 group/btn"
-                        onClick={() => navigate(action.ctaLink)}
+                        onClick={() => action.onClick ? action.onClick() : action.ctaLink && navigate(action.ctaLink)}
                         data-testid={`button-${action.ctaText.toLowerCase().replace(/\s+/g, '-')}`}
                       >
                         {action.ctaText}
