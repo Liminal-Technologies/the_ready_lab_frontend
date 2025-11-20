@@ -250,7 +250,6 @@ const AppContent = () => {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <DemoExperienceOverlay />
       <AIChatWidget />
       <MobileBottomNav />
     </>
