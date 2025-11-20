@@ -264,7 +264,16 @@ export function DemoExperienceProvider({ children }: { children: React.ReactNode
   const [state, setState] = useState<DemoState>(INITIAL_STATE);
   const pageReadinessRef = useRef<Map<string, PageReadiness>>(new Map());
   const currentTimeoutRef = useRef<number | null>(null);
+  const waitResolverRef = useRef<(() => void) | null>(null);
   const isExecutingRef = useRef(false);
+  const statusRef = useRef<DemoStatus>('idle');
+  const speedRef = useRef<1 | 2 | 4>(1);
+
+  // Sync refs with state
+  useEffect(() => {
+    statusRef.current = state.status;
+    speedRef.current = state.speed;
+  }, [state.status, state.speed]);
 
   // Persist demo state to localStorage
   useEffect(() => {
@@ -349,24 +358,26 @@ export function DemoExperienceProvider({ children }: { children: React.ReactNode
 
       // Wait for step duration (adjusted by speed)
       await new Promise<void>((resolve) => {
-        const adjustedDuration = step.duration / state.speed;
+        waitResolverRef.current = resolve;
+        const adjustedDuration = step.duration / speedRef.current;
         currentTimeoutRef.current = window.setTimeout(() => {
           currentTimeoutRef.current = null;
+          waitResolverRef.current = null;
           resolve();
         }, adjustedDuration);
       });
 
       isExecutingRef.current = false;
 
-      // Move to next step if still running
-      if (state.status === 'running') {
+      // Move to next step if still running (use ref for latest state)
+      if (statusRef.current === 'running') {
         executeStep(stepIndex + 1);
       }
     } catch (error) {
       console.error('Demo step error:', error);
       isExecutingRef.current = false;
     }
-  }, [state.speed, state.status]);
+  }, []);
 
   const startDemo = useCallback(() => {
     setState({
@@ -382,18 +393,31 @@ export function DemoExperienceProvider({ children }: { children: React.ReactNode
       clearTimeout(currentTimeoutRef.current);
       currentTimeoutRef.current = null;
     }
+    // Resolve the wait promise to unblock executeStep
+    if (waitResolverRef.current) {
+      waitResolverRef.current();
+      waitResolverRef.current = null;
+    }
     setState(prev => ({ ...prev, status: 'paused' }));
+    isExecutingRef.current = false;
   }, []);
 
   const resumeDemo = useCallback(() => {
     setState(prev => ({ ...prev, status: 'running' }));
-    executeStep(state.currentStepIndex);
+    // Restart the current step
+    const currentIndex = state.currentStepIndex;
+    executeStep(currentIndex >= 0 ? currentIndex : 0);
   }, [executeStep, state.currentStepIndex]);
 
   const cancelDemo = useCallback(() => {
     if (currentTimeoutRef.current) {
       clearTimeout(currentTimeoutRef.current);
       currentTimeoutRef.current = null;
+    }
+    // Resolve the wait promise to unblock executeStep
+    if (waitResolverRef.current) {
+      waitResolverRef.current();
+      waitResolverRef.current = null;
     }
     setState(INITIAL_STATE);
     isExecutingRef.current = false;
