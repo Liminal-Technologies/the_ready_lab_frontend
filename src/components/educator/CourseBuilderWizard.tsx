@@ -30,6 +30,7 @@ import { saveEducatorCourse, type EducatorCourse, type CourseModule, type Course
 import { generateDemoCourse } from "@/utils/demoCourseTemplate";
 import { getAutoDemoOrchestrator } from "@/utils/autoDemoOrchestrator";
 import { autoEnrollStudent } from "@/utils/autoDemoManager";
+import { useMockAuth } from "@/hooks/useMockAuth";
 
 interface CourseBuilderWizardProps {
   open: boolean;
@@ -95,8 +96,11 @@ const LANGUAGES = [
 ];
 
 export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editingCourse }: CourseBuilderWizardProps) {
-  // Generate demo data for pre-filling
-  const initialDemoData = generateDemoCourse();
+  // Subscribe to demo mode state from useMockAuth for reactive updates
+  const isDemoMode = useMockAuth((state) => state.isDemo);
+  
+  // Generate demo data only if in demo mode
+  const initialDemoData = isDemoMode ? generateDemoCourse() : null;
   
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -104,26 +108,26 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
   // Step 1: Course Type
   const [courseType, setCourseType] = useState("microlearning");
   
-  // Step 2: Course Details - Pre-filled with Grant Writing Masterclass
-  const [title, setTitle] = useState(initialDemoData.title);
-  const [category, setCategory] = useState(initialDemoData.category);
+  // Step 2: Course Details - Pre-filled only in demo mode
+  const [title, setTitle] = useState(initialDemoData?.title || "");
+  const [category, setCategory] = useState(initialDemoData?.category || "");
   const [level, setLevel] = useState("beginner");
   const [learningStyles, setLearningStyles] = useState<string[]>([]);
   const [courseLanguage, setCourseLanguage] = useState("en");
   const [microlearningDuration, setMicrolearningDuration] = useState(5);
-  const [description, setDescription] = useState(initialDemoData.description);
+  const [description, setDescription] = useState(initialDemoData?.description || "");
   const [objectives, setObjectives] = useState<string[]>(["", "", ""]);
   
-  // Step 3: Pricing - Pre-filled with $99
-  const [isPaid, setIsPaid] = useState(true);
-  const [price, setPrice] = useState("99");
+  // Step 3: Pricing - Pre-filled with $99 only in demo mode
+  const [isPaid, setIsPaid] = useState(isDemoMode ? true : false);
+  const [price, setPrice] = useState(isDemoMode ? "99" : "");
   
-  // Step 4: Content Upload - Pre-filled with modules
+  // Step 4: Content Upload - Pre-filled with modules only in demo mode
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
   const [thumbnailGenerated, setThumbnailGenerated] = useState(false);
   const [captionsGenerated, setCaptionsGenerated] = useState(false);
   const [modules, setModules] = useState<any[]>(
-    initialDemoData.modules.map((m) => ({
+    initialDemoData?.modules.map((m) => ({
       id: m.id,
       name: m.title,
       description: m.description,
@@ -131,8 +135,39 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
         ...lesson,
         name: lesson.title,
       }))
-    }))
+    })) || []
   );
+
+  // Reset form fields when demo mode is cleared (e.g., on logout)
+  useEffect(() => {
+    if (!isDemoMode && !editingCourse) {
+      // Demo mode was turned off - reset to blank fields
+      setTitle("");
+      setCategory("");
+      setDescription("");
+      setPrice("");
+      setIsPaid(false);
+      setModules([]);
+    } else if (isDemoMode && !editingCourse) {
+      // Demo mode was turned on - pre-fill with demo data
+      // Regenerate demo data instead of using cached initialDemoData
+      const demoData = generateDemoCourse();
+      setTitle(demoData.title);
+      setCategory(demoData.category);
+      setDescription(demoData.description);
+      setPrice("99");
+      setIsPaid(true);
+      setModules(demoData.modules.map((m) => ({
+        id: m.id,
+        name: m.title,
+        description: m.description,
+        lessons: m.lessons.map((lesson) => ({
+          ...lesson,
+          name: lesson.title,
+        }))
+      })));
+    }
+  }, [isDemoMode]);
 
   // Pre-populate form when editing or reset when creating new
   useEffect(() => {

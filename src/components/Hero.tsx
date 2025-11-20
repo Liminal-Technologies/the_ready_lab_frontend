@@ -6,17 +6,24 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { DemoVideoModal } from "@/components/DemoVideoModal";
+import { useMockAuth } from "@/hooks/useMockAuth";
 import heroImage from "@/assets/hero-entrepreneurs.jpg";
 
 const Hero = () => {
   const { t } = useLanguage();
   const { auth } = useAuth();
   const navigate = useNavigate();
+  const mockAuth = useMockAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const handleStartJourney = () => {
-    navigate('/pricing');
+    // Trigger demo mode and auto-login as educator (Dr. Sarah Chen)
+    // This sets isDemo=true in the Zustand store, which all forms subscribe to
+    mockAuth.login('educator');
+    
+    // Navigate to educator dashboard to start Journey B
+    navigate('/educator/dashboard');
   };
 
   const handleWatchDemo = () => {

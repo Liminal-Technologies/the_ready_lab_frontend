@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Upload, X, Sparkles } from "lucide-react";
+import { useMockAuth } from "@/hooks/useMockAuth";
 
 const EXPERTISE_OPTIONS = [
   "Funding & Grants",
@@ -38,12 +39,37 @@ const CONTENT_TYPES = [
 
 export default function EducatorOnboarding() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
+  
+  // Subscribe to demo mode state from useMockAuth for reactive updates
+  const isDemoMode = useMockAuth((state) => state.isDemo);
+  
+  // Pre-fill with demo data only in demo mode
+  const [name, setName] = useState(isDemoMode ? "Dr. Sarah Chen" : "");
+  const [bio, setBio] = useState(isDemoMode ? "Grant writing expert with 15+ years of experience helping entrepreneurs secure funding. Former nonprofit director and certified grant professional." : "");
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [selectedExpertise, setSelectedExpertise] = useState<string[]>([]);
-  const [selectedTeachingStyles, setSelectedTeachingStyles] = useState<string[]>([]);
-  const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>([]);
+  const [selectedExpertise, setSelectedExpertise] = useState<string[]>(isDemoMode ? ["Funding & Grants", "Legal & Compliance"] : []);
+  const [selectedTeachingStyles, setSelectedTeachingStyles] = useState<string[]>(isDemoMode ? ["visual", "reading"] : []);
+  const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>(isDemoMode ? ["microlearning", "live"] : []);
+
+  // Reset form fields when demo mode changes (e.g., on logout)
+  useEffect(() => {
+    if (!isDemoMode) {
+      // Demo mode was turned off - reset to blank fields
+      setName("");
+      setBio("");
+      setPhotoPreview(null);
+      setSelectedExpertise([]);
+      setSelectedTeachingStyles([]);
+      setSelectedContentTypes([]);
+    } else if (isDemoMode) {
+      // Demo mode was turned on - pre-fill with demo data
+      setName("Dr. Sarah Chen");
+      setBio("Grant writing expert with 15+ years of experience helping entrepreneurs secure funding. Former nonprofit director and certified grant professional.");
+      setSelectedExpertise(["Funding & Grants", "Legal & Compliance"]);
+      setSelectedTeachingStyles(["visual", "reading"]);
+      setSelectedContentTypes(["microlearning", "live"]);
+    }
+  }, [isDemoMode]);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

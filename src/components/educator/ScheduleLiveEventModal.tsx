@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { Calendar, Clock, Users, Video, DollarSign } from "lucide-react";
+import { useMockAuth } from "@/hooks/useMockAuth";
 
 interface ScheduleLiveEventModalProps {
   open: boolean;
@@ -32,6 +33,9 @@ const TIMEZONES = [
 ];
 
 export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEventModalProps) {
+  // Subscribe to demo mode state from useMockAuth for reactive updates
+  const isDemoMode = useMockAuth((state) => state.isDemo);
+  
   // Get browser timezone as default
   const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const defaultTimezone = TIMEZONES.find(tz => tz.value === browserTimezone)?.value || "America/New_York";
@@ -41,15 +45,15 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
   
-  // Pre-fill with demo data for Grant Writing Q&A event
-  const [title, setTitle] = useState("Grant Writing Q&A");
-  const [description, setDescription] = useState("Join us for a live Q&A session where we'll answer your questions about grant writing and funding strategies.");
-  const [date, setDate] = useState(tomorrowFormatted);
-  const [time, setTime] = useState("18:00");
+  // Pre-fill with demo data only in demo mode
+  const [title, setTitle] = useState(isDemoMode ? "Grant Writing Q&A" : "");
+  const [description, setDescription] = useState(isDemoMode ? "Join us for a live Q&A session where we'll answer your questions about grant writing and funding strategies." : "");
+  const [date, setDate] = useState(isDemoMode ? tomorrowFormatted : "");
+  const [time, setTime] = useState(isDemoMode ? "18:00" : "");
   const [timezone, setTimezone] = useState(defaultTimezone);
   const [duration, setDuration] = useState("60");
   const [maxAttendees, setMaxAttendees] = useState("100");
-  const [associatedCourse, setAssociatedCourse] = useState("Grant Writing Masterclass");
+  const [associatedCourse, setAssociatedCourse] = useState(isDemoMode ? "Grant Writing Masterclass" : "");
   const [isPaid, setIsPaid] = useState(false);
   const [price, setPrice] = useState("0");
   const [enableChat, setEnableChat] = useState(true);
@@ -59,6 +63,25 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
 
   // Get created courses from localStorage
   const createdCourses = JSON.parse(localStorage.getItem('createdCourses') || '[]');
+
+  // Reset form fields when demo mode changes (e.g., on logout)
+  useEffect(() => {
+    if (!isDemoMode) {
+      // Demo mode was turned off - reset to blank fields
+      setTitle("");
+      setDescription("");
+      setDate("");
+      setTime("");
+      setAssociatedCourse("");
+    } else if (isDemoMode) {
+      // Demo mode was turned on - pre-fill with demo data
+      setTitle("Grant Writing Q&A");
+      setDescription("Join us for a live Q&A session where we'll answer your questions about grant writing and funding strategies.");
+      setDate(tomorrowFormatted);
+      setTime("18:00");
+      setAssociatedCourse("Grant Writing Masterclass");
+    }
+  }, [isDemoMode]);
 
   const handleCreate = () => {
     if (!title.trim() || !date || !time) {
@@ -105,15 +128,15 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
       description: `Your live event "${title}" has been scheduled.`,
     });
 
-    // Reset form to pre-filled demo values
-    setTitle("Grant Writing Q&A");
-    setDescription("Join us for a live Q&A session where we'll answer your questions about grant writing and funding strategies.");
-    setDate(tomorrowFormatted);
-    setTime("18:00");
+    // Reset form (pre-filled demo values in demo mode, blank otherwise)
+    setTitle(isDemoMode ? "Grant Writing Q&A" : "");
+    setDescription(isDemoMode ? "Join us for a live Q&A session where we'll answer your questions about grant writing and funding strategies." : "");
+    setDate(isDemoMode ? tomorrowFormatted : "");
+    setTime(isDemoMode ? "18:00" : "");
     setTimezone(defaultTimezone);
     setDuration("60");
     setMaxAttendees("100");
-    setAssociatedCourse("Grant Writing Masterclass");
+    setAssociatedCourse(isDemoMode ? "Grant Writing Masterclass" : "");
     setIsPaid(false);
     setPrice("0");
     setEnableChat(true);

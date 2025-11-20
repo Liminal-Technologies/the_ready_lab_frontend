@@ -19,6 +19,7 @@ interface MockAuthStore {
   login: (role: MockUserRole) => void;
   logout: () => void;
   toggleDemo: () => void;
+  clearDemoMode: () => void;
 }
 
 const mockUsers: Record<MockUserRole, MockUser> = {
@@ -90,10 +91,17 @@ export const useMockAuth = create<MockAuthStore>()(
         set({ user: mockUsers[role], isDemo: true });
       },
       logout: () => {
+        // Clear demo mode flag and reset all state on logout
+        localStorage.removeItem('demo-mode');
         set({ user: null, isDemo: false });
       },
       toggleDemo: () => {
         set((state) => ({ isDemo: !state.isDemo }));
+      },
+      clearDemoMode: () => {
+        // Clear demo mode flag and reset all store state
+        localStorage.removeItem('demo-mode');
+        set({ user: null, isDemo: false });
       },
     }),
     {
