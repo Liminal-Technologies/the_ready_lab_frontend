@@ -2,9 +2,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
 import { DemoExperienceProvider } from "@/contexts/DemoExperienceContext";
 import { DemoExperienceOverlay } from "@/components/DemoExperienceOverlay";
 import { DashboardRouter } from "@/components/DashboardRouter";
@@ -72,6 +73,12 @@ import { AIChatWidget } from "@/components/ai/AIChatWidget";
 
 const AppContent = () => {
   const { auth } = useAuth();
+  const location = useLocation();
+  
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
   
   console.log('AppContent auth state:', auth);
   

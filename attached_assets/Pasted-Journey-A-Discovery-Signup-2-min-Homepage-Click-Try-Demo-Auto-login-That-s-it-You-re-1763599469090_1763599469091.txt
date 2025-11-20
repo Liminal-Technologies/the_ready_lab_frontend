@@ -1,0 +1,75 @@
+Journey A: Discovery → Signup (2 min)
+Homepage → Click "Try Demo" → Auto-login ✅
+That's it! You're in as Dr. Sarah Chen
+
+Journey B: Dashboard Overview (2 min)
+Location: /educator/dashboard
+Point to stats (0 students, 0 courses, $0 revenue) - 10 sec
+Scroll to "Create Your First Course" action - 10 sec
+Show empty course list - 10 sec
+Click "+Create Course" button (top right, gold) - 5 sec
+Transition: "Let's create a course" - 5 sec
+Total: 40 seconds (leaves 1:20 for buffer/transitions)
+
+Journey C: Create Course (2 min)
+Course Builder opens
+Step 1 - Fill in:
+Title: Grant Writing Masterclass
+Category: "Funding & Grants"
+Description: Learn grant writing to secure funding
+Click Next - 30 sec
+Step 2 - Curriculum:
+Show pre-populated 3 modules, 10 lessons
+Click Next - 15 sec
+Step 3 - Pricing:
+Select "One-time payment"
+Price: $99
+Click Next - 15 sec
+Step 4 - Settings:
+Leave defaults, Click Next - 10 sec
+Step 5 - Publish:
+Click "Publish Course"
+Confetti shows ✅
+20 sec
+Back to dashboard:
+Show course in list (1 student enrolled)
+10 sec
+Total: 1:40 (leaves 20 sec buffer)
+
+Journey D: Student Analytics (2 min)
+Location: Click "Students" → /educator/students
+Show student list: Alex Morgan, 15% progress - 20 sec
+Click on Alex - show details (2/10 lessons, $99 paid) - 30 sec
+Point to progress bars and engagement status - 20 sec
+Show analytics charts (if visible) - 20 sec
+Total: 1:30 (leaves 30 sec buffer)
+
+Journey E: Revenue (2 min)
+Location: Click "Revenue" → /educator/revenue
+Show revenue stats: $99 this month, $99 all-time - 20 sec
+Revenue by course: Grant Writing = $99 - 20 sec
+Transaction history: Alex Morgan $99 paid - 20 sec
+Mention: "Stripe handles auto-payouts" - 10 sec
+Total: 1:10 (leaves 50 sec buffer)
+
+Journey F: Live Event (2 min)
+Location: Back to /educator/dashboard
+Click "Schedule Event" button (top right) - 5 sec
+Fill event form:
+Title: Grant Writing Q&A
+Date: Tomorrow
+Time: 6:00 PM
+Course: Grant Writing Masterclass
+Click Create - 40 sec
+Event created - show success - 10 sec
+Explain: "Students get auto-invited, live broadcast with chat/Q&A, auto-records" - 20 sec
+Total: 1:15 (leaves 45 sec buffer)
+
+🎯 Speed Tips
+Pre-fill in advance: Have forms auto-populated if possible
+Skip narration fluff: Just action names ("Creating course... Publishing...")
+Fast transitions: No pauses between journeys
+Practice once: Know your clicks before recording
+Total demo: 8-10 minutes for all 6 journeys
+That's it - focused, fast, and complete! 🚀
+

@@ -36,14 +36,20 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
   const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const defaultTimezone = TIMEZONES.find(tz => tz.value === browserTimezone)?.value || "America/New_York";
   
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  // Calculate tomorrow's date in YYYY-MM-DD format for pre-filling
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
+  
+  // Pre-fill with demo data for Grant Writing Q&A event
+  const [title, setTitle] = useState("Grant Writing Q&A");
+  const [description, setDescription] = useState("Join us for a live Q&A session where we'll answer your questions about grant writing and funding strategies.");
+  const [date, setDate] = useState(tomorrowFormatted);
+  const [time, setTime] = useState("18:00");
   const [timezone, setTimezone] = useState(defaultTimezone);
   const [duration, setDuration] = useState("60");
   const [maxAttendees, setMaxAttendees] = useState("100");
-  const [associatedCourse, setAssociatedCourse] = useState("");
+  const [associatedCourse, setAssociatedCourse] = useState("Grant Writing Masterclass");
   const [isPaid, setIsPaid] = useState(false);
   const [price, setPrice] = useState("0");
   const [enableChat, setEnableChat] = useState(true);
@@ -99,15 +105,15 @@ export function ScheduleLiveEventModal({ open, onOpenChange }: ScheduleLiveEvent
       description: `Your live event "${title}" has been scheduled.`,
     });
 
-    // Reset form
-    setTitle("");
-    setDescription("");
-    setDate("");
-    setTime("");
+    // Reset form to pre-filled demo values
+    setTitle("Grant Writing Q&A");
+    setDescription("Join us for a live Q&A session where we'll answer your questions about grant writing and funding strategies.");
+    setDate(tomorrowFormatted);
+    setTime("18:00");
     setTimezone(defaultTimezone);
     setDuration("60");
     setMaxAttendees("100");
-    setAssociatedCourse("");
+    setAssociatedCourse("Grant Writing Masterclass");
     setIsPaid(false);
     setPrice("0");
     setEnableChat(true);

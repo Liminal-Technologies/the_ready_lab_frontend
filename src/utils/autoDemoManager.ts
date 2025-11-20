@@ -9,13 +9,13 @@ import { createEnrollment } from './educatorCoursesStorage';
  * Auto-enroll a demo student in the newly created course
  */
 export async function autoEnrollStudent(courseId: string): Promise<string> {
-  // Create a demo student enrollment
+  // Create a demo student enrollment with 15% progress
   const enrollment = createEnrollment({
     courseId,
     studentId: 'demo-student-1',
     studentName: 'Alex Morgan',
     studentEmail: 'alex.morgan@demo.com',
-    progress: 0,
+    progress: 15,
     completedLessons: [],
     lastActiveAt: new Date().toISOString(),
     status: 'active',

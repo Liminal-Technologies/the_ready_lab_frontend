@@ -95,31 +95,44 @@ const LANGUAGES = [
 ];
 
 export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editingCourse }: CourseBuilderWizardProps) {
+  // Generate demo data for pre-filling
+  const initialDemoData = generateDemoCourse();
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   
   // Step 1: Course Type
   const [courseType, setCourseType] = useState("microlearning");
   
-  // Step 2: Course Details
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  // Step 2: Course Details - Pre-filled with Grant Writing Masterclass
+  const [title, setTitle] = useState(initialDemoData.title);
+  const [category, setCategory] = useState(initialDemoData.category);
   const [level, setLevel] = useState("beginner");
   const [learningStyles, setLearningStyles] = useState<string[]>([]);
   const [courseLanguage, setCourseLanguage] = useState("en");
   const [microlearningDuration, setMicrolearningDuration] = useState(5);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(initialDemoData.description);
   const [objectives, setObjectives] = useState<string[]>(["", "", ""]);
   
-  // Step 3: Pricing
-  const [isPaid, setIsPaid] = useState(false);
+  // Step 3: Pricing - Pre-filled with $99
+  const [isPaid, setIsPaid] = useState(true);
   const [price, setPrice] = useState("99");
   
-  // Step 4: Content Upload
+  // Step 4: Content Upload - Pre-filled with modules
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
   const [thumbnailGenerated, setThumbnailGenerated] = useState(false);
   const [captionsGenerated, setCaptionsGenerated] = useState(false);
-  const [modules, setModules] = useState<any[]>([{ name: "Module 1", lessons: [] }]);
+  const [modules, setModules] = useState<any[]>(
+    initialDemoData.modules.map((m) => ({
+      id: m.id,
+      name: m.title,
+      description: m.description,
+      lessons: m.lessons.map((lesson) => ({
+        ...lesson,
+        name: lesson.title,
+      }))
+    }))
+  );
 
   // Pre-populate form when editing or reset when creating new
   useEffect(() => {
@@ -430,10 +443,13 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
     }
   };
 
-  const handleSubmitForReview = () => {
+  const handleSubmitForReview = async () => {
     try {
       const course = buildCourseData(true);
       saveEducatorCourse(course);
+      
+      // Auto-enroll demo student Alex Morgan
+      await autoEnrollStudent(course.id);
       
       // Show success screen
       setCurrentStep(6);
@@ -447,22 +463,33 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
   };
 
   const resetForm = () => {
+    // Pre-fill with Grant Writing Masterclass demo data for recording
+    const demoData = generateDemoCourse();
+    
     setCurrentStep(1);
     setCourseType("microlearning");
-    setTitle("");
-    setCategory("");
+    setTitle(demoData.title);
+    setCategory(demoData.category);
     setLevel("beginner");
     setLearningStyles([]);
     setCourseLanguage("en");
     setMicrolearningDuration(5);
-    setDescription("");
+    setDescription(demoData.description);
     setObjectives(["", "", ""]);
-    setIsPaid(false);
+    setIsPaid(true);
     setPrice("99");
     setUploadedFiles([]);
     setThumbnailGenerated(false);
     setCaptionsGenerated(false);
-    setModules([{ name: "Module 1", lessons: [] }]);
+    setModules(demoData.modules.map((m, index) => ({
+      id: m.id,
+      name: m.title,
+      description: m.description,
+      lessons: m.lessons.map((lesson) => ({
+        ...lesson,
+        name: lesson.title,
+      }))
+    })));
   };
 
   const handleNext = () => {
@@ -895,9 +922,9 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
               <Button
                 className="flex-1"
                 onClick={handleSubmitForReview}
-                data-testid="button-submit-review"
+                data-testid="button-publish-course"
               >
-                Submit for Review
+                Publish Course
               </Button>
             </div>
           </div>
@@ -910,10 +937,10 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">Submitted for Review!</h3>
+            <h3 className="text-2xl font-bold mb-2">Course Published!</h3>
             <p className="text-muted-foreground mb-6">
-              Your course "{title}" has been submitted for review.<br />
-              We'll notify you within 24-48 hours.
+              Your course "{title}" is now live and available to students.<br />
+              Students can enroll and start learning right away!
             </p>
             <Button
               onClick={() => {

@@ -68,16 +68,16 @@ import {
 } from '@/utils/educatorCoursesStorage';
 import { useToast } from '@/hooks/use-toast';
 
-// Mock student data
+// Mock student data (for dashboard overview only - real enrollments shown in StudentAnalytics)
 const MOCK_STUDENTS = [
-  { id: 1, name: "Sarah Johnson", avatar: "", course: "Funding Essentials", progress: 85, lastActive: "2 hours ago", atRisk: false },
-  { id: 2, name: "Michael Chen", avatar: "", course: "Legal Framework", progress: 92, lastActive: "1 day ago", atRisk: false },
-  { id: 3, name: "Emma Davis", avatar: "", course: "Funding Essentials", progress: 28, lastActive: "7 days ago", atRisk: true },
-  { id: 4, name: "James Wilson", avatar: "", course: "Marketing Basics", progress: 67, lastActive: "3 hours ago", atRisk: false },
-  { id: 5, name: "Lisa Anderson", avatar: "", course: "Legal Framework", progress: 15, lastActive: "10 days ago", atRisk: true },
-  { id: 6, name: "David Martinez", avatar: "", course: "Funding Essentials", progress: 73, lastActive: "1 hour ago", atRisk: false },
-  { id: 7, name: "Jennifer Taylor", avatar: "", course: "Marketing Basics", progress: 41, lastActive: "4 days ago", atRisk: false },
-  { id: 8, name: "Robert Brown", avatar: "", course: "Funding Essentials", progress: 89, lastActive: "30 min ago", atRisk: false },
+  { id: 2, name: "Sarah Johnson", avatar: "", course: "Funding Essentials", progress: 85, lastActive: "2 hours ago", atRisk: false },
+  { id: 3, name: "Michael Chen", avatar: "", course: "Legal Framework", progress: 92, lastActive: "1 day ago", atRisk: false },
+  { id: 4, name: "Emma Davis", avatar: "", course: "Funding Essentials", progress: 28, lastActive: "7 days ago", atRisk: true },
+  { id: 5, name: "James Wilson", avatar: "", course: "Marketing Basics", progress: 67, lastActive: "3 hours ago", atRisk: false },
+  { id: 6, name: "Lisa Anderson", avatar: "", course: "Legal Framework", progress: 15, lastActive: "10 days ago", atRisk: true },
+  { id: 7, name: "David Martinez", avatar: "", course: "Funding Essentials", progress: 73, lastActive: "1 hour ago", atRisk: false },
+  { id: 8, name: "Jennifer Taylor", avatar: "", course: "Marketing Basics", progress: 41, lastActive: "4 days ago", atRisk: false },
+  { id: 9, name: "Robert Brown", avatar: "", course: "Funding Essentials", progress: 89, lastActive: "30 min ago", atRisk: false },
 ];
 
 const MOCK_QUESTIONS = [
