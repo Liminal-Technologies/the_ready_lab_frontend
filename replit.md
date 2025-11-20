@@ -19,12 +19,13 @@ The system supports distinct user journeys:
 *   **Student Journeys:** Course discovery, enrollment, certificate generation with LinkedIn sharing, interactive community features, and a tab-based dashboard.
 *   **Educator Journeys:** Complete end-to-end journey with full localStorage persistence:
     - **Onboarding**: 4-step wizard with profile setup, teaching preferences, and payout configuration
-    - **Course Creation**: 5-step builder wizard with curriculum management, pricing configuration, and publishing controls
+    - **Course Creation**: 6-step builder wizard with curriculum management, pricing configuration, publishing controls, and success screen
     - **Course Management**: Edit (ID preservation), publish/unpublish toggle, delete with confirmation, duplicate courses
     - **Student-Facing Integration**: Educator courses appear in browse/search, enrollable by students, playable with progress tracking
     - **Analytics & Revenue**: Real-time dashboards showing student progress (active/at-risk/completed), revenue metrics (this month/all-time/pending), transaction history, and course performance breakdowns
     - **Data Flow**: Complete reactivity from course creation → publishing → student enrollment → progress tracking → analytics/revenue updates
-    - **Demo Recording Features**: Pre-filled forms for click-through demos (Course Builder with Grant Writing Masterclass, Schedule Event with Grant Writing Q&A), auto-enrollment of Alex Morgan (15% progress, $99 payment) when course published, scroll-to-top navigation for smooth recordings
+    - **Demo Mode Journey**: Homepage "Start Your Journey" → Pricing Page → "Start Educator Demo" button → Auto-login as Dr. Sarah Chen → Pre-filled Onboarding → Dashboard → Pre-filled Course Builder → Pre-filled Schedule Event → Publish → Success Screen (stays visible) → Analytics
+    - **Demo Recording Features**: Reactive form pre-filling using Zustand store (useMockAuth), forms auto-reset on logout, dedicated demo CTA on pricing page, auto-enrollment of Alex Morgan (15% progress, $99 payment) when course published, success screen stays visible for presenters to showcase
 *   **Institution Journeys:** Landing page, demo requests, and an admin dashboard for CSV uploads, cohort management, and report generation.
 *   **Course Management:** Unified browsing experience with search, filters, sorting, pagination, micro-learning feeds, community showcases, and comprehensive course detail pages with tabbed content and sticky enrollment sidebars. Educator-created courses are merged with mock courses and are searchable/filterable.
 *   **Learning Experience:** Dynamic lesson player with URL-based navigation, sequential lesson unlocking (cross-module support), dual-type ID support (UUID/numeric), video and quiz lesson types, progress tracking (localStorage-based persistence with hardened parsing), and resource downloads. Includes robust progress tracking and certificate generation upon completion.
