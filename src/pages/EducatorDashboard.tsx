@@ -35,8 +35,7 @@ import {
   Trash2,
   Copy,
   Power,
-  PowerOff,
-  Play
+  PowerOff
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -67,7 +66,6 @@ import {
   toggleCoursePublished,
   type EducatorCourse 
 } from '@/utils/educatorCoursesStorage';
-import { getAutoDemoOrchestrator } from '@/utils/autoDemoOrchestrator';
 import { useToast } from '@/hooks/use-toast';
 
 // Mock student data
@@ -192,14 +190,6 @@ export const EducatorDashboard = () => {
     setShowDeleteDialog(true);
   };
 
-  const handleStartAutoDemo = async () => {
-    setShowAutoDemo(true);
-    setShowCourseWizard(true);
-    
-    // Start the orchestrator
-    const orchestrator = getAutoDemoOrchestrator();
-    await orchestrator.start();
-  };
 
   const confirmDeleteCourse = () => {
     if (!courseToDelete) return;
@@ -340,15 +330,6 @@ export const EducatorDashboard = () => {
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
-            <Button
-              variant="secondary"
-              onClick={handleStartAutoDemo}
-              data-testid="button-watch-auto-demo"
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"
-            >
-              <Play className="mr-2 h-4 w-4" />
-              🎬 Watch Auto Demo
-            </Button>
             <Button
               variant="outline"
               onClick={() => setShowScheduleEvent(true)}
