@@ -579,7 +579,7 @@ export const EducatorDashboard = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" data-testid={`course-actions-${index}`}>
-                              <MoreVertical className="h-4 w-4" />
+                              <MoreVertical className="h-4 w-4 text-gray-700 dark:text-gray-300" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
