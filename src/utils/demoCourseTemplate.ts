@@ -22,6 +22,8 @@ export interface DemoCourseTemplate {
       description: string;
       videoUrl?: string;
       audioUrl?: string;
+      captionEnUrl?: string; // English subtitles (VTT/SRT)
+      captionEsUrl?: string; // Spanish subtitles (VTT/SRT)
       resources?: Array<{ title: string; url: string }>;
       quizQuestions?: Array<{
         question: string;
@@ -65,6 +67,8 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           duration: 8,
           description: "Get acquainted with the course structure, your instructor, and what you'll achieve by the end of this masterclass.",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          captionEnUrl: "demo://captions/welcome-en.vtt",
+          captionEsUrl: "demo://captions/welcome-es.vtt",
         },
         {
           title: "Understanding the Grant Landscape",
@@ -72,6 +76,8 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           duration: 12,
           description: "Explore different types of grants (federal, foundation, corporate) and learn which ones align with your mission and capacity.",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          captionEnUrl: "demo://captions/grant-landscape-en.vtt",
+          captionEsUrl: "demo://captions/grant-landscape-es.vtt",
           resources: [
             { title: "Grant Types Comparison Chart", url: "#" },
             { title: "Top 50 Foundation Databases", url: "#" },
@@ -83,6 +89,8 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           duration: 15,
           description: "Master advanced search techniques using Foundation Directory, Grants.gov, and other essential databases to build your pipeline.",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          captionEnUrl: "demo://captions/research-tools-en.vtt",
+          captionEsUrl: "demo://captions/research-tools-es.vtt",
           resources: [
             { title: "Research Checklist Template", url: "#" },
           ],
@@ -117,6 +125,8 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           duration: 18,
           description: "Break down successful grant proposals and identify the key elements that make them stand out from the competition.",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          captionEnUrl: "demo://captions/winning-proposal-en.vtt",
+          captionEsUrl: "demo://captions/winning-proposal-es.vtt",
           resources: [
             { title: "Sample Funded Proposals (3 examples)", url: "#" },
             { title: "Proposal Outline Template", url: "#" },
@@ -128,6 +138,8 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           duration: 14,
           description: "Learn how to weave compelling narratives that connect your mission to funder priorities using proven storytelling frameworks.",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          captionEnUrl: "demo://captions/storytelling-en.vtt",
+          captionEsUrl: "demo://captions/storytelling-es.vtt",
         },
         {
           title: "Audio Deep Dive: Funder Psychology",
@@ -142,6 +154,8 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           duration: 16,
           description: "Create realistic budgets that align with your narrative and demonstrate fiscal responsibility to funders.",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          captionEnUrl: "demo://captions/budget-en.vtt",
+          captionEsUrl: "demo://captions/budget-es.vtt",
           resources: [
             { title: "Budget Template with Formulas", url: "#" },
             { title: "Budget Justification Examples", url: "#" },
@@ -159,6 +173,8 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           duration: 13,
           description: "Understand common compliance requirements including audits, reporting, and documentation to avoid costly mistakes.",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          captionEnUrl: "demo://captions/compliance-en.vtt",
+          captionEsUrl: "demo://captions/compliance-es.vtt",
           resources: [
             { title: "Compliance Checklist", url: "#" },
           ],
@@ -169,6 +185,8 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           duration: 10,
           description: "Master the submission process with proven strategies for beating deadlines and avoiding common technical errors.",
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          captionEnUrl: "demo://captions/submission-en.vtt",
+          captionEsUrl: "demo://captions/submission-es.vtt",
         },
         {
           title: "Final Knowledge Assessment",
@@ -217,6 +235,8 @@ export function generateDemoCourse() {
       description: lesson.description,
       videoUrl: lesson.videoUrl,
       audioUrl: lesson.audioUrl,
+      captionEnUrl: lesson.captionEnUrl,
+      captionEsUrl: lesson.captionEsUrl,
       resources: lesson.resources,
       quizQuestions: lesson.quizQuestions,
     })),

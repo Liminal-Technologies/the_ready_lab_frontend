@@ -7,6 +7,8 @@ export interface CourseLesson {
   duration: number; // in minutes
   videoUrl?: string;
   audioUrl?: string; // For audio lessons (MP3, WAV, M4A) - auditory learners
+  captionEnUrl?: string; // English subtitles (VTT/SRT) - accessibility & bilingual support
+  captionEsUrl?: string; // Spanish subtitles (VTT/SRT) - accessibility & bilingual support
   content?: string;
   quiz?: {
     question: string;

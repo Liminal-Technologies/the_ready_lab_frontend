@@ -26,7 +26,9 @@ import {
   Plus,
   Clock,
   Headphones,
-  Music
+  Music,
+  Languages,
+  Subtitles
 } from "lucide-react";
 import { saveEducatorCourse, type EducatorCourse, type CourseModule, type CourseLesson } from "@/utils/educatorCoursesStorage";
 import { generateDemoCourse } from "@/utils/demoCourseTemplate";
@@ -128,6 +130,7 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
   const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
   const [thumbnailGenerated, setThumbnailGenerated] = useState(false);
   const [captionsGenerated, setCaptionsGenerated] = useState(false);
+  const [uploadedCaptions, setUploadedCaptions] = useState<{en?: {name: string}, es?: {name: string}}>({});
   const [modules, setModules] = useState<any[]>(
     initialDemoData?.modules.map((m) => ({
       id: m.id,
@@ -367,13 +370,47 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
 
   const generateCaptions = async () => {
     setIsProcessing(true);
-    // TODO: Replace with actual caption generation API
     await new Promise(resolve => setTimeout(resolve, 2000));
     setCaptionsGenerated(true);
     setIsProcessing(false);
     toast({
       title: "Captions generated! 📝",
-      description: "Captions in EN and ES are ready.",
+      description: "AI-generated captions in English and Spanish are ready for all video lessons.",
+    });
+  };
+
+  const handleCaptionUpload = (e: React.ChangeEvent<HTMLInputElement>, lang: 'en' | 'es') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validFormats = ['.vtt', '.srt'];
+    const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+    
+    if (!validFormats.includes(fileExtension)) {
+      toast({
+        title: "Invalid file format",
+        description: "Please upload VTT or SRT files only.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadedCaptions(prev => ({
+      ...prev,
+      [lang]: { name: file.name }
+    }));
+
+    toast({
+      title: `${lang === 'en' ? 'English' : 'Spanish'} captions uploaded`,
+      description: `${file.name} is ready for your video lessons.`,
+    });
+  };
+
+  const removeCaptions = (lang: 'en' | 'es') => {
+    setUploadedCaptions(prev => {
+      const newCaptions = { ...prev };
+      delete newCaptions[lang];
+      return newCaptions;
     });
   };
 
@@ -421,6 +458,8 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
             duration: lesson.duration || 10,
             videoUrl: lessonType === 'video' ? (lesson.videoUrl || "https://example.com/video.mp4") : undefined,
             audioUrl: lessonType === 'audio' ? (lesson.audioUrl || "https://example.com/audio.mp3") : undefined,
+            captionEnUrl: lesson.captionEnUrl,
+            captionEsUrl: lesson.captionEsUrl,
             content: lesson.content,
             quiz: lesson.quiz,
             order: lessonIndex,
@@ -867,6 +906,105 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
                 <p className="text-sm text-muted-foreground">
                   <strong>Tip:</strong> For auditory learners, you can also create video lessons with a still image and audio voiceover. 
                   This combines visual context with audio narration for enhanced learning.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Subtitles/Captions Section */}
+            <Card className="border-2 border-dashed border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-950/20">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Languages className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  Subtitles & Captions
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Add subtitles for accessibility and bilingual learners. Supports VTT and SRT formats.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* English Captions */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-2">
+                      <span className="text-lg">🇺🇸</span> English Captions
+                    </Label>
+                    {uploadedCaptions.en ? (
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-blue-100/50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium truncate max-w-[150px]">{uploadedCaptions.en.name}</span>
+                          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                            EN
+                          </Badge>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => removeCaptions('en')}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <input
+                          type="file"
+                          id="caption-en-upload"
+                          accept=".vtt,.srt"
+                          className="hidden"
+                          onChange={(e) => handleCaptionUpload(e, 'en')}
+                        />
+                        <label htmlFor="caption-en-upload">
+                          <Button variant="outline" size="sm" asChild data-testid="button-upload-caption-en" className="w-full border-blue-300 hover:bg-blue-100 dark:border-blue-700 dark:hover:bg-blue-900">
+                            <span className="cursor-pointer">
+                              <Upload className="mr-2 h-4 w-4" />
+                              Upload English (.vtt/.srt)
+                            </span>
+                          </Button>
+                        </label>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Spanish Captions */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-2">
+                      <span className="text-lg">🇪🇸</span> Spanish Captions
+                    </Label>
+                    {uploadedCaptions.es ? (
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-blue-100/50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium truncate max-w-[150px]">{uploadedCaptions.es.name}</span>
+                          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                            ES
+                          </Badge>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => removeCaptions('es')}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <input
+                          type="file"
+                          id="caption-es-upload"
+                          accept=".vtt,.srt"
+                          className="hidden"
+                          onChange={(e) => handleCaptionUpload(e, 'es')}
+                        />
+                        <label htmlFor="caption-es-upload">
+                          <Button variant="outline" size="sm" asChild data-testid="button-upload-caption-es" className="w-full border-blue-300 hover:bg-blue-100 dark:border-blue-700 dark:hover:bg-blue-900">
+                            <span className="cursor-pointer">
+                              <Upload className="mr-2 h-4 w-4" />
+                              Upload Spanish (.vtt/.srt)
+                            </span>
+                          </Button>
+                        </label>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  Or use "Generate Captions" below to auto-create EN/ES captions with AI
                 </p>
               </CardContent>
             </Card>

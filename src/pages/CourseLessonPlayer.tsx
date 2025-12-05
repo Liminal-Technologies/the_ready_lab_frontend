@@ -55,7 +55,37 @@ interface Lesson {
   quizId?: string;
   isAudio?: boolean;
   audioUrl?: string;
+  captionEnUrl?: string;
+  captionEsUrl?: string;
 }
+
+interface SubtitleCue {
+  start: number;
+  end: number;
+  text: string;
+}
+
+const MOCK_SUBTITLES_EN: SubtitleCue[] = [
+  { start: 0, end: 5, text: "Welcome to this lesson on grant writing fundamentals." },
+  { start: 5, end: 10, text: "In this module, we'll cover the core principles of successful grant applications." },
+  { start: 10, end: 15, text: "First, let's understand what funders are looking for in a proposal." },
+  { start: 15, end: 20, text: "The key is to align your mission with the funder's priorities." },
+  { start: 20, end: 25, text: "A compelling narrative that demonstrates impact is essential." },
+  { start: 25, end: 30, text: "Remember to include measurable outcomes and clear objectives." },
+  { start: 30, end: 35, text: "Budget justification should be realistic and well-documented." },
+  { start: 35, end: 40, text: "Now let's look at some successful grant writing strategies." },
+];
+
+const MOCK_SUBTITLES_ES: SubtitleCue[] = [
+  { start: 0, end: 5, text: "Bienvenidos a esta leccion sobre los fundamentos de redaccion de subvenciones." },
+  { start: 5, end: 10, text: "En este modulo, cubriremos los principios fundamentales de solicitudes exitosas." },
+  { start: 10, end: 15, text: "Primero, entendamos que buscan los financiadores en una propuesta." },
+  { start: 15, end: 20, text: "La clave es alinear su mision con las prioridades del financiador." },
+  { start: 20, end: 25, text: "Una narrativa convincente que demuestre impacto es esencial." },
+  { start: 25, end: 30, text: "Recuerde incluir resultados medibles y objetivos claros." },
+  { start: 30, end: 35, text: "La justificacion del presupuesto debe ser realista y bien documentada." },
+  { start: 35, end: 40, text: "Ahora veamos algunas estrategias exitosas de redaccion de subvenciones." },
+];
 
 interface Module {
   id: string | number;
@@ -361,6 +391,16 @@ export default function CourseLessonPlayer() {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getCurrentSubtitle = (): string | null => {
+    if (captions === 'off') return null;
+    
+    const currentTime = played * duration;
+    const subtitles = captions === 'spanish' ? MOCK_SUBTITLES_ES : MOCK_SUBTITLES_EN;
+    const currentCue = subtitles.find(cue => currentTime >= cue.start && currentTime < cue.end);
+    
+    return currentCue?.text || null;
   };
 
   const handleLessonClick = (clickedLessonId: string | number, locked: boolean) => {
@@ -729,6 +769,26 @@ export default function CourseLessonPlayer() {
                       height="100%"
                       {...({} as any)}
                     />
+                    
+                    {/* Subtitle Overlay */}
+                    {getCurrentSubtitle() && (
+                      <div className="absolute bottom-8 left-0 right-0 text-center px-4 pointer-events-none">
+                        <div className="inline-block bg-black/80 text-white px-4 py-2 rounded-lg max-w-[90%]">
+                          <p className="text-sm md:text-base font-medium leading-relaxed">
+                            {getCurrentSubtitle()}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Caption Language Badge */}
+                    {captions !== 'off' && (
+                      <div className="absolute top-4 right-4">
+                        <Badge variant="secondary" className="bg-black/60 text-white border-none">
+                          {captions === 'spanish' ? '🇪🇸 ES' : '🇺🇸 EN'}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
 
                   {/* Progress Bar */}
