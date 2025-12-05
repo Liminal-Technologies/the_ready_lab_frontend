@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,7 @@ interface Invoice {
 }
 
 export const BillingManagement = () => {
+  const navigate = useNavigate();
   const { subscription, checkSubscription } = useSubscription();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,7 +140,7 @@ export const BillingManagement = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 No active subscription found
               </p>
-              <Button onClick={() => window.location.href = '/pricing'}>
+              <Button onClick={() => navigate('/pricing')}>
                 View Plans
               </Button>
             </div>
