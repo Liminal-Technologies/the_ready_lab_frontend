@@ -35,8 +35,10 @@ import {
   Trash2,
   Copy,
   Power,
-  PowerOff
+  PowerOff,
+  Download
 } from 'lucide-react';
+import { exportEducatorAnalytics } from '@/utils/exportEducatorAnalytics';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,6 +66,7 @@ import {
   deleteEducatorCourse,
   duplicateEducatorCourse,
   toggleCoursePublished,
+  getRevenueMetrics,
   type EducatorCourse 
 } from '@/utils/educatorCoursesStorage';
 import { useToast } from '@/hooks/use-toast';
@@ -131,6 +134,7 @@ export const EducatorDashboard = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState<EducatorCourse | null>(null);
   const [editingCourse, setEditingCourse] = useState<EducatorCourse | null>(null);
+  const [downloadingAnalytics, setDownloadingAnalytics] = useState(false);
   const [stats, setStats] = useState({
     totalCourses: 0,
     publishedCourses: 0,
@@ -254,6 +258,43 @@ export const EducatorDashboard = () => {
   const handleEditCourse = (course: EducatorCourse) => {
     setEditingCourse(course);
     setShowCourseWizard(true);
+  };
+
+  const handleDownloadAnalytics = () => {
+    setDownloadingAnalytics(true);
+    try {
+      const educatorName = educatorProfile?.fullName || educatorProfile?.name || 'Educator';
+      const revenueMetrics = getRevenueMetrics();
+      
+      exportEducatorAnalytics({
+        educatorName,
+        totalCourses: stats.totalCourses,
+        publishedCourses: stats.publishedCourses,
+        totalStudents: stats.totalStudents,
+        totalRevenue: stats.totalRevenue || revenueMetrics.allTimeRevenue,
+        totalEnrollments: stats.totalEnrollments,
+        activeStudents: stats.activeStudents,
+        atRiskStudents: stats.atRiskStudents,
+        completedStudents: stats.completedStudents,
+        thisMonthRevenue: revenueMetrics.thisMonthRevenue,
+        lastMonthRevenue: revenueMetrics.lastMonthRevenue,
+        allTimeRevenue: revenueMetrics.allTimeRevenue,
+        pendingPayout: revenueMetrics.pendingPayout,
+      });
+      toast({
+        title: "Download Started",
+        description: "Your analytics report is downloading as CSV",
+      });
+    } catch (error) {
+      console.error('Error exporting analytics:', error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate analytics report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setTimeout(() => setDownloadingAnalytics(false), 1000);
+    }
   };
 
   // Calculate onboarding checklist
@@ -801,6 +842,32 @@ export const EducatorDashboard = () => {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
+            {/* Download Analytics Header */}
+            <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">Export Your Analytics</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Download a comprehensive report of your enrollments, revenue, course performance, and student engagement
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleDownloadAnalytics}
+                    disabled={downloadingAnalytics}
+                    data-testid="button-download-educator-analytics"
+                  >
+                    {downloadingAnalytics ? (
+                      <Download className="mr-2 h-4 w-4 animate-bounce" />
+                    ) : (
+                      <Download className="mr-2 h-4 w-4" />
+                    )}
+                    Download Analytics
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Revenue KPI Cards */}
             <div className="grid gap-4 md:grid-cols-4">
               <Card data-testid="card-total-revenue">
