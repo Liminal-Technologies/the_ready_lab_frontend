@@ -1,4 +1,5 @@
-import { Mail, Phone, MapPin, ChevronDown } from "lucide-react";
+import { Mail, HelpCircle, MessageCircle, ChevronDown, X, BookOpen, CreditCard, GraduationCap, Users, Send } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Accordion,
@@ -6,16 +7,114 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import logoImage from "@assets/ready-lab-logo-tagline.png";
+
+const AIAssistantDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
+  const quickTopics = [
+    { icon: BookOpen, label: "Getting Started", description: "Learn how to use The Ready Lab" },
+    { icon: CreditCard, label: "Pricing & Plans", description: "Understand our subscription options" },
+    { icon: GraduationCap, label: "Certifications", description: "How certificates work" },
+    { icon: Users, label: "For Educators", description: "Creating and selling courses" },
+  ];
+
+  const handleTopicClick = (topic: string) => {
+    document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md" data-testid="dialog-ai-assistant">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-primary" />
+            AI Assistant
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="bg-muted/50 rounded-lg p-4 border">
+            <p className="text-sm text-muted-foreground">
+              Hi! I'm here to help you navigate The Ready Lab. Choose a topic below or check out our FAQ for quick answers.
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Quick Topics</p>
+            <div className="grid grid-cols-2 gap-2">
+              {quickTopics.map((topic) => (
+                <button
+                  key={topic.label}
+                  onClick={() => handleTopicClick(topic.label)}
+                  className="flex flex-col items-start gap-1 p-3 rounded-lg border bg-card hover:bg-accent transition-colors text-left"
+                  data-testid={`button-topic-${topic.label.toLowerCase().replace(/\s+/g, '-')}`}
+                >
+                  <topic.icon className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">{topic.label}</span>
+                  <span className="text-xs text-muted-foreground">{topic.description}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <p className="text-sm text-muted-foreground mb-3">
+              Can't find what you're looking for?
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+                  onOpenChange(false);
+                }}
+                data-testid="button-view-faq"
+              >
+                <HelpCircle className="h-4 w-4 mr-2" />
+                View FAQ
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                asChild
+              >
+                <a href="mailto:hello@thereadylab.com" data-testid="button-email-support">
+                  <Send className="h-4 w-4 mr-2" />
+                  Email Support
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 const Footer = () => {
   const { t } = useLanguage();
+  const [aiAssistantOpen, setAiAssistantOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenAIAssistant = () => setAiAssistantOpen(true);
+    window.addEventListener('openAIAssistant', handleOpenAIAssistant);
+    return () => window.removeEventListener('openAIAssistant', handleOpenAIAssistant);
+  }, []);
 
   return (
+    <>
+    <AIAssistantDialog open={aiAssistantOpen} onOpenChange={setAiAssistantOpen} />
     <footer id="contact" className="bg-neutral-900 dark:bg-black text-white py-12 border-t border-neutral-800 dark:border-neutral-900 transition-colors duration-200">
       <div className="container mx-auto px-4">
         {/* FAQ Section */}
-        <div className="mb-12 max-w-4xl mx-auto">
+        <div id="faq-section" className="mb-12 max-w-4xl mx-auto scroll-mt-8">
           <h2 className="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
           <Accordion type="single" collapsible className="space-y-4">
             <AccordionItem value="faq-1" className="border border-white/20 rounded-lg px-6 bg-white/5" data-testid="accordion-faq-1">
@@ -95,15 +194,44 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-semibold mb-4">Contact</h3>
-            <ul className="space-y-2 text-white/70">
-              <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                hello@thereadylab.com
+            <h3 className="font-semibold mb-4">Get Help</h3>
+            <ul className="space-y-3 text-white/70">
+              <li>
+                <a 
+                  href="#faq-section" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer"
+                  data-testid="link-footer-faq"
+                >
+                  <HelpCircle className="h-4 w-4" />
+                  Help Center / FAQ
+                </a>
               </li>
-              <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                +1 (555) 123-4567
+              <li>
+                <button 
+                  onClick={() => {
+                    const event = new CustomEvent('openAIAssistant');
+                    window.dispatchEvent(event);
+                  }}
+                  className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer text-left"
+                  data-testid="button-footer-ai-assistant"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  AI Assistant
+                </button>
+              </li>
+              <li>
+                <a 
+                  href="mailto:hello@thereadylab.com" 
+                  className="flex items-center gap-2 hover:text-primary transition-colors"
+                  data-testid="link-footer-email"
+                >
+                  <Mail className="h-4 w-4" />
+                  Email Us
+                </a>
               </li>
             </ul>
           </div>
@@ -123,6 +251,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+    </>
   );
 };
 
