@@ -17,10 +17,11 @@ export interface DemoCourseTemplate {
     description: string;
     lessons: Array<{
       title: string;
-      type: 'video' | 'quiz';
+      type: 'video' | 'quiz' | 'audio';
       duration: number;
       description: string;
       videoUrl?: string;
+      audioUrl?: string;
       resources?: Array<{ title: string; url: string }>;
       quizQuestions?: Array<{
         question: string;
@@ -129,6 +130,13 @@ export const DEMO_COURSE_TEMPLATE: DemoCourseTemplate = {
           videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         },
         {
+          title: "Audio Deep Dive: Funder Psychology",
+          type: "audio",
+          duration: 12,
+          description: "Listen to this audio lesson while commuting or relaxing. Perfect for auditory learners who want to understand what makes funders say yes.",
+          audioUrl: "https://example.com/audio/funder-psychology.mp3",
+        },
+        {
           title: "Budget Development & Justification",
           type: "video",
           duration: 16,
@@ -208,6 +216,7 @@ export function generateDemoCourse() {
       duration: lesson.duration,
       description: lesson.description,
       videoUrl: lesson.videoUrl,
+      audioUrl: lesson.audioUrl,
       resources: lesson.resources,
       quizQuestions: lesson.quizQuestions,
     })),

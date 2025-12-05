@@ -24,7 +24,9 @@ import {
   Sparkles,
   X,
   Plus,
-  Clock
+  Clock,
+  Headphones,
+  Music
 } from "lucide-react";
 import { saveEducatorCourse, type EducatorCourse, type CourseModule, type CourseLesson } from "@/utils/educatorCoursesStorage";
 import { generateDemoCourse } from "@/utils/demoCourseTemplate";
@@ -335,13 +337,14 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'video' | 'audio' = 'video') => {
     const files = Array.from(e.target.files || []);
     const newFiles = files.map((file, index) => ({
       id: Date.now() + index,
       name: file.name,
       duration: Math.floor(Math.random() * 30) + 5, // Random duration 5-35 min
       size: (file.size / 1024 / 1024).toFixed(2) + " MB",
+      type: fileType, // 'video' or 'audio'
     }));
     setUploadedFiles([...uploadedFiles, ...newFiles]);
   };
@@ -409,16 +412,20 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
         id: module.id || `module-${Date.now()}-${index}`,
         title: module.name,
         description: module.description || "",
-        lessons: module.lessons.map((lesson: any, lessonIndex: number) => ({
-          id: lesson.id || `lesson-${Date.now()}-${index}-${lessonIndex}`,
-          title: lesson.name || lesson.title,
-          type: (lesson.type as "video" | "quiz" | "reading") || "video",
-          duration: lesson.duration || 10,
-          videoUrl: lesson.videoUrl || "https://example.com/video.mp4",
-          content: lesson.content,
-          quiz: lesson.quiz,
-          order: lessonIndex,
-        })),
+        lessons: module.lessons.map((lesson: any, lessonIndex: number) => {
+          const lessonType = lesson.type === 'audio' ? 'audio' : (lesson.type as "video" | "quiz" | "reading" | "audio") || "video";
+          return {
+            id: lesson.id || `lesson-${Date.now()}-${index}-${lessonIndex}`,
+            title: lesson.name || lesson.title,
+            type: lessonType,
+            duration: lesson.duration || 10,
+            videoUrl: lessonType === 'video' ? (lesson.videoUrl || "https://example.com/video.mp4") : undefined,
+            audioUrl: lessonType === 'audio' ? (lesson.audioUrl || "https://example.com/audio.mp3") : undefined,
+            content: lesson.content,
+            quiz: lesson.quiz,
+            order: lessonIndex,
+          };
+        }),
         order: index,
       }));
 
@@ -802,38 +809,92 @@ export function CourseBuilderWizard({ open, onOpenChange, onCourseCreated, editi
       case 4:
         return (
           <div className="space-y-6">
-            <div className="border-2 border-dashed rounded-lg p-8 text-center">
-              <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <input
-                type="file"
-                id="file-upload"
-                multiple
-                accept="video/*"
-                className="hidden"
-                onChange={handleFileUpload}
-              />
-              <label htmlFor="file-upload">
-                <Button variant="outline" asChild data-testid="button-upload-files">
-                  <span className="cursor-pointer">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload Video Files
-                  </span>
-                </Button>
-              </label>
-              <p className="text-sm text-muted-foreground mt-2">
-                Supports MP4, MOV, AVI (max 500MB per file)
-              </p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="border-2 border-dashed rounded-lg p-6 text-center">
+                <Video className="h-10 w-10 mx-auto mb-3 text-primary" />
+                <h3 className="font-semibold mb-2">Video Lessons</h3>
+                <input
+                  type="file"
+                  id="video-upload"
+                  multiple
+                  accept="video/*"
+                  className="hidden"
+                  onChange={(e) => handleFileUpload(e, 'video')}
+                />
+                <label htmlFor="video-upload">
+                  <Button variant="outline" asChild data-testid="button-upload-video">
+                    <span className="cursor-pointer">
+                      <Upload className="mr-2 h-4 w-4" />
+                      Upload Videos
+                    </span>
+                  </Button>
+                </label>
+                <p className="text-xs text-muted-foreground mt-2">
+                  MP4, MOV, AVI (max 500MB)
+                </p>
+              </div>
+
+              <div className="border-2 border-dashed border-purple-300 dark:border-purple-700 rounded-lg p-6 text-center bg-purple-50/50 dark:bg-purple-950/20">
+                <Headphones className="h-10 w-10 mx-auto mb-3 text-purple-600 dark:text-purple-400" />
+                <h3 className="font-semibold mb-1">Audio Lessons</h3>
+                <Badge variant="secondary" className="mb-2 text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                  For Auditory Learners
+                </Badge>
+                <input
+                  type="file"
+                  id="audio-upload"
+                  multiple
+                  accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a,.mp3,.wav,.m4a"
+                  className="hidden"
+                  onChange={(e) => handleFileUpload(e, 'audio')}
+                />
+                <label htmlFor="audio-upload">
+                  <Button variant="outline" asChild data-testid="button-upload-audio" className="border-purple-300 hover:bg-purple-100 dark:border-purple-700 dark:hover:bg-purple-900">
+                    <span className="cursor-pointer">
+                      <Music className="mr-2 h-4 w-4" />
+                      Upload Audio
+                    </span>
+                  </Button>
+                </label>
+                <p className="text-xs text-muted-foreground mt-2">
+                  MP3, WAV, M4A (max 100MB)
+                </p>
+              </div>
             </div>
+
+            <Card className="bg-muted/50">
+              <CardContent className="pt-4">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Tip:</strong> For auditory learners, you can also create video lessons with a still image and audio voiceover. 
+                  This combines visual context with audio narration for enhanced learning.
+                </p>
+              </CardContent>
+            </Card>
 
             {uploadedFiles.length > 0 && (
               <div className="space-y-2">
                 <Label>Uploaded Files ({uploadedFiles.length})</Label>
                 {uploadedFiles.map((file) => (
-                  <div key={file.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div key={file.id} className={`flex items-center justify-between p-3 rounded-lg ${
+                    file.type === 'audio' 
+                      ? 'bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800' 
+                      : 'bg-muted'
+                  }`}>
                     <div className="flex items-center gap-3">
-                      <Video className="h-5 w-5 text-primary" />
+                      {file.type === 'audio' ? (
+                        <Headphones className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                      ) : (
+                        <Video className="h-5 w-5 text-primary" />
+                      )}
                       <div>
-                        <div className="font-medium text-sm">{file.name}</div>
+                        <div className="font-medium text-sm flex items-center gap-2">
+                          {file.name}
+                          {file.type === 'audio' && (
+                            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                              Audio
+                            </Badge>
+                          )}
+                        </div>
                         <div className="text-xs text-muted-foreground">{file.duration} min • {file.size}</div>
                       </div>
                     </div>

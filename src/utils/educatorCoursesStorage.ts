@@ -3,9 +3,10 @@
 export interface CourseLesson {
   id: string;
   title: string;
-  type: "video" | "quiz" | "reading";
+  type: "video" | "quiz" | "reading" | "audio";
   duration: number; // in minutes
   videoUrl?: string;
+  audioUrl?: string; // For audio lessons (MP3, WAV, M4A) - auditory learners
   content?: string;
   quiz?: {
     question: string;

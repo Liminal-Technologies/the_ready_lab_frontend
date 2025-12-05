@@ -38,8 +38,11 @@ import {
   Award,
   ArrowRight,
   Menu,
-  X
+  X,
+  Headphones,
+  Music
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface Lesson {
   id: string | number;
@@ -50,6 +53,8 @@ interface Lesson {
   current: boolean;
   isQuiz?: boolean;
   quizId?: string;
+  isAudio?: boolean;
+  audioUrl?: string;
 }
 
 interface Module {
@@ -264,7 +269,9 @@ export default function CourseLessonPlayer() {
               locked: isLocked,
               current: urlLessonId ? String(lesson.id) === String(urlLessonId) : false,
               isQuiz: lesson.type === 'quiz',
-              quizId: lesson.type === 'quiz' ? lesson.id : undefined
+              quizId: lesson.type === 'quiz' ? lesson.id : undefined,
+              isAudio: lesson.type === 'audio',
+              audioUrl: lesson.audioUrl
             };
             
             // Track this lesson as previous for next iteration
@@ -612,6 +619,9 @@ export default function CourseLessonPlayer() {
                                   <span className="text-xs font-medium">
                                     {lessonIdx + 1}.
                                   </span>
+                                  {lesson.isAudio && (
+                                    <Headphones className="h-3 w-3 text-purple-500 flex-shrink-0" />
+                                  )}
                                   <span className="text-sm">{lesson.title}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -623,7 +633,9 @@ export default function CourseLessonPlayer() {
                                   )}
                                 </div>
                               </div>
-                              <div className="text-xs text-muted-foreground mt-1">
+                              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                                {lesson.isAudio && <span className="text-purple-500">Audio</span>}
+                                {lesson.isAudio && <span>•</span>}
                                 {lesson.duration}
                               </div>
                             </button>
@@ -662,7 +674,7 @@ export default function CourseLessonPlayer() {
 
               <h1 className="text-2xl font-bold mb-4">{currentLesson?.title || "Core Concepts"}</h1>
               
-              {/* Quiz or Video Player */}
+              {/* Quiz, Audio, or Video Player */}
               {currentLesson?.isQuiz ? (
                 <div className="mb-4">
                   <QuizPlayer
@@ -679,6 +691,27 @@ export default function CourseLessonPlayer() {
                     }}
                   />
                 </div>
+              ) : currentLesson?.isAudio ? (
+                <>
+                  {/* Audio Player for Auditory Learners */}
+                  <div className="relative bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-950 dark:to-purple-900 rounded-lg overflow-hidden aspect-video mb-4 flex flex-col items-center justify-center">
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-purple-600 text-white">
+                        <Headphones className="h-3 w-3 mr-1" />
+                        Audio Lesson
+                      </Badge>
+                    </div>
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-purple-200 dark:bg-purple-800 flex items-center justify-center mb-4 animate-pulse">
+                      <Music className="h-12 w-12 md:h-16 md:w-16 text-purple-600 dark:text-purple-300" />
+                    </div>
+                    <p className="text-purple-700 dark:text-purple-300 font-medium text-center px-4">
+                      Optimized for Auditory Learning
+                    </p>
+                    <p className="text-sm text-purple-600/70 dark:text-purple-400/70 text-center px-4 mt-1">
+                      Close your eyes and focus on the audio
+                    </p>
+                  </div>
+                </>
               ) : (
                 <>
                   {/* Video Player */}
@@ -1076,6 +1109,9 @@ export default function CourseLessonPlayer() {
                                 <span className="text-sm font-medium">
                                   {lessonIdx + 1}.
                                 </span>
+                                {lesson.isAudio && (
+                                  <Headphones className="h-3 w-3 text-purple-500 flex-shrink-0" />
+                                )}
                                 <span className="text-sm">{lesson.title}</span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -1087,7 +1123,9 @@ export default function CourseLessonPlayer() {
                                 )}
                               </div>
                             </div>
-                            <div className="text-xs text-muted-foreground mt-1">
+                            <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                              {lesson.isAudio && <span className="text-purple-500">Audio</span>}
+                              {lesson.isAudio && <span>•</span>}
                               {lesson.duration}
                             </div>
                           </button>
