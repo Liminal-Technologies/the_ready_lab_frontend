@@ -36,7 +36,9 @@ import {
   Copy,
   Power,
   PowerOff,
-  Download
+  Download,
+  Package,
+  FileText
 } from 'lucide-react';
 import { exportEducatorAnalytics } from '@/utils/exportEducatorAnalytics';
 import {
@@ -58,6 +60,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 import { CourseBuilderWizard } from '@/components/educator/CourseBuilderWizard';
+import { DigitalProductWizard } from '@/components/educator/DigitalProductWizard';
 import { ScheduleLiveEventModal } from '@/components/educator/ScheduleLiveEventModal';
 import { AutoDemoProgress } from '@/components/AutoDemoProgress';
 import { 
@@ -69,7 +72,17 @@ import {
   getRevenueMetrics,
   type EducatorCourse 
 } from '@/utils/educatorCoursesStorage';
+import {
+  getAllEducatorProducts,
+  deleteEducatorProduct,
+  duplicateEducatorProduct,
+  toggleProductPublished,
+  getProductStats,
+  initializeDemoProducts,
+  type DigitalProduct
+} from '@/utils/educatorProductsStorage';
 import { useToast } from '@/hooks/use-toast';
+import { useMockAuth } from '@/hooks/useMockAuth';
 
 // Mock student data (for dashboard overview only - real enrollments shown in StudentAnalytics)
 const MOCK_STUDENTS = [
@@ -124,6 +137,7 @@ const RECENT_TRANSACTIONS = [
 export const EducatorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isDemo } = useMockAuth();
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [showCourseWizard, setShowCourseWizard] = useState(false);
   const [showScheduleEvent, setShowScheduleEvent] = useState(false);
@@ -135,6 +149,19 @@ export const EducatorDashboard = () => {
   const [courseToDelete, setCourseToDelete] = useState<EducatorCourse | null>(null);
   const [editingCourse, setEditingCourse] = useState<EducatorCourse | null>(null);
   const [downloadingAnalytics, setDownloadingAnalytics] = useState(false);
+  
+  const [createdProducts, setCreatedProducts] = useState<DigitalProduct[]>([]);
+  const [showProductWizard, setShowProductWizard] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<DigitalProduct | null>(null);
+  const [showDeleteProductDialog, setShowDeleteProductDialog] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<DigitalProduct | null>(null);
+  const [productStats, setProductStats] = useState({
+    totalProducts: 0,
+    publishedProducts: 0,
+    totalDownloads: 0,
+    totalRevenue: 0,
+    totalPurchases: 0,
+  });
   const [stats, setStats] = useState({
     totalCourses: 0,
     publishedCourses: 0,
@@ -153,6 +180,16 @@ export const EducatorDashboard = () => {
     setStats(educatorStats);
   };
 
+  const loadProducts = () => {
+    if (isDemo) {
+      initializeDemoProducts();
+    }
+    const products = getAllEducatorProducts();
+    const pStats = getProductStats();
+    setCreatedProducts(products);
+    setProductStats(pStats);
+  };
+
   useEffect(() => {
     // Load educator profile and plan from localStorage
     const profile = localStorage.getItem('educatorProfile');
@@ -165,8 +202,9 @@ export const EducatorDashboard = () => {
       setSelectedPlan(plan);
     }
 
-    // Load courses using new storage system
+    // Load courses and products using storage system
     loadCourses();
+    loadProducts();
 
     // Check if user needs to select a plan (first time)
     if (!plan && !showPlanModal) {
@@ -258,6 +296,80 @@ export const EducatorDashboard = () => {
   const handleEditCourse = (course: EducatorCourse) => {
     setEditingCourse(course);
     setShowCourseWizard(true);
+  };
+
+  const handleProductCreated = () => {
+    loadProducts();
+  };
+
+  const handleDeleteProduct = (product: DigitalProduct) => {
+    setProductToDelete(product);
+    setShowDeleteProductDialog(true);
+  };
+
+  const confirmDeleteProduct = () => {
+    if (!productToDelete) return;
+    
+    try {
+      deleteEducatorProduct(productToDelete.id);
+      loadProducts();
+      toast({
+        title: "Product deleted",
+        description: `${productToDelete.title} has been removed.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error deleting product",
+        description: "There was a problem deleting your product. Please try again.",
+        variant: "destructive",
+      });
+    }
+    
+    setShowDeleteProductDialog(false);
+    setProductToDelete(null);
+  };
+
+  const handleDuplicateProduct = (product: DigitalProduct) => {
+    const duplicated = duplicateEducatorProduct(product.id);
+    
+    if (duplicated) {
+      loadProducts();
+      toast({
+        title: "Product duplicated!",
+        description: `Created a copy of "${product.title}"`,
+      });
+    } else {
+      toast({
+        title: "Error duplicating product",
+        description: "There was a problem duplicating your product. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleToggleProductPublish = (product: DigitalProduct) => {
+    try {
+      const newStatus = toggleProductPublished(product.id);
+      loadProducts();
+      
+      toast({
+        title: newStatus ? "Product published!" : "Product unpublished",
+        description: newStatus 
+          ? `${product.title} is now available for students.`
+          : `${product.title} has been unpublished.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error toggling publish status",
+        description: error?.message || "There was a problem updating your product. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditProduct = (product: DigitalProduct) => {
+    setEditingProduct(product);
+    setShowProductWizard(true);
   };
 
   const handleDownloadAnalytics = () => {
@@ -464,6 +576,10 @@ export const EducatorDashboard = () => {
             <TabsTrigger value="courses" className="flex items-center gap-2" data-testid="tab-courses">
               <BookOpen className="h-4 w-4" />
               My Courses
+            </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-2" data-testid="tab-products">
+              <Package className="h-4 w-4" />
+              Products
             </TabsTrigger>
             <TabsTrigger value="students" className="flex items-center gap-2" data-testid="tab-students">
               <Users className="h-4 w-4" />
@@ -690,6 +806,123 @@ export const EducatorDashboard = () => {
                   <Button onClick={() => setShowCourseWizard(true)}>
                     <Plus className="mr-2 h-4 w-4" />
                     Create Your First Course
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Products Tab */}
+          <TabsContent value="products" className="space-y-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold">Digital Products</h3>
+                <p className="text-sm text-muted-foreground">
+                  {productStats.publishedProducts} published, {productStats.totalDownloads} downloads, ${productStats.totalRevenue.toFixed(0)} revenue
+                </p>
+              </div>
+              <Button onClick={() => setShowProductWizard(true)} data-testid="button-create-product">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Product
+              </Button>
+            </div>
+
+            {createdProducts.length > 0 ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {createdProducts.map((product, index) => (
+                  <Card key={product.id} className="overflow-hidden" data-testid={`product-card-${index}`}>
+                    {product.thumbnail && (
+                      <div className="aspect-video bg-muted">
+                        <img 
+                          src={product.thumbnail} 
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <CardHeader className={product.thumbnail ? 'pt-4' : ''}>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex gap-2 flex-wrap">
+                          <Badge variant={product.published ? 'default' : 'secondary'}>
+                            {product.published ? 'Published' : 'Draft'}
+                          </Badge>
+                          <Badge variant="outline">
+                            {product.pricing.type === 'free' ? 'Free' : `$${product.pricing.amount}`}
+                          </Badge>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" data-testid={`product-actions-${index}`}>
+                              <MoreVertical className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEditProduct(product)} data-testid={`product-edit-${index}`}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Product
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleToggleProductPublish(product)} data-testid={`product-toggle-publish-${index}`}>
+                              {product.published ? (
+                                <><PowerOff className="mr-2 h-4 w-4" />Unpublish</>
+                              ) : (
+                                <><Power className="mr-2 h-4 w-4" />Publish</>
+                              )}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDuplicateProduct(product)} data-testid={`product-duplicate-${index}`}>
+                              <Copy className="mr-2 h-4 w-4" />
+                              Duplicate
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteProduct(product)} 
+                              className="text-destructive focus:text-destructive"
+                              data-testid={`product-delete-${index}`}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                      <CardTitle className="text-lg">{product.title}</CardTitle>
+                      <CardDescription className="line-clamp-2">
+                        {product.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Downloads</span>
+                          <span className="font-medium">{product.downloadCount}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Purchases</span>
+                          <span className="font-medium">{product.purchaseCount}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Revenue</span>
+                          <span className="font-medium">${product.revenue.toFixed(0)}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
+                        <FileText className="h-3 w-3" />
+                        {product.file.name}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="pt-10 pb-10 text-center">
+                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No products yet</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Create your first digital product to share or sell to students
+                  </p>
+                  <Button onClick={() => setShowProductWizard(true)}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Your First Product
                   </Button>
                 </CardContent>
               </Card>
@@ -1087,6 +1320,38 @@ export const EducatorDashboard = () => {
         open={showScheduleEvent}
         onOpenChange={setShowScheduleEvent}
       />
+      <DigitalProductWizard
+        open={showProductWizard}
+        onOpenChange={(open) => {
+          setShowProductWizard(open);
+          if (!open) {
+            setEditingProduct(null);
+          }
+        }}
+        onProductCreated={handleProductCreated}
+        editingProduct={editingProduct}
+      />
+      <AlertDialog open={showDeleteProductDialog} onOpenChange={setShowDeleteProductDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Product</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{productToDelete?.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowDeleteProductDialog(false);
+              setProductToDelete(null);
+            }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteProduct} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

@@ -41,9 +41,18 @@ import {
   Camera,
   Trash2,
   Star,
-  Video
+  Video,
+  Package,
+  FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  getAllPublishedProducts, 
+  getProductPurchasesByStudent,
+  createProductPurchase,
+  type DigitalProduct,
+  type ProductPurchase
+} from '@/utils/educatorProductsStorage';
 import { useAuth } from '@/hooks/useAuth';
 
 interface Certification {
@@ -190,6 +199,8 @@ export const StudentDashboard = () => {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [bookmarks, setBookmarks] = useState<BookmarkedItem[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [products, setProducts] = useState<DigitalProduct[]>([]);
+  const [myPurchases, setMyPurchases] = useState<ProductPurchase[]>([]);
   const [loading, setLoading] = useState(true);
   const [recommendedCourses, setRecommendedCourses] = useState<typeof MOCK_COURSES>([]);
   
@@ -296,6 +307,13 @@ export const StudentDashboard = () => {
       setEnrollments(enroll || []);
       setBookmarks(bookmarksWithLessons || []);
       setNotifications(notifs || []);
+      
+      const publishedProducts = getAllPublishedProducts();
+      setProducts(publishedProducts);
+      
+      const studentId = user.id || 'demo-student';
+      const purchases = getProductPurchasesByStudent(studentId);
+      setMyPurchases(purchases);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -545,7 +563,7 @@ export const StudentDashboard = () => {
 
         {/* Tab Navigation */}
         <Tabs defaultValue="overview" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5 h-auto p-1 bg-muted" data-tour="navigation" data-testid="dashboard-tabs">
+          <TabsList className="grid w-full grid-cols-6 h-auto p-1 bg-muted" data-tour="navigation" data-testid="dashboard-tabs">
             <TabsTrigger value="overview" className="flex items-center gap-2 py-3" data-testid="tab-overview">
               <TrendingUp className="h-4 w-4" />
               <span className="hidden sm:inline">Overview</span>
@@ -553,6 +571,10 @@ export const StudentDashboard = () => {
             <TabsTrigger value="courses" className="flex items-center gap-2 py-3" data-testid="tab-courses">
               <GraduationCap className="h-4 w-4" />
               <span className="hidden sm:inline">My Courses</span>
+            </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-2 py-3" data-testid="tab-products">
+              <Package className="h-4 w-4" />
+              <span className="hidden sm:inline">Products</span>
             </TabsTrigger>
             <TabsTrigger value="certificates" className="flex items-center gap-2 py-3" data-testid="tab-certificates">
               <Award className="h-4 w-4" />
@@ -795,6 +817,131 @@ export const StudentDashboard = () => {
                         </CardContent>
                       </Card>
                     ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Products Tab */}
+          <TabsContent value="products" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-primary" />
+                  Digital Products
+                </CardTitle>
+                <CardDescription>
+                  Browse and download digital products from educators
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <CourseCardSkeleton />
+                    <CourseCardSkeleton />
+                    <CourseCardSkeleton />
+                  </div>
+                ) : products.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No products available</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Check back later for new digital products from our educators
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {products.map((product) => {
+                      const isPurchased = myPurchases.some(p => p.productId === product.id);
+                      const isFree = product.pricing.type === 'free';
+                      const canDownload = isPurchased || isFree;
+                      
+                      const handleGetProduct = () => {
+                        if (isFree && !isPurchased) {
+                          createProductPurchase({
+                            productId: product.id,
+                            productTitle: product.title,
+                            studentId: auth.user?.id || 'demo-student',
+                            studentName: auth.user?.full_name || 'Student',
+                            studentEmail: auth.user?.email || 'student@demo.com',
+                            amount: 0,
+                          });
+                          setMyPurchases(getProductPurchasesByStudent(auth.user?.id || 'demo-student'));
+                          toast({
+                            title: "Product Added",
+                            description: `${product.title} has been added to your library.`,
+                          });
+                        } else if (!isFree && !isPurchased) {
+                          toast({
+                            title: "Purchase Required",
+                            description: `This product costs $${product.pricing.amount}. Purchases will be available soon.`,
+                          });
+                        }
+                      };
+
+                      const handleDownload = () => {
+                        if (product.file?.url) {
+                          window.open(product.file.url, '_blank');
+                          toast({
+                            title: "Download Started",
+                            description: `Downloading ${product.file.name}`,
+                          });
+                        }
+                      };
+
+                      return (
+                        <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow" data-testid={`product-card-${product.id}`}>
+                          {product.thumbnail && (
+                            <div className="relative aspect-video bg-gradient-to-br from-primary/20 to-primary/5">
+                              <img
+                                src={product.thumbnail}
+                                alt={product.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="secondary" className="text-xs">
+                                {product.category}
+                              </Badge>
+                              {isFree ? (
+                                <Badge className="bg-green-500 text-xs">Free</Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-xs">${product.pricing.amount}</Badge>
+                              )}
+                            </div>
+                            <h3 className="font-semibold mb-2 line-clamp-2">{product.title}</h3>
+                            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                              {product.description}
+                            </p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                              <FileText className="h-3 w-3" />
+                              <span>{product.file.name}</span>
+                            </div>
+                            {canDownload ? (
+                              <Button 
+                                className="w-full bg-primary hover:bg-primary/90"
+                                onClick={handleDownload}
+                                data-testid={`button-download-${product.id}`}
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Download
+                              </Button>
+                            ) : (
+                              <Button 
+                                className="w-full"
+                                onClick={handleGetProduct}
+                                data-testid={`button-get-${product.id}`}
+                              >
+                                {isFree ? 'Get Free' : `Buy for $${product.pricing.amount}`}
+                              </Button>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
