@@ -20,8 +20,10 @@ import {
   FileText,
   ChevronRight,
   Globe,
-  Mail
+  Mail,
+  Download
 } from "lucide-react";
+import { exportPlatformAnalytics } from "@/utils/exportAnalytics";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useAdminDataSource } from "@/hooks/useAdminDataSource";
@@ -31,8 +33,29 @@ export function AdminOverview() {
   const [kpis, setKpis] = useState<KPIData | null>(null);
   const [alerts, setAlerts] = useState<AdminAlert[]>([]);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
   const { toast } = useToast();
   const dataSource = useAdminDataSource();
+
+  const handleDownloadAnalytics = () => {
+    setDownloading(true);
+    try {
+      exportPlatformAnalytics(kpis);
+      toast({
+        title: "Download Started",
+        description: "Platform analytics report is downloading as CSV",
+      });
+    } catch (error) {
+      console.error('Error exporting analytics:', error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to generate analytics report. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setTimeout(() => setDownloading(false), 1000);
+    }
+  };
 
   useEffect(() => {
     fetchDashboardData();
@@ -166,14 +189,29 @@ export function AdminOverview() {
             Monitor platform performance and manage key metrics
           </p>
         </div>
-        <Button onClick={fetchDashboardData} disabled={loading} variant="outline">
-          {loading ? (
-            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw className="mr-2 h-4 w-4" />
-          )}
-          Refresh Data
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleDownloadAnalytics} 
+            disabled={downloading} 
+            variant="default"
+            data-testid="button-download-analytics"
+          >
+            {downloading ? (
+              <Download className="mr-2 h-4 w-4 animate-bounce" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
+            Download Analytics
+          </Button>
+          <Button onClick={fetchDashboardData} disabled={loading} variant="outline">
+            {loading ? (
+              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            Refresh Data
+          </Button>
+        </div>
       </div>
 
       {/* KPI Cards */}
