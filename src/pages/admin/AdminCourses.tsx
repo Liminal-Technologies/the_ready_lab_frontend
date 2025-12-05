@@ -4,28 +4,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Search, 
-  Filter, 
-  MoreHorizontal, 
-  Plus,
   Eye,
-  Edit,
-  Trash2,
   Award,
   BookOpen,
   Users,
-  Clock
+  Clock,
+  TrendingUp,
+  GraduationCap,
+  BarChart3,
+  CheckCircle2
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -46,38 +38,46 @@ interface Track {
   };
 }
 
+const mockCertificates = [
+  { id: 1, studentName: "Alex Morgan", courseName: "Business Fundamentals", completedAt: "2024-12-04", score: 94 },
+  { id: 2, studentName: "Jordan Lee", courseName: "Digital Marketing Mastery", completedAt: "2024-12-03", score: 88 },
+  { id: 3, studentName: "Taylor Kim", courseName: "Financial Planning", completedAt: "2024-12-02", score: 92 },
+  { id: 4, studentName: "Morgan Chen", courseName: "Leadership Excellence", completedAt: "2024-12-01", score: 96 },
+  { id: 5, studentName: "Casey Williams", courseName: "Operations Management", completedAt: "2024-11-30", score: 85 },
+];
+
+const topCertifiedCourses = [
+  { name: "Business Fundamentals", certificates: 234, completionRate: 78 },
+  { name: "Digital Marketing Mastery", certificates: 189, completionRate: 72 },
+  { name: "Financial Planning", certificates: 156, completionRate: 81 },
+  { name: "Leadership Excellence", certificates: 142, completionRate: 75 },
+  { name: "Operations Management", certificates: 152, completionRate: 69 },
+];
+
 export function AdminCourses() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [filteredTracks, setFilteredTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Determine active tab from URL
   const getActiveTab = () => {
     const path = location.pathname;
-    if (path.includes('/modules')) return 'modules';
-    if (path.includes('/lessons')) return 'lessons';
-    if (path.includes('/quizzes')) return 'quizzes';
     if (path.includes('/certificates')) return 'certificates';
-    return 'tracks';
+    return 'overview';
   };
 
   const [activeTab, setActiveTab] = useState(getActiveTab());
 
-  // Update active tab when URL changes
   useEffect(() => {
     setActiveTab(getActiveTab());
   }, [location.pathname]);
 
-  // Handle tab change
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    if (value === 'tracks') {
+    if (value === 'overview') {
       navigate('/admin/courses');
     } else {
       navigate(`/admin/courses/${value}`);
@@ -90,7 +90,7 @@ export function AdminCourses() {
 
   useEffect(() => {
     filterTracks();
-  }, [tracks, searchTerm, categoryFilter, statusFilter]);
+  }, [tracks, searchTerm]);
 
   const fetchTracks = async () => {
     try {
@@ -128,47 +128,7 @@ export function AdminCourses() {
       );
     }
 
-    if (categoryFilter !== "all") {
-      filtered = filtered.filter(track => track.category === categoryFilter);
-    }
-
-    if (statusFilter !== "all") {
-      const isActive = statusFilter === "active";
-      filtered = filtered.filter(track => track.is_active === isActive);
-    }
-
     setFilteredTracks(filtered);
-  };
-
-  const toggleTrackStatus = async (trackId: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('tracks')
-        .update({ is_active: !currentStatus })
-        .eq('id', trackId);
-
-      if (error) throw error;
-
-      await supabase.rpc('log_admin_action', {
-        _action: currentStatus ? 'unpublish_track' : 'publish_track',
-        _entity_type: 'track',
-        _entity_id: trackId
-      });
-
-      toast({
-        title: "Success",
-        description: `Track ${currentStatus ? 'unpublished' : 'published'} successfully`,
-      });
-
-      fetchTracks();
-    } catch (error) {
-      console.error('Error updating track:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update track status",
-        variant: "destructive",
-      });
-    }
   };
 
   const getStatusBadge = (isActive: boolean) => (
@@ -179,9 +139,9 @@ export function AdminCourses() {
 
   const getLevelBadge = (level: string) => {
     const colors = {
-      beginner: "bg-green-100 text-green-800",
-      intermediate: "bg-yellow-100 text-yellow-800",
-      advanced: "bg-red-100 text-red-800"
+      beginner: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+      intermediate: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+      advanced: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
     };
     return (
       <Badge className={colors[level as keyof typeof colors] || "bg-gray-100 text-gray-800"}>
@@ -190,105 +150,158 @@ export function AdminCourses() {
     );
   };
 
+  const analyticsData = {
+    totalCourses: 45,
+    certificatesCompleted: 873,
+    totalEnrollments: 3247,
+    completionRate: 68
+  };
+
+  const mockCourses = [
+    { id: "1", title: "Business Fundamentals", description: "Core business concepts for entrepreneurs", level: "beginner", category: "Business", is_active: true, estimated_hours: 12, price: 99, created_at: "2024-10-01", _count: { enrollments: 342, modules: 8 } },
+    { id: "2", title: "Digital Marketing Mastery", description: "Complete digital marketing strategies", level: "intermediate", category: "Marketing", is_active: true, estimated_hours: 18, price: 149, created_at: "2024-09-15", _count: { enrollments: 289, modules: 12 } },
+    { id: "3", title: "Financial Planning & Analysis", description: "Master financial planning and budgeting", level: "intermediate", category: "Finance", is_active: true, estimated_hours: 15, price: 129, created_at: "2024-08-20", _count: { enrollments: 234, modules: 10 } },
+    { id: "4", title: "Leadership Excellence", description: "Develop effective leadership skills", level: "advanced", category: "Leadership", is_active: true, estimated_hours: 20, price: 199, created_at: "2024-07-10", _count: { enrollments: 198, modules: 14 } },
+    { id: "5", title: "Operations Management", description: "Streamline business operations", level: "intermediate", category: "Operations", is_active: true, estimated_hours: 14, price: 119, created_at: "2024-06-05", _count: { enrollments: 176, modules: 9 } },
+  ];
+
+  const displayTracks = (() => {
+    const dataSource = tracks.length > 0 ? filteredTracks : mockCourses;
+    if (tracks.length === 0 && searchTerm) {
+      return mockCourses.filter(c => 
+        c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return dataSource;
+  })();
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Course Management</h1>
-          <p className="text-muted-foreground">
-            Manage learning tracks, modules, and certificates
-          </p>
-        </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Create Track
-        </Button>
+      <div>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Courses & Certificates</h1>
+        <p className="text-muted-foreground">
+          Platform-wide course analytics and certificate tracking
+        </p>
+      </div>
+
+      {/* Analytics Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.totalCourses}</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600 dark:text-green-400">+3</span> this month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Certificates Issued</CardTitle>
+            <Award className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.certificatesCompleted.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600 dark:text-green-400">+47</span> this week
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Enrollments</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.totalEnrollments.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600 dark:text-green-400">+156</span> this month
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.completionRate}%</div>
+            <p className="text-xs text-muted-foreground">
+              <span className="text-green-600 dark:text-green-400">+2.1%</span> vs last month
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList>
-          <TabsTrigger value="tracks">Tracks</TabsTrigger>
-          <TabsTrigger value="modules">Modules</TabsTrigger>
-          <TabsTrigger value="lessons">Lessons</TabsTrigger>
-          <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
+          <TabsTrigger value="overview">Course Overview</TabsTrigger>
           <TabsTrigger value="certificates">Certificates</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="tracks" className="space-y-6">
-          {/* Filters */}
+        <TabsContent value="overview" className="space-y-6">
+          {/* Search */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Filters</CardTitle>
+              <CardTitle className="text-lg">Search Courses</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4 flex-wrap">
-                <div className="flex-1 min-w-[200px]">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search tracks..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="technology">Technology</SelectItem>
-                    <SelectItem value="business">Business</SelectItem>
-                    <SelectItem value="design">Design</SelectItem>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Published</SelectItem>
-                    <SelectItem value="inactive">Draft</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="relative max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search courses..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                  data-testid="input-search-courses"
+                />
               </div>
             </CardContent>
           </Card>
 
-          {/* Tracks Table */}
+          {/* Courses Table - Read Only */}
           <Card>
             <CardHeader>
-              <CardTitle>Learning Tracks ({filteredTracks.length})</CardTitle>
+              <CardTitle>All Courses ({displayTracks.length})</CardTitle>
               <CardDescription>
-                All learning tracks and their current status
+                View course performance and statistics
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-auto">
+                {searchTerm && displayTracks.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No courses found</h3>
+                    <p className="text-muted-foreground">No courses match "{searchTerm}"</p>
+                  </div>
+                ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Track</TableHead>
+                      <TableHead>Course</TableHead>
                       <TableHead>Level</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Enrollments</TableHead>
                       <TableHead>Price</TableHead>
-                      <TableHead>Created</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredTracks.map((track) => (
-                      <TableRow key={track.id}>
+                    {displayTracks.map((track) => (
+                      <TableRow key={track.id} data-testid={`row-course-${track.id}`}>
                         <TableCell>
                           <div>
                             <div className="font-medium">{track.title}</div>
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-sm text-muted-foreground line-clamp-1">
                               {track.description}
                             </div>
                             <div className="flex items-center gap-2 mt-1">
@@ -314,82 +327,154 @@ export function AdminCourses() {
                           {track.price > 0 ? `$${track.price}` : 'Free'}
                         </TableCell>
                         <TableCell>
-                          {new Date(track.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Track
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => toggleTrackStatus(track.id, track.is_active)}
-                              >
-                                <BookOpen className="mr-2 h-4 w-4" />
-                                {track.is_active ? 'Unpublish' : 'Publish'}
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-destructive">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Track
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          <Button variant="ghost" size="sm" data-testid={`button-view-course-${track.id}`}>
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Phase 2 Notice */}
+          <Card className="border-dashed">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                  <BarChart3 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Course Approval Workflow</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Course approval and publishing controls will be available in Phase 2
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="modules">
+        <TabsContent value="certificates" className="space-y-6">
+          {/* Certificate Stats */}
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">This Week</CardTitle>
+                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">47</div>
+                <p className="text-xs text-muted-foreground">Certificates issued</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">This Month</CardTitle>
+                <Award className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">183</div>
+                <p className="text-xs text-muted-foreground">Certificates issued</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">All Time</CardTitle>
+                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">873</div>
+                <p className="text-xs text-muted-foreground">Total certificates</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Certificates */}
           <Card>
-            <CardContent className="p-8 text-center">
-              <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Module Management</h3>
-              <p className="text-muted-foreground">Module management features coming soon...</p>
+            <CardHeader>
+              <CardTitle>Recent Certificates</CardTitle>
+              <CardDescription>Latest course completions and certifications</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Student</TableHead>
+                    <TableHead>Course</TableHead>
+                    <TableHead>Completed</TableHead>
+                    <TableHead>Score</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {mockCertificates.map((cert) => (
+                    <TableRow key={cert.id} data-testid={`row-certificate-${cert.id}`}>
+                      <TableCell className="font-medium">{cert.studentName}</TableCell>
+                      <TableCell>{cert.courseName}</TableCell>
+                      <TableCell>{new Date(cert.completedAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Badge variant={cert.score >= 90 ? "default" : "secondary"}>
+                          {cert.score}%
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm" data-testid={`button-view-certificate-${cert.id}`}>
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="lessons">
+          {/* Top Certified Courses */}
           <Card>
-            <CardContent className="p-8 text-center">
-              <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Lesson Management</h3>
-              <p className="text-muted-foreground">Lesson management features coming soon...</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="quizzes">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Quiz Management</h3>
-              <p className="text-muted-foreground">Quiz management features coming soon...</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="certificates">
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Award className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Certificate Templates</h3>
-              <p className="text-muted-foreground">Certificate management features coming soon...</p>
+            <CardHeader>
+              <CardTitle>Top Certified Courses</CardTitle>
+              <CardDescription>Courses with the most certificate completions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Course</TableHead>
+                    <TableHead>Certificates</TableHead>
+                    <TableHead>Completion Rate</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {topCertifiedCourses.map((course, index) => (
+                    <TableRow key={index} data-testid={`row-top-course-${index}`}>
+                      <TableCell className="font-medium">{course.name}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-amber-500" />
+                          {course.certificates}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div 
+                              className="bg-primary h-2 rounded-full" 
+                              style={{ width: `${course.completionRate}%` }}
+                            />
+                          </div>
+                          <span className="text-sm text-muted-foreground">{course.completionRate}%</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>
