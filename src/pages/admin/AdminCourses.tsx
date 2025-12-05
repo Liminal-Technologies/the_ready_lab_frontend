@@ -194,7 +194,7 @@ export function AdminCourses() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Course Management</h1>
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Course Management</h1>
           <p className="text-muted-foreground">
             Manage learning tracks, modules, and certificates
           </p>
