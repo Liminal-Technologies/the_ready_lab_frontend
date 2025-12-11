@@ -11,7 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useMockAuth, type MockUserRole } from '@/hooks/useMockAuth';
 import { useNavigate } from 'react-router-dom';
-import { UserCog, Users, GraduationCap, BookOpen, Shield } from 'lucide-react';
+import { UserCog, Users, GraduationCap, BookOpen, Shield, Building2 } from 'lucide-react';
 
 const roleIcons: Record<MockUserRole, React.ReactNode> = {
   super_admin: <Shield className="h-4 w-4" />,
@@ -48,6 +48,11 @@ export function RoleSwitcher() {
   const handleEnterDemo = (role: MockUserRole) => {
     login(role);
     navigate(roleRoutes[role]);
+    setIsOpen(false);
+  };
+
+  const handleEnterInstitutionDemo = () => {
+    navigate('/institution-demo');
     setIsOpen(false);
   };
 
@@ -112,6 +117,17 @@ export function RoleSwitcher() {
           >
             <BookOpen className="h-4 w-4 mr-2" />
             Student
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem 
+            onClick={handleEnterInstitutionDemo}
+            className="cursor-pointer"
+            data-testid="demo-as-institution"
+          >
+            <Building2 className="h-4 w-4 mr-2" />
+            Institution
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -187,6 +203,17 @@ export function RoleSwitcher() {
           {user?.role === 'student' && (
             <Badge variant="secondary" className="ml-auto">Active</Badge>
           )}
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem 
+          onClick={handleEnterInstitutionDemo}
+          className="cursor-pointer"
+          data-testid="role-institution"
+        >
+          <Building2 className="h-4 w-4 mr-2" />
+          Institution
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
