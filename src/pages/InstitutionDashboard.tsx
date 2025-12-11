@@ -355,12 +355,12 @@ export default function InstitutionDashboard() {
 
       <div className="container mx-auto px-4 py-16">
         {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 shadow-lg">
+        <div className="rounded-2xl p-6 mb-8 shadow-lg" style={{ background: 'linear-gradient(to right, #2563eb, #4338ca)' }}>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <p className="text-blue-200 text-sm mb-1">Welcome back,</p>
-              <h1 className="text-2xl md:text-3xl font-bold mb-2 text-white">Stanford Innovation Academy</h1>
-              <p className="text-blue-100 max-w-xl">
+              <p style={{ color: '#bfdbfe' }} className="text-sm mb-1">Welcome back,</p>
+              <h1 style={{ color: '#ffffff' }} className="text-2xl md:text-3xl font-bold mb-2">Stanford Innovation Academy</h1>
+              <p style={{ color: '#dbeafe' }} className="max-w-xl">
                 Your learning programs are performing well. 8 cohorts are on track and student engagement is up 12% this month.
               </p>
             </div>
