@@ -31,7 +31,58 @@ import {
   Settings,
   Eye,
   AlertCircle,
+  Globe,
+  Languages,
+  Subtitles,
+  Accessibility,
+  Volume2,
+  Play,
 } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area } from "recharts";
+
+// Analytics chart data
+const COMPLETION_TREND_DATA = [
+  { month: "Jul", rate: 58, students: 890 },
+  { month: "Aug", rate: 62, students: 945 },
+  { month: "Sep", rate: 65, students: 1020 },
+  { month: "Oct", rate: 68, students: 1105 },
+  { month: "Nov", rate: 71, students: 1180 },
+  { month: "Dec", rate: 72, students: 1247 },
+];
+
+const COURSE_DISTRIBUTION_DATA = [
+  { name: "Leadership", value: 28, color: "#3b82f6" },
+  { name: "Technical Skills", value: 24, color: "#10b981" },
+  { name: "Grant Writing", value: 18, color: "#f59e0b" },
+  { name: "Marketing", value: 15, color: "#8b5cf6" },
+  { name: "Finance", value: 15, color: "#ec4899" },
+];
+
+const ENGAGEMENT_DATA = [
+  { day: "Mon", logins: 425, lessons: 312 },
+  { day: "Tue", logins: 480, lessons: 345 },
+  { day: "Wed", logins: 520, lessons: 398 },
+  { day: "Thu", logins: 495, lessons: 367 },
+  { day: "Fri", logins: 410, lessons: 289 },
+  { day: "Sat", logins: 180, lessons: 124 },
+  { day: "Sun", logins: 145, lessons: 98 },
+];
+
+// Language & Accessibility stats
+const LANGUAGE_STATS = {
+  totalCaptionedCourses: 47,
+  englishOnly: 23,
+  bilingual: 24,
+  captionUsageRate: 34,
+  preferredLanguages: [
+    { language: "English", percentage: 68 },
+    { language: "Spanish", percentage: 28 },
+    { language: "Portuguese", percentage: 4 },
+  ],
+  accessibilityUsers: 156,
+  screenReaderUsers: 23,
+  captionUsers: 133,
+};
 
 // Mock cohorts data - 12 cohorts, 1,247 total students, 72% avg completion
 const MOCK_COHORTS = [
@@ -303,19 +354,32 @@ export default function InstitutionDashboard() {
       <PageBreadcrumb />
 
       <div className="container mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Institution Dashboard</h1>
-            <p className="text-muted-foreground mb-2">
-              Manage cohorts, track student progress, and administer your learning programs
-            </p>
-            <Badge variant="secondary">Demo View - Mock Data</Badge>
+        {/* Welcome Banner */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 mb-8 shadow-lg">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <p className="text-blue-200 text-sm mb-1">Welcome back,</p>
+              <h1 className="text-2xl md:text-3xl font-bold mb-2 text-white">Stanford Innovation Academy</h1>
+              <p className="text-blue-100 max-w-xl">
+                Your learning programs are performing well. 8 cohorts are on track and student engagement is up 12% this month.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button variant="secondary" onClick={() => setShowCohortModal(true)} data-testid="button-create-cohort">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Cohort
+              </Button>
+            </div>
           </div>
-          <Button onClick={() => setShowCohortModal(true)} data-testid="button-create-cohort">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Cohort
-          </Button>
+        </div>
+
+        {/* Page Title */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground">Institution Overview</h2>
+            <p className="text-sm text-muted-foreground">Real-time metrics across all your learning programs</p>
+          </div>
+          <Badge variant="secondary">Demo View</Badge>
         </div>
 
         {/* Stats Cards */}
@@ -396,6 +460,10 @@ export default function InstitutionDashboard() {
             <TabsTrigger value="reports" className="flex items-center gap-2" data-testid="tab-reports">
               <Download className="h-4 w-4" />
               Reports
+            </TabsTrigger>
+            <TabsTrigger value="language" className="flex items-center gap-2" data-testid="tab-language">
+              <Languages className="h-4 w-4" />
+              Language & Accessibility
             </TabsTrigger>
           </TabsList>
 
@@ -530,6 +598,145 @@ export default function InstitutionDashboard() {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
+            {/* Summary Stats */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-6 bg-green-50 dark:bg-green-950 rounded-xl border border-green-200 dark:border-green-800">
+                <div className="text-3xl font-bold text-green-600 dark:text-green-400">8</div>
+                <p className="text-sm font-medium text-green-800 dark:text-green-200">Cohorts On Track</p>
+                <p className="text-xs text-muted-foreground mt-1">Meeting completion targets</p>
+              </div>
+              <div className="text-center p-6 bg-amber-50 dark:bg-amber-950 rounded-xl border border-amber-200 dark:border-amber-800">
+                <div className="text-3xl font-bold text-amber-600 dark:text-amber-400">3</div>
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-200">At Risk</p>
+                <p className="text-xs text-muted-foreground mt-1">Below 50% completion</p>
+              </div>
+              <div className="text-center p-6 bg-blue-50 dark:bg-blue-950 rounded-xl border border-blue-200 dark:border-blue-800">
+                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">1</div>
+                <p className="text-sm font-medium text-blue-800 dark:text-blue-200">Completed</p>
+                <p className="text-xs text-muted-foreground mt-1">100% completion rate</p>
+              </div>
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Completion Trend Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    Completion Rate Trend
+                  </CardTitle>
+                  <CardDescription>6-month completion rate progression across all cohorts</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[280px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={COMPLETION_TREND_DATA}>
+                        <defs>
+                          <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                        <XAxis dataKey="month" className="text-xs" />
+                        <YAxis domain={[50, 80]} className="text-xs" />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(var(--background))', 
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '8px'
+                          }} 
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="rate" 
+                          stroke="#10b981" 
+                          strokeWidth={3}
+                          fillOpacity={1} 
+                          fill="url(#colorRate)" 
+                          name="Completion Rate %"
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 mt-4 text-sm text-green-600">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>+14% growth over 6 months</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Course Distribution Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
+                    Course Category Distribution
+                  </CardTitle>
+                  <CardDescription>Enrollment breakdown by course category</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[280px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={COURSE_DISTRIBUTION_DATA}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          paddingAngle={2}
+                          dataKey="value"
+                          label={({ name, value }) => `${name}: ${value}%`}
+                          labelLine={false}
+                        >
+                          {COURSE_DISTRIBUTION_DATA.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Weekly Engagement Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-purple-600" />
+                  Weekly Engagement
+                </CardTitle>
+                <CardDescription>Daily logins and lesson completions this week</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[250px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={ENGAGEMENT_DATA}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis dataKey="day" className="text-xs" />
+                      <YAxis className="text-xs" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--background))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px'
+                        }} 
+                      />
+                      <Legend />
+                      <Line type="monotone" dataKey="logins" stroke="#8b5cf6" strokeWidth={2} name="Daily Logins" dot={{ r: 4 }} />
+                      <Line type="monotone" dataKey="lessons" stroke="#f59e0b" strokeWidth={2} name="Lessons Completed" dot={{ r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Student Progress Table */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -537,93 +744,74 @@ export default function InstitutionDashboard() {
                   Student Progress Tracking
                 </CardTitle>
                 <CardDescription>
-                  Monitor student engagement and identify at-risk learners across all cohorts
+                  Monitor student engagement and identify at-risk learners
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {/* Summary Stats */}
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
-                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">8</div>
-                      <p className="text-sm text-muted-foreground">On Track</p>
-                    </div>
-                    <div className="text-center p-4 bg-amber-50 dark:bg-amber-950 rounded-lg border border-amber-200 dark:border-amber-800">
-                      <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">3</div>
-                      <p className="text-sm text-muted-foreground">At Risk</p>
-                    </div>
-                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">1</div>
-                      <p className="text-sm text-muted-foreground">Completed</p>
-                    </div>
-                  </div>
-
-                  {/* Student Table */}
-                  <div className="rounded-lg border overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Student</TableHead>
-                          <TableHead>Cohort</TableHead>
-                          <TableHead>Progress</TableHead>
-                          <TableHead>Last Active</TableHead>
-                          <TableHead>Status</TableHead>
+                <div className="rounded-lg border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Student</TableHead>
+                        <TableHead>Cohort</TableHead>
+                        <TableHead>Progress</TableHead>
+                        <TableHead>Last Active</TableHead>
+                        <TableHead>Status</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {MOCK_STUDENT_PROGRESS.map((student) => (
+                        <TableRow key={student.id} data-testid={`student-row-${student.id}`}>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{student.name}</div>
+                              <div className="text-xs text-muted-foreground">{student.email}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm">{student.cohort}</TableCell>
+                          <TableCell>
+                            <div className="space-y-1 min-w-[120px]">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="font-medium">{student.progress}%</span>
+                              </div>
+                              <Progress value={student.progress} className="h-2" />
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{student.lastActive}</TableCell>
+                          <TableCell>
+                            {student.status === "At Risk" ? (
+                              <Badge variant="destructive" className="gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                At Risk
+                              </Badge>
+                            ) : student.status === "Completed" ? (
+                              <Badge variant="default" className="gap-1 bg-green-600">
+                                <CheckCircle2 className="h-3 w-3" />
+                                Completed
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary" className="gap-1">
+                                <CheckCircle2 className="h-3 w-3" />
+                                On Track
+                              </Badge>
+                            )}
+                          </TableCell>
                         </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {MOCK_STUDENT_PROGRESS.map((student) => (
-                          <TableRow key={student.id} data-testid={`student-row-${student.id}`}>
-                            <TableCell>
-                              <div>
-                                <div className="font-medium">{student.name}</div>
-                                <div className="text-xs text-muted-foreground">{student.email}</div>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-sm">{student.cohort}</TableCell>
-                            <TableCell>
-                              <div className="space-y-1 min-w-[120px]">
-                                <div className="flex items-center justify-between text-sm">
-                                  <span className="font-medium">{student.progress}%</span>
-                                </div>
-                                <Progress value={student.progress} className="h-2" />
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{student.lastActive}</TableCell>
-                            <TableCell>
-                              {student.status === "At Risk" ? (
-                                <Badge variant="destructive" className="gap-1">
-                                  <AlertCircle className="h-3 w-3" />
-                                  At Risk
-                                </Badge>
-                              ) : student.status === "Completed" ? (
-                                <Badge variant="default" className="gap-1 bg-green-600">
-                                  <CheckCircle2 className="h-3 w-3" />
-                                  Completed
-                                </Badge>
-                              ) : (
-                                <Badge variant="secondary" className="gap-1">
-                                  <CheckCircle2 className="h-3 w-3" />
-                                  On Track
-                                </Badge>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4">
-                    <Button variant="outline" onClick={() => toast({ title: "Reminder sent! 📧", description: "Sent engagement reminders to 3 at-risk students" })}>
-                      <Send className="mr-2 h-4 w-4" />
-                      Send Reminders to At-Risk Students
-                    </Button>
-                    <Button variant="outline" onClick={() => handleDownloadReport("Student Progress")}>
-                      <Download className="mr-2 h-4 w-4" />
-                      Export Report
-                    </Button>
-                  </div>
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" onClick={() => toast({ title: "Reminder sent! 📧", description: "Sent engagement reminders to 3 at-risk students" })}>
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Reminders to At-Risk Students
+                  </Button>
+                  <Button variant="outline" onClick={() => handleDownloadReport("Student Progress")}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Export Report
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -769,6 +957,199 @@ Jane Smith,jane@example.com,Spring 2025`}
                       <div className="text-xs text-muted-foreground">All issued certificates</div>
                     </div>
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Language & Accessibility Tab */}
+          <TabsContent value="language" className="space-y-6">
+            {/* Language Stats Overview */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <Subtitles className="h-5 w-5 text-blue-500" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold">{LANGUAGE_STATS.totalCaptionedCourses}</div>
+                  <p className="text-sm text-muted-foreground">Captioned Courses</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                      <Globe className="h-5 w-5 text-green-500" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold">{LANGUAGE_STATS.bilingual}</div>
+                  <p className="text-sm text-muted-foreground">Bilingual Courses (EN/ES)</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                      <Accessibility className="h-5 w-5 text-purple-500" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold">{LANGUAGE_STATS.accessibilityUsers}</div>
+                  <p className="text-sm text-muted-foreground">Accessibility Users</p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                      <Volume2 className="h-5 w-5 text-amber-500" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold">{LANGUAGE_STATS.captionUsageRate}%</div>
+                  <p className="text-sm text-muted-foreground">Caption Usage Rate</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Language Preferences */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Languages className="h-5 w-5" />
+                    Student Language Preferences
+                  </CardTitle>
+                  <CardDescription>Distribution of preferred content language across your institution</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {LANGUAGE_STATS.preferredLanguages.map((lang) => (
+                    <div key={lang.language}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{lang.language === "English" ? "🇺🇸" : lang.language === "Spanish" ? "🇪🇸" : "🇧🇷"}</span>
+                          <span className="font-medium">{lang.language}</span>
+                        </div>
+                        <span className="text-muted-foreground">{lang.percentage}%</span>
+                      </div>
+                      <Progress value={lang.percentage} className="h-2" />
+                    </div>
+                  ))}
+                  
+                  <div className="pt-4 border-t mt-4">
+                    <p className="text-sm text-muted-foreground mb-3">Default Institution Language</p>
+                    <div className="flex gap-2">
+                      <Button variant="default" size="sm" className="flex items-center gap-2">
+                        <span>🇺🇸</span> English
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex items-center gap-2">
+                        <span>🇪🇸</span> Spanish
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Accessibility Features */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Accessibility className="h-5 w-5" />
+                    Accessibility Features Usage
+                  </CardTitle>
+                  <CardDescription>How students use accessibility features in your courses</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                          <Subtitles className="h-5 w-5 text-blue-500" />
+                        </div>
+                        <div>
+                          <p className="font-medium">Closed Captions</p>
+                          <p className="text-sm text-muted-foreground">Students using video captions</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xl font-bold">{LANGUAGE_STATS.captionUsers}</p>
+                        <p className="text-xs text-muted-foreground">students</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                          <Eye className="h-5 w-5 text-purple-500" />
+                        </div>
+                        <div>
+                          <p className="font-medium">Screen Reader Compatible</p>
+                          <p className="text-sm text-muted-foreground">Students using screen readers</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xl font-bold">{LANGUAGE_STATS.screenReaderUsers}</p>
+                        <p className="text-xs text-muted-foreground">students</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 rounded-lg border border-green-200 dark:border-green-800">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-green-800 dark:text-green-200">WCAG 2.1 AA Compliant</p>
+                        <p className="text-sm text-green-700 dark:text-green-300">All courses meet accessibility standards</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Caption Preview Demo */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Play className="h-5 w-5" />
+                  Bilingual Caption Preview
+                </CardTitle>
+                <CardDescription>See how captions appear in courses with bilingual support</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="relative bg-gray-900 rounded-lg overflow-hidden aspect-video max-w-2xl mx-auto">
+                  {/* Mock Video Preview */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-white/60">
+                      <Play className="h-16 w-16 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Video Preview</p>
+                    </div>
+                  </div>
+                  
+                  {/* Caption Overlay Preview */}
+                  <div className="absolute bottom-8 left-0 right-0 text-center px-4">
+                    <div className="inline-block bg-black/80 text-white px-4 py-2 rounded-lg">
+                      <p className="text-sm md:text-base font-medium">
+                        Welcome to The Ready Lab. Let's begin your learning journey.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Language Badge */}
+                  <div className="absolute top-4 right-4">
+                    <Badge variant="secondary" className="bg-black/60 text-white border-none">
+                      🇺🇸 EN
+                    </Badge>
+                  </div>
+                </div>
+                
+                <div className="flex justify-center gap-2 mt-4">
+                  <Button variant="default" size="sm">🇺🇸 English</Button>
+                  <Button variant="outline" size="sm">🇪🇸 Español</Button>
+                  <Button variant="outline" size="sm">Off</Button>
                 </div>
               </CardContent>
             </Card>
