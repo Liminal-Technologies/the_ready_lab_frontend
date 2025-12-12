@@ -39,43 +39,50 @@ const Hero = () => {
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Massive Headline - Bottom Left (Desktop) / Top Center (Mobile) */}
-      <div className="absolute bottom-20 md:bottom-24 left-4 md:left-8 lg:left-16 lg:block hidden z-10 max-w-4xl">
-        <h1 className="font-bold leading-tight" style={{ fontSize: '6.3rem' }}>
-          <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-            Prepare &{" "}
-          </span>
-          <br />
-          <span style={{ color: '#FDB022', textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
-            Get Funded
-          </span>
-        </h1>
-      </div>
+      {/* Desktop Layout - Flex container for aligned headline and CTA */}
+      <div className="absolute bottom-16 left-0 right-0 z-10 hidden lg:block">
+        <div className="container mx-auto px-8 lg:px-16">
+          <div className="flex items-end justify-between gap-8">
+            {/* Headline - Left Side */}
+            <div className="max-w-3xl">
+              <h1 className="font-bold leading-tight" style={{ fontSize: '6.3rem' }}>
+                <span className="text-white" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+                  Prepare &{" "}
+                </span>
+                <br />
+                <span style={{ color: '#FDB022', textShadow: '2px 2px 8px rgba(0,0,0,0.8)' }}>
+                  Get Funded
+                </span>
+              </h1>
+            </div>
 
-      {/* Right Floating Content Box - Centered Vertically, Right Aligned */}
-      <div className="absolute top-1/2 -translate-y-1/2 -mt-8 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block" data-demo-anchor="educator-cta">
-        <div className="rounded-2xl p-5 text-center">
-          <p className="text-white mb-5 leading-relaxed font-normal" style={{ fontSize: '0.9375rem', textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
-            Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
-          </p>
-          <div className="flex flex-col gap-3">
-            <Button 
-              onClick={handleStartJourney}
-              className="w-full rounded-full font-semibold text-base py-3 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-              style={{ backgroundColor: '#FDB022', color: '#000' }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
-              data-testid="button-start-journey"
-            >
-              Start Your Journey
-            </Button>
-            <Button 
-              onClick={handleWatchDemo}
-              className="w-full rounded-full border-2 bg-transparent hover:bg-white/10 font-semibold text-base py-3 text-white border-white/60"
-              data-testid="button-watch-demo"
-            >
-              Watch Demo
-            </Button>
+            {/* CTA Box - Right Side */}
+            <div className="max-w-sm mb-4" data-demo-anchor="educator-cta">
+              <div className="rounded-2xl p-5 text-center">
+                <p className="text-white mb-5 leading-relaxed font-normal" style={{ fontSize: '0.9375rem', textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
+                  Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <Button 
+                    onClick={handleStartJourney}
+                    className="w-full rounded-full font-semibold text-base py-3 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    style={{ backgroundColor: '#FDB022', color: '#000' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FCA311'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FDB022'}
+                    data-testid="button-start-journey"
+                  >
+                    Start Your Journey
+                  </Button>
+                  <Button 
+                    onClick={handleWatchDemo}
+                    className="w-full rounded-full border-2 bg-transparent hover:bg-white/10 font-semibold text-base py-3 text-white border-white/60"
+                    data-testid="button-watch-demo"
+                  >
+                    Watch Demo
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
