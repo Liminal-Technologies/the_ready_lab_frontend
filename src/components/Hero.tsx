@@ -53,7 +53,7 @@ const Hero = () => {
       </div>
 
       {/* Right Floating Content Box - Centered Vertically, Right Aligned */}
-      <div className="absolute top-1/2 -translate-y-1/2 mt-16 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block" data-demo-anchor="educator-cta">
+      <div className="absolute top-1/2 -translate-y-1/2 -mt-8 right-8 md:right-16 lg:right-24 z-20 max-w-sm hidden lg:block" data-demo-anchor="educator-cta">
         <div className="rounded-2xl p-5 text-center">
           <p className="text-white mb-5 leading-relaxed font-normal" style={{ fontSize: '0.9375rem', textShadow: '2px 2px 8px rgba(0,0,0,0.9)' }}>
             Build the fundable business that funders actually want to back. Real education, real results, real opportunity.
