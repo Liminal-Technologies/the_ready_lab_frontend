@@ -438,7 +438,7 @@ const Pricing = () => {
                   </div>
                   
                   <div className="flex gap-4 justify-center pt-4">
-                    <Button size="lg" data-testid="button-request-demo">
+                    <Button size="lg" data-testid="button-request-demo" onClick={() => navigate('/institution-demo')}>
                       Request Demo
                     </Button>
                     <Button size="lg" variant="outline" data-testid="button-contact-sales">
