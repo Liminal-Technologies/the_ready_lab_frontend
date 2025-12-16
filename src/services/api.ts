@@ -627,6 +627,35 @@ class ApiClient {
     get: (id: string) =>
       this.request<Lesson>(`/api/lessons/${id}`),
 
+    /**
+     * Get learning feed lessons with optional related data
+     *
+     * TRANSITIONAL IMPLEMENTATION: Uses include param to join related tables.
+     * TODO: Replace with purpose-built endpoints that abstract internal schema.
+     *
+     * @param params.user_id - Required for progress include
+     * @param params.include - Comma-separated: module, track, progress
+     * @param params.interest_tags - Filter by interest tags (comma-separated)
+     * @param params.is_standalone - Filter standalone lessons only
+     */
+    feed: (params: {
+      user_id?: string;
+      include?: ('module' | 'track' | 'progress')[];
+      interest_tags?: string[];
+      is_standalone?: boolean;
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params.user_id) searchParams.set('user_id', params.user_id);
+      if (params.include?.length) searchParams.set('include', params.include.join(','));
+      if (params.interest_tags?.length) searchParams.set('interest_tags', params.interest_tags.join(','));
+      if (params.is_standalone) searchParams.set('is_standalone', 'true');
+      if (params.limit) searchParams.set('limit', String(params.limit));
+      if (params.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ data: (Lesson & { module?: Module; track?: Track; progress?: LessonProgress })[]; pagination: { limit: number; offset: number } }>(`/api/lessons/feed?${searchParams}`);
+    },
+
     create: (data: Partial<Lesson>) =>
       this.request<Lesson>('/api/lessons', {
         method: 'POST',
@@ -653,6 +682,30 @@ class ApiClient {
       if (userId) params.set('user_id', userId);
       if (trackId) params.set('track_id', trackId);
       return this.request<Enrollment[]>(`/api/enrollments?${params}`);
+    },
+
+    /**
+     * List user enrollments with optional related data
+     *
+     * TRANSITIONAL IMPLEMENTATION: Uses include param to join related tables.
+     * TODO: Replace with purpose-built endpoints that abstract internal schema.
+     *
+     * @param userId - User ID to get enrollments for
+     * @param params.status - Filter by status (active, completed, dropped)
+     * @param params.include - Comma-separated: track
+     */
+    listByUser: (userId: string, params?: {
+      status?: 'active' | 'completed' | 'dropped';
+      include?: ('track')[];
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.status) searchParams.set('status', params.status);
+      if (params?.include?.length) searchParams.set('include', params.include.join(','));
+      if (params?.limit) searchParams.set('limit', String(params.limit));
+      if (params?.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ data: (Enrollment & { track?: Track })[]; pagination: { limit: number; offset: number } }>(`/api/enrollments/user/${userId}?${searchParams}`);
     },
 
     get: (id: string) =>
@@ -771,8 +824,29 @@ class ApiClient {
 
     // Member management
     members: {
-      list: (communityId: string) =>
-        this.request<CommunityMember[]>(`/api/communities/${communityId}/members`),
+      /**
+       * List community members with optional profile data
+       *
+       * TRANSITIONAL IMPLEMENTATION: Uses include param to join related tables.
+       * TODO: Replace with purpose-built endpoints that abstract internal schema.
+       *
+       * @param communityId - Community ID
+       * @param params.role - Filter by role
+       * @param params.include - Comma-separated: profile
+       */
+      list: (communityId: string, params?: {
+        role?: 'member' | 'moderator' | 'admin';
+        include?: ('profile')[];
+        limit?: number;
+        offset?: number;
+      }) => {
+        const searchParams = new URLSearchParams();
+        if (params?.role) searchParams.set('role', params.role);
+        if (params?.include?.length) searchParams.set('include', params.include.join(','));
+        if (params?.limit) searchParams.set('limit', String(params.limit));
+        if (params?.offset) searchParams.set('offset', String(params.offset));
+        return this.request<{ data: (CommunityMember & { profile?: Profile })[]; pagination: { limit: number; offset: number } }>(`/api/communities/${communityId}/members?${searchParams}`);
+      },
 
       join: (communityId: string) =>
         this.request<CommunityMember>(`/api/communities/${communityId}/members`, {
@@ -797,8 +871,28 @@ class ApiClient {
   // ============================================================================
 
   posts = {
-    list: (communityId: string) =>
-      this.request<Post[]>(`/api/posts?community_id=${communityId}`),
+    /**
+     * List posts with optional related data
+     *
+     * TRANSITIONAL IMPLEMENTATION: Uses include param to join related tables.
+     * TODO: Replace with purpose-built endpoints that abstract internal schema.
+     *
+     * @param params.community_id - Filter by community
+     * @param params.include - Comma-separated: author, reactions_count
+     */
+    list: (params?: {
+      community_id?: string;
+      include?: ('author' | 'reactions_count')[];
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.community_id) searchParams.set('community_id', params.community_id);
+      if (params?.include?.length) searchParams.set('include', params.include.join(','));
+      if (params?.limit) searchParams.set('limit', String(params.limit));
+      if (params?.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ data: (Post & { author?: Profile; totalReactions?: number })[]; pagination: { limit: number; offset: number } }>(`/api/posts?${searchParams}`);
+    },
 
     get: (id: string) =>
       this.request<Post>(`/api/posts/${id}`),
@@ -834,6 +928,13 @@ class ApiClient {
     reactions: {
       list: (postId: string) =>
         this.request<PostReaction[]>(`/api/posts/${postId}/reactions`),
+
+      /**
+       * Get current user's reaction on a post
+       * Returns { hasReacted, emoji, reactedAt }
+       */
+      getUserReaction: (postId: string, userId: string) =>
+        this.request<{ hasReacted: boolean; emoji: string | null; reactedAt: string | null }>(`/api/posts/${postId}/reactions/user/${userId}`),
 
       add: (postId: string, reactionType: string) =>
         this.request<PostReaction>(`/api/posts/${postId}/reactions`, {
@@ -1134,8 +1235,29 @@ class ApiClient {
   // ============================================================================
 
   bookmarks = {
-    list: (userId: string) =>
-      this.request<Bookmark[]>(`/api/bookmarks/user/${userId}`),
+    /**
+     * List user bookmarks with optional item details
+     *
+     * TRANSITIONAL IMPLEMENTATION: Uses include param to hydrate bookmarked items.
+     * TODO: Replace with purpose-built endpoints that abstract internal schema.
+     *
+     * @param userId - User ID
+     * @param params.type - Filter by type (lesson, track, post, product)
+     * @param params.include - Comma-separated: details (fetches the bookmarked item's data)
+     */
+    list: (userId: string, params?: {
+      type?: 'lesson' | 'track' | 'post' | 'product';
+      include?: ('details')[];
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.type) searchParams.set('type', params.type);
+      if (params?.include?.length) searchParams.set('include', params.include.join(','));
+      if (params?.limit) searchParams.set('limit', String(params.limit));
+      if (params?.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ data: (Bookmark & { item?: Lesson | Track | Post | Product })[]; pagination: { limit: number; offset: number } }>(`/api/bookmarks/user/${userId}?${searchParams}`);
+    },
 
     create: (type: string, itemId: string) =>
       this.request<Bookmark>('/api/bookmarks', {
