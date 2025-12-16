@@ -38,7 +38,9 @@ import {
   PowerOff,
   Download,
   Package,
-  FileText
+  FileText,
+  Mail,
+  Send
 } from 'lucide-react';
 import { exportEducatorAnalytics } from '@/utils/exportEducatorAnalytics';
 import {
@@ -58,6 +60,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { PlanSelectionModal } from '@/components/educator/PlanSelectionModal';
 import { CourseBuilderWizard } from '@/components/educator/CourseBuilderWizard';
 import { DigitalProductWizard } from '@/components/educator/DigitalProductWizard';
@@ -162,6 +174,9 @@ export const EducatorDashboard = () => {
     totalRevenue: 0,
     totalPurchases: 0,
   });
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<{id: number; name: string; course: string} | null>(null);
+  const [messageText, setMessageText] = useState('');
   const [stats, setStats] = useState({
     totalCourses: 0,
     publishedCourses: 0,
@@ -407,6 +422,24 @@ export const EducatorDashboard = () => {
     } finally {
       setTimeout(() => setDownloadingAnalytics(false), 1000);
     }
+  };
+
+  const handleOpenMessageDialog = (student: {id: number; name: string; course: string}) => {
+    setSelectedStudent(student);
+    setMessageText('');
+    setShowMessageDialog(true);
+  };
+
+  const handleSendMessage = () => {
+    if (!selectedStudent || !messageText.trim()) return;
+    
+    toast({
+      title: "Message Sent",
+      description: `Your message to ${selectedStudent.name} has been sent successfully.`,
+    });
+    setShowMessageDialog(false);
+    setSelectedStudent(null);
+    setMessageText('');
   };
 
   // Calculate onboarding checklist
@@ -945,18 +978,23 @@ export const EducatorDashboard = () => {
                       <TableHead>Progress</TableHead>
                       <TableHead>Last Active</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {MOCK_STUDENTS.map((student) => (
                       <TableRow key={student.id} data-testid={`student-row-${student.id}`}>
                         <TableCell>
-                          <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => handleOpenMessageDialog({ id: student.id, name: student.name, course: student.course })}
+                            className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer group"
+                            data-testid={`student-name-${student.id}`}
+                          >
                             <Avatar className="h-8 w-8">
                               <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
                             </Avatar>
-                            <span className="font-medium">{student.name}</span>
-                          </div>
+                            <span className="font-medium text-primary underline-offset-2 group-hover:underline">{student.name}</span>
+                          </button>
                         </TableCell>
                         <TableCell>{student.course}</TableCell>
                         <TableCell>
@@ -975,6 +1013,17 @@ export const EducatorDashboard = () => {
                           ) : (
                             <Badge variant="secondary">Active</Badge>
                           )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleOpenMessageDialog({ id: student.id, name: student.name, course: student.course })}
+                            data-testid={`student-message-${student.id}`}
+                          >
+                            <Mail className="h-4 w-4 mr-1" />
+                            Message
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -1382,6 +1431,51 @@ export const EducatorDashboard = () => {
           onClose={() => setShowAutoDemo(false)}
         />
       )}
+
+      {/* Direct Message Dialog */}
+      <Dialog open={showMessageDialog} onOpenChange={setShowMessageDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Message {selectedStudent?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Send a direct message to this student enrolled in {selectedStudent?.course}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="message">Your Message</Label>
+              <Textarea
+                id="message"
+                placeholder="Write your message here... (e.g., Great job on your progress! or Need help with anything?)"
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                className="min-h-[120px]"
+                data-testid="input-student-message"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowMessageDialog(false)}
+              data-testid="button-cancel-message"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSendMessage}
+              disabled={!messageText.trim()}
+              data-testid="button-send-message"
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Send Message
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
