@@ -736,7 +736,7 @@ export const EducatorDashboard = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" data-testid={`course-actions-${index}`}>
-                              <MoreVertical className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                              <MoreVertical className="h-5 w-5 text-neutral-900 dark:text-neutral-100" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -853,7 +853,7 @@ export const EducatorDashboard = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" data-testid={`product-actions-${index}`}>
-                              <MoreVertical className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                              <MoreVertical className="h-5 w-5 text-neutral-900 dark:text-neutral-100" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
