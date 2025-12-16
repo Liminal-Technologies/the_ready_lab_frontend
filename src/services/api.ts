@@ -256,19 +256,80 @@ export interface ChatMessage {
   user?: Profile;
 }
 
+// Micro Lesson Types
+export interface MicroLesson {
+  id: string;
+  instructor_id: string;
+  title: string;
+  description?: string;
+  video_url?: string;
+  thumbnail_url?: string;
+  duration_seconds: number;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  category: string;
+  interest_tags: string[];
+  likes_count: number;
+  comments_count: number;
+  views_count: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  instructor?: {
+    id: string;
+    full_name: string;
+    avatar_url?: string;
+  };
+}
+
+export interface MicroLessonComment {
+  id: string;
+  micro_lesson_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  user?: {
+    id: string;
+    full_name: string;
+    avatar_url?: string;
+  };
+}
+
+// Community Poll Types
+export interface CommunityPollOption {
+  id: string;
+  poll_id: string;
+  text: string;
+  votes_count: number;
+  order_index: number;
+  created_at: string;
+}
+
+export interface CommunityPoll {
+  id: string;
+  created_by: string;
+  question: string;
+  is_active: boolean;
+  ends_at?: string;
+  total_votes: number;
+  created_at: string;
+  updated_at: string;
+  options: CommunityPollOption[];
+  user_vote?: string; // option_id if user has voted
+}
+
 // Product Types
 export interface Product {
   id: string;
   title: string;
   description?: string;
-  price: number;
-  file_url?: string;
-  thumbnail_url?: string;
-  created_by: string;
-  is_active: boolean;
-  download_count: number;
-  created_at: string;
-  updated_at: string;
+  price: string | number;
+  fileUrl?: string;
+  thumbnailUrl?: string;
+  creatorId: string;
+  category: string;
+  isActive: boolean;
+  salesCount: number;
 }
 
 // Purchase Types
@@ -1007,6 +1068,138 @@ class ApiClient {
           method: 'DELETE',
         }),
     },
+  };
+
+  // ============================================================================
+  // Micro Lesson Endpoints
+  // ============================================================================
+
+  microLessons = {
+    list: (params?: {
+      instructor_id?: string;
+      category?: string;
+      level?: string;
+      interest_tags?: string[];
+      is_active?: boolean;
+      include?: string[];
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.instructor_id) searchParams.set('instructor_id', params.instructor_id);
+      if (params?.category) searchParams.set('category', params.category);
+      if (params?.level) searchParams.set('level', params.level);
+      if (params?.interest_tags?.length) searchParams.set('interest_tags', params.interest_tags.join(','));
+      if (params?.is_active !== undefined) searchParams.set('is_active', String(params.is_active));
+      if (params?.include?.length) searchParams.set('include', params.include.join(','));
+      if (params?.limit) searchParams.set('limit', String(params.limit));
+      if (params?.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ data: MicroLesson[]; pagination: { limit: number; offset: number } }>(
+        `/api/micro-lessons?${searchParams}`
+      );
+    },
+
+    get: (id: string, params?: { include?: string[] }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.include?.length) searchParams.set('include', params.include.join(','));
+      return this.request<MicroLesson>(`/api/micro-lessons/${id}?${searchParams}`);
+    },
+
+    create: (data: Partial<MicroLesson>) =>
+      this.request<MicroLesson>('/api/micro-lessons', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    update: (id: string, data: Partial<MicroLesson>) =>
+      this.request<MicroLesson>(`/api/micro-lessons/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+
+    delete: (id: string) =>
+      this.request<void>(`/api/micro-lessons/${id}`, { method: 'DELETE' }),
+
+    // Like/Unlike
+    like: (id: string, userId: string) =>
+      this.request<{ success: boolean }>(`/api/micro-lessons/${id}/like`, {
+        method: 'POST',
+        body: JSON.stringify({ user_id: userId }),
+      }),
+
+    unlike: (id: string, userId: string) =>
+      this.request<void>(`/api/micro-lessons/${id}/like?user_id=${userId}`, {
+        method: 'DELETE',
+      }),
+
+    // Comments
+    comments: {
+      list: (microLessonId: string, params?: { limit?: number; offset?: number }) => {
+        const searchParams = new URLSearchParams();
+        if (params?.limit) searchParams.set('limit', String(params.limit));
+        if (params?.offset) searchParams.set('offset', String(params.offset));
+        return this.request<{ data: MicroLessonComment[]; pagination: { limit: number; offset: number } }>(
+          `/api/micro-lessons/${microLessonId}/comments?${searchParams}`
+        );
+      },
+
+      add: (microLessonId: string, userId: string, content: string) =>
+        this.request<MicroLessonComment>(`/api/micro-lessons/${microLessonId}/comments`, {
+          method: 'POST',
+          body: JSON.stringify({ user_id: userId, content }),
+        }),
+
+      delete: (microLessonId: string, commentId: string) =>
+        this.request<void>(`/api/micro-lessons/${microLessonId}/comments/${commentId}`, {
+          method: 'DELETE',
+        }),
+    },
+  };
+
+  // ============================================================================
+  // Community Poll Endpoints
+  // ============================================================================
+
+  communityPolls = {
+    list: (params?: {
+      is_active?: boolean;
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.is_active !== undefined) searchParams.set('is_active', String(params.is_active));
+      if (params?.limit) searchParams.set('limit', String(params.limit));
+      if (params?.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ data: CommunityPoll[]; pagination: { limit: number; offset: number } }>(
+        `/api/community-polls?${searchParams}`
+      );
+    },
+
+    get: (id: string, userId?: string) => {
+      const searchParams = new URLSearchParams();
+      if (userId) searchParams.set('user_id', userId);
+      return this.request<CommunityPoll>(`/api/community-polls/${id}?${searchParams}`);
+    },
+
+    create: (data: { created_by: string; question: string; options: string[]; ends_at?: string }) =>
+      this.request<CommunityPoll>('/api/community-polls', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    vote: (pollId: string, userId: string, optionId: string) =>
+      this.request<{ success: boolean; message: string }>(`/api/community-polls/${pollId}/vote`, {
+        method: 'POST',
+        body: JSON.stringify({ user_id: userId, option_id: optionId }),
+      }),
+
+    close: (pollId: string) =>
+      this.request<CommunityPoll>(`/api/community-polls/${pollId}/close`, {
+        method: 'POST',
+      }),
+
+    delete: (id: string) =>
+      this.request<void>(`/api/community-polls/${id}`, { method: 'DELETE' }),
   };
 
   // ============================================================================

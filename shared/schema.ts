@@ -248,6 +248,72 @@ export const liveEvents = pgTable("live_events", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Micro Lessons - Short-form educational videos (<5 min)
+export const microLessons = pgTable("micro_lessons", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  instructorId: uuid("instructor_id").notNull().references(() => profiles.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  videoUrl: text("video_url"),
+  thumbnailUrl: text("thumbnail_url"),
+  durationSeconds: integer("duration_seconds").notNull().default(0),
+  level: text("level").notNull().default("beginner"), // beginner, intermediate, advanced
+  category: text("category").notNull(),
+  interestTags: jsonb("interest_tags").$type<string[]>().default([]),
+  likesCount: integer("likes_count").notNull().default(0),
+  commentsCount: integer("comments_count").notNull().default(0),
+  viewsCount: integer("views_count").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Track user interactions with micro lessons
+export const microLessonLikes = pgTable("micro_lesson_likes", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  microLessonId: uuid("micro_lesson_id").notNull().references(() => microLessons.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const microLessonComments = pgTable("micro_lesson_comments", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  microLessonId: uuid("micro_lesson_id").notNull().references(() => microLessons.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Community Polls - For community engagement on Explore page
+export const communityPolls = pgTable("community_polls", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  createdBy: uuid("created_by").notNull().references(() => profiles.id),
+  question: text("question").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  endsAt: timestamp("ends_at"), // Optional expiration
+  totalVotes: integer("total_votes").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const communityPollOptions = pgTable("community_poll_options", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  pollId: uuid("poll_id").notNull().references(() => communityPolls.id, { onDelete: "cascade" }),
+  text: text("text").notNull(),
+  votesCount: integer("votes_count").notNull().default(0),
+  orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const communityPollVotes = pgTable("community_poll_votes", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  pollId: uuid("poll_id").notNull().references(() => communityPolls.id, { onDelete: "cascade" }),
+  optionId: uuid("option_id").notNull().references(() => communityPollOptions.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const quizzes = pgTable("quizzes", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   lessonId: uuid("lesson_id").notNull().references(() => lessons.id, { onDelete: "cascade" }),
@@ -297,6 +363,11 @@ export const insertCommunitySchema = createInsertSchema(communities).omit({ id: 
 export const insertPostSchema = createInsertSchema(posts).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertDigitalProductSchema = createInsertSchema(digitalProducts).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertNotificationSchema = createInsertSchema(notifications).omit({ id: true, createdAt: true });
+export const insertMicroLessonSchema = createInsertSchema(microLessons).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertMicroLessonCommentSchema = createInsertSchema(microLessonComments).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertCommunityPollSchema = createInsertSchema(communityPolls).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertCommunityPollOptionSchema = createInsertSchema(communityPollOptions).omit({ id: true, createdAt: true });
+export const insertCommunityPollVoteSchema = createInsertSchema(communityPollVotes).omit({ id: true, createdAt: true });
 
 export type Profile = typeof profiles.$inferSelect;
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
@@ -318,3 +389,14 @@ export type DigitalProduct = typeof digitalProducts.$inferSelect;
 export type InsertDigitalProduct = z.infer<typeof insertDigitalProductSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type MicroLesson = typeof microLessons.$inferSelect;
+export type InsertMicroLesson = z.infer<typeof insertMicroLessonSchema>;
+export type MicroLessonComment = typeof microLessonComments.$inferSelect;
+export type InsertMicroLessonComment = z.infer<typeof insertMicroLessonCommentSchema>;
+export type MicroLessonLike = typeof microLessonLikes.$inferSelect;
+export type CommunityPoll = typeof communityPolls.$inferSelect;
+export type InsertCommunityPoll = z.infer<typeof insertCommunityPollSchema>;
+export type CommunityPollOption = typeof communityPollOptions.$inferSelect;
+export type InsertCommunityPollOption = z.infer<typeof insertCommunityPollOptionSchema>;
+export type CommunityPollVote = typeof communityPollVotes.$inferSelect;
+export type InsertCommunityPollVote = z.infer<typeof insertCommunityPollVoteSchema>;
