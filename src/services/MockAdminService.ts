@@ -90,6 +90,7 @@ class MockKPIService implements IAdminKPIService {
       activeCommunities,
       pendingApprovals: 3, // Mock pending items
       totalGMV,
+      platformFeePercent: 15, // Mock: 15% platform fee
       stripeConnected: stripeStatus?.connected || false,
       emailProviderConnected: emailConfig?.connected || false,
       emailProvider: emailConfig?.provider,

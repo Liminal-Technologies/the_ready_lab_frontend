@@ -49,6 +49,7 @@ export interface KPIData {
   activeCommunities: number;
   pendingApprovals: number;
   totalGMV: number;
+  platformFeePercent: number;
   stripeConnected: boolean;
   emailProviderConnected: boolean;
   emailProvider?: string;
