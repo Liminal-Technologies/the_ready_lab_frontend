@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface Institution {
@@ -60,13 +61,24 @@ export function AdminInstitutions() {
   const fetchInstitutions = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('institutions')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Fetch institutions via API
+      const instData = await api.institutions.get('list');
 
-      if (error) throw error;
-      setInstitutions(data || []);
+      // Map to expected format
+      const mappedInstitutions = ((instData as any) || []).map((inst: any) => ({
+        id: inst.id,
+        name: inst.name,
+        domain: inst.domain,
+        seat_limit: inst.seat_limit || inst.seatLimit || 0,
+        seats_used: inst.seats_used || inst.seatsUsed || 0,
+        status: inst.status || 'active',
+        payment_status: inst.payment_status || inst.paymentStatus || 'pending',
+        admin_contact_email: inst.admin_contact_email || inst.adminContactEmail,
+        created_at: inst.created_at || inst.createdAt,
+        trial_ends_at: inst.trial_ends_at || inst.trialEndsAt,
+      }));
+
+      setInstitutions(mappedInstitutions);
     } catch (error) {
       console.error('Error fetching institutions:', error);
       toast({

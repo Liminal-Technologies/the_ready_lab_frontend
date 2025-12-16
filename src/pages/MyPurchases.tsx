@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,24 +36,28 @@ export default function MyPurchases() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('purchases')
-        .select(`
-          *,
-          digital_products (
-            title,
-            description,
-            file_url,
-            product_type,
-            thumbnail_url
-          )
-        `)
-        .eq('user_id', user.id)
-        .eq('status', 'completed')
-        .order('purchased_at', { ascending: false });
+      // Fetch purchases via API
+      const purchasesData = await api.purchases.list(user.id);
 
-      if (error) throw error;
-      setPurchases(data || []);
+      // Map to expected format with product details
+      const mappedPurchases = (purchasesData || [])
+        .filter((p: any) => p.status === 'completed')
+        .map((purchase: any) => ({
+          id: purchase.id,
+          product_id: purchase.product_id || purchase.productId,
+          amount: purchase.amount || 0,
+          status: purchase.status,
+          purchased_at: purchase.created_at || purchase.purchased_at,
+          digital_products: purchase.product || {
+            title: 'Unknown Product',
+            description: '',
+            file_url: '',
+            product_type: 'unknown',
+            thumbnail_url: '',
+          },
+        }));
+
+      setPurchases(mappedPurchases);
     } catch (error) {
       console.error('Error fetching purchases:', error);
       toast({

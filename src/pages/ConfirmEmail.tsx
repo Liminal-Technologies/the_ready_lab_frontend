@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, Loader2, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { toast } from 'sonner';
 
 export default function ConfirmEmail() {
@@ -80,21 +81,12 @@ export default function ConfirmEmail() {
             // Don't fail the whole flow - profile might already exist
           }
           
-          // Fetch the user's profile to determine their role
+          // Fetch the user's role via API
           let userRole = 'student'; // Default to student
-          
+
           try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', data.user.id)
-              .single();
-
-            // Get user role from user_roles table
-            const { data: roleData } = await supabase
-              .rpc('get_user_role', { _user_id: data.user.id });
-
-            userRole = roleData || 'student';
+            const roleData = await api.userRoles.get(data.user.id);
+            userRole = (roleData as any)?.role || 'student';
           } catch (roleError) {
             console.error('Error fetching role, defaulting to student:', roleError);
             // Continue with default role instead of failing

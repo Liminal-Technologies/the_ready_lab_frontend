@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -140,53 +141,59 @@ export const LessonDetail = () => {
 
   const fetchLesson = async () => {
     try {
-      const { data, error } = await supabase
-        .from('lessons')
-        .select(`
-          *,
-          module:modules (
-            id,
-            title,
-            track:tracks (
-              id,
-              title
-            )
-          ),
-          lesson_progress (
-            status,
-            completion_date
-          )
-        `)
-        .eq('id', lessonId)
-        .single();
+      const { data: { user } } = await supabase.auth.getUser();
 
-      if (error) throw error;
-      setLesson(data);
-      setHasCompleted(data.lesson_progress?.[0]?.status === 'completed');
+      // Fetch lesson via API
+      const lessonData = await api.lessons.get(lessonId!);
 
-      // Fetch quiz if exists
-      const { data: quizData } = await supabase
-        .from('quizzes')
-        .select('*')
-        .eq('lesson_id', lessonId)
-        .maybeSingle();
+      // Map to expected format with module/track structure
+      const mappedLesson = {
+        ...lessonData,
+        module: (lessonData as any).module || {
+          id: '',
+          title: 'Unknown Module',
+          track: { id: '', title: 'Unknown Track' }
+        },
+        lesson_progress: [],
+      };
 
-      if (quizData) {
-        setQuiz(quizData);
-        
-        // Check if user has passed the quiz
-        const { data: user } = await supabase.auth.getUser();
-        if (user?.user) {
-          const { data: attempts } = await supabase
-            .from('quiz_attempts')
-            .select('passed')
-            .eq('quiz_id', quizData.id)
-            .eq('user_id', user.user.id)
-            .eq('passed', true)
-            .limit(1);
-          
-          setQuizPassed(!!attempts && attempts.length > 0);
+      // Check lesson progress if user is logged in
+      if (user) {
+        try {
+          const progressData = await api.lessonProgress.get(user.id, lessonId!);
+          if (progressData) {
+            mappedLesson.lesson_progress = [{
+              status: (progressData as any).completed ? 'completed' : 'in_progress',
+              completion_date: (progressData as any).last_watched_at,
+            }];
+          }
+        } catch {
+          // Progress not found is okay
         }
+      }
+
+      setLesson(mappedLesson);
+      setHasCompleted(mappedLesson.lesson_progress?.[0]?.status === 'completed');
+
+      // Fetch quiz if exists via API
+      try {
+        const quizData = await api.quizzes.get(lessonId!);
+        if (quizData) {
+          setQuiz(quizData);
+
+          // Check if user has passed the quiz
+          if (user) {
+            try {
+              const attempts = await api.quizzes.getAttempts((quizData as any).id, user.id);
+              const hasPassed = (attempts || []).some((a: any) => a.passed);
+              setQuizPassed(hasPassed);
+            } catch {
+              // No attempts found is okay
+            }
+          }
+        }
+      } catch {
+        // No quiz for this lesson is okay
       }
     } catch (error) {
       console.error('Error fetching lesson:', error);
@@ -204,19 +211,14 @@ export const LessonDetail = () => {
     if (hasCompleted) return;
 
     try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user?.user) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      const { error } = await supabase
-        .from('lesson_progress')
-        .upsert({
-          user_id: user.user.id,
-          lesson_id: lessonId,
-          status: 'completed',
-          completion_date: new Date().toISOString(),
-        });
-
-      if (error) throw error;
+      // Update lesson progress via API
+      await api.lessonProgress.update(user.id, lessonId!, {
+        status: 'completed',
+        completion_date: new Date().toISOString(),
+      } as any);
 
       setHasCompleted(true);
       toast({

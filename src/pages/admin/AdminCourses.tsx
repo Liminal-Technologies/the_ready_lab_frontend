@@ -19,6 +19,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface Track {
@@ -95,17 +96,28 @@ export function AdminCourses() {
   const fetchTracks = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('tracks')
-        .select(`
-          *,
-          enrollments(count),
-          modules(count)
-        `)
-        .order('created_at', { ascending: false });
+      // Fetch tracks via API
+      const tracksData = await api.tracks.list({});
 
-      if (error) throw error;
-      setTracks(data || []);
+      // Map to expected format
+      const mappedTracks = ((tracksData as any)?.data || []).map((track: any) => ({
+        id: track.id,
+        title: track.title,
+        description: track.description,
+        level: track.level || 'beginner',
+        category: track.category || 'General',
+        created_by: track.created_by || track.createdBy,
+        price: track.price || 0,
+        is_active: track.is_active !== false,
+        estimated_hours: track.estimated_hours || track.estimatedHours || 0,
+        created_at: track.created_at || track.createdAt,
+        _count: {
+          enrollments: track.enrollments_count || 0,
+          modules: track.modules_count || 0,
+        },
+      }));
+
+      setTracks(mappedTracks);
     } catch (error) {
       console.error('Error fetching tracks:', error);
       toast({

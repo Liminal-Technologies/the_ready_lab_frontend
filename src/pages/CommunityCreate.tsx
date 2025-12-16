@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/services/api";
 import { Loader2 } from "lucide-react";
 
 const CommunityCreate = () => {
@@ -82,6 +83,12 @@ const CommunityCreate = () => {
       let coverPhotoUrl = '';
 
       // Upload cover photo if provided
+      // TODO: Move storage uploads to API for centralized control, validation, and security
+      // Currently using Supabase Storage directly for efficiency, but at scale we should:
+      // 1. Add POST /api/storage/upload endpoint to trl-api
+      // 2. Validate file types/sizes server-side
+      // 3. Add virus scanning before storage
+      // 4. Generate signed URLs with expiration for private files
       if (coverPhoto) {
         const fileExt = coverPhoto.name.split('.').pop();
         const fileName = `${user.id}-${Date.now()}.${fileExt}`;
@@ -100,15 +107,14 @@ const CommunityCreate = () => {
         coverPhotoUrl = publicUrl;
       }
 
-      const { error } = await supabase.from('communities').insert({
+      // Create community via API
+      await api.communities.create({
         name: formData.name,
         description: formData.description,
-        visibility: formData.visibility,
+        type: formData.visibility === 'private' ? 'private' : 'public',
+        thumbnail_url: coverPhotoUrl || undefined,
         created_by: user.id,
-        cover_photo: coverPhotoUrl || null,
       });
-
-      if (error) throw error;
       
       toast({
         title: "Community Created",

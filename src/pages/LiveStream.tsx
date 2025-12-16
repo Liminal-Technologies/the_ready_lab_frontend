@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
@@ -72,25 +73,40 @@ const LiveStream = () => {
   const loadEventDetails = async () => {
     if (!eventId) return;
 
-    // Use the public view to avoid exposing instructor_id
-    const { data, error } = await supabase
-      .from('public_live_events')
-      .select('*')
-      .eq('id', eventId)
-      .single();
+    try {
+      // Fetch live event via API
+      const eventData = await api.liveEvents.get(eventId);
 
-    if (error) {
+      // Map to expected format
+      const mappedEvent: LiveEvent = {
+        id: (eventData as any).id,
+        title: (eventData as any).title,
+        description: (eventData as any).description,
+        scheduled_at: (eventData as any).scheduled_at || (eventData as any).scheduledAt,
+        duration_minutes: (eventData as any).duration_minutes || 60,
+        status: (eventData as any).status,
+        viewer_count: (eventData as any).current_viewers || (eventData as any).viewer_count || 0,
+        attendee_count: (eventData as any).attendee_count || 0,
+        max_attendees: (eventData as any).max_viewers || (eventData as any).max_attendees,
+        is_recording: false,
+        thumbnail_url: (eventData as any).thumbnail_url || (eventData as any).thumbnailUrl,
+        recording_url: null,
+        meeting_url: null,
+        created_at: (eventData as any).created_at,
+        updated_at: (eventData as any).updated_at,
+        track_id: null,
+      };
+
+      setEvent(mappedEvent);
+      setLoading(false);
+    } catch (error) {
       toast({
         title: 'Error',
         description: 'Failed to load stream details',
         variant: 'destructive',
       });
       navigate('/');
-      return;
     }
-
-    setEvent(data);
-    setLoading(false);
   };
 
   const checkUserRole = async () => {

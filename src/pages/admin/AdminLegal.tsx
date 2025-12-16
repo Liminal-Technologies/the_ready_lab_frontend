@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface EducatorAgreement {
@@ -50,19 +51,27 @@ export function AdminLegal() {
   const fetchEducatorAgreements = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('educator_agreements')
-        .select(`
-          *,
-          profiles:user_id (
-            email,
-            full_name
-          )
-        `)
-        .order('accepted_at', { ascending: false });
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      if (error) throw error;
-      setAgreements(data || []);
+      // Fetch educator agreements via API
+      const agreementsData = await api.admin.educatorAgreements.list(user.id);
+
+      // Map to expected format
+      const mappedAgreements = ((agreementsData as any) || []).map((agreement: any) => ({
+        id: agreement.id,
+        user_id: agreement.user_id || agreement.userId,
+        version: agreement.version || agreement.agreement_version || 'v1.0',
+        accepted_at: agreement.accepted_at || agreement.acceptedAt || agreement.signed_at,
+        ip_address: agreement.ip_address,
+        user_agent: agreement.user_agent,
+        profiles: agreement.profile || agreement.profiles || {
+          email: 'unknown@email.com',
+          full_name: 'Unknown User',
+        },
+      }));
+
+      setAgreements(mappedAgreements);
     } catch (error) {
       console.error('Error fetching educator agreements:', error);
       toast({

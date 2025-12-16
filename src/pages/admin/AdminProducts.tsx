@@ -16,6 +16,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface DigitalProduct {
@@ -57,13 +58,23 @@ export function AdminProducts() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('digital_products')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Fetch products via API
+      const productsData = await api.products.list({});
 
-      if (error) throw error;
-      setProducts(data || []);
+      // Map to expected format
+      const mappedProducts = ((productsData as any)?.data || []).map((prod: any) => ({
+        id: prod.id,
+        title: prod.title || prod.name,
+        description: prod.description,
+        product_type: prod.product_type || prod.productType || 'template',
+        price: prod.price || 0,
+        downloads_count: prod.downloads_count || prod.downloadsCount || 0,
+        purchases_count: prod.purchases_count || 0,
+        created_at: prod.created_at || prod.createdAt,
+        tags: prod.tags || [],
+      }));
+
+      setProducts(mappedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast({

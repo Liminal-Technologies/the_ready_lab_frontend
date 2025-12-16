@@ -271,47 +271,48 @@ export const StudentDashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: enroll } = await supabase
-        .from('enrollments')
-        .select('*, track:tracks(title, thumbnail_url)')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .order('updated_at', { ascending: false });
+      // Fetch enrollments with track data via API
+      const enrollResponse = await api.enrollments.listByUser(user.id, {
+        status: 'active',
+        include: ['track'],
+      });
 
-      const { data: bookmarked } = await supabase
-        .from('bookmarks')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('bookmarkable_type', 'lesson')
-        .order('created_at', { ascending: false })
-        .limit(10);
+      // Fetch bookmarks with lesson details via API
+      const bookmarksResponse = await api.bookmarks.list(user.id, {
+        type: 'lesson',
+        include: ['details'],
+        limit: 10,
+      });
 
-      const bookmarksWithLessons = await Promise.all(
-        (bookmarked || []).map(async (bookmark) => {
-          const { data: lesson } = await supabase
-            .from('lessons')
-            .select('title, module:modules(track:tracks(title))')
-            .eq('id', bookmark.bookmarkable_id)
-            .single();
-          
-          return { ...bookmark, lesson };
-        })
-      );
+      // Map bookmarks to expected format
+      const bookmarksWithLessons = (bookmarksResponse.data || []).map((bookmark: any) => ({
+        ...bookmark,
+        lesson: bookmark.item ? {
+          title: bookmark.item.title,
+          module: bookmark.item.module ? {
+            track: bookmark.item.module.track ? { title: bookmark.item.module.track.title } : undefined
+          } : undefined
+        } : undefined
+      }));
 
-      const { data: notifs } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(20);
+      // Fetch notifications via API
+      const notifs = await api.notifications.list(user.id);
 
-      setEnrollments(enroll || []);
-      setBookmarks(bookmarksWithLessons || []);
+      // Map enrollments to expected format
+      const mappedEnrollments = (enrollResponse.data || []).map((e: any) => ({
+        id: e.id,
+        track_id: e.trackId || e.track_id,
+        progress_percentage: e.progressPercentage || e.progress_percentage || 0,
+        track: e.track || { title: 'Unknown Track' },
+      }));
+
+      setEnrollments(mappedEnrollments);
+      setBookmarks(bookmarksWithLessons);
       setNotifications(notifs || []);
-      
+
       const publishedProducts = getAllPublishedProducts();
       setProducts(publishedProducts);
-      
+
       const studentId = user.id || 'demo-student';
       const purchases = getProductPurchasesByStudent(studentId);
       setMyPurchases(purchases);

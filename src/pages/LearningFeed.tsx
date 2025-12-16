@@ -110,45 +110,37 @@ export const LearningFeed = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch lessons
-      const { data, error } = await supabase
-        .from('lessons')
-        .select(`
-          *,
-          module:modules!inner(
-            id,
-            track:tracks!inner(
-              id,
-              title,
-              interest_tags
-            )
-          ),
-          lesson_progress(*)
-        `)
-        .order('created_at', { ascending: false })
-        .limit(20);
+      // Fetch lessons via API with includes for module, track, and progress
+      const feedResponse = await api.lessons.feed({
+        user_id: user.id,
+        include: ['module', 'track', 'progress'],
+        interest_tags: selectedInterests.length > 0 ? selectedInterests : undefined,
+        limit: 20,
+      });
 
-      if (error) throw error;
+      // Map to expected format
+      const mappedLessons = (feedResponse.data || []).map((lesson: any) => ({
+        id: lesson.id,
+        title: lesson.title,
+        description: lesson.description,
+        content_url: lesson.content_url || lesson.contentUrl,
+        duration_minutes: lesson.duration_minutes || lesson.durationMinutes || 0,
+        module: lesson.module ? {
+          track: lesson.track || lesson.module?.track || { id: '', title: 'Unknown Track' }
+        } : { track: { id: '', title: 'Unknown Track' } },
+        lesson_progress: lesson.progress ? [lesson.progress] : [],
+      }));
 
-      // Filter by selected interests on client side
-      let filteredLessons = data || [];
-      if (selectedInterests.length > 0) {
-        filteredLessons = filteredLessons.filter(lesson => {
-          const trackTags = lesson.module?.track?.interest_tags || [];
-          return selectedInterests.some(interest => trackTags.includes(interest));
-        });
-      }
+      setLessons(mappedLessons);
 
-      setLessons(filteredLessons);
+      // Fetch user's bookmarks via API
+      const bookmarksResponse = await api.bookmarks.list(user.id, {
+        type: 'lesson',
+      });
 
-      // Fetch user's bookmarks
-      const { data: bookmarks } = await supabase
-        .from('bookmarks')
-        .select('bookmarkable_id')
-        .eq('user_id', user.id)
-        .eq('bookmarkable_type', 'lesson');
-
-      setBookmarkedLessons(new Set(bookmarks?.map(b => b.bookmarkable_id) || []));
+      setBookmarkedLessons(new Set(
+        (bookmarksResponse.data || []).map((b: any) => b.bookmarkable_id || b.bookmarkableId)
+      ));
     } catch (error) {
       console.error('Error fetching feed content:', error);
     } finally {

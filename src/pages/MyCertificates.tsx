@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import Header from '@/components/Header';
 import { CertificateDisplay } from '@/components/certificates/CertificateDisplay';
 import { CertificateSkeleton } from '@/components/skeletons/CertificateSkeleton';
@@ -46,36 +47,32 @@ export const MyCertificates = () => {
 
   const fetchCertificates = async () => {
     try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user?.user) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-      // Get user name
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, email')
-        .eq('id', user.user.id)
-        .single();
+      // Get user profile via API
+      const profile = await api.profiles.get(user.id);
+      setUserName((profile as any)?.full_name || (profile as any)?.email || 'Student');
 
-      setUserName(profile?.full_name || profile?.email || 'Student');
+      // Get certificates via API
+      const certsData = await api.certifications.list(user.id);
 
-      // Get certificates
-      const { data, error } = await supabase
-        .from('certifications')
-        .select(`
-          *,
-          track:tracks (
-            title
-          )
-        `)
-        .eq('user_id', user.user.id)
-        .eq('status', 'approved')
-        .order('issued_at', { ascending: false });
+      // Map to expected format - filter for approved and map track data
+      const mappedCerts = (certsData || [])
+        .filter((cert: any) => cert.status === 'approved' || cert.status === 'issued')
+        .map((cert: any) => ({
+          id: cert.id,
+          track_id: cert.track_id || cert.trackId,
+          cert_type: (cert.certificate_type || cert.cert_type || 'completion') as 'completion' | 'certified',
+          issued_at: cert.issue_date || cert.issued_at || cert.created_at,
+          pdf_url: cert.certificate_url || cert.pdf_url,
+          share_url: cert.shareable_url || cert.share_url,
+          serial: cert.id?.slice(0, 8)?.toUpperCase() || 'N/A',
+          disclaimer_text: null,
+          track: cert.track || { title: 'Unknown Track' },
+        }));
 
-      if (error) throw error;
-      setCertificates((data || []).map(cert => ({
-        ...cert,
-        cert_type: cert.cert_type as 'completion' | 'certified',
-      })));
+      setCertificates(mappedCerts);
     } catch (error) {
       console.error('Error fetching certificates:', error);
     } finally {

@@ -16,6 +16,7 @@ import {
   Activity
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuditLog {
@@ -52,14 +53,25 @@ export function AdminAuditLogs() {
   const fetchAuditLogs = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('audit_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
+      // Fetch audit logs via API
+      const logsData = await api.admin.auditLogs.list({ limit: 100 });
 
-      if (error) throw error;
-      setAuditLogs(data || []);
+      // Map to expected format
+      const mappedLogs = ((logsData as any)?.data || []).map((log: any) => ({
+        id: log.id,
+        actor_id: log.actor_id || log.actorId || '',
+        action: log.action || '',
+        entity_type: log.entity_type || log.entityType || '',
+        entity_id: log.entity_id || log.entityId,
+        old_values: log.old_values || log.oldValues,
+        new_values: log.new_values || log.newValues,
+        metadata: log.metadata,
+        ip_address: log.ip_address || log.ipAddress,
+        user_agent: log.user_agent || log.userAgent,
+        created_at: log.created_at || log.createdAt,
+      }));
+
+      setAuditLogs(mappedLogs);
     } catch (error) {
       console.error('Error fetching audit logs:', error);
       toast({
