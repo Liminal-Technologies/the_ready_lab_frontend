@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguagePreference } from '@/hooks/useLanguagePreference';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { User, Shield, CreditCard, DollarSign, FileText, Download, Trash2, ExternalLink, Globe } from 'lucide-react';
 import { BillingManagement } from './BillingManagement';
 import { PayoutManagement } from './PayoutManagement';
@@ -46,14 +47,10 @@ export const EducatorSettings = () => {
   }, []);
 
   const fetchAgreements = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('educator_agreements')
-        .select('*')
-        .eq('user_id', auth.user?.id)
-        .order('accepted_at', { ascending: false });
+    if (!auth.user?.id) return;
 
-      if (error) throw error;
+    try {
+      const data = await api.admin.educatorAgreements.list(auth.user.id);
       setAgreements(data || []);
     } catch (error) {
       console.error('Error fetching agreements:', error);
@@ -61,17 +58,14 @@ export const EducatorSettings = () => {
   };
 
   const handleProfileUpdate = async () => {
+    if (!auth.user?.id) return;
+
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: profile.full_name,
-          email: profile.email
-        })
-        .eq('id', auth.user?.id);
-
-      if (error) throw error;
+      await api.profiles.update(auth.user.id, {
+        full_name: profile.full_name,
+        email: profile.email
+      });
 
       toast({
         title: "Profile updated",
@@ -114,14 +108,10 @@ export const EducatorSettings = () => {
   };
 
   const handleDataExport = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', auth.user?.id)
-        .single();
+    if (!auth.user?.id) return;
 
-      if (error) throw error;
+    try {
+      const data = await api.profiles.get(auth.user.id);
 
       const dataStr = JSON.stringify(data, null, 2);
       const dataBlob = new Blob([dataStr], { type: 'application/json' });

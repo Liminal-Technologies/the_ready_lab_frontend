@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { 
   Award, 
   BookOpen, 
@@ -322,20 +323,25 @@ export const StudentDashboard = () => {
   };
 
   const markNotificationRead = async (notifId: string) => {
-    await supabase
-      .from('notifications')
-      .update({ is_read: true, read_at: new Date().toISOString() })
-      .eq('id', notifId);
-    
-    setNotifications(prev => 
-      prev.map(n => n.id === notifId ? { ...n, is_read: true } : n)
-    );
+    try {
+      await api.notifications.markRead(notifId);
+      setNotifications(prev =>
+        prev.map(n => n.id === notifId ? { ...n, is_read: true } : n)
+      );
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   };
 
   const removeBookmark = async (bookmarkId: string) => {
-    await supabase.from('bookmarks').delete().eq('id', bookmarkId);
-    setBookmarks(prev => prev.filter(b => b.id !== bookmarkId));
-    toast({ title: 'Bookmark removed' });
+    try {
+      await api.bookmarks.delete(bookmarkId);
+      setBookmarks(prev => prev.filter(b => b.id !== bookmarkId));
+      toast({ title: 'Bookmark removed' });
+    } catch (error) {
+      console.error('Error removing bookmark:', error);
+      toast({ title: 'Error removing bookmark', variant: 'destructive' });
+    }
   };
 
   const handleCertificateClick = (cert: Certification) => {

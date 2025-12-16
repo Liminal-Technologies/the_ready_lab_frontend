@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
 
@@ -27,18 +27,12 @@ export const useLanguagePreference = () => {
     if (!auth.user) return;
 
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('preferred_language, show_content_in_language_first')
-        .eq('id', auth.user.id)
-        .single();
+      const profile = await api.profiles.get(auth.user.id);
 
-      if (error) throw error;
-
-      if (data) {
+      if (profile) {
         setPreference({
-          preferred_language: data.preferred_language || 'en',
-          show_content_in_language_first: data.show_content_in_language_first ?? true
+          preferred_language: profile.preferred_language || 'en',
+          show_content_in_language_first: profile.show_content_in_language_first ?? true
         });
       }
     } catch (error) {
@@ -53,19 +47,14 @@ export const useLanguagePreference = () => {
 
     try {
       const updatedPreference = { ...preference, ...newPreference };
-      
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          preferred_language: updatedPreference.preferred_language,
-          show_content_in_language_first: updatedPreference.show_content_in_language_first
-        })
-        .eq('id', auth.user.id);
 
-      if (error) throw error;
+      await api.profiles.update(auth.user.id, {
+        preferred_language: updatedPreference.preferred_language,
+        show_content_in_language_first: updatedPreference.show_content_in_language_first
+      });
 
       setPreference(updatedPreference);
-      
+
       toast({
         title: "Language preference updated",
         description: "Your language settings have been saved.",

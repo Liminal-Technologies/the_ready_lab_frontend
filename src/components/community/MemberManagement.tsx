@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -79,13 +80,7 @@ export const MemberManagement = ({ communityId }: MemberManagementProps) => {
     if (!confirm('Are you sure you want to remove this member?')) return;
 
     try {
-      const { error } = await supabase
-        .from('community_members')
-        .delete()
-        .eq('community_id', communityId)
-        .eq('user_id', userId);
-
-      if (error) throw error;
+      await api.communities.members.leave(communityId, userId);
 
       toast({
         title: "Member removed",
@@ -147,14 +142,8 @@ export const MemberManagement = ({ communityId }: MemberManagementProps) => {
   const handlePromoteModerator = async (userId: string, currentRole: string) => {
     try {
       const newRole = currentRole === 'moderator' ? 'member' : 'moderator';
-      
-      const { error } = await supabase
-        .from('community_members')
-        .update({ role: newRole })
-        .eq('community_id', communityId)
-        .eq('user_id', userId);
 
-      if (error) throw error;
+      await api.communities.members.updateRole(communityId, userId, newRole);
 
       toast({
         title: newRole === 'moderator' ? "Member promoted" : "Moderator demoted",

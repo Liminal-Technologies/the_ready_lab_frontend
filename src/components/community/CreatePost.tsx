@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -92,19 +93,12 @@ export const CreatePost = ({ communityId, onPostCreated }: CreatePostProps) => {
         mediaUrl = await uploadMedia(mediaFile);
       }
 
-      const { error } = await supabase
-        .from('posts')
-        .insert({
-          community_id: communityId,
-          user_id: user.id,
-          post_type: postType,
-          title: title || null,
-          content: content || null,
-          media_url: mediaUrl,
-          link_url: linkUrl || null,
-        });
-
-      if (error) throw error;
+      await api.posts.create({
+        community_id: communityId,
+        title: title || undefined,
+        content: content || '',
+        media_urls: mediaUrl ? [mediaUrl] : undefined,
+      });
 
       toast.success("Post created! 💬", {
         description: "Your post has been published successfully",

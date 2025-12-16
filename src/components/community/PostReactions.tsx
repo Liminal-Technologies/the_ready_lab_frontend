@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import {
@@ -46,25 +47,13 @@ export const PostReactions = ({ postId, currentUserId, initialCount }: PostReact
 
     try {
       if (hasReacted) {
-        // Update existing reaction
-        await supabase
-          .from('post_reactions')
-          .update({ emoji })
-          .eq('post_id', postId)
-          .eq('user_id', currentUserId);
-        
+        // Remove then add new reaction
+        await api.posts.reactions.remove(postId);
+        await api.posts.reactions.add(postId, emoji);
         setUserEmoji(emoji);
       } else {
         // Add new reaction
-        await supabase
-          .from('post_reactions')
-          .insert({
-            post_id: postId,
-            user_id: currentUserId,
-            emoji,
-            reaction_type: 'emoji',
-          });
-
+        await api.posts.reactions.add(postId, emoji);
         setHasReacted(true);
         setUserEmoji(emoji);
         setCount(count + 1);
@@ -78,12 +67,7 @@ export const PostReactions = ({ postId, currentUserId, initialCount }: PostReact
     if (!currentUserId || !hasReacted) return;
 
     try {
-      await supabase
-        .from('post_reactions')
-        .delete()
-        .eq('post_id', postId)
-        .eq('user_id', currentUserId);
-
+      await api.posts.reactions.remove(postId);
       setHasReacted(false);
       setUserEmoji(null);
       setCount(Math.max(0, count - 1));

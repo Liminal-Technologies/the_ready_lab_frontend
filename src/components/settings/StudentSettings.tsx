@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useLanguagePreference } from '@/hooks/useLanguagePreference';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { User, Shield, CreditCard, Award, Download, Trash2, Globe } from 'lucide-react';
 import { BillingManagement } from './BillingManagement';
 import {
@@ -37,17 +38,14 @@ export const StudentSettings = () => {
   });
 
   const handleProfileUpdate = async () => {
+    if (!auth.user?.id) return;
+
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: profile.full_name,
-          email: profile.email
-        })
-        .eq('id', auth.user?.id);
-
-      if (error) throw error;
+      await api.profiles.update(auth.user.id, {
+        full_name: profile.full_name,
+        email: profile.email
+      });
 
       toast({
         title: "Profile updated",
@@ -83,15 +81,11 @@ export const StudentSettings = () => {
   };
 
   const handleDataExport = async () => {
-    try {
-      // Export user data
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', auth.user?.id)
-        .single();
+    if (!auth.user?.id) return;
 
-      if (error) throw error;
+    try {
+      // Export user data via API
+      const data = await api.profiles.get(auth.user.id);
 
       const dataStr = JSON.stringify(data, null, 2);
       const dataBlob = new Blob([dataStr], { type: 'application/json' });

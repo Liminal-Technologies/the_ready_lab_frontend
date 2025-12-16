@@ -6,6 +6,7 @@ import { LiveCard } from '@/components/feed/LiveCard';
 import { ResourceCard } from '@/components/feed/ResourceCard';
 import { FeedCardSkeleton } from '@/components/skeletons/FeedCardSkeleton';
 import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -52,33 +53,29 @@ export const LearningFeed = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data } = await supabase
-      .from('user_interests')
-      .select('interest_tag')
-      .eq('user_id', user.id);
-
-    const interests = data?.map(d => d.interest_tag) || [];
-    setSelectedInterests(interests);
+    try {
+      const data = await api.userInterests.list(user.id);
+      const interests = data?.map(d => d.interest) || [];
+      setSelectedInterests(interests);
+    } catch (error) {
+      console.error('Error fetching user interests:', error);
+    }
   };
 
   const toggleInterest = async (interest: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    if (selectedInterests.includes(interest)) {
-      await supabase
-        .from('user_interests')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('interest_tag', interest);
-      
-      setSelectedInterests(prev => prev.filter(i => i !== interest));
-    } else {
-      await supabase
-        .from('user_interests')
-        .insert({ user_id: user.id, interest_tag: interest });
-      
-      setSelectedInterests(prev => [...prev, interest]);
+    try {
+      if (selectedInterests.includes(interest)) {
+        await api.userInterests.remove(user.id, interest);
+        setSelectedInterests(prev => prev.filter(i => i !== interest));
+      } else {
+        await api.userInterests.add(user.id, interest);
+        setSelectedInterests(prev => [...prev, interest]);
+      }
+    } catch (error) {
+      console.error('Error toggling interest:', error);
     }
   };
 
@@ -86,32 +83,25 @@ export const LearningFeed = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    if (bookmarkedLessons.has(lessonId)) {
-      await supabase
-        .from('bookmarks')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('bookmarkable_type', 'lesson')
-        .eq('bookmarkable_id', lessonId);
-      
-      setBookmarkedLessons(prev => {
-        const next = new Set(prev);
-        next.delete(lessonId);
-        return next;
-      });
-      
-      toast({ title: 'Bookmark removed' });
-    } else {
-      await supabase
-        .from('bookmarks')
-        .insert({
-          user_id: user.id,
-          bookmarkable_type: 'lesson',
-          bookmarkable_id: lessonId
+    try {
+      if (bookmarkedLessons.has(lessonId)) {
+        await api.bookmarks.deleteByItem(user.id, 'lesson', lessonId);
+
+        setBookmarkedLessons(prev => {
+          const next = new Set(prev);
+          next.delete(lessonId);
+          return next;
         });
-      
-      setBookmarkedLessons(prev => new Set([...prev, lessonId]));
-      toast({ title: 'Lesson bookmarked!' });
+
+        toast({ title: 'Bookmark removed' });
+      } else {
+        await api.bookmarks.create('lesson', lessonId);
+
+        setBookmarkedLessons(prev => new Set([...prev, lessonId]));
+        toast({ title: 'Lesson bookmarked!' });
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
     }
   };
 
