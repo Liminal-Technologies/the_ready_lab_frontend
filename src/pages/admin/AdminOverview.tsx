@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PageBreadcrumb } from "@/components/PageBreadcrumb";
 import { SuggestedActions, SuggestedAction } from "@/components/dashboard/SuggestedActions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   Users, 
   GraduationCap, 
@@ -21,9 +27,11 @@ import {
   ChevronRight,
   Globe,
   Mail,
-  Download
+  Download,
+  FileSpreadsheet,
+  ChevronDown
 } from "lucide-react";
-import { exportPlatformAnalytics } from "@/utils/exportAnalytics";
+import { exportPlatformAnalytics, type ExportFormat } from "@/utils/exportAnalytics";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { useAdminDataSource } from "@/hooks/useAdminDataSource";
@@ -37,13 +45,14 @@ export function AdminOverview() {
   const { toast } = useToast();
   const dataSource = useAdminDataSource();
 
-  const handleDownloadAnalytics = () => {
+  const handleDownloadAnalytics = (format: ExportFormat) => {
     setDownloading(true);
     try {
-      exportPlatformAnalytics(kpis);
+      exportPlatformAnalytics(kpis, format);
+      const formatLabel = format === 'excel' ? 'Excel (.xlsx)' : 'CSV';
       toast({
         title: "Download Started",
-        description: "Platform analytics report is downloading as CSV",
+        description: `Platform analytics report is downloading as ${formatLabel}`,
       });
     } catch (error) {
       console.error('Error exporting analytics:', error);
@@ -190,19 +199,39 @@ export function AdminOverview() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button 
-            onClick={handleDownloadAnalytics} 
-            disabled={downloading} 
-            variant="default"
-            data-testid="button-download-analytics"
-          >
-            {downloading ? (
-              <Download className="mr-2 h-4 w-4 animate-bounce" />
-            ) : (
-              <Download className="mr-2 h-4 w-4" />
-            )}
-            Download Analytics
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                disabled={downloading} 
+                variant="default"
+                data-testid="button-download-analytics"
+              >
+                {downloading ? (
+                  <Download className="mr-2 h-4 w-4 animate-bounce" />
+                ) : (
+                  <Download className="mr-2 h-4 w-4" />
+                )}
+                Download Analytics
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem 
+                onClick={() => handleDownloadAnalytics('csv')}
+                data-testid="menu-item-download-csv"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Download as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => handleDownloadAnalytics('excel')}
+                data-testid="menu-item-download-excel"
+              >
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                Download as Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button onClick={fetchDashboardData} disabled={loading} variant="outline">
             {loading ? (
               <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
