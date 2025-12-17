@@ -212,6 +212,35 @@
   .grid-compact {
     @apply gap-4;
   }
+  
+  /* Standardized Card Styling */
+  .card-standard {
+    @apply rounded-2xl border-border/60 bg-card;
+    box-shadow: 0 10px 30px -15px rgba(15, 23, 42, 0.12);
+    transition: box-shadow 0.2s ease-in-out;
+  }
+  
+  .card-standard:hover {
+    box-shadow: 0 18px 38px -18px rgba(15, 23, 42, 0.2);
+  }
+  
+  .dark .card-standard {
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.4);
+  }
+  
+  .dark .card-standard:hover {
+    box-shadow: 0 18px 38px -18px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Dashboard container standard */
+  .dashboard-container {
+    @apply container mx-auto px-4 lg:px-6 py-12 lg:py-16;
+  }
+  
+  /* Section spacing */
+  .section-gap {
+    @apply space-y-8;
+  }
 }
 
 /* Smooth transitions for theme changes */

@@ -45,6 +45,15 @@ Preferred communication style: Simple, everyday language.
 - **Path Aliases**: `@/` maps to `src/`, `@shared/` maps to `shared/`, `@assets/` maps to `attached_assets/`
 - **Demo Experience**: Context-based demo orchestration system for guided walkthroughs
 
+### Design System (UI Consistency)
+- **Typography Scale**: h1 (text-4xl md:text-5xl), h2 (text-3xl md:text-4xl), h3 (text-2xl), h4 (text-xl)
+- **Spacing Tokens**: CSS variables --space-1 (0.25rem) through --space-16 (4rem)
+- **Radius Tokens**: --radius-sm through --radius-2xl for consistent border-radius
+- **Card Styling**: Use `.card-standard` class for consistent shadows and hover states
+- **Dashboard Headers**: Use `DashboardHeader` component from `@/components/dashboard/DashboardHeader`
+- **Container Pattern**: `.dashboard-container` for consistent page padding
+- **Section Gaps**: `.section-gap` for consistent vertical spacing (space-y-8)
+
 ### Multi-Role Dashboards
 - **Student Dashboard**: Course progress, enrollments, certifications, community access
 - **Educator Dashboard**: Course creation, student analytics, revenue tracking, live events
