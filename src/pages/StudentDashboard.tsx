@@ -571,38 +571,40 @@ export const StudentDashboard = () => {
         />
 
         {/* Tab Navigation */}
-        <Tabs defaultValue="overview" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-6 h-auto p-1 bg-muted" data-tour="navigation" data-testid="dashboard-tabs">
-            <TabsTrigger value="overview" className="flex items-center gap-2 py-3" data-testid="tab-overview">
-              <TrendingUp className="h-4 w-4" />
-              <span className="hidden sm:inline">Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="courses" className="flex items-center gap-2 py-3" data-testid="tab-courses">
-              <GraduationCap className="h-4 w-4" />
-              <span className="hidden sm:inline">My Courses</span>
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2 py-3" data-testid="tab-products">
-              <Package className="h-4 w-4" />
-              <span className="hidden sm:inline">Products</span>
-            </TabsTrigger>
-            <TabsTrigger value="certificates" className="flex items-center gap-2 py-3" data-testid="tab-certificates">
-              <Award className="h-4 w-4" />
-              <span className="hidden sm:inline">Certificates</span>
-            </TabsTrigger>
-            <TabsTrigger value="bookmarks" className="flex items-center gap-2 py-3" data-testid="tab-bookmarks">
-              <Bookmark className="h-4 w-4" />
-              <span className="hidden sm:inline">Bookmarks</span>
-            </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center gap-2 py-3 relative" data-testid="tab-activity">
-              <Bell className="h-4 w-4" />
-              {unreadCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {unreadCount}
-                </Badge>
-              )}
-              <span className="hidden sm:inline">Activity</span>
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="overview" className="space-y-6 sm:space-y-8">
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-6 h-auto gap-1 p-1 bg-muted rounded-lg min-w-max sm:min-w-0" data-tour="navigation" data-testid="dashboard-tabs">
+              <TabsTrigger value="overview" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap" data-testid="tab-overview">
+                <TrendingUp className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Overview</span>
+              </TabsTrigger>
+              <TabsTrigger value="courses" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap" data-testid="tab-courses">
+                <GraduationCap className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Courses</span>
+              </TabsTrigger>
+              <TabsTrigger value="products" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap" data-testid="tab-products">
+                <Package className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Products</span>
+              </TabsTrigger>
+              <TabsTrigger value="certificates" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap" data-testid="tab-certificates">
+                <Award className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Certificates</span>
+              </TabsTrigger>
+              <TabsTrigger value="bookmarks" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap" data-testid="tab-bookmarks">
+                <Bookmark className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Bookmarks</span>
+              </TabsTrigger>
+              <TabsTrigger value="activity" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 relative whitespace-nowrap" data-testid="tab-activity">
+                <Bell className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                    {unreadCount}
+                  </Badge>
+                )}
+                <span className="text-xs sm:text-sm">Activity</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">

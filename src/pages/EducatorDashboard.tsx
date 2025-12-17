@@ -676,37 +676,39 @@ export const EducatorDashboard = () => {
         />
 
         {/* Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-muted p-1 w-full justify-start overflow-x-auto">
-            <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
-              <BarChart3 className="h-4 w-4" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="courses" className="flex items-center gap-2" data-testid="tab-courses">
-              <BookOpen className="h-4 w-4" />
-              My Courses
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2" data-testid="tab-products">
-              <Package className="h-4 w-4" />
-              Products
-            </TabsTrigger>
-            <TabsTrigger value="students" className="flex items-center gap-2" data-testid="tab-students">
-              <Users className="h-4 w-4" />
-              Students
-            </TabsTrigger>
-            <TabsTrigger value="qa" className="flex items-center gap-2" data-testid="tab-qa">
-              <MessageCircle className="h-4 w-4" />
-              Q&A
-            </TabsTrigger>
-            <TabsTrigger value="events" className="flex items-center gap-2" data-testid="tab-events">
-              <Calendar className="h-4 w-4" />
-              Live Events
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2" data-testid="tab-analytics">
-              <TrendingUp className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-7 h-auto gap-1 bg-muted p-1 rounded-lg min-w-max sm:min-w-0">
+              <TabsTrigger value="overview" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-overview">
+                <BarChart3 className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Overview</span>
+              </TabsTrigger>
+              <TabsTrigger value="courses" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-courses">
+                <BookOpen className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Courses</span>
+              </TabsTrigger>
+              <TabsTrigger value="products" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-products">
+                <Package className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Products</span>
+              </TabsTrigger>
+              <TabsTrigger value="students" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-students">
+                <Users className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Students</span>
+              </TabsTrigger>
+              <TabsTrigger value="qa" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-qa">
+                <MessageCircle className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Q&A</span>
+              </TabsTrigger>
+              <TabsTrigger value="events" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-events">
+                <Calendar className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Events</span>
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-analytics">
+                <TrendingUp className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Analytics</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">

@@ -240,21 +240,23 @@ export function AdminDashboard() {
             </Badge>
           }
           actions={
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-2 sm:gap-3">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     disabled={downloading} 
                     variant="outline"
+                    size="default"
+                    className="px-3 sm:px-4"
                     data-testid="button-export-report"
                   >
                     {downloading ? (
-                      <Download className="mr-2 h-4 w-4 animate-bounce" />
+                      <Download className="h-4 w-4 animate-bounce sm:mr-2" />
                     ) : (
-                      <Download className="mr-2 h-4 w-4" />
+                      <Download className="h-4 w-4 sm:mr-2" />
                     )}
-                    Export Report
-                    <ChevronDown className="ml-2 h-4 w-4" />
+                    <span className="hidden sm:inline">Export Report</span>
+                    <ChevronDown className="ml-1 sm:ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -277,55 +279,58 @@ export function AdminDashboard() {
               <Button 
                 onClick={fetchDashboardData} 
                 disabled={loading}
+                className="px-3 sm:px-4"
                 data-testid="button-refresh-data"
               >
                 {loading ? (
-                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  <RefreshCw className="h-4 w-4 animate-spin sm:mr-2" />
                 ) : (
-                  <RefreshCw className="mr-2 h-4 w-4" />
+                  <RefreshCw className="h-4 w-4 sm:mr-2" />
                 )}
-                Refresh Data
+                <span className="hidden sm:inline">Refresh Data</span>
               </Button>
             </div>
           }
         />
 
-        <div className="mt-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto gap-1 bg-muted/50 p-1 rounded-lg">
-              <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-background" data-testid="tab-overview">
-                <LayoutDashboard className="h-4 w-4" />
-                <span className="hidden sm:inline">Overview</span>
-              </TabsTrigger>
-              <TabsTrigger value="users" className="flex items-center gap-2 data-[state=active]:bg-background" data-testid="tab-users">
-                <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">Users</span>
-              </TabsTrigger>
-              <TabsTrigger value="courses" className="flex items-center gap-2 data-[state=active]:bg-background" data-testid="tab-courses">
-                <BookOpen className="h-4 w-4" />
-                <span className="hidden sm:inline">Courses</span>
-              </TabsTrigger>
-              <TabsTrigger value="communities" className="flex items-center gap-2 data-[state=active]:bg-background" data-testid="tab-communities">
-                <MessageSquare className="h-4 w-4" />
-                <span className="hidden sm:inline">Communities</span>
-              </TabsTrigger>
-              <TabsTrigger value="products" className="flex items-center gap-2 data-[state=active]:bg-background" data-testid="tab-products">
-                <Package className="h-4 w-4" />
-                <span className="hidden sm:inline">Products</span>
-              </TabsTrigger>
-              <TabsTrigger value="payments" className="flex items-center gap-2 data-[state=active]:bg-background" data-testid="tab-payments">
-                <CreditCard className="h-4 w-4" />
-                <span className="hidden sm:inline">Payments</span>
-              </TabsTrigger>
-              <TabsTrigger value="institutions" className="flex items-center gap-2 data-[state=active]:bg-background" data-testid="tab-institutions">
-                <Building2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Institutions</span>
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-2 data-[state=active]:bg-background" data-testid="tab-settings">
-                <Settings className="h-4 w-4" />
-                <span className="hidden sm:inline">Settings</span>
-              </TabsTrigger>
-            </TabsList>
+        <div className="mt-6 sm:mt-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+              <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-8 h-auto gap-1 bg-muted/50 p-1 rounded-lg min-w-max sm:min-w-0">
+                <TabsTrigger value="overview" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 data-[state=active]:bg-background whitespace-nowrap" data-testid="tab-overview">
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span className="text-xs sm:text-sm">Overview</span>
+                </TabsTrigger>
+                <TabsTrigger value="users" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 data-[state=active]:bg-background whitespace-nowrap" data-testid="tab-users">
+                  <Users className="h-4 w-4" />
+                  <span className="text-xs sm:text-sm">Users</span>
+                </TabsTrigger>
+                <TabsTrigger value="courses" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 data-[state=active]:bg-background whitespace-nowrap" data-testid="tab-courses">
+                  <BookOpen className="h-4 w-4" />
+                  <span className="text-xs sm:text-sm">Courses</span>
+                </TabsTrigger>
+                <TabsTrigger value="communities" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 data-[state=active]:bg-background whitespace-nowrap" data-testid="tab-communities">
+                  <MessageSquare className="h-4 w-4" />
+                  <span className="text-xs sm:text-sm">Communities</span>
+                </TabsTrigger>
+                <TabsTrigger value="products" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 data-[state=active]:bg-background whitespace-nowrap" data-testid="tab-products">
+                  <Package className="h-4 w-4" />
+                  <span className="text-xs sm:text-sm">Products</span>
+                </TabsTrigger>
+                <TabsTrigger value="payments" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 data-[state=active]:bg-background whitespace-nowrap" data-testid="tab-payments">
+                  <CreditCard className="h-4 w-4" />
+                  <span className="text-xs sm:text-sm">Payments</span>
+                </TabsTrigger>
+                <TabsTrigger value="institutions" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 data-[state=active]:bg-background whitespace-nowrap" data-testid="tab-institutions">
+                  <Building2 className="h-4 w-4" />
+                  <span className="text-xs sm:text-sm">Institutions</span>
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 data-[state=active]:bg-background whitespace-nowrap" data-testid="tab-settings">
+                  <Settings className="h-4 w-4" />
+                  <span className="text-xs sm:text-sm">Settings</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <TabsContent value="overview" className="space-y-8" data-testid="content-overview">
               {/* KPI Cards */}
