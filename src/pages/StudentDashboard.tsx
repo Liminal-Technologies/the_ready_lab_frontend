@@ -832,14 +832,80 @@ export const StudentDashboard = () => {
 
           {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
+            {/* My Library Section */}
+            {myPurchases.length > 0 && (
+              <Card className="border-primary/20 bg-primary/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Download className="h-5 w-5 text-primary" />
+                    My Library
+                  </CardTitle>
+                  <CardDescription>
+                    {myPurchases.length} {myPurchases.length === 1 ? 'product' : 'products'} ready to download
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {myPurchases.map((purchase) => {
+                      const product = products.find(p => p.id === purchase.productId);
+                      if (!product) return null;
+                      
+                      const handleDownload = () => {
+                        if (product.file?.url) {
+                          window.open(product.file.url, '_blank');
+                          toast({
+                            title: "Download Started",
+                            description: `Downloading ${product.file.name}`,
+                          });
+                        }
+                      };
+                      
+                      return (
+                        <Card key={purchase.id} className="overflow-hidden bg-background" data-testid={`my-product-${product.id}`}>
+                          {product.thumbnail && (
+                            <div className="relative aspect-video bg-gradient-to-br from-primary/20 to-primary/5">
+                              <img src={product.thumbnail} alt={product.title} className="w-full h-full object-cover" />
+                              <Badge className="absolute top-2 right-2 bg-green-500">
+                                <Download className="h-3 w-3 mr-1" />
+                                Owned
+                              </Badge>
+                            </div>
+                          )}
+                          <CardContent className="p-4">
+                            <h3 className="font-semibold mb-2 line-clamp-2">{product.title}</h3>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                              <FileText className="h-3 w-3" />
+                              <span>{product.file.name}</span>
+                            </div>
+                            <Button 
+                              className="w-full bg-primary hover:bg-primary/90"
+                              onClick={handleDownload}
+                              data-testid={`button-redownload-${product.id}`}
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Download Again
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Browse Products Section */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5 text-primary" />
-                  Digital Products
+                  {myPurchases.length > 0 ? 'Browse More Products' : 'Digital Products'}
                 </CardTitle>
                 <CardDescription>
-                  Browse and download digital products from educators
+                  {myPurchases.length > 0 
+                    ? 'Discover more resources from our educators'
+                    : 'Browse and download digital products from educators'
+                  }
                 </CardDescription>
               </CardHeader>
               <CardContent>

@@ -475,6 +475,15 @@ export const EducatorDashboard = () => {
       badge: createdCourses.length === 0 ? "Start Here" : undefined,
     },
     {
+      icon: Package,
+      title: "Sell a Digital Product",
+      description: "Create templates, guides, or toolkits to sell or give away. Build your audience with free resources or earn from premium content.",
+      ctaText: "Create Product",
+      onClick: () => setShowProductWizard(true),
+      variant: "default" as const,
+      badge: createdProducts.length === 0 ? "New" : undefined,
+    },
+    {
       icon: Video,
       title: "Schedule a Live Event",
       description: "Host live Q&A sessions, workshops, or office hours to engage with your students in real-time.",
@@ -523,6 +532,14 @@ export const EducatorDashboard = () => {
             >
               <Video className="mr-2 h-4 w-4" />
               Schedule Event
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowProductWizard(true)}
+              data-testid="button-create-product"
+            >
+              <Package className="mr-2 h-4 w-4" />
+              Create Product
             </Button>
             <Button
               onClick={() => setShowCourseWizard(true)}

@@ -381,46 +381,72 @@ export const DigitalProductWizard = ({
 
           {currentStep === 2 && (
             <div className="space-y-6">
+              <div className="text-center mb-2">
+                <h3 className="font-semibold text-lg">How do you want to offer this product?</h3>
+                <p className="text-sm text-muted-foreground">Choose how students will access your digital product</p>
+              </div>
+
               <Card className={`cursor-pointer transition-all ${
-                formData.isFree ? 'ring-2 ring-primary' : ''
+                formData.isFree ? 'ring-2 ring-primary bg-primary/5' : ''
               }`} onClick={() => setFormData({ ...formData, isFree: true })}>
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      formData.isFree ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                    }`}>
-                      <Download className="h-5 w-5" />
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        formData.isFree ? 'bg-green-500 text-white' : 'bg-muted'
+                      }`}>
+                        <Download className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">Free Download</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Build your audience with a free resource
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold">Free Download</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Anyone can download this product for free
-                      </p>
-                    </div>
+                    <Switch
+                      checked={formData.isFree}
+                      onCheckedChange={(checked) => setFormData({ ...formData, isFree: checked })}
+                      data-testid="switch-free-product"
+                    />
                   </div>
-                  <Switch
-                    checked={formData.isFree}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isFree: checked })}
-                    data-testid="switch-free-product"
-                  />
+                  {formData.isFree && (
+                    <div className="mt-4 pt-4 border-t border-dashed space-y-2">
+                      <p className="text-sm font-medium text-green-700 dark:text-green-400">What happens when a student gets this product:</p>
+                      <ul className="text-sm text-muted-foreground space-y-1.5">
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Instant download access - no payment required</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Product saved to their "My Products" library for re-download</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>Great for lead magnets and building your email list</span>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
               <Card className={`cursor-pointer transition-all ${
-                !formData.isFree ? 'ring-2 ring-primary' : ''
+                !formData.isFree ? 'ring-2 ring-primary bg-primary/5' : ''
               }`} onClick={() => setFormData({ ...formData, isFree: false })}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-4">
+                <CardContent className="p-5">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                         !formData.isFree ? 'bg-primary text-primary-foreground' : 'bg-muted'
                       }`}>
-                        <DollarSign className="h-5 w-5" />
+                        <DollarSign className="h-6 w-6" />
                       </div>
                       <div>
-                        <h3 className="font-semibold">Paid Product</h3>
+                        <h3 className="font-semibold text-lg">Paid Product</h3>
                         <p className="text-sm text-muted-foreground">
-                          Set a price for your digital product
+                          Earn revenue from your expertise
                         </p>
                       </div>
                     </div>
@@ -432,26 +458,50 @@ export const DigitalProductWizard = ({
                   </div>
                   
                   {!formData.isFree && (
-                    <div className="space-y-2 pt-2 border-t">
-                      <Label htmlFor="price">Price (USD) *</Label>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="price"
-                          type="number"
-                          min="1"
-                          max="500"
-                          step="1"
-                          value={formData.price}
-                          onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-                          className="pl-10"
-                          placeholder="29"
-                          data-testid="input-product-price"
-                        />
+                    <div className="mt-4 pt-4 border-t border-dashed space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="price">Set Your Price (USD) *</Label>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="price"
+                            type="number"
+                            min="1"
+                            max="500"
+                            step="1"
+                            value={formData.price}
+                            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                            className="pl-10 text-lg font-semibold"
+                            placeholder="29"
+                            data-testid="input-product-price"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Price range: $1 - $500. Platform fees apply based on your plan.
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Price range: $1 - $500. Platform fees apply based on your plan.
-                      </p>
+                      
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-primary">What happens when a student purchases:</p>
+                        <ul className="text-sm text-muted-foreground space-y-1.5">
+                          <li className="flex items-start gap-2">
+                            <span className="text-primary mt-0.5">✓</span>
+                            <span>Secure checkout via Stripe - instant payment</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-primary mt-0.5">✓</span>
+                            <span>Immediate download access after purchase</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-primary mt-0.5">✓</span>
+                            <span>Product saved to their "My Products" library forever</span>
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="text-primary mt-0.5">✓</span>
+                            <span>Purchase confirmation email with download link</span>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </CardContent>
