@@ -9,18 +9,7 @@ import { useEffect } from "react";
 import { DemoExperienceProvider } from "@/contexts/DemoExperienceContext";
 import { DemoExperienceOverlay } from "@/components/DemoExperienceOverlay";
 import { DashboardRouter } from "@/components/DashboardRouter";
-import { AdminLayout } from "@/components/admin/AdminLayout";
-import { AdminOverview } from "@/pages/admin/AdminOverview";
-import { AdminUsers } from "@/pages/admin/AdminUsers";
-import { AdminCourses } from "@/pages/admin/AdminCourses";
-import { AdminCommunities } from "@/pages/admin/AdminCommunities";
-import { AdminProducts } from "@/pages/admin/AdminProducts";
-import { AdminPayments } from "@/pages/admin/AdminPayments";
-import { AdminInstitutions } from "@/pages/admin/AdminInstitutions";
-import { AdminAI } from "@/pages/admin/AdminAI";
-import { AdminLegal } from "@/pages/admin/AdminLegal";
-import { AdminSettings } from "@/pages/admin/AdminSettings";
-import { AdminAuditLogs } from "@/pages/admin/AdminAuditLogs";
+import { AdminDashboard } from "@/pages/AdminDashboard";
 import CreateLiveEvent from "./pages/educator/CreateLiveEvent";
 import CreateProduct from "./pages/educator/CreateProduct";
 import StudentAnalytics from "./pages/educator/StudentAnalytics";
@@ -148,67 +137,9 @@ const AppContent = () => {
           <Route path="/settings" element={<Settings />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
         
-        {/* Admin routes */}
-        <Route path="/admin" element={
-          <AdminLayout>
-            <AdminOverview />
-          </AdminLayout>
-        } />
-        <Route path="/admin/users" element={
-          <AdminLayout>
-            <AdminUsers />
-          </AdminLayout>
-        } />
-        <Route path="/admin/courses/*" element={
-          <AdminLayout>
-            <AdminCourses />
-          </AdminLayout>
-        } />
-        <Route path="/admin/communities" element={
-          <AdminLayout>
-            <AdminCommunities />
-          </AdminLayout>
-        } />
-        <Route path="/admin/products" element={
-          <AdminLayout>
-            <AdminProducts />
-          </AdminLayout>
-        } />
-        <Route path="/admin/payments" element={
-          <AdminLayout>
-            <AdminPayments />
-          </AdminLayout>
-        } />
-        <Route path="/admin/institutions" element={
-          <AdminLayout>
-            <AdminInstitutions />
-          </AdminLayout>
-        } />
-        <Route path="/admin/ai" element={
-          <AdminLayout>
-            <AdminAI />
-          </AdminLayout>
-        } />
-        <Route path="/admin/legal" element={
-          <AdminLayout>
-            <AdminLegal />
-          </AdminLayout>
-        } />
-        <Route path="/admin/settings" element={
-          <AdminLayout>
-            <AdminSettings />
-          </AdminLayout>
-        } />
-        <Route path="/admin/profile" element={
-          <AdminLayout>
-            <AdminSettings />
-          </AdminLayout>
-        } />
-        <Route path="/admin/audit-logs" element={
-          <AdminLayout>
-            <AdminAuditLogs />
-          </AdminLayout>
-        } />
+        {/* Admin routes - unified dashboard */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
         
         <Route path="*" element={<NotFound />} />
         </Routes>
@@ -255,6 +186,8 @@ const AppContent = () => {
         <Route path="/educator/revenue" element={<RevenueDashboard />} />
         <Route path="/live/:eventId" element={<LiveStream />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <AIChatWidget />
