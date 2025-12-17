@@ -710,11 +710,9 @@ const CourseBrowse = () => {
           <div className="flex gap-8">
             {/* Desktop Sidebar */}
             <aside className="hidden lg:block w-64 flex-shrink-0">
-              <div className="sticky top-4 max-h-[calc(100vh-6rem)] flex flex-col">
-                <h2 className="text-2xl font-bold mb-6 flex-shrink-0">Filter</h2>
-                <div className="overflow-y-auto flex-1 pr-2 scrollbar-hide">
-                  <FilterContent />
-                </div>
+              <div className="sticky top-4">
+                <h2 className="text-2xl font-bold mb-6">Filter</h2>
+                <FilterContent />
               </div>
             </aside>
 
