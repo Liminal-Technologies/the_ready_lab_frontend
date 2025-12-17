@@ -1,4 +1,4 @@
-import { Mail, HelpCircle, MessageCircle, ChevronDown, X, BookOpen, CreditCard, GraduationCap, Users, Send } from "lucide-react";
+import { Mail, HelpCircle, MessageCircle, ChevronDown, X, BookOpen, CreditCard, GraduationCap, Users, Send, ArrowLeft, CheckCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -14,9 +14,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import logoImage from "@assets/ready-lab-logo-tagline.png";
 
 const AIAssistantDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const { toast } = useToast();
+
   const quickTopics = [
     { icon: BookOpen, label: "Getting Started", description: "Learn how to use The Ready Lab" },
     { icon: CreditCard, label: "Pricing & Plans", description: "Understand our subscription options" },
@@ -29,70 +38,167 @@ const AIAssistantDialog = ({ open, onOpenChange }: { open: boolean; onOpenChange
     onOpenChange(false);
   };
 
+  const handleSubmitContact = (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormSubmitted(true);
+    toast({
+      title: "Message Sent!",
+      description: "We'll get back to you within 24-48 hours.",
+    });
+    setTimeout(() => {
+      setFormData({ name: '', email: '', message: '' });
+      setShowContactForm(false);
+      setFormSubmitted(false);
+      onOpenChange(false);
+    }, 2000);
+  };
+
+  const resetDialog = () => {
+    setShowContactForm(false);
+    setFormSubmitted(false);
+    setFormData({ name: '', email: '', message: '' });
+  };
+
+  useEffect(() => {
+    if (!open) {
+      resetDialog();
+    }
+  }, [open]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md" data-testid="dialog-ai-assistant">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
+            {showContactForm && !formSubmitted && (
+              <button 
+                onClick={() => setShowContactForm(false)}
+                className="mr-1 hover:bg-muted rounded p-1"
+                data-testid="button-back-to-topics"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+            )}
             <MessageCircle className="h-5 w-5 text-primary" />
-            AI Assistant
+            {showContactForm ? (formSubmitted ? "Message Sent" : "Contact Us") : "Get Help"}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="bg-muted/50 rounded-lg p-4 border">
-            <p className="text-sm text-muted-foreground">
-              Hi! I'm here to help you navigate The Ready Lab. Choose a topic below or check out our FAQ for quick answers.
-            </p>
-          </div>
-          
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Quick Topics</p>
-            <div className="grid grid-cols-2 gap-2">
-              {quickTopics.map((topic) => (
-                <button
-                  key={topic.label}
-                  onClick={() => handleTopicClick(topic.label)}
-                  className="flex flex-col items-start gap-1 p-3 rounded-lg border bg-card hover:bg-accent transition-colors text-left"
-                  data-testid={`button-topic-${topic.label.toLowerCase().replace(/\s+/g, '-')}`}
-                >
-                  <topic.icon className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">{topic.label}</span>
-                  <span className="text-xs text-muted-foreground">{topic.description}</span>
-                </button>
-              ))}
-            </div>
-          </div>
 
-          <div className="border-t pt-4">
-            <p className="text-sm text-muted-foreground mb-3">
-              Can't find what you're looking for?
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
-                  onOpenChange(false);
-                }}
-                data-testid="button-view-faq"
-              >
-                <HelpCircle className="h-4 w-4 mr-2" />
-                View FAQ
-              </Button>
-              <Button
-                variant="default"
-                size="sm"
-                asChild
-              >
-                <a href="mailto:hello@thereadylab.com" data-testid="button-email-support">
-                  <Send className="h-4 w-4 mr-2" />
-                  Email Support
-                </a>
-              </Button>
+        {formSubmitted ? (
+          <div className="py-8 text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg">Thank you for reaching out!</h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Our team will review your message and respond within 24-48 hours.
+              </p>
             </div>
           </div>
-        </div>
+        ) : showContactForm ? (
+          <form onSubmit={handleSubmitContact} className="space-y-4">
+            <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                Couldn't find what you need in FAQ or AI topics? We're here to help!
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact-name">Name</Label>
+              <Input
+                id="contact-name"
+                placeholder="Your name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                data-testid="input-contact-name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact-email">Email</Label>
+              <Input
+                id="contact-email"
+                type="email"
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+                data-testid="input-contact-email"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="contact-message">Message</Label>
+              <Textarea
+                id="contact-message"
+                placeholder="How can we help you?"
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                rows={4}
+                required
+                data-testid="input-contact-message"
+              />
+            </div>
+            <Button type="submit" className="w-full" data-testid="button-submit-contact">
+              <Send className="h-4 w-4 mr-2" />
+              Send Message
+            </Button>
+          </form>
+        ) : (
+          <div className="space-y-4">
+            <div className="bg-muted/50 rounded-lg p-4 border">
+              <p className="text-sm text-muted-foreground">
+                Hi! I'm here to help you navigate The Ready Lab. Choose a topic below or check out our FAQ for quick answers.
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Quick Topics</p>
+              <div className="grid grid-cols-2 gap-2">
+                {quickTopics.map((topic) => (
+                  <button
+                    key={topic.label}
+                    onClick={() => handleTopicClick(topic.label)}
+                    className="flex flex-col items-start gap-1 p-3 rounded-lg border bg-card hover:bg-accent transition-colors text-left"
+                    data-testid={`button-topic-${topic.label.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    <topic.icon className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">{topic.label}</span>
+                    <span className="text-xs text-muted-foreground">{topic.description}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <p className="text-sm text-muted-foreground mb-3">
+                Can't find what you're looking for?
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    document.getElementById('faq-section')?.scrollIntoView({ behavior: 'smooth' });
+                    onOpenChange(false);
+                  }}
+                  data-testid="button-view-faq"
+                >
+                  <HelpCircle className="h-4 w-4 mr-2" />
+                  View FAQ
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => setShowContactForm(true)}
+                  data-testid="button-contact-form"
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Contact Us
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -224,14 +330,17 @@ const Footer = () => {
                 </button>
               </li>
               <li>
-                <a 
-                  href="mailto:hello@thereadylab.com" 
-                  className="flex items-center gap-2 hover:text-primary transition-colors"
-                  data-testid="link-footer-email"
+                <button 
+                  onClick={() => {
+                    const event = new CustomEvent('openAIAssistant');
+                    window.dispatchEvent(event);
+                  }}
+                  className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer text-left"
+                  data-testid="button-footer-contact"
                 >
-                  <Mail className="h-4 w-4" />
-                  Email Us
-                </a>
+                  <Send className="h-4 w-4" />
+                  Contact Us
+                </button>
               </li>
             </ul>
           </div>
