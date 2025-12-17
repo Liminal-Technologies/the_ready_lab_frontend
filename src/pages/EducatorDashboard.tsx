@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import { PageBreadcrumb } from '@/components/PageBreadcrumb';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { SuggestedActions, SuggestedAction } from '@/components/dashboard/SuggestedActions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -512,108 +513,103 @@ export const EducatorDashboard = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-16">
-        {/* Breadcrumb Navigation */}
-        <PageBreadcrumb className="mb-8" />
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              {educatorProfile ? `Welcome back, ${educatorProfile.name.split(' ')[0]}!` : 'Educator Dashboard'}
-            </h1>
-            <p className="text-muted-foreground">
-              Manage your courses, track student progress, and grow your teaching business
-            </p>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" data-testid="button-export-report">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export Report
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    exportEducatorAnalytics({
-                      educatorName: educatorProfile?.name || 'Educator',
-                      totalCourses: stats.totalCourses,
-                      publishedCourses: stats.publishedCourses,
-                      totalStudents: stats.totalStudents,
-                      totalRevenue: stats.totalRevenue,
-                      totalEnrollments: stats.totalEnrollments,
-                      activeStudents: stats.activeStudents,
-                      atRiskStudents: stats.atRiskStudents,
-                      completedStudents: stats.completedStudents,
-                      thisMonthRevenue: getRevenueMetrics().thisMonthRevenue,
-                      lastMonthRevenue: getRevenueMetrics().lastMonthRevenue,
-                      allTimeRevenue: getRevenueMetrics().allTimeRevenue,
-                      pendingPayout: getRevenueMetrics().pendingPayout,
-                    }, 'csv');
-                    toast({
-                      title: "Report Downloaded",
-                      description: "Your analytics report has been downloaded as a CSV file.",
-                    });
-                  }}
-                  data-testid="export-csv"
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  Download as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    exportEducatorAnalytics({
-                      educatorName: educatorProfile?.name || 'Educator',
-                      totalCourses: stats.totalCourses,
-                      publishedCourses: stats.publishedCourses,
-                      totalStudents: stats.totalStudents,
-                      totalRevenue: stats.totalRevenue,
-                      totalEnrollments: stats.totalEnrollments,
-                      activeStudents: stats.activeStudents,
-                      atRiskStudents: stats.atRiskStudents,
-                      completedStudents: stats.completedStudents,
-                      thisMonthRevenue: getRevenueMetrics().thisMonthRevenue,
-                      lastMonthRevenue: getRevenueMetrics().lastMonthRevenue,
-                      allTimeRevenue: getRevenueMetrics().allTimeRevenue,
-                      pendingPayout: getRevenueMetrics().pendingPayout,
-                    }, 'excel');
-                    toast({
-                      title: "Report Downloaded",
-                      description: "Your analytics report has been downloaded as an Excel file.",
-                    });
-                  }}
-                  data-testid="export-excel"
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  Download as Excel
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-              variant="outline"
-              onClick={() => setShowScheduleEvent(true)}
-              data-testid="button-schedule-event"
-            >
-              <Video className="mr-2 h-4 w-4" />
-              Schedule Event
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowProductWizard(true)}
-              data-testid="button-create-product"
-            >
-              <Package className="mr-2 h-4 w-4" />
-              Create Product
-            </Button>
-            <Button
-              onClick={() => setShowCourseWizard(true)}
-              data-testid="button-create-course"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Create Course
-            </Button>
-          </div>
-        </div>
+        <DashboardHeader
+          title={educatorProfile ? `Welcome back, ${educatorProfile.name.split(' ')[0]}!` : 'Educator Dashboard'}
+          description="Manage your courses, track student progress, and grow your teaching business"
+          showBreadcrumb={true}
+          actions={
+            <div className="flex gap-3 flex-wrap">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" data-testid="button-export-report">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export Report
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      exportEducatorAnalytics({
+                        educatorName: educatorProfile?.name || 'Educator',
+                        totalCourses: stats.totalCourses,
+                        publishedCourses: stats.publishedCourses,
+                        totalStudents: stats.totalStudents,
+                        totalRevenue: stats.totalRevenue,
+                        totalEnrollments: stats.totalEnrollments,
+                        activeStudents: stats.activeStudents,
+                        atRiskStudents: stats.atRiskStudents,
+                        completedStudents: stats.completedStudents,
+                        thisMonthRevenue: getRevenueMetrics().thisMonthRevenue,
+                        lastMonthRevenue: getRevenueMetrics().lastMonthRevenue,
+                        allTimeRevenue: getRevenueMetrics().allTimeRevenue,
+                        pendingPayout: getRevenueMetrics().pendingPayout,
+                      }, 'csv');
+                      toast({
+                        title: "Report Downloaded",
+                        description: "Your analytics report has been downloaded as a CSV file.",
+                      });
+                    }}
+                    data-testid="export-csv"
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    Download as CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      exportEducatorAnalytics({
+                        educatorName: educatorProfile?.name || 'Educator',
+                        totalCourses: stats.totalCourses,
+                        publishedCourses: stats.publishedCourses,
+                        totalStudents: stats.totalStudents,
+                        totalRevenue: stats.totalRevenue,
+                        totalEnrollments: stats.totalEnrollments,
+                        activeStudents: stats.activeStudents,
+                        atRiskStudents: stats.atRiskStudents,
+                        completedStudents: stats.completedStudents,
+                        thisMonthRevenue: getRevenueMetrics().thisMonthRevenue,
+                        lastMonthRevenue: getRevenueMetrics().lastMonthRevenue,
+                        allTimeRevenue: getRevenueMetrics().allTimeRevenue,
+                        pendingPayout: getRevenueMetrics().pendingPayout,
+                      }, 'excel');
+                      toast({
+                        title: "Report Downloaded",
+                        description: "Your analytics report has been downloaded as an Excel file.",
+                      });
+                    }}
+                    data-testid="export-excel"
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    Download as Excel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button
+                variant="outline"
+                onClick={() => setShowScheduleEvent(true)}
+                data-testid="button-schedule-event"
+              >
+                <Video className="mr-2 h-4 w-4" />
+                Schedule Event
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowProductWizard(true)}
+                data-testid="button-create-product"
+              >
+                <Package className="mr-2 h-4 w-4" />
+                Create Product
+              </Button>
+              <Button
+                onClick={() => setShowCourseWizard(true)}
+                data-testid="button-create-course"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Create Course
+              </Button>
+            </div>
+          }
+          className="mb-8"
+        />
 
         {/* Stats Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

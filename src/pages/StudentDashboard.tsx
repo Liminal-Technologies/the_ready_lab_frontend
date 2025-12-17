@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import { WelcomeTour } from '@/components/onboarding/WelcomeTour';
 import { PageBreadcrumb } from '@/components/PageBreadcrumb';
 import { SuggestedActions, SuggestedAction } from '@/components/dashboard/SuggestedActions';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import confetti from 'canvas-confetti';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -555,11 +556,12 @@ export const StudentDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Header with Welcome */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-3">Welcome back, {auth.user?.full_name || 'Student'}!</h1>
-          <p className="text-lg text-muted-foreground">Track your progress and continue learning</p>
-        </div>
+        <DashboardHeader
+          title={`Welcome back, ${auth.user?.full_name || 'Student'}!`}
+          description="Track your progress and continue learning"
+          showBreadcrumb={false}
+          className="mb-8"
+        />
 
         {/* Suggested Next Actions */}
         <SuggestedActions 

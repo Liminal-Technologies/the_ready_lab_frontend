@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { PageBreadcrumb } from "@/components/PageBreadcrumb";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { SuggestedActions, SuggestedAction } from "@/components/dashboard/SuggestedActions";
 import {
   DropdownMenu,
@@ -188,60 +188,56 @@ export function AdminOverview() {
 
   return (
     <div className="min-h-screen bg-background dark:bg-neutral-900 p-6 space-y-8">
-      <PageBreadcrumb />
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-neutral-900 dark:text-white">Admin Overview</h1>
-          <p className="text-neutral-600 dark:text-neutral-400">
-            Monitor platform performance and manage key metrics
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                disabled={downloading} 
-                variant="default"
-                data-testid="button-download-analytics"
-              >
-                {downloading ? (
-                  <Download className="mr-2 h-4 w-4 animate-bounce" />
-                ) : (
-                  <Download className="mr-2 h-4 w-4" />
-                )}
-                Download Analytics
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem 
-                onClick={() => handleDownloadAnalytics('csv')}
-                data-testid="menu-item-download-csv"
-              >
-                <FileText className="mr-2 h-4 w-4" />
-                Download as CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => handleDownloadAnalytics('excel')}
-                data-testid="menu-item-download-excel"
-              >
-                <FileSpreadsheet className="mr-2 h-4 w-4" />
-                Download as Excel
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button onClick={fetchDashboardData} disabled={loading} variant="outline">
-            {loading ? (
-              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            Refresh Data
-          </Button>
-        </div>
-      </div>
+      <DashboardHeader
+        title="Admin Overview"
+        description="Monitor platform performance and manage key metrics"
+        showBreadcrumb={true}
+        actions={
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  disabled={downloading} 
+                  variant="default"
+                  data-testid="button-download-analytics"
+                >
+                  {downloading ? (
+                    <Download className="mr-2 h-4 w-4 animate-bounce" />
+                  ) : (
+                    <Download className="mr-2 h-4 w-4" />
+                  )}
+                  Download Analytics
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem 
+                  onClick={() => handleDownloadAnalytics('csv')}
+                  data-testid="menu-item-download-csv"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Download as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleDownloadAnalytics('excel')}
+                  data-testid="menu-item-download-excel"
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Download as Excel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button onClick={fetchDashboardData} disabled={loading} variant="outline">
+              {loading ? (
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
+              Refresh Data
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
