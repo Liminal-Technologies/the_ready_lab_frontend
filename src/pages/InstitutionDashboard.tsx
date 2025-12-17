@@ -439,33 +439,35 @@ export default function InstitutionDashboard() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-muted p-1 w-full justify-start overflow-x-auto">
-            <TabsTrigger value="overview" className="flex items-center gap-2" data-testid="tab-overview">
-              <BarChart3 className="h-4 w-4" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="cohorts" className="flex items-center gap-2" data-testid="tab-cohorts">
-              <Users className="h-4 w-4" />
-              Cohorts
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2" data-testid="tab-analytics">
-              <TrendingUp className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger value="students" className="flex items-center gap-2" data-testid="tab-students">
-              <Upload className="h-4 w-4" />
-              Import Students
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-2" data-testid="tab-reports">
-              <Download className="h-4 w-4" />
-              Reports
-            </TabsTrigger>
-            <TabsTrigger value="language" className="flex items-center gap-2" data-testid="tab-language">
-              <Languages className="h-4 w-4" />
-              Language & Accessibility
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-6 h-auto gap-1 bg-muted p-1 rounded-lg min-w-max sm:min-w-0">
+              <TabsTrigger value="overview" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-overview">
+                <BarChart3 className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Overview</span>
+              </TabsTrigger>
+              <TabsTrigger value="cohorts" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-cohorts">
+                <Users className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Cohorts</span>
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-analytics">
+                <TrendingUp className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Analytics</span>
+              </TabsTrigger>
+              <TabsTrigger value="students" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-students">
+                <Upload className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Import</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-reports">
+                <Download className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Reports</span>
+              </TabsTrigger>
+              <TabsTrigger value="language" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 whitespace-nowrap" data-testid="tab-language">
+                <Languages className="h-4 w-4" />
+                <span className="text-xs sm:text-sm">Accessibility</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
@@ -748,8 +750,8 @@ export default function InstitutionDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="rounded-lg border overflow-hidden">
-                  <Table>
+                <div className="rounded-lg border overflow-x-auto">
+                  <Table className="min-w-[600px]">
                     <TableHeader>
                       <TableRow>
                         <TableHead>Student</TableHead>
