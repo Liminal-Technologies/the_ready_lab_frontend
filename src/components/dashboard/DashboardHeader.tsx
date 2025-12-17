@@ -22,26 +22,28 @@ export function DashboardHeader({
     <div className={`space-y-6 ${className}`}>
       {showBreadcrumb && <PageBreadcrumb />}
       
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
-              {title}
-            </h1>
-            {badge}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
+                {title}
+              </h1>
+              {badge}
+            </div>
+            {description && (
+              <p className="text-muted-foreground text-base">
+                {description}
+              </p>
+            )}
           </div>
-          {description && (
-            <p className="text-muted-foreground text-base">
-              {description}
-            </p>
+          
+          {actions && (
+            <div className="flex flex-wrap gap-2 sm:gap-3 items-center">
+              {actions}
+            </div>
           )}
         </div>
-        
-        {actions && (
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full md:w-auto">
-            {actions}
-          </div>
-        )}
       </div>
     </div>
   );

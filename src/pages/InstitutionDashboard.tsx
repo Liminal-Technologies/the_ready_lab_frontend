@@ -374,12 +374,14 @@ export default function InstitutionDashboard() {
         </div>
 
         {/* Page Title */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-semibold text-foreground">Institution Overview</h2>
-            <p className="text-sm text-muted-foreground">Real-time metrics across all your learning programs</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-foreground">Institution Overview</h2>
+              <p className="text-sm text-muted-foreground">Real-time metrics across all your learning programs</p>
+            </div>
+            <Badge variant="secondary" className="self-start sm:self-auto">Demo View</Badge>
           </div>
-          <Badge variant="secondary">Demo View</Badge>
         </div>
 
         {/* Stats Cards */}
