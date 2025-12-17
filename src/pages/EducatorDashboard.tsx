@@ -42,7 +42,7 @@ import {
   Mail,
   Send
 } from 'lucide-react';
-import { exportEducatorAnalytics } from '@/utils/exportEducatorAnalytics';
+import { exportEducatorAnalytics, type EducatorExportFormat } from '@/utils/exportEducatorAnalytics';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -525,6 +525,70 @@ export const EducatorDashboard = () => {
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" data-testid="button-export-report">
+                  <Download className="mr-2 h-4 w-4" />
+                  Export Report
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => {
+                    exportEducatorAnalytics({
+                      educatorName: educatorProfile?.name || 'Educator',
+                      totalCourses: stats.totalCourses,
+                      publishedCourses: stats.publishedCourses,
+                      totalStudents: stats.totalStudents,
+                      totalRevenue: stats.totalRevenue,
+                      totalEnrollments: stats.totalEnrollments,
+                      activeStudents: stats.activeStudents,
+                      atRiskStudents: stats.atRiskStudents,
+                      completedStudents: stats.completedStudents,
+                      thisMonthRevenue: getRevenueMetrics().thisMonthRevenue,
+                      lastMonthRevenue: getRevenueMetrics().lastMonthRevenue,
+                      allTimeRevenue: getRevenueMetrics().allTimeRevenue,
+                      pendingPayout: getRevenueMetrics().pendingPayout,
+                    }, 'csv');
+                    toast({
+                      title: "Report Downloaded",
+                      description: "Your analytics report has been downloaded as a CSV file.",
+                    });
+                  }}
+                  data-testid="export-csv"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Download as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    exportEducatorAnalytics({
+                      educatorName: educatorProfile?.name || 'Educator',
+                      totalCourses: stats.totalCourses,
+                      publishedCourses: stats.publishedCourses,
+                      totalStudents: stats.totalStudents,
+                      totalRevenue: stats.totalRevenue,
+                      totalEnrollments: stats.totalEnrollments,
+                      activeStudents: stats.activeStudents,
+                      atRiskStudents: stats.atRiskStudents,
+                      completedStudents: stats.completedStudents,
+                      thisMonthRevenue: getRevenueMetrics().thisMonthRevenue,
+                      lastMonthRevenue: getRevenueMetrics().lastMonthRevenue,
+                      allTimeRevenue: getRevenueMetrics().allTimeRevenue,
+                      pendingPayout: getRevenueMetrics().pendingPayout,
+                    }, 'excel');
+                    toast({
+                      title: "Report Downloaded",
+                      description: "Your analytics report has been downloaded as an Excel file.",
+                    });
+                  }}
+                  data-testid="export-excel"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Download as Excel
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="outline"
               onClick={() => setShowScheduleEvent(true)}

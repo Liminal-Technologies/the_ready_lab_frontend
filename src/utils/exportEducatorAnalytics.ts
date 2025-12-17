@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx';
+
 export interface EducatorAnalyticsData {
   overview: {
     educatorName: string;
@@ -242,10 +244,106 @@ export function downloadCSV(content: string, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function exportEducatorAnalytics(educatorData?: EducatorDataInput | null): void {
+export function generateEducatorExcelWorkbook(data: EducatorAnalyticsData): XLSX.WorkBook {
+  const workbook = XLSX.utils.book_new();
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const summaryData = [
+    ['EDUCATOR ANALYTICS REPORT'],
+    [`Educator: ${data.overview.educatorName}`],
+    [`Generated: ${dateStr}`],
+    [],
+    ['OVERVIEW'],
+    ['Metric', 'Value'],
+    ['Total Courses', data.overview.totalCourses],
+    ['Published Courses', data.overview.publishedCourses],
+    ['Total Students', data.overview.totalStudents],
+    ['Total Revenue', `$${data.overview.totalRevenue.toLocaleString()}`],
+    [],
+    ['ENROLLMENT SUMMARY'],
+    ['Metric', 'Value'],
+    ['Total Enrollments', data.enrollments.totalEnrollments],
+    ['This Month Enrollments', data.enrollments.thisMonthEnrollments],
+    [],
+    ['STUDENT ENGAGEMENT'],
+    ['Metric', 'Value'],
+    ['Active Students', data.engagement.activeStudents],
+    ['At-Risk Students', data.engagement.atRiskStudents],
+    ['Completed Students', data.engagement.completedStudents],
+    ['Avg. Student Progress', `${data.engagement.avgStudentProgress}%`],
+    ['Questions Received', data.engagement.questionsReceived],
+  ];
+  const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+  summarySheet['!cols'] = [{ wch: 25 }, { wch: 20 }];
+  XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+
+  const courseData = [
+    ['Course Name', 'Students', 'Completion Rate', 'Avg Progress', 'Revenue'],
+    ...data.coursePerformance.courses.map(c => [
+      c.name,
+      c.students,
+      `${c.completionRate}%`,
+      `${c.avgProgress}%`,
+      `$${c.revenue.toLocaleString()}`
+    ])
+  ];
+  const courseSheet = XLSX.utils.aoa_to_sheet(courseData);
+  courseSheet['!cols'] = [{ wch: 30 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 12 }];
+  XLSX.utils.book_append_sheet(workbook, courseSheet, 'Course Performance');
+
+  const revenueData = [
+    ['REVENUE SUMMARY'],
+    ['Metric', 'Value'],
+    ['This Month Revenue', `$${data.revenue.thisMonthRevenue.toLocaleString()}`],
+    ['Last Month Revenue', `$${data.revenue.lastMonthRevenue.toLocaleString()}`],
+    ['All-Time Revenue', `$${data.revenue.allTimeRevenue.toLocaleString()}`],
+    ['Pending Payout', `$${data.revenue.pendingPayout.toLocaleString()}`],
+    [],
+    ['RECENT TRANSACTIONS'],
+    ['Student', 'Course', 'Amount', 'Date'],
+    ...data.revenue.recentTransactions.map(t => [
+      t.student,
+      t.course,
+      `$${t.amount}`,
+      t.date
+    ])
+  ];
+  const revenueSheet = XLSX.utils.aoa_to_sheet(revenueData);
+  revenueSheet['!cols'] = [{ wch: 20 }, { wch: 25 }, { wch: 12 }, { wch: 15 }];
+  XLSX.utils.book_append_sheet(workbook, revenueSheet, 'Revenue');
+
+  const enrollmentData = [
+    ['ENROLLMENTS BY COURSE'],
+    ['Course', 'Enrollments'],
+    ...data.enrollments.enrollmentsByCourseName.map(e => [e.course, e.enrollments])
+  ];
+  const enrollmentSheet = XLSX.utils.aoa_to_sheet(enrollmentData);
+  enrollmentSheet['!cols'] = [{ wch: 30 }, { wch: 12 }];
+  XLSX.utils.book_append_sheet(workbook, enrollmentSheet, 'Enrollments');
+
+  return workbook;
+}
+
+export function downloadExcel(workbook: XLSX.WorkBook, filename: string): void {
+  XLSX.writeFile(workbook, filename);
+}
+
+export type EducatorExportFormat = 'csv' | 'excel';
+
+export function exportEducatorAnalytics(
+  educatorData?: EducatorDataInput | null,
+  format: EducatorExportFormat = 'csv'
+): void {
   const data = mergeEducatorDataWithDefaults(educatorData);
-  const csv = generateEducatorAnalyticsCSV(data);
   const date = new Date().toISOString().split('T')[0];
   const safeName = data.overview.educatorName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-  downloadCSV(csv, `educator-analytics-${safeName}-${date}.csv`);
+
+  if (format === 'excel') {
+    const workbook = generateEducatorExcelWorkbook(data);
+    downloadExcel(workbook, `educator-analytics-${safeName}-${date}.xlsx`);
+  } else {
+    const csv = generateEducatorAnalyticsCSV(data);
+    downloadCSV(csv, `educator-analytics-${safeName}-${date}.csv`);
+  }
 }
