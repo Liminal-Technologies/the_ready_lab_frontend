@@ -124,7 +124,7 @@ export function AdminSidebar() {
           <Shield className="h-6 w-6 text-primary" />
           {!collapsed && (
             <div>
-              <h2 className="font-semibold text-sm">TRL Admin</h2>
+              <h2 className="font-semibold text-sm text-neutral-900 dark:text-white">TRL Admin</h2>
               <Badge variant="outline" className="text-xs mt-1">PROD</Badge>
             </div>
           )}

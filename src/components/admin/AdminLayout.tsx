@@ -46,11 +46,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   if (auth.loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-neutral-900 flex items-center justify-center">
         <Card>
           <CardContent className="p-8 flex items-center gap-4">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span>Loading admin dashboard...</span>
+            <span className="text-neutral-900 dark:text-white">Loading admin dashboard...</span>
           </CardContent>
         </Card>
       </div>
@@ -66,11 +66,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   
   if (!hasAdminRole && !isAdmin) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-neutral-900 flex items-center justify-center">
         <Card>
           <CardContent className="p-8 text-center">
             <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+            <h2 className="text-xl font-semibold mb-2 text-neutral-900 dark:text-white">Access Denied</h2>
             <p className="text-muted-foreground">You don't have permission to access the admin dashboard.</p>
           </CardContent>
         </Card>
@@ -88,7 +88,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-white">
+      <div className="min-h-screen flex w-full bg-white dark:bg-neutral-900">
         <AdminSidebar />
         
         <div className="flex-1 flex flex-col">
