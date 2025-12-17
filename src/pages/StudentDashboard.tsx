@@ -941,14 +941,25 @@ export const StudentDashboard = () => {
                             amount: 0,
                           });
                           setMyPurchases(getProductPurchasesByStudent(auth.user?.id || 'demo-student'));
-                          toast({
-                            title: "Product Added",
-                            description: `${product.title} has been added to your library.`,
+                          confetti({
+                            particleCount: 50,
+                            spread: 60,
+                            origin: { y: 0.7 }
                           });
+                          toast({
+                            title: "Added to Your Library!",
+                            description: `"${product.title}" is now yours! Your download will start automatically, and you can re-download anytime from "My Library" at the top of this page.`,
+                            duration: 6000,
+                          });
+                          if (product.file?.url) {
+                            setTimeout(() => {
+                              window.open(product.file.url, '_blank');
+                            }, 500);
+                          }
                         } else if (!isFree && !isPurchased) {
                           toast({
                             title: "Purchase Required",
-                            description: `This product costs $${product.pricing.amount}. Purchases will be available soon.`,
+                            description: `This product costs $${product.pricing.amount}. After purchase, it will appear in your library for instant download.`,
                           });
                         }
                       };
