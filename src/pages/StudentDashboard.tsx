@@ -87,10 +87,10 @@ interface Notification {
   id: string;
   title: string;
   message: string;
-  is_read: boolean;
+  read: boolean;
   created_at: string;
-  link_url?: string;
-  notification_type: string;
+  action_url?: string;
+  type: string;
 }
 
 const MOCK_COURSES = [
@@ -328,7 +328,7 @@ export const StudentDashboard = () => {
     try {
       await api.notifications.markRead(notifId);
       setNotifications(prev =>
-        prev.map(n => n.id === notifId ? { ...n, is_read: true } : n)
+        prev.map(n => n.id === notifId ? { ...n, read: true } : n)
       );
     } catch (error) {
       console.error('Error marking notification as read:', error);
@@ -441,7 +441,7 @@ export const StudentDashboard = () => {
   };
 
   const totalHours = enrollments.reduce((acc, e) => acc + (e.progress_percentage / 100) * 40, 0);
-  const unreadCount = notifications.filter(n => !n.is_read).length;
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   // Suggested actions for student journey
   const suggestedActions: SuggestedAction[] = [
@@ -1207,21 +1207,21 @@ export const StudentDashboard = () => {
                         <Card
                           key={notif.id}
                           className={`p-4 cursor-pointer transition-colors ${
-                            !notif.is_read
+                            !notif.read
                               ? 'bg-primary/5 border-primary/20'
                               : 'bg-accent/30 hover:bg-accent/50'
                           }`}
                           onClick={() => {
                             markNotificationRead(notif.id);
-                            if (notif.link_url) navigate(notif.link_url);
+                            if (notif.action_url) navigate(notif.action_url);
                           }}
                         >
                           <div className="flex gap-3">
-                            <Bell className={`h-5 w-5 shrink-0 ${!notif.is_read ? 'text-primary' : 'text-muted-foreground'}`} />
+                            <Bell className={`h-5 w-5 shrink-0 ${!notif.read ? 'text-primary' : 'text-muted-foreground'}`} />
                             <div className="flex-1 min-w-0">
                               <h4 className="font-semibold mb-1 flex items-center gap-2">
                                 {notif.title}
-                                {!notif.is_read && (
+                                {!notif.read && (
                                   <Badge variant="default" className="text-xs">New</Badge>
                                 )}
                               </h4>

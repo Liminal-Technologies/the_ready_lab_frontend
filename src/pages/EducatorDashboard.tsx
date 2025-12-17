@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
-import { PageBreadcrumb } from '@/components/PageBreadcrumb';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { SuggestedActions, SuggestedAction } from '@/components/dashboard/SuggestedActions';
 import { Button } from '@/components/ui/button';
