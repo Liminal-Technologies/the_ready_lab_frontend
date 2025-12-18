@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,200 +26,23 @@ import {
   Users,
   Star,
   ChevronLeft,
-  Award,
   ArrowRight,
-  Heart,
-  MessageCircle,
-  PlayCircle,
-  Eye,
-  Ear,
-  BookOpen,
-  Hand,
   Search,
   X,
 } from "lucide-react";
-import fundingImage from "../../attached_assets/stock_images/business_professiona_9e1fef7d.jpg";
-import operationsImage from "../../attached_assets/stock_images/business_operations__a3e6e538.jpg";
-import brandingImage from "../../attached_assets/stock_images/branding_marketing_s_50e607b2.jpg";
-import aiImage from "../../attached_assets/stock_images/artificial_intellige_80651e44.jpg";
-import partnershipImage from "../../attached_assets/stock_images/partnership_handshak_d5c0b270.jpg";
-import financialImage from "../../attached_assets/stock_images/financial_planning_a_96357d65.jpg";
 import ctaBackgroundImage from "../../attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useAuth } from "@/hooks/useAuth";
-import { getAllPublishedCourses, type EducatorCourse } from "@/utils/educatorCoursesStorage";
+import { api, type Course, type Community } from "@/services/api";
 
-const allCourses = [
-  {
-    id: "1",
-    title: "Funding Readiness 101",
-    description: "Master grants, sponsorships, and investor pitches. Build the foundation for sustainable funding.",
-    duration: "8 weeks",
-    students: "3,200",
-    rating: "4.9",
-    level: "Beginner",
-    price: 299,
-    category: "Funding Strategy",
-    certification: true,
-    featured: true,
-    image: fundingImage,
-    instructorName: "Dr. Michael Chen",
-    format: "Video",
-    learningStyle: "visual"
-  },
-  {
-    id: "2",
-    title: "Business Infrastructure Mastery",
-    description: "Set up compliance, budgets, and operational systems that funders demand to see.",
-    duration: "6 weeks",
-    students: "2,800",
-    rating: "4.8",
-    level: "Beginner",
-    price: 249,
-    category: "Operations",
-    certification: true,
-    featured: false,
-    image: operationsImage,
-    instructorName: "Sarah Rodriguez",
-    format: "Video",
-    learningStyle: "reading"
-  },
-  {
-    id: "3",
-    title: "Branding for Growth & Fundability",
-    description: "Develop clear messaging and positioning that attracts investors and customers alike.",
-    duration: "4 weeks",
-    students: "2,100",
-    rating: "4.9",
-    level: "Intermediate",
-    price: 199,
-    category: "Brand Strategy",
-    certification: true,
-    featured: false,
-    image: brandingImage,
-    instructorName: "Alex Thompson",
-    format: "Interactive",
-    learningStyle: "visual"
-  },
-  {
-    id: "4",
-    title: "AI for Entrepreneurs",
-    description: "Streamline operations and scale efficiently using artificial intelligence tools and strategies.",
-    duration: "5 weeks",
-    students: "1,900",
-    rating: "4.7",
-    level: "Intermediate",
-    price: 229,
-    category: "Technology",
-    certification: true,
-    featured: false,
-    image: aiImage,
-    instructorName: "Jamie Lee",
-    format: "Video",
-    learningStyle: "kinesthetic"
-  },
-  {
-    id: "5",
-    title: "Donor Engagement & Strategic Partnerships",
-    description: "Build lasting relationships with donors, sponsors, and strategic partners for sustainable growth.",
-    duration: "6 weeks",
-    students: "1,600",
-    rating: "4.8",
-    level: "Advanced",
-    price: 279,
-    category: "Partnership Strategy",
-    certification: true,
-    featured: true,
-    image: partnershipImage,
-    instructorName: "Morgan Taylor",
-    format: "Interactive",
-    learningStyle: "auditory"
-  },
-  {
-    id: "6",
-    title: "Financial Fluency for Founders",
-    description: "Master budgeting, financial planning, and reporting that builds credibility with funders.",
-    duration: "4 weeks",
-    students: "1,400",
-    rating: "4.7",
-    level: "Intermediate",
-    price: 0,
-    category: "Financial Planning",
-    certification: true,
-    featured: false,
-    image: financialImage,
-    instructorName: "Chris Anderson",
-    format: "Video",
-    learningStyle: "visual"
-  },
-  {
-    id: "7",
-    title: "Grant Writing Mastery",
-    description: "Learn to write compelling grant proposals that get funded.",
-    duration: "6 weeks",
-    students: "2,200",
-    rating: "4.9",
-    level: "Beginner",
-    price: 249,
-    category: "Funding Strategy",
-    certification: true,
-    featured: false,
-    image: fundingImage,
-    instructorName: "Dr. Emily Foster",
-    format: "Video",
-    learningStyle: "reading"
-  },
-  {
-    id: "8",
-    title: "Social Impact Measurement",
-    description: "Track and communicate your organization's impact effectively.",
-    duration: "3 weeks",
-    students: "980",
-    rating: "4.6",
-    level: "Intermediate",
-    price: 0,
-    category: "Impact",
-    certification: true,
-    featured: false,
-    image: partnershipImage,
-    instructorName: "Jordan Lee",
-    format: "Interactive",
-    learningStyle: "kinesthetic"
-  }
-];
+// Fallback placeholder image for courses without thumbnails
+const placeholderImage = "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800";
 
 const categories = ["Funding Strategy", "Operations", "Brand Strategy", "Technology", "Partnership Strategy", "Financial Planning", "Impact"];
 const levels = ["Beginner", "Intermediate", "Advanced"];
 const formats = ["Video", "Interactive", "Live"];
-
-const communities = [
-  {
-    id: "c1",
-    name: "Startups Under 2 Years",
-    members: "2,400",
-    description: "Connect with fellow early-stage entrepreneurs navigating the startup journey."
-  },
-  {
-    id: "c2",
-    name: "501(c)(3) Founders",
-    members: "1,800",
-    description: "A community for nonprofit leaders building sustainable impact organizations."
-  },
-  {
-    id: "c3",
-    name: "Creative Entrepreneurs",
-    members: "1,500",
-    description: "Artists, designers, and creative professionals scaling their businesses."
-  },
-  {
-    id: "c4",
-    name: "Tech-Enabled Businesses",
-    members: "2,100",
-    description: "Founders leveraging technology to solve problems and scale impact."
-  }
-];
 
 const learningStyles = [
   {
@@ -244,33 +67,6 @@ const learningStyles = [
   }
 ];
 
-// Transform educator course to match browse format
-function transformEducatorCourse(course: EducatorCourse) {
-  // Calculate duration in weeks (assuming 60 min/week study time)
-  const durationWeeks = Math.ceil(course.totalDuration / 60);
-  
-  // Capitalize level
-  const capitalizedLevel = course.level.charAt(0).toUpperCase() + course.level.slice(1);
-  
-  return {
-    id: course.id,
-    title: course.title,
-    description: course.description,
-    duration: `${durationWeeks} week${durationWeeks !== 1 ? 's' : ''}`,
-    students: course.enrollmentCount.toLocaleString(),
-    rating: (course.rating || 4.5).toFixed(1),
-    level: capitalizedLevel,
-    price: course.pricing.type === 'paid' ? course.pricing.amount || 0 : 0,
-    category: course.category || "Operations", // Default category if not specified
-    certification: true, // All courses offer certification
-    featured: false, // Educator courses not featured by default
-    image: fundingImage, // Use a default image
-    instructorName: course.educatorName,
-    format: "Video", // Default format
-    learningStyle: "visual" // Default learning style
-  };
-}
-
 const CourseBrowse = () => {
   const navigate = useNavigate();
   const { auth } = useAuth();
@@ -285,43 +81,33 @@ const CourseBrowse = () => {
   const [activeChip, setActiveChip] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [combinedCourses, setCombinedCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [loading, setLoading] = useState(true);
   const coursesPerPage = 6;
-  
-  // Load and merge educator courses with mock courses
-  const loadCourses = () => {
-    if (typeof window !== 'undefined') {
-      const educatorCourses = getAllPublishedCourses();
-      const transformedEducatorCourses = educatorCourses.map(transformEducatorCourse);
-      setCombinedCourses([...transformedEducatorCourses, ...allCourses]);
-    } else {
-      setCombinedCourses([...allCourses]);
+
+  // Load courses and communities from API
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [coursesResponse, communitiesResponse] = await Promise.all([
+        api.courses.list({ is_active: true }),
+        api.communities.list()
+      ]);
+      setCourses(coursesResponse?.courses || []);
+      setCommunities((communitiesResponse as any)?.communities || []);
+    } catch (error) {
+      console.error('Failed to load data:', error);
+      setCourses([]);
+      setCommunities([]);
+    } finally {
+      setLoading(false);
     }
   };
-  
-  // Load courses on mount and when localStorage changes
+
+  // Load data on mount
   useEffect(() => {
-    loadCourses();
-    
-    // Listen for storage events (changes from other tabs)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'educator_courses') {
-        loadCourses();
-      }
-    };
-    
-    // Listen for custom event (changes from same tab)
-    const handleCoursesUpdated = () => {
-      loadCourses();
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('educatorCoursesUpdated', handleCoursesUpdated);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('educatorCoursesUpdated', handleCoursesUpdated);
-    };
+    loadData();
   }, []);
 
   // Scroll to top when the page loads
@@ -338,23 +124,23 @@ const CourseBrowse = () => {
   };
 
   // Filter courses
-  const filteredCourses = combinedCourses.filter(course => {
+  const filteredCourses = courses.filter(course => {
     const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(course.category);
     const levelMatch = selectedLevels.length === 0 || selectedLevels.includes(course.level);
     const formatMatch = selectedFormats.length === 0 || selectedFormats.includes(course.format);
     const learningStyleMatch = selectedLearningStyles.length === 0 || selectedLearningStyles.includes(course.learningStyle);
-    const paidFilterMatch = paidFilter === "all" || 
+    const paidFilterMatch = paidFilter === "all" ||
       (paidFilter === "free" && course.price === 0) ||
       (paidFilter === "paid" && course.price > 0);
     const priceMatch = course.price >= priceRange[0] && course.price <= priceRange[1];
     const chipMatch = !activeChip || course.category === activeChip;
-    
+
     // Search match - search in title, instructor, category, and description if available
-    const searchMatch = !searchQuery || 
+    const searchMatch = !searchQuery ||
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.instructorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.category.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     return categoryMatch && levelMatch && formatMatch && learningStyleMatch && paidFilterMatch && priceMatch && chipMatch && searchMatch;
   });
 
@@ -366,11 +152,11 @@ const CourseBrowse = () => {
       case "price-high":
         return b.price - a.price;
       case "rating":
-        return parseFloat(b.rating) - parseFloat(a.rating);
+        return b.averageRating - a.averageRating;
       case "popular":
-        return parseInt(b.students.replace(",", "")) - parseInt(a.students.replace(",", ""));
+        return b.enrollmentCount - a.enrollmentCount;
       default:
-        return b.featured ? 1 : -1;
+        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
     }
   });
 
@@ -718,6 +504,21 @@ const CourseBrowse = () => {
 
             {/* Course Grid */}
             <div className="flex-1">
+              {loading ? (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-md border border-neutral-200 dark:border-neutral-700 animate-pulse">
+                      <div className="h-48 bg-neutral-200 dark:bg-neutral-700" />
+                      <div className="p-5 space-y-3">
+                        <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3" />
+                        <div className="h-6 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4" />
+                        <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-full" />
+                        <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-2/3" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
                 {paginatedCourses.map(course => (
                   <div
@@ -729,11 +530,11 @@ const CourseBrowse = () => {
                     {/* Image */}
                     <div className="relative h-48 overflow-hidden">
                       <img
-                        src={course.image}
+                        src={course.thumbnailUrl || placeholderImage}
                         alt={course.title}
                         className="w-full h-full object-cover"
                       />
-                      {course.featured && (
+                      {course.isFeatured && (
                         <Badge className="absolute top-3 left-3 bg-yellow-400 text-black hover:bg-yellow-500">
                           Featured
                         </Badge>
@@ -746,13 +547,13 @@ const CourseBrowse = () => {
                       <div className="flex items-center gap-2 mb-3">
                         <Badge variant="secondary" className="text-xs">
                           <Clock className="h-3 w-3 mr-1" />
-                          {course.duration}
+                          {course.estimatedHours} {course.estimatedHours === 1 ? 'hour' : 'hours'}
                         </Badge>
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className={`text-xs ${
-                            course.level === "Beginner" 
-                              ? "border-green-500 text-green-600" 
+                            course.level === "Beginner"
+                              ? "border-green-500 text-green-600"
                               : course.level === "Intermediate"
                               ? "border-orange-500 text-orange-600"
                               : "border-red-500 text-red-600"
@@ -786,17 +587,17 @@ const CourseBrowse = () => {
                       <div className="flex items-center justify-between text-sm text-muted-foreground pb-4 border-b border-neutral-200 dark:border-neutral-700 mb-4">
                         <div className="flex items-center gap-1">
                           <Users className="h-4 w-4" />
-                          <span>{course.students}</span>
+                          <span>{course.enrollmentCount.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-semibold text-foreground">{course.rating}</span>
+                          <span className="font-semibold text-foreground">{course.averageRating.toFixed(1)}</span>
                         </div>
                       </div>
 
                       {/* Price & CTA */}
                       <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold">${course.price}</span>
+                        <span className="text-2xl font-bold">{course.price === 0 ? 'Free' : `$${course.price}`}</span>
                         <Button
                           size="sm"
                           className="bg-orange-500 hover:bg-orange-600 text-white"
@@ -814,6 +615,7 @@ const CourseBrowse = () => {
                   </div>
                 ))}
               </div>
+              )}
 
               {/* Pagination */}
               {totalPages > 1 && (
@@ -875,7 +677,7 @@ const CourseBrowse = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {communities.map((community) => (
+            {communities.slice(0, 4).map((community) => (
               <div
                 key={community.id}
                 className="bg-neutral-50 dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200 dark:border-neutral-700 hover:border-orange-500 transition-colors"
@@ -884,13 +686,13 @@ const CourseBrowse = () => {
                 <h3 className="text-xl font-bold mb-2">{community.name}</h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
                   <Users className="h-4 w-4" />
-                  <span>{community.members} members</span>
+                  <span>{(community.member_count || 0).toLocaleString()} members</span>
                 </div>
                 <p className="text-muted-foreground mb-6">{community.description}</p>
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => navigate("/community/join")}
+                  onClick={() => navigate(`/community/${community.id}`)}
                   data-testid={`button-join-community-${community.id}`}
                 >
                   Join Community

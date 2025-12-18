@@ -121,7 +121,7 @@ const CommunityCreate = () => {
         description: "Your community has been successfully created!",
       });
       
-      navigate("/community/join");
+      navigate("/community/browse");
     } catch (error) {
       console.error('Error creating community:', error);
       toast({
@@ -237,7 +237,7 @@ const CommunityCreate = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => navigate("/community/join")}
+                      onClick={() => navigate("/community/browse")}
                     >
                       Cancel
                     </Button>

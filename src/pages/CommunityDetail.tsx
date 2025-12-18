@@ -11,17 +11,20 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Users, Settings, ArrowLeft, Shield, Send, Video, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { PostTimeline } from '@/components/community/PostTimeline';
+import { api } from '@/services/api';
 
 interface Community {
   id: string;
   name: string;
   description: string;
   category: string;
-  member_count: number;
-  cover_photo?: string;
+  memberCount: number;
+  coverPhoto?: string;
   visibility?: string;
   rules?: string[];
-  created_at?: string;
+  createdAt?: string;
+  isPrivate?: boolean;
+  postsToday?: number;
 }
 
 interface Member {
@@ -41,16 +44,6 @@ interface LiveEvent {
   date: string;
   time: string;
 }
-
-// Mock data for communities
-const MOCK_COMMUNITIES: Record<string, Community> = {
-  '1': { id: '1', name: 'Funding & Grants', description: 'Connect with experts in fundraising, grant writing, and securing capital for your ventures.', category: 'Funding', member_count: 2847, cover_photo: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-01-15', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
-  '2': { id: '2', name: 'Legal & Compliance', description: 'Navigate legal challenges, contracts, and regulatory requirements with fellow entrepreneurs.', category: 'Legal', member_count: 1923, cover_photo: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-02-20', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
-  '3': { id: '3', name: 'Marketing & Branding', description: 'Share strategies, campaigns, and creative ideas to grow your brand and reach your audience.', category: 'Branding', member_count: 3521, cover_photo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-03-10', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
-  '4': { id: '4', name: 'Tech Infrastructure', description: 'Discuss technical architecture, cloud solutions, and infrastructure best practices.', category: 'Infrastructure', member_count: 2156, cover_photo: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-04-05', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
-  '5': { id: '5', name: 'Financial Planning', description: 'Master budgeting, forecasting, and financial management for sustainable growth.', category: 'Finance', member_count: 2034, cover_photo: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-05-12', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
-  '6': { id: '6', name: 'AI & Innovation', description: 'Explore artificial intelligence, machine learning, and cutting-edge technologies.', category: 'AI', member_count: 4102, cover_photo: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=200&fit=crop', visibility: 'Public', created_at: '2024-06-01', rules: ['Be respectful', 'Stay on topic', 'No spam'] },
-};
 
 const MOCK_MEMBERS: Member[] = [
   { id: '1', name: 'Sarah Johnson', role: 'admin', joined_at: '2024-01-15' },
@@ -88,18 +81,37 @@ const CommunityDetail = () => {
     }
   }, [communityId]);
 
-  const fetchCommunityDetails = () => {
-    // TODO: backend - GET /api/communities/:id
-    // const response = await fetch(`/api/communities/${communityId}`)
-    setTimeout(() => {
-      const communityData = MOCK_COMMUNITIES[communityId || '1'];
-      setCommunity(communityData || null);
+  const fetchCommunityDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await api.communities.get(communityId!);
+
+      // Transform API response to match component interface
+      const communityData: Community = {
+        id: response.id,
+        name: response.name,
+        description: response.description || '',
+        category: (response as any).category || 'General',
+        memberCount: (response as any).memberCount || response.member_count || 0,
+        coverPhoto: (response as any).coverPhoto || (response as any).cover_photo,
+        visibility: (response as any).visibility || ((response as any).isPrivate ? 'Private' : 'Public'),
+        rules: (response as any).rules || [],
+        createdAt: response.created_at,
+        isPrivate: (response as any).isPrivate,
+        postsToday: (response as any).postsToday || 0,
+      };
+
+      setCommunity(communityData);
 
       // Check if user is a member from localStorage
       const joinedCommunities = JSON.parse(localStorage.getItem('joinedCommunities') || '[]');
       setIsMember(joinedCommunities.includes(communityId));
+    } catch (error) {
+      console.error('Failed to fetch community:', error);
+      setCommunity(null);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const handleLeaveCommunity = () => {
@@ -112,7 +124,7 @@ const CommunityDetail = () => {
       title: "Left community",
       description: `You've left ${community?.name}`,
     });
-    navigate('/community/join');
+    navigate('/community/browse');
   };
 
   const handleCreatePost = () => {
@@ -168,7 +180,7 @@ const CommunityDetail = () => {
             <Card>
               <CardContent className="py-12 text-center">
                 <h3 className="text-lg font-semibold mb-2">Community not found</h3>
-                <Button onClick={() => navigate('/community/join')}>
+                <Button onClick={() => navigate('/community/browse')}>
                   Browse Communities
                 </Button>
               </CardContent>
@@ -197,10 +209,10 @@ const CommunityDetail = () => {
           <div className="max-w-4xl mx-auto">
             {/* Community Header */}
             <Card className="mb-6 overflow-hidden">
-              {community.cover_photo && (
+              {community.coverPhoto && (
                 <div className="w-full h-48 overflow-hidden">
-                  <img 
-                    src={community.cover_photo} 
+                  <img
+                    src={community.coverPhoto}
                     alt={community.name}
                     className="w-full h-full object-cover"
                   />
@@ -222,7 +234,7 @@ const CommunityDetail = () => {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4" />
-                        {community.member_count} members
+                        {community.memberCount?.toLocaleString()} members
                       </div>
                       <Badge variant="secondary">{community.visibility}</Badge>
                     </div>
@@ -404,7 +416,7 @@ const CommunityDetail = () => {
                     <div>
                       <h4 className="font-semibold mb-2">Created</h4>
                       <p className="text-muted-foreground">
-                        {community.created_at ? new Date(community.created_at).toLocaleDateString() : 'N/A'}
+                        {community.createdAt ? new Date(community.createdAt).toLocaleDateString() : 'N/A'}
                       </p>
                     </div>
                     <div>

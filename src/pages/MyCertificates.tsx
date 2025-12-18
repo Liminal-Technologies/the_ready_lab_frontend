@@ -131,8 +131,8 @@ export const MyCertificates = () => {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button 
-                        onClick={() => navigate('/community/join')}
+                      <Button
+                        onClick={() => navigate('/community/browse')}
                         data-testid="button-join-communities"
                       >
                         <Users className="h-4 w-4 mr-2" />

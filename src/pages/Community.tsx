@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,122 +27,51 @@ import {
 } from "lucide-react";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { api } from "@/services/api";
 
 const COMMUNITY_TOPICS = [
-  'Funding', 'Legal', 'Marketing', 'Infrastructure', 
+  'Funding', 'Legal', 'Marketing', 'Infrastructure',
   'Branding', 'Finance', 'AI', 'Operations'
 ];
 
-const communities = [
-  {
-    id: "1",
-    name: "Funding & Grants",
-    topic: "Funding",
-    members: 2247,
-    description: "Master the art of raising capital and securing grants. Share pitch decks, celebrate funding wins, and navigate investor relationships together.",
-    postsToday: 18,
-    isPrivate: false,
-    isJoined: false,
-    icon: "💰",
-    image: "/attached_assets/stock_images/partnership_handshak_d5c0b270.jpg"
-  },
-  {
-    id: "c1",
-    name: "Startups Under 2 Years",
-    topic: "Funding",
-    members: 2400,
-    description: "Connect with fellow early-stage entrepreneurs navigating the startup journey. Share funding strategies and build together.",
-    postsToday: 12,
-    isPrivate: false,
-    isJoined: false,
-    icon: "🚀",
-    image: "/attached_assets/stock_images/business_professiona_9e1fef7d.jpg"
-  },
-  {
-    id: "c2",
-    name: "501(c)(3) Founders",
-    topic: "Legal",
-    members: 1800,
-    description: "A community for nonprofit leaders building sustainable impact organizations and navigating compliance.",
-    postsToday: 8,
-    isPrivate: false,
-    isJoined: true,
-    icon: "🏛️",
-    image: "/attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg"
-  },
-  {
-    id: "c3",
-    name: "Creative Entrepreneurs",
-    topic: "Branding",
-    members: 1500,
-    description: "Artists, designers, and creative professionals scaling their businesses while staying authentic to their craft.",
-    postsToday: 15,
-    isPrivate: false,
-    isJoined: false,
-    icon: "🎨",
-    image: "/attached_assets/stock_images/branding_marketing_s_50e607b2.jpg"
-  },
-  {
-    id: "c4",
-    name: "Tech-Enabled Businesses",
-    topic: "AI",
-    members: 2100,
-    description: "Founders leveraging technology and AI to solve problems and scale impact. Share tools, strategies, and wins.",
-    postsToday: 20,
-    isPrivate: false,
-    isJoined: true,
-    icon: "💻",
-    image: "/attached_assets/stock_images/artificial_intellige_80651e44.jpg"
-  },
-  {
-    id: "c5",
-    name: "Financial Planning Masters",
-    topic: "Finance",
-    members: 980,
-    description: "Master budgeting, forecasting, and financial strategy. Learn from CFOs and finance professionals.",
-    postsToday: 6,
-    isPrivate: false,
-    isJoined: false,
-    icon: "💰",
-    image: "/attached_assets/stock_images/financial_planning_a_96357d65.jpg"
-  },
-  {
-    id: "c6",
-    name: "Marketing Growth Hackers",
-    topic: "Marketing",
-    members: 3200,
-    description: "Share growth strategies, campaigns that worked, and learn the latest marketing trends together.",
-    postsToday: 25,
-    isPrivate: false,
-    isJoined: false,
-    icon: "📈",
-    image: "/attached_assets/stock_images/business_operations__a3e6e538.jpg"
-  },
-  {
-    id: "c7",
-    name: "Infrastructure & Operations",
-    topic: "Operations",
-    members: 1650,
-    description: "Build scalable systems, optimize operations, and establish compliance frameworks that funders trust.",
-    postsToday: 9,
-    isPrivate: false,
-    isJoined: false,
-    icon: "⚙️",
-    image: "/attached_assets/stock_images/business_operations__a3e6e538.jpg"
-  },
-  {
-    id: "c8",
-    name: "Certified Founders Circle",
-    topic: "Infrastructure",
-    members: 450,
-    description: "Exclusive community for Ready Lab certified founders. Share wins, challenges, and connect deeply.",
-    postsToday: 18,
-    isPrivate: true,
-    isJoined: false,
-    icon: "👑",
-    image: "/attached_assets/stock_images/partnership_handshak_d5c0b270.jpg"
-  }
-];
+// Icon mapping based on category
+const CATEGORY_ICONS: Record<string, string> = {
+  'Funding': '💰',
+  'Legal': '🏛️',
+  'Marketing': '📈',
+  'Infrastructure': '⚙️',
+  'Branding': '🎨',
+  'Finance': '💵',
+  'AI': '💻',
+  'Operations': '⚙️',
+  'General': '🌐',
+};
+
+// Image mapping based on category
+const CATEGORY_IMAGES: Record<string, string> = {
+  'Funding': '/attached_assets/stock_images/partnership_handshak_d5c0b270.jpg',
+  'Legal': '/attached_assets/stock_images/diverse_business_tea_d87c6b57.jpg',
+  'Marketing': '/attached_assets/stock_images/business_operations__a3e6e538.jpg',
+  'Infrastructure': '/attached_assets/stock_images/business_operations__a3e6e538.jpg',
+  'Branding': '/attached_assets/stock_images/branding_marketing_s_50e607b2.jpg',
+  'Finance': '/attached_assets/stock_images/financial_planning_a_96357d65.jpg',
+  'AI': '/attached_assets/stock_images/artificial_intellige_80651e44.jpg',
+  'Operations': '/attached_assets/stock_images/business_operations__a3e6e538.jpg',
+  'General': '/attached_assets/stock_images/diverse_community_pe_a18abfb1.jpg',
+};
+
+interface CommunityData {
+  id: string;
+  name: string;
+  topic: string;
+  members: number;
+  description: string;
+  postsToday: number;
+  isPrivate: boolean;
+  isJoined: boolean;
+  icon: string;
+  image: string;
+}
 
 const trendingDiscussions = [
   { title: "How to respond to grant rejections?", replies: 45, community: "Funding" },
@@ -156,6 +85,40 @@ const Community = () => {
   const [showPrivate, setShowPrivate] = useState(false);
   const [showJoined, setShowJoined] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [communities, setCommunities] = useState<CommunityData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadCommunities();
+  }, []);
+
+  const loadCommunities = async () => {
+    try {
+      setLoading(true);
+      const response = await api.communities.list();
+      const joinedCommunities = JSON.parse(localStorage.getItem('joinedCommunities') || '[]');
+
+      // Transform API response to match component interface
+      const transformedCommunities: CommunityData[] = ((response as any)?.communities || []).map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        topic: c.category || 'General',
+        members: c.memberCount || 0,
+        description: c.description || '',
+        postsToday: c.postsToday || 0,
+        isPrivate: c.isPrivate || c.type === 'private',
+        isJoined: joinedCommunities.includes(c.id),
+        icon: CATEGORY_ICONS[c.category] || '🌐',
+        image: c.thumbnailUrl || c.coverPhoto || CATEGORY_IMAGES[c.category] || CATEGORY_IMAGES['General'],
+      }));
+
+      setCommunities(transformedCommunities);
+    } catch (error) {
+      console.error('Failed to load communities:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleTopic = (topic: string) => {
     if (selectedTopics.includes(topic)) {
@@ -410,7 +373,22 @@ const Community = () => {
                 ))}
               </div>
             </div>
-            {filteredCommunities.length === 0 ? (
+            {loading ? (
+              <div className="grid md:grid-cols-2 gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-700 animate-pulse">
+                    <div className="h-32 bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div className="p-6 space-y-4">
+                      <div className="h-6 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4"></div>
+                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4"></div>
+                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-full"></div>
+                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-2/3"></div>
+                      <div className="h-10 bg-neutral-200 dark:bg-neutral-700 rounded w-full"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredCommunities.length === 0 ? (
               <div className="text-center py-12 bg-white dark:bg-neutral-800 rounded-2xl border border-neutral-200 dark:border-neutral-700">
                 <p className="text-muted-foreground">
                   No communities match your filters. Try adjusting your selection.

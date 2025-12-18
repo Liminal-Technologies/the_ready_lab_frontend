@@ -497,6 +497,50 @@ export interface Video {
   created_at: string;
 }
 
+// Course Types (for CourseBrowse page)
+export interface Course {
+  id: string;
+  title: string;
+  description?: string;
+  price: number;
+  category: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  thumbnailUrl?: string;
+  estimatedHours: number;
+  enrollmentCount: number;
+  averageRating: number;
+  format: 'Video' | 'Interactive' | 'Live';
+  learningStyle: 'visual' | 'auditory' | 'reading' | 'kinesthetic';
+  isFeatured: boolean;
+  isActive: boolean;
+  instructorName: string;
+  instructorAvatar?: string;
+  certificationType?: string;
+  completionRequirement?: number;
+  instructor?: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+  };
+  modules?: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    orderIndex: number;
+    lessons: Array<{
+      id: string;
+      title: string;
+      description?: string;
+      contentType: string;
+      contentUrl?: string;
+      duration?: number;
+      orderIndex: number;
+    }>;
+  }>;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 // ============================================================================
 // API Client Class
 // ============================================================================
@@ -1231,6 +1275,58 @@ class ApiClient {
 
     delete: (id: string) =>
       this.request<void>(`/api/products/${id}`, { method: 'DELETE' }),
+  };
+
+  // ============================================================================
+  // Course Endpoints (for CourseBrowse page)
+  // ============================================================================
+
+  courses = {
+    list: (params?: {
+      category?: string;
+      level?: string;
+      format?: string;
+      learning_style?: string;
+      is_active?: boolean;
+      is_featured?: boolean;
+      is_free?: boolean;
+      search?: string;
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.category) searchParams.set('category', params.category);
+      if (params?.level) searchParams.set('level', params.level);
+      if (params?.format) searchParams.set('format', params.format);
+      if (params?.learning_style) searchParams.set('learning_style', params.learning_style);
+      if (params?.is_active !== undefined) searchParams.set('is_active', String(params.is_active));
+      if (params?.is_featured !== undefined) searchParams.set('is_featured', String(params.is_featured));
+      if (params?.is_free !== undefined) searchParams.set('is_free', String(params.is_free));
+      if (params?.search) searchParams.set('search', params.search);
+      if (params?.limit) searchParams.set('limit', String(params.limit));
+      if (params?.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ courses: Course[]; pagination: { limit: number; offset: number; total: number } }>(
+        `/api/courses?${searchParams}`
+      );
+    },
+
+    get: (id: string) =>
+      this.request<Course>(`/api/courses/${id}`),
+
+    create: (data: Partial<Course>) =>
+      this.request<Course>('/api/courses', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    update: (id: string, data: Partial<Course>) =>
+      this.request<Course>(`/api/courses/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+
+    delete: (id: string) =>
+      this.request<void>(`/api/courses/${id}`, { method: 'DELETE' }),
   };
 
   // ============================================================================

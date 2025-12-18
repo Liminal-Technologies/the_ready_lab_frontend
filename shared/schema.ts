@@ -28,6 +28,11 @@ export const tracks = pgTable("tracks", {
   category: text("category").notNull(),
   level: text("level").notNull().default("beginner"),
   estimatedHours: integer("estimated_hours").notNull().default(1),
+  enrollmentCount: integer("enrollment_count").notNull().default(0),
+  averageRating: decimal("average_rating", { precision: 3, scale: 2 }).notNull().default("0.00"),
+  format: text("format").notNull().default("Video"),
+  learningStyle: text("learning_style").notNull().default("visual"),
+  isFeatured: boolean("is_featured").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

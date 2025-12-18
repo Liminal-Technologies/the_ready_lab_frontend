@@ -3,13 +3,23 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronRight, Plus, TrendingUp, MessageSquare, Heart, ThumbsUp } from "lucide-react";
+import { ChevronRight, Plus, TrendingUp, MessageSquare, Heart, ThumbsUp, X, Send } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CreatePostModal } from "@/components/community/CreatePostModal";
 import { LiveEventBanner } from "@/components/community/LiveEventBanner";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+
+interface Comment {
+  id: string;
+  author: string;
+  authorInitials: string;
+  content: string;
+  timeAgo: string;
+}
 
 interface Post {
   id: string;
@@ -21,6 +31,7 @@ interface Post {
   likes: number;
   comments: number;
   likedBy?: string[];
+  commentsList?: Comment[];
 }
 
 const INITIAL_POSTS: Post[] = [
@@ -34,6 +45,10 @@ const INITIAL_POSTS: Post[] = [
     likes: 15,
     comments: 8,
     likedBy: [],
+    commentsList: [
+      { id: "c1", author: "Sarah Chen", authorInitials: "SC", content: "Try Y Combinator's co-founder matching platform! I found my co-founder there.", timeAgo: "1 hour ago" },
+      { id: "c2", author: "Marcus Johnson", authorInitials: "MJ", content: "LinkedIn groups for your industry can be great. Also consider attending startup weekends.", timeAgo: "30 min ago" },
+    ],
   },
   {
     id: "post-2",
@@ -45,6 +60,11 @@ const INITIAL_POSTS: Post[] = [
     likes: 42,
     comments: 15,
     likedBy: [],
+    commentsList: [
+      { id: "c3", author: "Emma Davis", authorInitials: "ED", content: "Congrats Sarah! Would love to hear what resonated with investors.", timeAgo: "4 hours ago" },
+      { id: "c4", author: "David Kim", authorInitials: "DK", content: "Amazing! Your pitch deck was really polished. Glad the feedback helped!", timeAgo: "3 hours ago" },
+      { id: "c5", author: "Alex Martinez", authorInitials: "AM", content: "🎉 Huge congrats! What was the key thing that got them to say yes?", timeAgo: "2 hours ago" },
+    ],
   },
   {
     id: "post-3",
@@ -56,6 +76,10 @@ const INITIAL_POSTS: Post[] = [
     likes: 28,
     comments: 12,
     likedBy: [],
+    commentsList: [
+      { id: "c6", author: "Emma Davis", authorInitials: "ED", content: "For quick MVPs I love Bubble.io or Webflow. You can always rebuild later.", timeAgo: "20 hours ago" },
+      { id: "c7", author: "Sarah Chen", authorInitials: "SC", content: "If you need more control, try Supabase + Next.js. Still fast but more scalable.", timeAgo: "18 hours ago" },
+    ],
   },
   {
     id: "post-4",
@@ -66,6 +90,10 @@ const INITIAL_POSTS: Post[] = [
     likes: 67,
     comments: 22,
     likedBy: [],
+    commentsList: [
+      { id: "c8", author: "David Kim", authorInitials: "DK", content: "100% this! We wasted so much time on features nobody wanted.", timeAgo: "23 hours ago" },
+      { id: "c9", author: "Alex Martinez", authorInitials: "AM", content: "Needed to hear this today. I keep adding \"just one more feature\"...", timeAgo: "22 hours ago" },
+    ],
   },
   {
     id: "post-5",
@@ -77,6 +105,10 @@ const INITIAL_POSTS: Post[] = [
     likes: 34,
     comments: 19,
     likedBy: [],
+    commentsList: [
+      { id: "c10", author: "Sarah Chen", authorInitials: "SC", content: "Look for specific feedback. If they say 'too early' without details, it's usually a pass.", timeAgo: "2 days ago" },
+      { id: "c11", author: "Marcus Johnson", authorInitials: "MJ", content: "Track your metrics - when you have clear traction data, 'too early' becomes harder to say.", timeAgo: "1 day ago" },
+    ],
   },
 ];
 
@@ -87,6 +119,8 @@ const CommunityFeed = () => {
     return savedPosts ? [...JSON.parse(savedPosts), ...INITIAL_POSTS] : INITIAL_POSTS;
   });
   const [createPostOpen, setCreatePostOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [newComment, setNewComment] = useState("");
 
   const handleCreatePost = (title: string, body: string) => {
     const newPost: Post = {
@@ -132,9 +166,43 @@ const CommunityFeed = () => {
   };
 
   const handleComment = (postId: string) => {
-    setPosts(prev => prev.map(post => 
-      post.id === postId ? { ...post, comments: post.comments + 1 } : post
-    ));
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      setSelectedPost(post);
+    }
+  };
+
+  const handleAddComment = () => {
+    if (!newComment.trim() || !selectedPost) return;
+
+    const comment: Comment = {
+      id: `comment-${Date.now()}`,
+      author: "Demo User",
+      authorInitials: "DU",
+      content: newComment,
+      timeAgo: "just now",
+    };
+
+    setPosts(prev => prev.map(post => {
+      if (post.id === selectedPost.id) {
+        return {
+          ...post,
+          comments: post.comments + 1,
+          commentsList: [...(post.commentsList || []), comment],
+        };
+      }
+      return post;
+    }));
+
+    // Update selected post with new comment
+    setSelectedPost(prev => prev ? {
+      ...prev,
+      comments: prev.comments + 1,
+      commentsList: [...(prev.commentsList || []), comment],
+    } : null);
+
+    setNewComment("");
+    toast.success("Comment added!");
   };
 
   return (
@@ -240,10 +308,13 @@ const CommunityFeed = () => {
                         </div>
                       </div>
 
-                      {/* Post Content */}
-                      <div className="mb-4">
+                      {/* Post Content - Clickable to open thread */}
+                      <div
+                        className="mb-4 cursor-pointer hover:bg-muted/30 -mx-2 px-2 py-1 rounded transition-colors"
+                        onClick={() => setSelectedPost(post)}
+                      >
                         {post.title && (
-                          <h3 className="text-lg font-bold mb-2">{post.title}</h3>
+                          <h3 className="text-lg font-bold mb-2 hover:text-primary">{post.title}</h3>
                         )}
                         <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                           {post.content}
@@ -297,6 +368,95 @@ const CommunityFeed = () => {
         onOpenChange={setCreatePostOpen}
         onSubmit={handleCreatePost}
       />
+
+      {/* Thread Detail Modal */}
+      <Dialog open={!!selectedPost} onOpenChange={(open) => !open && setSelectedPost(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>{selectedPost?.title || "Thread"}</DialogTitle>
+          </DialogHeader>
+
+          {selectedPost && (
+            <div className="flex-1 overflow-y-auto space-y-4">
+              {/* Original Post */}
+              <div className="p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-start gap-3 mb-3">
+                  <Avatar>
+                    <AvatarFallback>{selectedPost.authorInitials}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-semibold">{selectedPost.author}</p>
+                    <p className="text-xs text-muted-foreground">{selectedPost.timeAgo}</p>
+                  </div>
+                </div>
+                <p className="text-sm whitespace-pre-wrap">{selectedPost.content}</p>
+                <div className="flex items-center gap-4 mt-4 pt-3 border-t">
+                  <Button
+                    variant={(selectedPost.likedBy || []).includes("currentUser") ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => {
+                      handleLike(selectedPost.id);
+                      // Update selected post like state
+                      setSelectedPost(prev => {
+                        if (!prev) return null;
+                        const likedBy = prev.likedBy || [];
+                        const alreadyLiked = likedBy.includes("currentUser");
+                        return {
+                          ...prev,
+                          likes: alreadyLiked ? prev.likes - 1 : prev.likes + 1,
+                          likedBy: alreadyLiked
+                            ? likedBy.filter(u => u !== "currentUser")
+                            : [...likedBy, "currentUser"],
+                        };
+                      });
+                    }}
+                    className="gap-2"
+                  >
+                    <Heart className={`h-4 w-4 ${(selectedPost.likedBy || []).includes("currentUser") ? "fill-current" : ""}`} />
+                    <span>{selectedPost.likes}</span>
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    <MessageSquare className="h-4 w-4 inline mr-1" />
+                    {selectedPost.comments} comments
+                  </span>
+                </div>
+              </div>
+
+              {/* Comments */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-sm">Comments ({selectedPost.commentsList?.length || 0})</h4>
+                {(selectedPost.commentsList || []).map((comment) => (
+                  <div key={comment.id} className="flex items-start gap-3 p-3 rounded-lg border">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="text-xs">{comment.authorInitials}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-sm">{comment.author}</span>
+                        <span className="text-xs text-muted-foreground">{comment.timeAgo}</span>
+                      </div>
+                      <p className="text-sm">{comment.content}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Add Comment Input */}
+          <div className="flex gap-2 pt-4 border-t mt-auto">
+            <Input
+              placeholder="Write a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
+            />
+            <Button onClick={handleAddComment} disabled={!newComment.trim()}>
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
