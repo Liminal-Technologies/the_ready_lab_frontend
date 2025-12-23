@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
-import { Calendar, CheckCircle2 } from "lucide-react";
+import { Calendar, CheckCircle2, Loader2 } from "lucide-react";
 
 interface RequestDemoModalProps {
   open: boolean;
@@ -38,6 +38,7 @@ const AREAS_OF_INTEREST = [
 
 export function RequestDemoModal({ open, onOpenChange }: RequestDemoModalProps) {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     orgName: "",
     contactName: "",
@@ -59,7 +60,7 @@ export function RequestDemoModal({ open, onOpenChange }: RequestDemoModalProps) 
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.orgName || !formData.contactName || !formData.email || !formData.orgType) {
@@ -71,15 +72,55 @@ export function RequestDemoModal({ open, onOpenChange }: RequestDemoModalProps) 
       return;
     }
 
-    // Save to localStorage (optional)
-    const inquiries = JSON.parse(localStorage.getItem('demoInquiries') || '[]');
-    inquiries.push({
-      ...formData,
-      submittedAt: new Date().toISOString(),
-    });
-    localStorage.setItem('demoInquiries', JSON.stringify(inquiries));
+    setIsSubmitting(true);
 
-    setShowConfirmation(true);
+    try {
+      // Build detailed message from form data
+      const message = [
+        `Organization Type: ${formData.orgType}`,
+        formData.phone ? `Phone: ${formData.phone}` : null,
+        formData.numUsers ? `Estimated Users: ${formData.numUsers}` : null,
+        formData.areasOfInterest.length > 0 ? `Areas of Interest: ${formData.areasOfInterest.join(', ')}` : null,
+        formData.debarmentCheck ? 'Debarment certification: Confirmed' : null,
+        formData.customRequests ? `\nSpecial Requirements:\n${formData.customRequests}` : null,
+      ].filter(Boolean).join('\n');
+
+      // Submit to API
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/demo-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.contactName.trim(),
+          email: formData.email.trim(),
+          company: formData.orgName.trim(),
+          role: formData.orgType,
+          message: message,
+          source: 'institution-demo',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit request');
+      }
+
+      // Also save to localStorage as backup
+      const inquiries = JSON.parse(localStorage.getItem('demoInquiries') || '[]');
+      inquiries.push({
+        ...formData,
+        submittedAt: new Date().toISOString(),
+      });
+      localStorage.setItem('demoInquiries', JSON.stringify(inquiries));
+
+      setShowConfirmation(true);
+    } catch (error: any) {
+      toast({
+        title: "Submission failed",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -295,15 +336,24 @@ export function RequestDemoModal({ open, onOpenChange }: RequestDemoModalProps) 
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
               data-testid="button-cancel"
             >
               Cancel
             </Button>
             <Button
               type="submit"
+              disabled={isSubmitting}
               data-testid="button-submit-demo"
             >
-              Request Demo
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                "Request Demo"
+              )}
             </Button>
           </div>
         </form>

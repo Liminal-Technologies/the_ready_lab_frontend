@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronRight, Plus, TrendingUp, MessageSquare, Heart, ThumbsUp, X, Send } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronRight, Plus, TrendingUp, MessageSquare, Heart, ThumbsUp, Send } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CreatePostModal } from "@/components/community/CreatePostModal";
@@ -12,6 +14,7 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { api } from "@/services/api";
 
 interface Comment {
   id: string;
@@ -32,178 +35,298 @@ interface Post {
   comments: number;
   likedBy?: string[];
   commentsList?: Comment[];
+  communityName?: string;
+  communityId?: string;
 }
 
-const INITIAL_POSTS: Post[] = [
-  {
-    id: "post-1",
-    title: "How do I find co-founders?",
-    content: "I have a solid MVP for a fintech app but I'm struggling to find the right technical co-founder. Where do you all recommend looking? Any tips on vetting potential partners?",
-    author: "Alex Martinez",
-    authorInitials: "AM",
-    timeAgo: "2 hours ago",
-    likes: 15,
-    comments: 8,
-    likedBy: [],
-    commentsList: [
-      { id: "c1", author: "Sarah Chen", authorInitials: "SC", content: "Try Y Combinator's co-founder matching platform! I found my co-founder there.", timeAgo: "1 hour ago" },
-      { id: "c2", author: "Marcus Johnson", authorInitials: "MJ", content: "LinkedIn groups for your industry can be great. Also consider attending startup weekends.", timeAgo: "30 min ago" },
-    ],
-  },
-  {
-    id: "post-2",
-    title: "Just got funded $50K! 🎉",
-    content: "Incredible news - we just closed our first angel round! $50K to build out our MVP and hire our first engineer. Huge thanks to this community for the pitch deck feedback. It made all the difference. Happy to share what worked!",
-    author: "Sarah Chen",
-    authorInitials: "SC",
-    timeAgo: "5 hours ago",
-    likes: 42,
-    comments: 15,
-    likedBy: [],
-    commentsList: [
-      { id: "c3", author: "Emma Davis", authorInitials: "ED", content: "Congrats Sarah! Would love to hear what resonated with investors.", timeAgo: "4 hours ago" },
-      { id: "c4", author: "David Kim", authorInitials: "DK", content: "Amazing! Your pitch deck was really polished. Glad the feedback helped!", timeAgo: "3 hours ago" },
-      { id: "c5", author: "Alex Martinez", authorInitials: "AM", content: "🎉 Huge congrats! What was the key thing that got them to say yes?", timeAgo: "2 hours ago" },
-    ],
-  },
-  {
-    id: "post-3",
-    title: "Best tools for MVP development?",
-    content: "What's your go-to tech stack for getting an MVP out the door quickly? I'm debating between no-code platforms vs. hiring a dev. Budget is tight but I want something scalable. Thoughts?",
-    author: "Marcus Johnson",
-    authorInitials: "MJ",
-    timeAgo: "1 day ago",
-    likes: 28,
-    comments: 12,
-    likedBy: [],
-    commentsList: [
-      { id: "c6", author: "Emma Davis", authorInitials: "ED", content: "For quick MVPs I love Bubble.io or Webflow. You can always rebuild later.", timeAgo: "20 hours ago" },
-      { id: "c7", author: "Sarah Chen", authorInitials: "SC", content: "If you need more control, try Supabase + Next.js. Still fast but more scalable.", timeAgo: "18 hours ago" },
-    ],
-  },
-  {
-    id: "post-4",
-    content: "Pro tip: Don't wait for perfection. We spent 6 months \"perfecting\" our product before launching. Wish we'd gotten user feedback way earlier. Ship fast, iterate faster! 🚀",
-    author: "Emma Davis",
-    authorInitials: "ED",
-    timeAgo: "1 day ago",
-    likes: 67,
-    comments: 22,
-    likedBy: [],
-    commentsList: [
-      { id: "c8", author: "David Kim", authorInitials: "DK", content: "100% this! We wasted so much time on features nobody wanted.", timeAgo: "23 hours ago" },
-      { id: "c9", author: "Alex Martinez", authorInitials: "AM", content: "Needed to hear this today. I keep adding \"just one more feature\"...", timeAgo: "22 hours ago" },
-    ],
-  },
-  {
-    id: "post-5",
-    title: "Struggling with investor conversations",
-    content: "I've had 10+ investor calls and keep getting \"we like it but it's too early.\" How do you know when you're actually ready vs. when it's just a polite rejection? Any red flags to watch for?",
-    author: "David Kim",
-    authorInitials: "DK",
-    timeAgo: "2 days ago",
-    likes: 34,
-    comments: 19,
-    likedBy: [],
-    commentsList: [
-      { id: "c10", author: "Sarah Chen", authorInitials: "SC", content: "Look for specific feedback. If they say 'too early' without details, it's usually a pass.", timeAgo: "2 days ago" },
-      { id: "c11", author: "Marcus Johnson", authorInitials: "MJ", content: "Track your metrics - when you have clear traction data, 'too early' becomes harder to say.", timeAgo: "1 day ago" },
-    ],
-  },
-];
+// Helper to get initials from name
+const getInitials = (name: string): string => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
 
 const CommunityFeed = () => {
-  const [posts, setPosts] = useState<Post[]>(() => {
-    // Load posts from localStorage on mount
-    const savedPosts = localStorage.getItem("communityFeedPosts");
-    return savedPosts ? [...JSON.parse(savedPosts), ...INITIAL_POSTS] : INITIAL_POSTS;
-  });
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
   const [createPostOpen, setCreatePostOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [newComment, setNewComment] = useState("");
 
-  const handleCreatePost = (title: string, body: string) => {
-    const newPost: Post = {
-      id: `post-${Date.now()}`,
-      title: title,
-      content: body,
-      author: "Demo User",
-      authorInitials: "DU",
-      timeAgo: "just now",
-      likes: 0,
-      comments: 0,
-      likedBy: [],
+  // Fetch posts from API
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const defaultUserId = "11111111-1111-1111-1111-111111111111";
+        const response = await api.posts.list({ include: ['author', 'community'] });
+
+        // Fetch user reactions for all posts in parallel
+        const postsWithReactions = await Promise.all(
+          response.data.map(async (post: any) => {
+            let userLiked = false;
+            try {
+              const reactionRes = await fetch(
+                `${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/posts/${post.id}/reactions/user/${defaultUserId}`
+              );
+              if (reactionRes.ok) {
+                const reactionData = await reactionRes.json();
+                userLiked = reactionData?.hasReacted === true;
+              }
+            } catch {
+              // Ignore reaction fetch errors
+            }
+            return { ...post, userLiked };
+          })
+        );
+
+        const transformedPosts: Post[] = postsWithReactions.map((post: any) => ({
+          id: post.id,
+          title: post.title || undefined,
+          content: post.content,
+          author: post.author?.full_name || "Anonymous",
+          authorInitials: getInitials(post.author?.full_name || "AN"),
+          timeAgo: formatDistanceToNow(new Date(post.createdAt || post.created_at), { addSuffix: true }),
+          likes: post.likesCount ?? post.likes_count ?? 0,
+          comments: post.commentsCount ?? post.comments_count ?? 0,
+          likedBy: post.userLiked ? ["currentUser"] : [],
+          commentsList: [],
+          communityName: post.community?.name,
+          communityId: post.community?.id,
+        }));
+
+        setPosts(transformedPosts);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+        // Keep empty state on error
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const updatedPosts = [newPost, ...posts];
-    setPosts(updatedPosts);
+    fetchPosts();
+  }, []);
 
-    // Save to localStorage (only user-created posts)
-    const userPosts = updatedPosts.filter(p => p.author === "Demo User");
-    localStorage.setItem("communityFeedPosts", JSON.stringify(userPosts));
+  const handleCreatePost = async (title: string, body: string) => {
+    try {
+      // Use the first community as default (Psychology Students)
+      const defaultCommunityId = "eeee1111-1111-1111-1111-111111111111";
+      const defaultUserId = "11111111-1111-1111-1111-111111111111";
 
-    toast.success("Post published!", {
-      description: "Your post has been shared with the community",
-      duration: 4000,
-    });
+      // Create post via API
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/posts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          community_id: defaultCommunityId,
+          user_id: defaultUserId,
+          title: title || null,
+          content: body,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create post');
+      }
+
+      const createdPost = await response.json();
+
+      // Add to local state with transformed data
+      const newPost: Post = {
+        id: createdPost.id,
+        title: createdPost.title || undefined,
+        content: createdPost.content,
+        author: "Test Student",
+        authorInitials: "TS",
+        timeAgo: "just now",
+        likes: 0,
+        comments: 0,
+        likedBy: [],
+        communityName: "Psychology Students",
+        communityId: defaultCommunityId,
+      };
+
+      setPosts(prev => [newPost, ...prev]);
+
+      toast.success("Post published!", {
+        description: "Your post has been shared with the community",
+        duration: 4000,
+      });
+    } catch (error) {
+      console.error("Failed to create post:", error);
+      toast.error("Failed to publish post", {
+        description: "Please try again later",
+      });
+    }
   };
 
-  const handleLike = (postId: string) => {
-    setPosts(prev => prev.map(post => {
-      if (post.id === postId) {
-        const likedBy = post.likedBy || [];
-        const alreadyLiked = likedBy.includes("currentUser");
+  const handleLike = async (postId: string) => {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+
+    const defaultUserId = "11111111-1111-1111-1111-111111111111";
+    const likedBy = post.likedBy || [];
+    const alreadyLiked = likedBy.includes("currentUser");
+
+    // Optimistic update
+    setPosts(prev => prev.map(p => {
+      if (p.id === postId) {
         return {
-          ...post,
-          likes: alreadyLiked ? post.likes - 1 : post.likes + 1,
+          ...p,
+          likes: alreadyLiked ? p.likes - 1 : p.likes + 1,
           likedBy: alreadyLiked
             ? likedBy.filter(u => u !== "currentUser")
             : [...likedBy, "currentUser"],
         };
       }
-      return post;
+      return p;
     }));
-  };
 
-  const handleComment = (postId: string) => {
-    const post = posts.find(p => p.id === postId);
-    if (post) {
-      setSelectedPost(post);
+    try {
+      if (alreadyLiked) {
+        // Remove reaction
+        await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/posts/${postId}/reactions/${defaultUserId}`, {
+          method: 'DELETE',
+        });
+      } else {
+        // Add reaction
+        await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/posts/${postId}/reactions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: defaultUserId,
+            reaction_type: 'like',
+          }),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update like:", error);
+      // Revert optimistic update on error
+      setPosts(prev => prev.map(p => {
+        if (p.id === postId) {
+          return {
+            ...p,
+            likes: alreadyLiked ? p.likes + 1 : p.likes - 1,
+            likedBy: alreadyLiked
+              ? [...likedBy, "currentUser"]
+              : likedBy.filter(u => u !== "currentUser"),
+          };
+        }
+        return p;
+      }));
     }
   };
 
-  const handleAddComment = () => {
+  const handleComment = async (postId: string) => {
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      setSelectedPost(post);
+
+      // Fetch existing comments from API
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/posts/${postId}/comments`);
+        if (response.ok) {
+          const data = await response.json();
+          const comments: Comment[] = (data.data || []).map((c: any) => ({
+            id: c.id,
+            author: c.author_name || "Anonymous",
+            authorInitials: getInitials(c.author_name || "AN"),
+            content: c.content,
+            timeAgo: formatDistanceToNow(new Date(c.created_at), { addSuffix: true }),
+          }));
+
+          // Update selected post with fetched comments
+          setSelectedPost(prev => prev ? { ...prev, commentsList: comments } : null);
+
+          // Also update in posts array
+          setPosts(prev => prev.map(p =>
+            p.id === postId ? { ...p, commentsList: comments } : p
+          ));
+        }
+      } catch (error) {
+        console.error("Failed to fetch comments:", error);
+      }
+    }
+  };
+
+  const handleAddComment = async () => {
     if (!newComment.trim() || !selectedPost) return;
 
-    const comment: Comment = {
-      id: `comment-${Date.now()}`,
-      author: "Demo User",
-      authorInitials: "DU",
-      content: newComment,
-      timeAgo: "just now",
-    };
+    try {
+      const defaultUserId = "11111111-1111-1111-1111-111111111111";
 
-    setPosts(prev => prev.map(post => {
-      if (post.id === selectedPost.id) {
-        return {
-          ...post,
-          comments: post.comments + 1,
-          commentsList: [...(post.commentsList || []), comment],
-        };
+      // Create comment via API
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/posts/${selectedPost.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: defaultUserId,
+          content: newComment,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add comment');
       }
-      return post;
-    }));
 
-    // Update selected post with new comment
-    setSelectedPost(prev => prev ? {
-      ...prev,
-      comments: prev.comments + 1,
-      commentsList: [...(prev.commentsList || []), comment],
-    } : null);
+      const createdComment = await response.json();
 
-    setNewComment("");
-    toast.success("Comment added!");
+      const comment: Comment = {
+        id: createdComment.id,
+        author: "Test Student",
+        authorInitials: "TS",
+        content: createdComment.content,
+        timeAgo: "just now",
+      };
+
+      setPosts(prev => prev.map(post => {
+        if (post.id === selectedPost.id) {
+          return {
+            ...post,
+            comments: post.comments + 1,
+            commentsList: [...(post.commentsList || []), comment],
+          };
+        }
+        return post;
+      }));
+
+      // Update selected post with new comment
+      setSelectedPost(prev => prev ? {
+        ...prev,
+        comments: prev.comments + 1,
+        commentsList: [...(prev.commentsList || []), comment],
+      } : null);
+
+      setNewComment("");
+      toast.success("Comment added!");
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+      toast.error("Failed to add comment", {
+        description: "Please try again later",
+      });
+    }
   };
+
+  // Loading skeleton
+  const PostSkeleton = () => (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-start gap-3 mb-4">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="flex-1">
+            <Skeleton className="h-4 w-24 mb-2" />
+            <Skeleton className="h-3 w-16" />
+          </div>
+        </div>
+        <Skeleton className="h-5 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-full mb-1" />
+        <Skeleton className="h-4 w-2/3" />
+      </CardContent>
+    </Card>
+  );
 
   return (
     <>
@@ -291,71 +414,94 @@ const CommunityFeed = () => {
 
             {/* Posts Feed */}
             <div className="space-y-4">
-              {posts.map((post) => {
-                const isLiked = post.likedBy?.includes("currentUser") || false;
-                
-                return (
-                  <Card key={post.id} data-testid={`post-card-${post.id}`}>
-                    <CardContent className="p-6">
-                      {/* Post Header */}
-                      <div className="flex items-start gap-3 mb-4">
-                        <Avatar>
-                          <AvatarFallback>{post.authorInitials}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <p className="font-semibold">{post.author}</p>
-                          <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
+              {loading ? (
+                <>
+                  <PostSkeleton />
+                  <PostSkeleton />
+                  <PostSkeleton />
+                </>
+              ) : posts.length === 0 ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <p className="text-muted-foreground">No posts yet. Be the first to share something!</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                posts.map((post) => {
+                  const isLiked = post.likedBy?.includes("currentUser") || false;
+
+                  return (
+                    <Card key={post.id} data-testid={`post-card-${post.id}`}>
+                      <CardContent className="p-6">
+                        {/* Post Header with Community Label */}
+                        <div className="flex items-start gap-3 mb-4">
+                          <Avatar>
+                            <AvatarFallback>{post.authorInitials}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-semibold">{post.author}</p>
+                              {post.communityName && (
+                                <Link to={`/community/${post.communityId}`}>
+                                  <Badge variant="secondary" className="text-xs hover:bg-purple-100 dark:hover:bg-purple-900 cursor-pointer">
+                                    {post.communityName}
+                                  </Badge>
+                                </Link>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">{post.timeAgo}</p>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Post Content - Clickable to open thread */}
-                      <div
-                        className="mb-4 cursor-pointer hover:bg-muted/30 -mx-2 px-2 py-1 rounded transition-colors"
-                        onClick={() => setSelectedPost(post)}
-                      >
-                        {post.title && (
-                          <h3 className="text-lg font-bold mb-2 hover:text-primary">{post.title}</h3>
-                        )}
-                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                          {post.content}
-                        </p>
-                      </div>
+                        {/* Post Content - Clickable to open thread */}
+                        <div
+                          className="mb-4 cursor-pointer hover:bg-muted/30 -mx-2 px-2 py-1 rounded transition-colors"
+                          onClick={() => setSelectedPost(post)}
+                        >
+                          {post.title && (
+                            <h3 className="text-lg font-bold mb-2 hover:text-primary">{post.title}</h3>
+                          )}
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                            {post.content}
+                          </p>
+                        </div>
 
-                      {/* Post Actions */}
-                      <div className="flex items-center gap-4 pt-4 border-t">
-                        <Button
-                          variant={isLiked ? "default" : "ghost"}
-                          size="sm"
-                          onClick={() => handleLike(post.id)}
-                          className="gap-2"
-                          data-testid={`button-like-${post.id}`}
-                        >
-                          <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
-                          <span>{post.likes}</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleComment(post.id)}
-                          className="gap-2"
-                          data-testid={`button-comment-${post.id}`}
-                        >
-                          <MessageSquare className="h-4 w-4" />
-                          <span>{post.comments}</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-2"
-                          data-testid={`button-thumbsup-${post.id}`}
-                        >
-                          <ThumbsUp className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                        {/* Post Actions */}
+                        <div className="flex items-center gap-4 pt-4 border-t">
+                          <Button
+                            variant={isLiked ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => handleLike(post.id)}
+                            className="gap-2"
+                            data-testid={`button-like-${post.id}`}
+                          >
+                            <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
+                            <span>{post.likes}</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleComment(post.id)}
+                            className="gap-2"
+                            data-testid={`button-comment-${post.id}`}
+                          >
+                            <MessageSquare className="h-4 w-4" />
+                            <span>{post.comments}</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-2"
+                            data-testid={`button-thumbsup-${post.id}`}
+                          >
+                            <ThumbsUp className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

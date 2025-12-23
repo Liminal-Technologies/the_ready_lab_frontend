@@ -28,6 +28,8 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { RequestDemoModal } from "@/components/institution/RequestDemoModal";
+import { ContactSalesModal } from "@/components/institution/ContactSalesModal";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useMockAuth } from "@/hooks/useMockAuth";
 
@@ -43,6 +45,8 @@ const Pricing = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authDefaultMode, setAuthDefaultMode] = useState<'login' | 'signup'>('signup');
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
+  const [showRequestDemo, setShowRequestDemo] = useState(false);
+  const [showContactSales, setShowContactSales] = useState(false);
   const navigate = useNavigate();
   const { auth } = useAuth();
   const login = useMockAuth((state) => state.login);
@@ -438,10 +442,10 @@ const Pricing = () => {
                   </div>
                   
                   <div className="flex gap-4 justify-center pt-4">
-                    <Button size="lg" data-testid="button-request-demo" onClick={() => navigate('/institution-demo')}>
+                    <Button size="lg" data-testid="button-request-demo" onClick={() => setShowRequestDemo(true)}>
                       Request Demo
                     </Button>
-                    <Button size="lg" variant="outline" data-testid="button-contact-sales">
+                    <Button size="lg" variant="outline" data-testid="button-contact-sales" onClick={() => setShowContactSales(true)}>
                       Contact Sales
                     </Button>
                   </div>
@@ -557,11 +561,21 @@ const Pricing = () => {
 
       <Footer />
       
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
+      <AuthModal
+        isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         defaultMode={authDefaultMode}
         selectedPlan={selectedPlan}
+      />
+
+      <RequestDemoModal
+        open={showRequestDemo}
+        onOpenChange={setShowRequestDemo}
+      />
+
+      <ContactSalesModal
+        open={showContactSales}
+        onOpenChange={setShowContactSales}
       />
     </div>
   );

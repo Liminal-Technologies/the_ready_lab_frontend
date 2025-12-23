@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Video, Users } from "lucide-react";
+import { Video, Users, Calendar } from "lucide-react";
+import { toast } from "sonner";
 
 interface LiveEventBannerProps {
   eventId?: string;
@@ -8,19 +9,40 @@ interface LiveEventBannerProps {
   startsIn?: string;
   isLive?: boolean;
   participantCount?: number;
+  scheduledAt?: Date;
 }
 
-export const LiveEventBanner = ({ 
+export const LiveEventBanner = ({
   eventId = "live-1",
   title = "Grant Writing Workshop",
   startsIn = "5 minutes",
   isLive = false,
-  participantCount = 45
+  participantCount = 45,
+  scheduledAt
 }: LiveEventBannerProps) => {
   const navigate = useNavigate();
 
   const handleJoinEvent = () => {
     navigate(`/live/${eventId}`);
+  };
+
+  // Generate calendar event data
+  const handleAddToCalendar = () => {
+    // Default to 5 minutes from now if no scheduled time provided
+    const eventStart = scheduledAt || new Date(Date.now() + 5 * 60 * 1000);
+    const eventEnd = new Date(eventStart.getTime() + 60 * 60 * 1000); // 1 hour duration
+
+    // Format dates for Google Calendar
+    const formatDate = (date: Date) => {
+      return date.toISOString().replace(/-|:|\.\d{3}/g, '');
+    };
+
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatDate(eventStart)}/${formatDate(eventEnd)}&details=${encodeURIComponent(`Join the live event at: ${window.location.origin}/live/${eventId}`)}&location=${encodeURIComponent(window.location.origin)}&sf=true&output=xml`;
+
+    window.open(googleCalendarUrl, '_blank');
+    toast.success("Opening calendar...", {
+      description: "Add this event to your calendar",
+    });
   };
 
   return (
@@ -41,7 +63,7 @@ export const LiveEventBanner = ({
           <div className="flex items-center gap-2 mb-2">
             <Video className="h-5 w-5 text-[#9333EA]" />
             <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-              {isLive ? "🔴 LIVE NOW" : "🔴 Upcoming Event"}
+              {isLive ? "LIVE NOW" : "Upcoming Event"}
             </h3>
           </div>
           <p className="text-lg font-semibold mb-1 text-neutral-800 dark:text-neutral-200">{title}</p>
@@ -60,15 +82,29 @@ export const LiveEventBanner = ({
           </div>
         </div>
 
-        <Button
-          size="lg"
-          onClick={handleJoinEvent}
-          className="bg-[#9333EA] hover:bg-[#7C3AED] text-white font-bold shadow-lg"
-          data-testid="button-join-live-event"
-        >
-          <Video className="mr-2 h-5 w-5" />
-          Join Now
-        </Button>
+        <div className="flex gap-2">
+          {!isLive && (
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={handleAddToCalendar}
+              className="border-[#9333EA] text-[#9333EA] hover:bg-purple-50 dark:hover:bg-purple-950"
+              data-testid="button-add-to-calendar"
+            >
+              <Calendar className="mr-2 h-5 w-5" />
+              Add to Calendar
+            </Button>
+          )}
+          <Button
+            size="lg"
+            onClick={handleJoinEvent}
+            className="bg-[#9333EA] hover:bg-[#7C3AED] text-white font-bold shadow-lg"
+            data-testid="button-join-live-event"
+          >
+            <Video className="mr-2 h-5 w-5" />
+            {isLive ? "Join Now" : "Set Reminder"}
+          </Button>
+        </div>
       </div>
     </div>
   );

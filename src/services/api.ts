@@ -983,11 +983,11 @@ class ApiClient {
      * TODO: Replace with purpose-built endpoints that abstract internal schema.
      *
      * @param params.community_id - Filter by community
-     * @param params.include - Comma-separated: author, reactions_count
+     * @param params.include - Comma-separated: author, community
      */
     list: (params?: {
       community_id?: string;
-      include?: ('author' | 'reactions_count')[];
+      include?: ('author' | 'community')[];
       limit?: number;
       offset?: number;
     }) => {
@@ -996,7 +996,7 @@ class ApiClient {
       if (params?.include?.length) searchParams.set('include', params.include.join(','));
       if (params?.limit) searchParams.set('limit', String(params.limit));
       if (params?.offset) searchParams.set('offset', String(params.offset));
-      return this.request<{ data: (Post & { author?: Profile; totalReactions?: number })[]; pagination: { limit: number; offset: number } }>(`/api/posts?${searchParams}`);
+      return this.request<{ data: (Post & { author?: Profile; community?: { id: string; name: string; category: string } })[]; pagination: { limit: number; offset: number } }>(`/api/posts?${searchParams}`);
     },
 
     get: (id: string) =>

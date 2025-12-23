@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Mail, Phone, CheckCircle2 } from "lucide-react";
+import { Mail, Phone, CheckCircle2, Loader2 } from "lucide-react";
 
 interface ContactSalesModalProps {
   open: boolean;
@@ -14,6 +14,7 @@ interface ContactSalesModalProps {
 
 export function ContactSalesModal({ open, onOpenChange }: ContactSalesModalProps) {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,7 +22,7 @@ export function ContactSalesModal({ open, onOpenChange }: ContactSalesModalProps
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.organization) {
@@ -33,15 +34,44 @@ export function ContactSalesModal({ open, onOpenChange }: ContactSalesModalProps
       return;
     }
 
-    // Save to localStorage (optional)
-    const contacts = JSON.parse(localStorage.getItem('salesContacts') || '[]');
-    contacts.push({
-      ...formData,
-      submittedAt: new Date().toISOString(),
-    });
-    localStorage.setItem('salesContacts', JSON.stringify(contacts));
+    setIsSubmitting(true);
 
-    setShowConfirmation(true);
+    try {
+      // Submit to API (reusing demo-requests endpoint with different source)
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/demo-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          company: formData.organization.trim(),
+          message: formData.message.trim() || undefined,
+          source: 'contact-sales',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit');
+      }
+
+      // Save to localStorage as backup
+      const contacts = JSON.parse(localStorage.getItem('salesContacts') || '[]');
+      contacts.push({
+        ...formData,
+        submittedAt: new Date().toISOString(),
+      });
+      localStorage.setItem('salesContacts', JSON.stringify(contacts));
+
+      setShowConfirmation(true);
+    } catch (error: any) {
+      toast({
+        title: "Submission failed",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -143,12 +173,20 @@ export function ContactSalesModal({ open, onOpenChange }: ContactSalesModalProps
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
               data-testid="button-cancel-sales"
             >
               Cancel
             </Button>
-            <Button type="submit" data-testid="button-submit-sales">
-              Send Message
+            <Button type="submit" disabled={isSubmitting} data-testid="button-submit-sales">
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Send Message"
+              )}
             </Button>
           </div>
         </form>
