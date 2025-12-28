@@ -3,6 +3,22 @@ import { UserProfile, AuthState } from '@/types/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { useMockAuth, convertMockUserToProfile } from './useMockAuth';
+import { authApi, AuthUser } from '@/services/api';
+
+// Helper to convert API auth user to UserProfile
+const convertApiUserToProfile = (apiUser: AuthUser): UserProfile => {
+  return {
+    id: apiUser.id,
+    email: apiUser.email,
+    role: apiUser.role,
+    full_name: apiUser.fullName,
+    created_at: apiUser.createdAt,
+    subscription_status: (apiUser.subscriptionStatus as 'active' | 'inactive' | 'trial' | 'cancelled') || 'trial',
+    subscription_tier: apiUser.subscriptionTier as 'basic' | 'pro' | 'premium' | undefined,
+    avatar_url: apiUser.avatarUrl,
+    admin_roles: []
+  };
+};
 
 const AuthContext = createContext<{
   auth: AuthState;
@@ -208,7 +224,10 @@ export const useAuthState = () => {
   const signOut = async () => {
     try {
       setAuth(prev => ({ ...prev, loading: true }));
-      
+
+      // Clear API auth token
+      authApi.logout();
+
       if (mockAuth.isDemo) {
         mockAuth.logout();
         setAuth({
@@ -218,10 +237,10 @@ export const useAuthState = () => {
         });
         return;
       }
-      
+
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
+
       setAuth({
         user: null,
         loading: false,
@@ -234,7 +253,7 @@ export const useAuthState = () => {
 
   useEffect(() => {
     console.log('useAuth useEffect: Setting up auth state listener');
-    
+
     // Check demo mode FIRST - if active, bypass Supabase entirely
     if (mockAuth.isDemo && mockAuth.user) {
       console.log('Demo mode active, using mock user:', mockAuth.user);
@@ -257,7 +276,20 @@ export const useAuthState = () => {
       });
       return;
     }
-    
+
+    // Check for API auth token (from our custom auth system)
+    const apiUser = authApi.getStoredUser();
+    if (apiUser && authApi.isAuthenticated()) {
+      console.log('API auth found, using stored user:', apiUser);
+      const apiProfile = convertApiUserToProfile(apiUser);
+      setAuth({
+        user: apiProfile,
+        loading: false,
+        error: null
+      });
+      return; // Exit early, user is authenticated via API
+    }
+
     // Set up auth state listener FIRST to prevent missing events
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {

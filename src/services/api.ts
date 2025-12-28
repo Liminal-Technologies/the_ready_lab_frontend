@@ -1610,6 +1610,145 @@ class ApiClient {
     this.request<{ status: string; timestamp: string; services: Record<string, string> }>('/health');
 }
 
+// ============================================================================
+// Auth Types
+// ============================================================================
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  fullName: string;
+  role: 'student' | 'educator' | 'admin';
+  subscriptionStatus?: string;
+  subscriptionTier?: string;
+  avatarUrl?: string;
+  createdAt: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  token: string;
+  user: AuthUser;
+}
+
+// ============================================================================
+// Auth API (uses direct fetch, not Supabase token)
+// ============================================================================
+
+const AUTH_TOKEN_KEY = 'trl_auth_token';
+const AUTH_USER_KEY = 'trl_auth_user';
+
+export const authApi = {
+  /**
+   * Login with email and password
+   */
+  login: async (email: string, password: string): Promise<AuthResponse> => {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Login failed' }));
+      throw new Error(error.message || 'Login failed');
+    }
+
+    const data = await response.json();
+
+    // Store token and user in localStorage
+    localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+
+    return data;
+  },
+
+  /**
+   * Signup with email, password, and name
+   */
+  signup: async (email: string, password: string, fullName: string, role: 'student' | 'educator' = 'student'): Promise<AuthResponse> => {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, fullName, role }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Signup failed' }));
+      throw new Error(error.message || 'Signup failed');
+    }
+
+    const data = await response.json();
+
+    // Store token and user in localStorage
+    localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.user));
+
+    return data;
+  },
+
+  /**
+   * Get current user from token
+   */
+  getCurrentUser: async (): Promise<AuthUser | null> => {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token) return null;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        // Token is invalid, clear storage
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(AUTH_USER_KEY);
+        return null;
+      }
+
+      const data = await response.json();
+      return data.user;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Get stored user (from localStorage, no API call)
+   */
+  getStoredUser: (): AuthUser | null => {
+    const userStr = localStorage.getItem(AUTH_USER_KEY);
+    if (!userStr) return null;
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Get stored token
+   */
+  getToken: (): string | null => {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+  },
+
+  /**
+   * Check if user is authenticated
+   */
+  isAuthenticated: (): boolean => {
+    return !!localStorage.getItem(AUTH_TOKEN_KEY);
+  },
+
+  /**
+   * Logout - clear stored auth data
+   */
+  logout: (): void => {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    localStorage.removeItem(AUTH_USER_KEY);
+  },
+};
+
 // Export singleton instance
 export const api = new ApiClient();
 
