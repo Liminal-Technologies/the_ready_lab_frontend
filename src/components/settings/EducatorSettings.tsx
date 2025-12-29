@@ -15,6 +15,7 @@ import { api } from '@/services/api';
 import { User, Shield, CreditCard, DollarSign, FileText, Download, Trash2, ExternalLink, Globe } from 'lucide-react';
 import { BillingManagement } from './BillingManagement';
 import { PayoutManagement } from './PayoutManagement';
+import { ProfilePhotoUpload } from './ProfilePhotoUpload';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +29,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export const EducatorSettings = () => {
-  const { auth, signOut } = useAuth();
+  const { auth, signOut, updateUser } = useAuth();
   const { toast } = useToast();
   const { preference, updatePreference } = useLanguagePreference();
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,17 @@ export const EducatorSettings = () => {
     social_links: ''
   });
   const [agreements, setAgreements] = useState<any[]>([]);
+
+  // Sync profile state with auth state when it changes
+  useEffect(() => {
+    if (auth.user) {
+      setProfile(prev => ({
+        ...prev,
+        full_name: auth.user?.full_name || '',
+        email: auth.user?.email || '',
+      }));
+    }
+  }, [auth.user?.full_name, auth.user?.email]);
 
   useEffect(() => {
     fetchAgreements();
@@ -60,18 +72,18 @@ export const EducatorSettings = () => {
   const handleProfileUpdate = async () => {
     if (!auth.user?.id) return;
 
+    // Optimistic update - same pattern as CommunityFeed
+    const rollback = updateUser({ full_name: profile.full_name });
+
     setLoading(true);
     try {
-      await api.profiles.update(auth.user.id, {
-        full_name: profile.full_name,
-        email: profile.email
-      });
-
+      await api.profiles.update(auth.user.id, { full_name: profile.full_name });
       toast({
         title: "Profile updated",
-        description: "Your educator profile has been successfully updated.",
+        description: "Your changes have been saved.",
       });
     } catch (error) {
+      rollback();
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
@@ -79,6 +91,24 @@ export const EducatorSettings = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePhotoUpdated = async (url: string | null) => {
+    if (!auth.user?.id) return;
+
+    // Optimistic update - same pattern as CommunityFeed
+    const rollback = updateUser({ avatar_url: url || undefined });
+
+    try {
+      await api.profiles.update(auth.user.id, { avatar_url: url || '' });
+    } catch (error) {
+      rollback();
+      toast({
+        title: "Error",
+        description: "Failed to save photo. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -193,6 +223,13 @@ export const EducatorSettings = () => {
                 <CardDescription>Manage your public educator profile visible to students</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                <ProfilePhotoUpload
+                  userId={auth.user?.id || ''}
+                  currentAvatarUrl={auth.user?.avatar_url}
+                  fullName={auth.user?.full_name}
+                  onPhotoUpdated={handlePhotoUpdated}
+                />
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Display Name</Label>

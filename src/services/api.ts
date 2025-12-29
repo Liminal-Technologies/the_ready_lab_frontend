@@ -553,9 +553,16 @@ class ApiClient {
   }
 
   /**
-   * Get the current auth token from Supabase session
+   * Get the current auth token from Supabase session or JWT auth
    */
   private async getAuthToken(): Promise<string | null> {
+    // First check for JWT token from our custom auth system
+    const jwtToken = localStorage.getItem('trl_auth_token');
+    if (jwtToken) {
+      return jwtToken;
+    }
+
+    // Fall back to Supabase session token
     const { data: { session } } = await supabase.auth.getSession();
     return session?.access_token || null;
   }
@@ -613,6 +620,187 @@ class ApiClient {
   };
 
   // ============================================================================
+  // Track Endpoints (Course containers)
+  // ============================================================================
+
+  tracks = {
+    list: (params?: {
+      category?: string;
+      level?: string;
+      is_active?: boolean;
+      created_by?: string;
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.category) searchParams.set('category', params.category);
+      if (params?.level) searchParams.set('level', params.level);
+      if (params?.is_active !== undefined) searchParams.set('is_active', String(params.is_active));
+      if (params?.created_by) searchParams.set('created_by', params.created_by);
+      if (params?.limit) searchParams.set('limit', String(params.limit));
+      if (params?.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ data: Track[]; pagination: { limit: number; offset: number } }>(
+        `/api/tracks?${searchParams}`
+      );
+    },
+
+    get: (id: string) =>
+      this.request<Track>(`/api/tracks/${id}`),
+
+    create: (data: {
+      title: string;
+      description?: string;
+      category: string;
+      level?: string;
+      price?: number;
+      thumbnail_url?: string;
+      is_active?: boolean;
+      created_by?: string;
+      estimated_hours?: number;
+      translations?: Record<string, any>;
+    }) =>
+      this.request<Track>('/api/tracks', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    update: (id: string, data: Partial<{
+      title: string;
+      description: string;
+      category: string;
+      level: string;
+      price: number;
+      thumbnail_url: string;
+      is_active: boolean;
+      estimated_hours: number;
+      translations: Record<string, any>;
+    }>) =>
+      this.request<Track>(`/api/tracks/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+
+    delete: (id: string) =>
+      this.request<void>(`/api/tracks/${id}`, { method: 'DELETE' }),
+
+    getModules: (trackId: string) =>
+      this.request<{ data: Module[] }>(`/api/tracks/${trackId}/modules`),
+  };
+
+  // ============================================================================
+  // Module Endpoints
+  // ============================================================================
+
+  modules = {
+    get: (id: string) =>
+      this.request<Module>(`/api/modules/${id}`),
+
+    create: (data: {
+      track_id: string;
+      title: string;
+      description?: string;
+      order_index: number;
+      is_required?: boolean;
+    }) =>
+      this.request<Module>('/api/modules', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    update: (id: string, data: Partial<{
+      title: string;
+      description: string;
+      order_index: number;
+      is_required: boolean;
+    }>) =>
+      this.request<Module>(`/api/modules/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+
+    delete: (id: string) =>
+      this.request<void>(`/api/modules/${id}`, { method: 'DELETE' }),
+
+    getLessons: (moduleId: string) =>
+      this.request<{ data: Lesson[] }>(`/api/modules/${moduleId}/lessons`),
+  };
+
+  // ============================================================================
+  // Lesson Endpoints
+  // ============================================================================
+
+  lessons = {
+    get: (id: string) =>
+      this.request<Lesson>(`/api/lessons/${id}`),
+
+    list: (moduleId: string) =>
+      this.request<{ lessons: Lesson[] }>(`/api/lessons?moduleId=${moduleId}`),
+
+    /**
+     * Get learning feed lessons with optional related data
+     */
+    feed: (params: {
+      user_id?: string;
+      include?: ('module' | 'track' | 'progress')[];
+      interest_tags?: string[];
+      is_standalone?: boolean;
+      limit?: number;
+      offset?: number;
+    }) => {
+      const searchParams = new URLSearchParams();
+      if (params.user_id) searchParams.set('user_id', params.user_id);
+      if (params.include?.length) searchParams.set('include', params.include.join(','));
+      if (params.interest_tags?.length) searchParams.set('interest_tags', params.interest_tags.join(','));
+      if (params.is_standalone) searchParams.set('is_standalone', 'true');
+      if (params.limit) searchParams.set('limit', String(params.limit));
+      if (params.offset) searchParams.set('offset', String(params.offset));
+      return this.request<{ data: (Lesson & { module?: Module; track?: Track; progress?: LessonProgress })[]; pagination: { limit: number; offset: number } }>(`/api/lessons/feed?${searchParams}`);
+    },
+
+    create: (data: {
+      moduleId?: string;
+      title: string;
+      description?: string;
+      lessonType: string;
+      orderIndex: number;
+      duration?: number;
+      videoAssetId?: string;
+      contentMarkdown?: string;
+      isFreePreview?: boolean;
+      isStandalone?: boolean;
+      posterUrl?: string;
+      thumbnailUrl?: string;
+      videoDurationSeconds?: number;
+      contentData?: Record<string, any>;
+    }) =>
+      this.request<Lesson>('/api/lessons', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    update: (id: string, data: Partial<{
+      title: string;
+      description: string;
+      orderIndex: number;
+      duration: number;
+      videoAssetId: string;
+      contentMarkdown: string;
+      isFreePreview: boolean;
+      posterUrl: string;
+      thumbnailUrl: string;
+      videoDurationSeconds: number;
+      contentData: Record<string, any>;
+    }>) =>
+      this.request<Lesson>(`/api/lessons/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+
+    delete: (id: string) =>
+      this.request<void>(`/api/lessons/${id}`, { method: 'DELETE' }),
+  };
+
+  // ============================================================================
   // User Role Endpoints
   // ============================================================================
 
@@ -660,121 +848,6 @@ class ApiClient {
       this.request<void>(`/api/user-interests/${userId}/${encodeURIComponent(interest)}`, {
         method: 'DELETE',
       }),
-  };
-
-  // ============================================================================
-  // Track Endpoints
-  // ============================================================================
-
-  tracks = {
-    list: (params?: { category?: string; level?: string; is_active?: boolean }) => {
-      const searchParams = new URLSearchParams();
-      if (params?.category) searchParams.set('category', params.category);
-      if (params?.level) searchParams.set('level', params.level);
-      if (params?.is_active !== undefined) searchParams.set('is_active', String(params.is_active));
-      return this.request<Track[]>(`/api/tracks?${searchParams}`);
-    },
-
-    get: (id: string) =>
-      this.request<Track>(`/api/tracks/${id}`),
-
-    create: (data: Partial<Track>) =>
-      this.request<Track>('/api/tracks', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
-
-    update: (id: string, data: Partial<Track>) =>
-      this.request<Track>(`/api/tracks/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      }),
-
-    delete: (id: string) =>
-      this.request<void>(`/api/tracks/${id}`, { method: 'DELETE' }),
-  };
-
-  // ============================================================================
-  // Module Endpoints
-  // ============================================================================
-
-  modules = {
-    list: (trackId: string) =>
-      this.request<Module[]>(`/api/modules?track_id=${trackId}`),
-
-    get: (id: string) =>
-      this.request<Module>(`/api/modules/${id}`),
-
-    create: (data: Partial<Module>) =>
-      this.request<Module>('/api/modules', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
-
-    update: (id: string, data: Partial<Module>) =>
-      this.request<Module>(`/api/modules/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      }),
-
-    delete: (id: string) =>
-      this.request<void>(`/api/modules/${id}`, { method: 'DELETE' }),
-  };
-
-  // ============================================================================
-  // Lesson Endpoints
-  // ============================================================================
-
-  lessons = {
-    list: (moduleId: string) =>
-      this.request<Lesson[]>(`/api/lessons?module_id=${moduleId}`),
-
-    get: (id: string) =>
-      this.request<Lesson>(`/api/lessons/${id}`),
-
-    /**
-     * Get learning feed lessons with optional related data
-     *
-     * TRANSITIONAL IMPLEMENTATION: Uses include param to join related tables.
-     * TODO: Replace with purpose-built endpoints that abstract internal schema.
-     *
-     * @param params.user_id - Required for progress include
-     * @param params.include - Comma-separated: module, track, progress
-     * @param params.interest_tags - Filter by interest tags (comma-separated)
-     * @param params.is_standalone - Filter standalone lessons only
-     */
-    feed: (params: {
-      user_id?: string;
-      include?: ('module' | 'track' | 'progress')[];
-      interest_tags?: string[];
-      is_standalone?: boolean;
-      limit?: number;
-      offset?: number;
-    }) => {
-      const searchParams = new URLSearchParams();
-      if (params.user_id) searchParams.set('user_id', params.user_id);
-      if (params.include?.length) searchParams.set('include', params.include.join(','));
-      if (params.interest_tags?.length) searchParams.set('interest_tags', params.interest_tags.join(','));
-      if (params.is_standalone) searchParams.set('is_standalone', 'true');
-      if (params.limit) searchParams.set('limit', String(params.limit));
-      if (params.offset) searchParams.set('offset', String(params.offset));
-      return this.request<{ data: (Lesson & { module?: Module; track?: Track; progress?: LessonProgress })[]; pagination: { limit: number; offset: number } }>(`/api/lessons/feed?${searchParams}`);
-    },
-
-    create: (data: Partial<Lesson>) =>
-      this.request<Lesson>('/api/lessons', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
-
-    update: (id: string, data: Partial<Lesson>) =>
-      this.request<Lesson>(`/api/lessons/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      }),
-
-    delete: (id: string) =>
-      this.request<void>(`/api/lessons/${id}`, { method: 'DELETE' }),
   };
 
   // ============================================================================
@@ -1595,6 +1668,12 @@ class ApiClient {
     getUploadUrl: () =>
       this.request<{ url: string; id: string }>('/api/videos/upload-url'),
 
+    createUpload: (data: { title: string; ownerId: string; description?: string; corsOrigin?: string }) =>
+      this.request<{ id: string; uploadUrl: string; title: string; status: string }>('/api/videos/uploads', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
     create: (data: { lesson_id?: string; title: string; mux_upload_id: string }) =>
       this.request<Video>('/api/videos', {
         method: 'POST',
@@ -1746,6 +1825,30 @@ export const authApi = {
   logout: (): void => {
     localStorage.removeItem(AUTH_TOKEN_KEY);
     localStorage.removeItem(AUTH_USER_KEY);
+  },
+
+  /**
+   * Refresh user data from API (used by useAuth hook)
+   * Note: Does NOT update localStorage - we always fetch fresh on page load
+   */
+  refreshUser: async (): Promise<AuthUser | null> => {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+    if (!token) return null;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      return data.user;
+    } catch {
+      return null;
+    }
   },
 };
 

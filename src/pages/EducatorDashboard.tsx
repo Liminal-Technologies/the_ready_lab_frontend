@@ -83,6 +83,7 @@ import {
 } from '@/utils/educatorProductsStorage';
 import { useToast } from '@/hooks/use-toast';
 import { useMockAuth } from '@/hooks/useMockAuth';
+import { useAuth } from '@/hooks/useAuth';
 
 // Mock student data (for dashboard overview only - real enrollments shown in StudentAnalytics)
 const MOCK_STUDENTS = [
@@ -138,6 +139,7 @@ export const EducatorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isDemo } = useMockAuth();
+  const { auth } = useAuth();
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [showCourseWizard, setShowCourseWizard] = useState(false);
   const [showScheduleEvent, setShowScheduleEvent] = useState(false);
@@ -375,7 +377,7 @@ export const EducatorDashboard = () => {
   const handleDownloadAnalytics = () => {
     setDownloadingAnalytics(true);
     try {
-      const educatorName = educatorProfile?.fullName || educatorProfile?.name || 'Educator';
+      const educatorName = auth.user?.full_name || educatorProfile?.fullName || educatorProfile?.name || 'Educator';
       const revenueMetrics = getRevenueMetrics();
       
       exportEducatorAnalytics({
@@ -437,7 +439,7 @@ export const EducatorDashboard = () => {
       title: "Create Your First Course",
       description: "Build and publish a course to start teaching and earning. Our wizard makes it easy to get started.",
       ctaText: "Launch Course Builder",
-      onClick: () => setShowCourseWizard(true),
+      onClick: () => navigate('/my-courses/create'),
       variant: "default" as const,
       badge: createdCourses.length === 0 ? "Start Here" : undefined,
     },
@@ -476,7 +478,7 @@ export const EducatorDashboard = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              {educatorProfile ? `Welcome back, ${educatorProfile.name.split(' ')[0]}!` : 'Educator Dashboard'}
+              {auth.user?.full_name ? `Welcome back, ${auth.user.full_name.split(' ')[0]}!` : 'Educator Dashboard'}
             </h1>
             <p className="text-muted-foreground">
               Manage your courses, track student progress, and grow your teaching business
@@ -492,7 +494,7 @@ export const EducatorDashboard = () => {
               Schedule Event
             </Button>
             <Button
-              onClick={() => setShowCourseWizard(true)}
+              onClick={() => navigate('/my-courses/create')}
               data-testid="button-create-course"
             >
               <Plus className="mr-2 h-4 w-4" />
@@ -682,10 +684,10 @@ export const EducatorDashboard = () => {
                   <CardDescription>Common tasks and shortcuts</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start"
-                    onClick={() => setShowCourseWizard(true)}
+                    onClick={() => navigate('/my-courses/create')}
                     data-testid="quick-create-course"
                   >
                     <Plus className="mr-2 h-4 w-4" />
@@ -803,7 +805,7 @@ export const EducatorDashboard = () => {
                   <p className="text-muted-foreground mb-6">
                     Create your first course to start teaching and earning
                   </p>
-                  <Button onClick={() => setShowCourseWizard(true)}>
+                  <Button onClick={() => navigate('/my-courses/create')}>
                     <Plus className="mr-2 h-4 w-4" />
                     Create Your First Course
                   </Button>

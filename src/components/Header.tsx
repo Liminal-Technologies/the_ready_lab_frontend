@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BookOpen, Menu, User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -92,6 +93,16 @@ const Header = () => {
     navigate('/educator/onboarding');
   };
 
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 shadow-sm transition-colors duration-200">
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
@@ -173,7 +184,12 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
+                  <Avatar className="h-7 w-7">
+                    <AvatarImage src={auth.user.avatar_url} alt={auth.user.full_name || 'User'} />
+                    <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                      {getInitials(auth.user.full_name)}
+                    </AvatarFallback>
+                  </Avatar>
                   <span>{auth.user.full_name || auth.user.email}</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -209,8 +225,13 @@ const Header = () => {
           {auth.user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="rounded-full p-0">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={auth.user.avatar_url} alt={auth.user.full_name || 'User'} />
+                    <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                      {getInitials(auth.user.full_name)}
+                    </AvatarFallback>
+                  </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">

@@ -25,6 +25,7 @@ import CreateLiveEvent from "./pages/educator/CreateLiveEvent";
 import CreateProduct from "./pages/educator/CreateProduct";
 import StudentAnalytics from "./pages/educator/StudentAnalytics";
 import RevenueDashboard from "./pages/educator/RevenueDashboard";
+import MyCourses from "./pages/educator/MyCourses";
 import EventDetail from "./pages/EventDetail";
 import { Settings } from "@/components/settings/Settings";
 import Index from "./pages/Index";
@@ -142,6 +143,9 @@ const AppContent = () => {
           <Route path="/educator/products/create" element={<CreateProduct />} />
           <Route path="/educator/students" element={<StudentAnalytics />} />
           <Route path="/educator/revenue" element={<RevenueDashboard />} />
+          <Route path="/my-courses" element={<MyCourses />} />
+          <Route path="/my-courses/create" element={<MyCourses />} />
+          <Route path="/educator/courses" element={<Navigate to="/my-courses" replace />} />
           <Route path="/certificates" element={<MyCertificates />} />
           <Route path="/certificates/:certificateId" element={<CertificateView />} />
           <Route path="/my-purchases" element={<MyPurchases />} />
@@ -253,6 +257,9 @@ const AppContent = () => {
         <Route path="/educator/dashboard" element={<EducatorDashboard />} />
         <Route path="/educator/students" element={<StudentAnalytics />} />
         <Route path="/educator/revenue" element={<RevenueDashboard />} />
+        <Route path="/my-courses" element={<MyCourses />} />
+        <Route path="/my-courses/create" element={<MyCourses />} />
+        <Route path="/educator/courses" element={<Navigate to="/my-courses" replace />} />
         <Route path="/live/:eventId" element={<LiveStream />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="*" element={<NotFound />} />

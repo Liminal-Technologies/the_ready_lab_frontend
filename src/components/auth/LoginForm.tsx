@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useMockAuth } from '@/hooks/useMockAuth';
 import { authApi } from '@/services/api';
 import { toast } from 'sonner';
-import { User, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { User, Lock, Eye, EyeOff, Loader2, Sparkles } from 'lucide-react';
 
 // Schema for real login with password
 const loginSchema = z.object({
@@ -37,6 +37,7 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
   const [isDemo, setIsDemo] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<LoginFormData>({
     resolver: zodResolver(isDemo ? demoSchema : loginSchema)
@@ -56,40 +57,51 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
         // Check if user previously chose a role, default to student
         const savedRole = localStorage.getItem('demoUserRole') || 'student';
 
+        // Show logging in animation
+        setIsLoggingIn(true);
+
         // Use mock authentication for instant login
         mockAuth.login(savedRole as 'student' | 'educator');
+
+        // Wait for auth state to propagate
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
         toast.success('Welcome to Demo Mode!', {
           description: 'Exploring The Ready Lab...'
         });
 
-        // Redirect to appropriate dashboard
-        const dashboardPath = savedRole === 'educator' ? '/educator/dashboard' : '/dashboard';
-        navigate(dashboardPath);
+        // Force reload to ensure fresh auth state
+        window.location.href = savedRole === 'educator' ? '/educator/dashboard' : '/dashboard';
       } else {
         // Real login with API
         const response = await authApi.login(data.email, data.password);
+
+        // Show logging in animation
+        setIsLoggingIn(true);
+
+        // Wait for auth state to propagate (localStorage is now set)
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
         toast.success('Welcome back!', {
           description: `Signed in as ${response.user.fullName || response.user.email}`
         });
 
-        // Redirect based on role
+        // Redirect based on role - use window.location for full reload
         const dashboardPath = response.user.role === 'educator'
           ? '/educator/dashboard'
           : response.user.role === 'admin'
             ? '/admin'
             : '/dashboard';
 
-        navigate(dashboardPath);
+        window.location.href = dashboardPath;
       }
     } catch (error: any) {
       console.error('Login error:', error);
       toast.error('Login failed', {
         description: error.message || 'Please check your credentials and try again'
       });
-    } finally {
       setIsLoading(false);
+      setIsLoggingIn(false);
     }
   };
 
@@ -97,6 +109,26 @@ export const LoginForm = ({ onSwitchToSignup }: LoginFormProps) => {
     setIsDemo(!isDemo);
     reset(); // Clear form when switching modes
   };
+
+  // Show logging in animation
+  if (isLoggingIn) {
+    return (
+      <Card className="w-full max-w-md mx-auto">
+        <CardContent className="p-12">
+          <div className="flex flex-col items-center justify-center">
+            <div className="relative">
+              <div className="h-16 w-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+              <Sparkles className="absolute inset-0 m-auto h-6 w-6 text-primary animate-pulse" />
+            </div>
+            <h3 className="mt-6 text-xl font-semibold">Logging you in...</h3>
+            <p className="mt-2 text-muted-foreground text-center">
+              Please wait while we set up your experience
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md mx-auto">

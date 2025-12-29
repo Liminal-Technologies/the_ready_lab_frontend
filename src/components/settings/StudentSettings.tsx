@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { api } from '@/services/api';
 import { User, Shield, CreditCard, Award, Download, Trash2, Globe } from 'lucide-react';
 import { BillingManagement } from './BillingManagement';
+import { ProfilePhotoUpload } from './ProfilePhotoUpload';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +28,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export const StudentSettings = () => {
-  const { auth, signOut } = useAuth();
+  const { auth, signOut, updateUser } = useAuth();
   const { toast } = useToast();
   const { t, language, setLanguage } = useLanguage();
   const { preference, updatePreference } = useLanguagePreference();
@@ -37,21 +38,32 @@ export const StudentSettings = () => {
     email: auth.user?.email || ''
   });
 
+  // Sync profile state with auth state when it changes
+  useEffect(() => {
+    if (auth.user) {
+      setProfile(prev => ({
+        ...prev,
+        full_name: auth.user?.full_name || '',
+        email: auth.user?.email || '',
+      }));
+    }
+  }, [auth.user?.full_name, auth.user?.email]);
+
   const handleProfileUpdate = async () => {
     if (!auth.user?.id) return;
 
+    // Optimistic update - same pattern as CommunityFeed
+    const rollback = updateUser({ full_name: profile.full_name });
+
     setLoading(true);
     try {
-      await api.profiles.update(auth.user.id, {
-        full_name: profile.full_name,
-        email: profile.email
-      });
-
+      await api.profiles.update(auth.user.id, { full_name: profile.full_name });
       toast({
         title: "Profile updated",
-        description: "Your profile has been successfully updated.",
+        description: "Your changes have been saved.",
       });
     } catch (error) {
+      rollback();
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
@@ -59,6 +71,24 @@ export const StudentSettings = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePhotoUpdated = async (url: string | null) => {
+    if (!auth.user?.id) return;
+
+    // Optimistic update - same pattern as CommunityFeed
+    const rollback = updateUser({ avatar_url: url || undefined });
+
+    try {
+      await api.profiles.update(auth.user.id, { avatar_url: url || '' });
+    } catch (error) {
+      rollback();
+      toast({
+        title: "Error",
+        description: "Failed to save photo. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -163,6 +193,13 @@ export const StudentSettings = () => {
                 <CardDescription>Update your personal information and preferences</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                <ProfilePhotoUpload
+                  userId={auth.user?.id || ''}
+                  currentAvatarUrl={auth.user?.avatar_url}
+                  fullName={auth.user?.full_name}
+                  onPhotoUpdated={handlePhotoUpdated}
+                />
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="fullName">Full Name</Label>

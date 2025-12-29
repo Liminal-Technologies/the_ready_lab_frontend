@@ -26,6 +26,8 @@ const AuthContext = createContext<{
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   clearError: () => void;
+  updateUser: (updates: Partial<UserProfile>) => () => void; // Returns rollback function
+  refreshUser: () => Promise<void>; // Refresh user data from API
 } | null>(null);
 
 export const useAuth = () => {
@@ -278,14 +280,37 @@ export const useAuthState = () => {
     }
 
     // Check for API auth token (from our custom auth system)
-    const apiUser = authApi.getStoredUser();
-    if (apiUser && authApi.isAuthenticated()) {
-      console.log('API auth found, using stored user:', apiUser);
-      const apiProfile = convertApiUserToProfile(apiUser);
-      setAuth({
-        user: apiProfile,
-        loading: false,
-        error: null
+    // ALWAYS fetch fresh user data from API - don't rely on localStorage cache
+    if (authApi.isAuthenticated()) {
+      console.log('API auth token found, fetching fresh user data from API');
+      setAuth(prev => ({ ...prev, loading: true }));
+
+      authApi.getCurrentUser().then(apiUser => {
+        if (apiUser) {
+          console.log('Fresh user data fetched:', apiUser);
+          const apiProfile = convertApiUserToProfile(apiUser);
+          setAuth({
+            user: apiProfile,
+            loading: false,
+            error: null
+          });
+        } else {
+          // Token invalid or expired, clear auth
+          console.log('Token invalid, clearing auth');
+          authApi.logout();
+          setAuth({
+            user: null,
+            loading: false,
+            error: null
+          });
+        }
+      }).catch(error => {
+        console.error('Error fetching user from API:', error);
+        setAuth({
+          user: null,
+          loading: false,
+          error: error.message
+        });
       });
       return; // Exit early, user is authenticated via API
     }
@@ -367,12 +392,85 @@ export const useAuthState = () => {
     setAuth(prev => ({ ...prev, error: null }));
   };
 
+  /**
+   * Optimistically update user profile data in React state.
+   * Returns a rollback function to revert changes if the API call fails.
+   *
+   * This follows the same pattern as CommunityFeed - just update React state directly.
+   * On page refresh, fresh data is always fetched from the API.
+   *
+   * Usage:
+   * const rollback = updateUser({ full_name: 'New Name' });
+   * try {
+   *   await api.profiles.update(userId, { full_name: 'New Name' });
+   *   toast.success('Profile updated!');
+   * } catch (error) {
+   *   rollback(); // Revert to previous state
+   *   toast.error('Update failed');
+   * }
+   */
+  const updateUser = (updates: Partial<UserProfile>): (() => void) => {
+    // Store previous state for rollback
+    const previousUser = auth.user;
+
+    if (!previousUser) {
+      return () => {}; // No-op if no user
+    }
+
+    // Create updated user
+    const updatedUser: UserProfile = {
+      ...previousUser,
+      ...updates
+    };
+
+    // Update React state only - no localStorage sync needed
+    // Fresh data is fetched from API on page load
+    setAuth(prev => ({
+      ...prev,
+      user: updatedUser
+    }));
+
+    // Return rollback function
+    return () => {
+      setAuth(prev => ({
+        ...prev,
+        user: previousUser
+      }));
+    };
+  };
+
+  /**
+   * Refresh user data from the API and update auth state.
+   * Call this after profile updates to ensure data is in sync.
+   */
+  const refreshUser = async (): Promise<void> => {
+    // Only works for API-authenticated users
+    if (!authApi.isAuthenticated()) {
+      return;
+    }
+
+    try {
+      const apiUser = await authApi.refreshUser();
+      if (apiUser) {
+        const profile = convertApiUserToProfile(apiUser);
+        setAuth(prev => ({
+          ...prev,
+          user: profile
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+    }
+  };
+
   return {
     auth,
     signUp,
     signIn,
     signOut,
-    clearError
+    clearError,
+    updateUser,
+    refreshUser
   };
 };
 
