@@ -57,30 +57,9 @@ export default function ConfirmEmail() {
           
           // Clear the hash from URL
           window.history.replaceState(null, '', window.location.pathname);
-          
-          // Create profile in Neon database using secure endpoint
-          try {
-            console.log('Creating profile in Neon database...');
-            const profileResponse = await fetch('/api/profiles/create-on-signup', {
-              method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-              }
-            });
-            
-            if (!profileResponse.ok) {
-              const errorText = await profileResponse.text();
-              console.error('Failed to create profile:', errorText);
-              // Don't fail the whole flow - try to continue
-            } else {
-              console.log('Profile created successfully in Neon');
-            }
-          } catch (profileError) {
-            console.error('Error creating profile:', profileError);
-            // Don't fail the whole flow - profile might already exist
-          }
-          
+
+          // Profile is created automatically by Supabase trigger (on_auth_user_created)
+
           // Fetch the user's role via API
           let userRole = 'student'; // Default to student
 

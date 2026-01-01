@@ -154,26 +154,8 @@ export const useAuthState = () => {
         // Check if we have a session (email confirmation disabled or auto-confirmed)
         if (data.session) {
           console.log('Session established, logging user in immediately');
-          
-          // Create profile in Neon database
-          try {
-            const profileResponse = await fetch('/api/profiles/create-on-signup', {
-              method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${data.session.access_token}`
-              }
-            });
-            
-            if (!profileResponse.ok) {
-              console.error('Failed to create profile');
-            } else {
-              console.log('Profile created successfully');
-            }
-          } catch (profileError) {
-            console.error('Error creating profile:', profileError);
-          }
-          
+          // Profile is created automatically by Supabase trigger (on_auth_user_created)
+
           // Fetch user profile and set auth state
           const userProfile = await fetchUserProfile(data.user);
           setAuth({

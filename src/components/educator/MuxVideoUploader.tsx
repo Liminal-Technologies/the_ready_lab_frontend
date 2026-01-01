@@ -130,12 +130,6 @@ export const MuxVideoUploader = ({ onVideoUploaded, educatorId, lessonTitle }: M
       setUploadStatus('processing');
       setUploadProgress(100);
 
-      // Clean up preview
-      if (selectedFile) {
-        URL.revokeObjectURL(selectedFile.previewUrl);
-        setSelectedFile(null);
-      }
-
       // Notify parent with video info
       onVideoUploaded({
         videoId,
@@ -172,21 +166,6 @@ export const MuxVideoUploader = ({ onVideoUploaded, educatorId, lessonTitle }: M
     }
     return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
   };
-
-  // Show success state
-  if (uploadStatus === 'complete') {
-    return (
-      <div className="border rounded-lg p-6 text-center bg-green-50 dark:bg-green-950/20">
-        <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-green-600" />
-        <p className="text-sm font-medium text-green-800 dark:text-green-200">
-          Video uploaded successfully!
-        </p>
-        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-          Processing may take a few minutes.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -248,7 +227,7 @@ export const MuxVideoUploader = ({ onVideoUploaded, educatorId, lessonTitle }: M
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {uploadStatus === 'processing' ? 'Processing video...' : 'Uploading to Mux...'}
+                  {uploadStatus === 'processing' ? 'Processing video...' : 'Uploading your video...'}
                 </span>
                 <span className="font-medium">{uploadProgress}%</span>
               </div>
@@ -261,6 +240,21 @@ export const MuxVideoUploader = ({ onVideoUploaded, educatorId, lessonTitle }: M
             </div>
           )}
 
+          {/* Success Indicator */}
+          {uploadStatus === 'complete' && (
+            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                  Video uploaded successfully!
+                </p>
+                <p className="text-xs text-green-600 dark:text-green-400">
+                  Ready to save. Processing may take a few minutes after saving.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Error Message */}
           {errorMessage && (
             <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive rounded-lg text-sm">
@@ -269,32 +263,34 @@ export const MuxVideoUploader = ({ onVideoUploaded, educatorId, lessonTitle }: M
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex gap-2">
-            {!uploading ? (
-              <>
+          {/* Action Buttons - hide when upload is complete */}
+          {uploadStatus !== 'complete' && (
+            <div className="flex gap-2">
+              {!uploading ? (
+                <>
+                  <Button
+                    onClick={uploadSelectedFile}
+                    className="flex-1"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Video
+                  </Button>
+                  <Button variant="outline" onClick={cancelFileSelection}>
+                    Cancel
+                  </Button>
+                </>
+              ) : (
                 <Button
-                  onClick={uploadSelectedFile}
+                  variant="destructive"
+                  onClick={cancelUpload}
                   className="flex-1"
                 >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Video
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel Upload
                 </Button>
-                <Button variant="outline" onClick={cancelFileSelection}>
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="destructive"
-                onClick={cancelUpload}
-                className="flex-1"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Cancel Upload
-              </Button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

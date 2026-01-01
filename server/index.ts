@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
-import { router } from "./routes";
+import { stripeRouter } from "./stripe-routes";
 import { setupVite } from "./vite";
 import path from "path";
 
@@ -28,7 +28,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(router);
+// Only Stripe routes remain - all other API calls go to trl-api
+app.use(stripeRouter);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(process.cwd(), "dist/public")));

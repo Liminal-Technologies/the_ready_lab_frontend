@@ -1669,7 +1669,7 @@ class ApiClient {
       this.request<{ url: string; id: string }>('/api/videos/upload-url'),
 
     createUpload: (data: { title: string; ownerId: string; description?: string; corsOrigin?: string }) =>
-      this.request<{ id: string; uploadUrl: string; title: string; status: string }>('/api/videos/uploads', {
+      this.request<{ id: string; uploadUrl: string; title: string; status: string }>('/api/videos/upload', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
