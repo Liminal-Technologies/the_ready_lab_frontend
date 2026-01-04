@@ -51,24 +51,24 @@ const mockUsers: Record<MockUserRole, MockUser> = {
 
 export const convertMockUserToProfile = (mockUser: MockUser): UserProfile => {
   const baseRole = mockUser.role === 'super_admin' || mockUser.role === 'admin' ? 'admin' : mockUser.role;
-  
+
   const profile: UserProfile = {
     id: mockUser.id,
     email: mockUser.email,
     role: baseRole as 'student' | 'educator' | 'admin',
-    full_name: mockUser.fullName,
-    created_at: new Date().toISOString(),
-    subscription_status: 'active',
-    subscription_tier: 'premium',
-    avatar_url: mockUser.avatarUrl || null,
-    admin_roles: []
+    fullName: mockUser.fullName,
+    createdAt: new Date().toISOString(),
+    subscriptionStatus: 'active',
+    subscriptionTier: 'premium',
+    avatarUrl: mockUser.avatarUrl || undefined,
+    adminRoles: []
   };
 
   if (mockUser.role === 'super_admin') {
-    profile.admin_roles = [{
+    profile.adminRoles = [{
       id: 'mock-admin-role-1',
       role: 'super_admin' as const,
-      granted_by: null,
+      granted_by: undefined,
       granted_at: new Date().toISOString(),
       is_active: true,
       feature_flags: {}

@@ -185,12 +185,12 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2">
                   <Avatar className="h-7 w-7">
-                    <AvatarImage src={auth.user.avatar_url} alt={auth.user.full_name || 'User'} />
+                    <AvatarImage src={auth.user.avatarUrl} alt={auth.user.fullName || 'User'} />
                     <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                      {getInitials(auth.user.full_name)}
+                      {getInitials(auth.user.fullName)}
                     </AvatarFallback>
                   </Avatar>
-                  <span>{auth.user.full_name || auth.user.email}</span>
+                  <span>{auth.user.fullName || auth.user.email}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700">
@@ -227,9 +227,9 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full p-0">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={auth.user.avatar_url} alt={auth.user.full_name || 'User'} />
+                    <AvatarImage src={auth.user.avatarUrl} alt={auth.user.fullName || 'User'} />
                     <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                      {getInitials(auth.user.full_name)}
+                      {getInitials(auth.user.fullName)}
                     </AvatarFallback>
                   </Avatar>
                 </Button>

@@ -494,7 +494,7 @@ export const StudentDashboard = () => {
                 <Avatar className="h-24 w-24 border-4 border-primary/20" data-testid="avatar-current">
                   <AvatarImage src={previewPhoto || profilePhoto || undefined} />
                   <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
-                    {auth.user?.full_name?.charAt(0) || 'S'}
+                    {auth.user?.fullName?.charAt(0) || 'S'}
                   </AvatarFallback>
                 </Avatar>
                 <Button
@@ -515,7 +515,7 @@ export const StudentDashboard = () => {
                 />
               </div>
               <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-1">{auth.user?.full_name || 'Student'}</h2>
+                <h2 className="text-2xl font-bold mb-1">{auth.user?.fullName || 'Student'}</h2>
                 <p className="text-muted-foreground mb-4">{auth.user?.email || 'student@example.com'}</p>
                 <div className="flex gap-2">
                   {previewPhoto && (
@@ -557,7 +557,7 @@ export const StudentDashboard = () => {
 
         {/* Header with Welcome */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-3">Welcome back, {auth.user?.full_name || 'Student'}!</h1>
+          <h1 className="text-4xl font-bold mb-3">Welcome back, {auth.user?.fullName || 'Student'}!</h1>
           <p className="text-lg text-muted-foreground">Track your progress and continue learning</p>
         </div>
 
@@ -870,7 +870,7 @@ export const StudentDashboard = () => {
                             productId: product.id,
                             productTitle: product.title,
                             studentId: auth.user?.id || 'demo-student',
-                            studentName: auth.user?.full_name || 'Student',
+                            studentName: auth.user?.fullName || 'Student',
                             studentEmail: auth.user?.email || 'student@demo.com',
                             amount: 0,
                           });

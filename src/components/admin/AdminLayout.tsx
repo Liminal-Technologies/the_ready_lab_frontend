@@ -124,13 +124,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2 px-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={auth.user.avatar_url} />
+                      <AvatarImage src={auth.user.avatarUrl} />
                       <AvatarFallback>
-                        {auth.user.full_name?.charAt(0) || auth.user.email.charAt(0).toUpperCase()}
+                        {auth.user.fullName?.charAt(0) || auth.user.email.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="text-left">
-                      <div className="text-sm font-medium">{auth.user.full_name || 'Admin'}</div>
+                      <div className="text-sm font-medium">{auth.user.fullName || 'Admin'}</div>
                       <div className="text-xs text-muted-foreground">{roleLabel}</div>
                     </div>
                   </Button>

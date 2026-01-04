@@ -377,7 +377,7 @@ export const EducatorDashboard = () => {
   const handleDownloadAnalytics = () => {
     setDownloadingAnalytics(true);
     try {
-      const educatorName = auth.user?.full_name || educatorProfile?.fullName || educatorProfile?.name || 'Educator';
+      const educatorName = auth.user?.fullName || educatorProfile?.fullName || educatorProfile?.name || 'Educator';
       const revenueMetrics = getRevenueMetrics();
       
       exportEducatorAnalytics({
@@ -478,7 +478,7 @@ export const EducatorDashboard = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              {auth.user?.full_name ? `Welcome back, ${auth.user.full_name.split(' ')[0]}!` : 'Educator Dashboard'}
+              {auth.user?.fullName ? `Welcome back, ${auth.user.fullName.split(' ')[0]}!` : 'Educator Dashboard'}
             </h1>
             <p className="text-muted-foreground">
               Manage your courses, track student progress, and grow your teaching business

@@ -18,15 +18,15 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 export interface Profile {
   id: string;
   email: string;
-  full_name?: string;
+  fullName?: string;
   role: 'student' | 'educator' | 'admin';
-  subscription_status?: string;
-  subscription_tier?: string;
-  avatar_url?: string;
-  preferred_language?: string;
-  show_content_in_language_first?: boolean;
-  created_at: string;
-  updated_at: string;
+  subscriptionStatus?: string;
+  subscriptionTier?: string;
+  avatarUrl?: string;
+  preferredLanguage?: string;
+  showContentInLanguageFirst?: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // User Role Types

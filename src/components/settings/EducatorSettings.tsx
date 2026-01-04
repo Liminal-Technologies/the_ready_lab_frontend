@@ -34,7 +34,7 @@ export const EducatorSettings = () => {
   const { preference, updatePreference } = useLanguagePreference();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
-    full_name: auth.user?.full_name || '',
+    fullName: auth.user?.fullName || '',
     email: auth.user?.email || '',
     bio: '',
     expertise: '',
@@ -48,11 +48,11 @@ export const EducatorSettings = () => {
     if (auth.user) {
       setProfile(prev => ({
         ...prev,
-        full_name: auth.user?.full_name || '',
+        fullName: auth.user?.fullName || '',
         email: auth.user?.email || '',
       }));
     }
-  }, [auth.user?.full_name, auth.user?.email]);
+  }, [auth.user?.fullName, auth.user?.email]);
 
   useEffect(() => {
     fetchAgreements();
@@ -73,11 +73,11 @@ export const EducatorSettings = () => {
     if (!auth.user?.id) return;
 
     // Optimistic update - same pattern as CommunityFeed
-    const rollback = updateUser({ full_name: profile.full_name });
+    const rollback = updateUser({ fullName: profile.fullName });
 
     setLoading(true);
     try {
-      await api.profiles.update(auth.user.id, { full_name: profile.full_name });
+      await api.profiles.update(auth.user.id, { fullName: profile.fullName });
       toast({
         title: "Profile updated",
         description: "Your changes have been saved.",
@@ -98,10 +98,10 @@ export const EducatorSettings = () => {
     if (!auth.user?.id) return;
 
     // Optimistic update - same pattern as CommunityFeed
-    const rollback = updateUser({ avatar_url: url || undefined });
+    const rollback = updateUser({ avatarUrl: url || undefined });
 
     try {
-      await api.profiles.update(auth.user.id, { avatar_url: url || '' });
+      await api.profiles.update(auth.user.id, { avatarUrl: url || '' });
     } catch (error) {
       rollback();
       toast({
@@ -225,8 +225,8 @@ export const EducatorSettings = () => {
               <CardContent className="space-y-6">
                 <ProfilePhotoUpload
                   userId={auth.user?.id || ''}
-                  currentAvatarUrl={auth.user?.avatar_url}
-                  fullName={auth.user?.full_name}
+                  currentAvatarUrl={auth.user?.avatarUrl}
+                  fullName={auth.user?.fullName}
                   onPhotoUpdated={handlePhotoUpdated}
                 />
 
@@ -235,8 +235,8 @@ export const EducatorSettings = () => {
                     <Label htmlFor="fullName">Display Name</Label>
                     <Input
                       id="fullName"
-                      value={profile.full_name}
-                      onChange={(e) => setProfile(prev => ({ ...prev, full_name: e.target.value }))}
+                      value={profile.fullName}
+                      onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-2">

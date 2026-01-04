@@ -11,12 +11,12 @@ const convertApiUserToProfile = (apiUser: AuthUser): UserProfile => {
     id: apiUser.id,
     email: apiUser.email,
     role: apiUser.role,
-    full_name: apiUser.fullName,
-    created_at: apiUser.createdAt,
-    subscription_status: (apiUser.subscriptionStatus as 'active' | 'inactive' | 'trial' | 'cancelled') || 'trial',
-    subscription_tier: apiUser.subscriptionTier as 'basic' | 'pro' | 'premium' | undefined,
-    avatar_url: apiUser.avatarUrl,
-    admin_roles: []
+    fullName: apiUser.fullName,
+    createdAt: apiUser.createdAt,
+    subscriptionStatus: (apiUser.subscriptionStatus as 'active' | 'inactive' | 'trial' | 'cancelled') || 'trial',
+    subscriptionTier: apiUser.subscriptionTier as 'basic' | 'pro' | 'premium' | undefined,
+    avatarUrl: apiUser.avatarUrl,
+    adminRoles: []
   };
 };
 
@@ -101,12 +101,12 @@ export const useAuthState = () => {
         id: (profile as any).id,
         email: (profile as any).email,
         role: roleData || 'student', // Default to student if no role found
-        full_name: (profile as any).full_name,
-        created_at: (profile as any).created_at,
-        subscription_status: (profile as any).subscription_status,
-        subscription_tier: (profile as any).subscription_tier,
-        avatar_url: (profile as any).avatar_url,
-        admin_roles: (adminRoles || []).map((role: any) => ({
+        fullName: (profile as any).full_name,
+        createdAt: (profile as any).created_at,
+        subscriptionStatus: (profile as any).subscription_status,
+        subscriptionTier: (profile as any).subscription_tier,
+        avatarUrl: (profile as any).avatar_url,
+        adminRoles: (adminRoles || []).map((role: any) => ({
           id: role.id,
           role: role.role,
           granted_by: role.granted_by,

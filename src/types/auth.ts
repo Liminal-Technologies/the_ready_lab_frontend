@@ -13,12 +13,12 @@ export interface UserProfile {
   id: string;
   email: string;
   role: UserRole;
-  full_name?: string;
-  created_at: string;
-  subscription_status: 'active' | 'inactive' | 'trial' | 'cancelled';
-  subscription_tier?: 'basic' | 'pro' | 'premium';
-  avatar_url?: string;
-  admin_roles?: AdminRole[];
+  fullName?: string;
+  createdAt: string;
+  subscriptionStatus: 'active' | 'inactive' | 'trial' | 'cancelled';
+  subscriptionTier?: 'basic' | 'pro' | 'premium';
+  avatarUrl?: string;
+  adminRoles?: AdminRole[];
 }
 
 export interface AuthState {
